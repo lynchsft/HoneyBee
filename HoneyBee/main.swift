@@ -28,14 +28,11 @@ func randomInt() -> Int {
 	return Int(arc4random())
 }
 
-
-let root = ProcessLink<Void, Void>.startProcess()
-	root
-	.invoke(randomInt)
-	.invoke(intToString)
-	.invoke(stringToInt)
-	.invoke(printInt)
-	.terminate()
-
-root.execute(argument: ())
+doProccess { root in
+	root.invoke(randomInt)
+		.invoke(intToString)
+		.invoke(stringToInt)
+		.invoke(printInt)
+		.terminate()
+}
 

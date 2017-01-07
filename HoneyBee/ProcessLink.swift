@@ -14,7 +14,7 @@ class Executable<A> {
 
 class ProcessLink<A,B> : Executable<A> {
 	
-	static func startProcess() -> ProcessLink<Void,Void> {
+	static func rootProcess() -> ProcessLink<Void,Void> {
 		return ProcessLink<Void, Void>(function: {})
 	}
 	
@@ -43,3 +43,10 @@ class ProcessLink<A,B> : Executable<A> {
 		}
 	}
 }
+
+func doProccess(defineBlock: (ProcessLink<Void,Void>)->Void) {
+	let root = ProcessLink<Void, Void>.rootProcess()
+	defineBlock(root)
+	root.execute(argument: ())
+}
+
