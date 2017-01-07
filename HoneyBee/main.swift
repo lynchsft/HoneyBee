@@ -8,5 +8,34 @@
 
 import Foundation
 
-print("Hello, World!")
+func printString(string: String) {
+	print("printing: \(string)")
+}
+
+func printInt(int: Int) {
+	print("printing: \(int)")
+}
+
+func stringToInt(string: String) -> Int {
+	return Int(string)!
+}
+
+func intToString(int: Int) -> String {
+	return "\(int)"
+}
+
+func randomInt() -> Int {
+	return Int(arc4random())
+}
+
+
+let root = ProcessLink<Void, Void>.startProcess()
+	root
+	.invoke(randomInt)
+	.invoke(intToString)
+	.invoke(stringToInt)
+	.invoke(printInt)
+	.terminate()
+
+root.execute(argument: ())
 
