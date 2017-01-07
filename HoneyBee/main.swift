@@ -20,8 +20,8 @@ func stringToInt(string: String) -> Int {
 	return Int(string)!
 }
 
-func intToString(int: Int) -> String {
-	return "\(int)"
+func intToString(int: Int, callback: (String)->Void) {
+	return callback("\(int)")
 }
 
 func randomInt() -> Int {

@@ -15,18 +15,24 @@ class Executable<A> {
 class ProcessLink<A,B> : Executable<A> {
 	
 	static func rootProcess() -> ProcessLink<Void,Void> {
-		return ProcessLink<Void, Void>(function: {})
+		return ProcessLink<Void, Void>(function: {_,block in block()})
 	}
 	
 	private var createdLinks: [Executable<B>] = []
 	
-	private var function: (A)->(B)
+	private var function: (A,(B)->Void)->Void
 	
-	private init(function:  @escaping (A)->(B)) {
+	private init(function:  @escaping (A,(B)->Void)->Void) {
 		self.function = function
 	}
 	
 	func invoke<C>(_ functor:  @escaping (B)->(C)) -> ProcessLink<B,C> {
+		return self.invoke { (b, callback) in
+			callback(functor(b))
+		}
+	}
+	
+	func invoke<C>(_ functor:  @escaping (B,(C)->Void)->Void) -> ProcessLink<B,C> {
 		let link = ProcessLink<B,C>(function: functor)
 		createdLinks.append(link)
 		return link
@@ -37,9 +43,10 @@ class ProcessLink<A,B> : Executable<A> {
 	}
 	
 	override func execute(argument: A) {
-		let result = function(argument)
-		for createdLink in self.createdLinks {
-			createdLink.execute(argument: result)
+		function(argument) { result in
+			for createdLink in self.createdLinks {
+				createdLink.execute(argument: result)
+			}
 		}
 	}
 }
