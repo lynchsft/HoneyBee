@@ -15,6 +15,9 @@ func printString(string: String) {
 func printInt(int: Int) {
 	print("printing: \(int)")
 }
+func multiplyInt(int: Int) -> Int {
+	return int * 2
+}
 
 func stringToInt(string: String) -> Int {
 	return Int(string)!
@@ -32,7 +35,14 @@ doProccess { root in
 	root.invoke(randomInt)
 		.invoke(intToString)
 		.invoke(stringToInt)
-		.invoke(printInt)
-		.terminate()
+		.parallel { link in
+			link.invoke(printInt)
+				.terminate()
+			
+			link.invoke(multiplyInt)
+				.invoke(printInt)
+				.terminate()
+		}
 }
 
+sleep(3)

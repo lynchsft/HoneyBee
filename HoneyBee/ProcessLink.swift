@@ -18,11 +18,11 @@ class ProcessLink<A,B> : Executable<A> {
 		return ProcessLink<Void, Void>(function: {_,block in block()})
 	}
 	
-	private var createdLinks: [Executable<B>] = []
+	fileprivate var createdLinks: [Executable<B>] = []
 	
-	private var function: (A,(B)->Void)->Void
+	fileprivate var function: (A,(B)->Void)->Void
 	
-	private init(function:  @escaping (A,(B)->Void)->Void) {
+	fileprivate init(function:  @escaping (A,(B)->Void)->Void) {
 		self.function = function
 	}
 	
@@ -38,6 +38,10 @@ class ProcessLink<A,B> : Executable<A> {
 		return link
 	}
 	
+	func parallel(_ defineBlock: (ProcessLink<A,B>)->Void) {
+		defineBlock(self)
+	}
+	
 	func terminate() {
 		
 	}
@@ -45,13 +49,15 @@ class ProcessLink<A,B> : Executable<A> {
 	override func execute(argument: A) {
 		function(argument) { result in
 			for createdLink in self.createdLinks {
-				createdLink.execute(argument: result)
+				DispatchQueue.global().async {
+					createdLink.execute(argument: result)
+				}
 			}
 		}
 	}
 }
 
-func doProccess(defineBlock: (ProcessLink<Void,Void>)->Void) {
+func doProccess(_ defineBlock: (ProcessLink<Void,Void>)->Void) {
 	let root = ProcessLink<Void, Void>.rootProcess()
 	defineBlock(root)
 	root.execute(argument: ())
