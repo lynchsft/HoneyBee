@@ -9,7 +9,7 @@
 import Foundation
 
 class Executable<A> {
-	func execute(argument: A) -> Void {}
+	fileprivate func execute(argument: A) -> Void {}
 }
 
 class ProcessLink<A,B> : Executable<A> {
@@ -26,27 +26,27 @@ class ProcessLink<A,B> : Executable<A> {
 		self.function = function
 	}
 	
-	func invoke<C>(_ functor:  @escaping (B)->(C)) -> ProcessLink<B,C> {
-		return self.invoke { (b, callback) in
+	func link<C>(_ functor:  @escaping (B)->(C)) -> ProcessLink<B,C> {
+		return self.link { (b, callback) in
 			callback(functor(b))
 		}
 	}
 	
-	func invoke<C>(_ functor:  @escaping (B,(C)->Void)->Void) -> ProcessLink<B,C> {
+	func link<C>(_ functor:  @escaping (B,(C)->Void)->Void) -> ProcessLink<B,C> {
 		let link = ProcessLink<B,C>(function: functor)
 		createdLinks.append(link)
 		return link
 	}
 	
-	func parallel(_ defineBlock: (ProcessLink<A,B>)->Void) {
+	func fork(_ defineBlock: (ProcessLink<A,B>)->Void) {
 		defineBlock(self)
 	}
 	
-	func terminate() {
+	func end() {
 		
 	}
 	
-	override func execute(argument: A) {
+	override fileprivate func execute(argument: A) {
 		function(argument) { result in
 			for createdLink in self.createdLinks {
 				DispatchQueue.global().async {
@@ -57,7 +57,7 @@ class ProcessLink<A,B> : Executable<A> {
 	}
 }
 
-func doProccess(_ defineBlock: (ProcessLink<Void,Void>)->Void) {
+func startProccess(_ defineBlock: (ProcessLink<Void,Void>)->Void) {
 	let root = ProcessLink<Void, Void>.rootProcess()
 	defineBlock(root)
 	root.execute(argument: ())

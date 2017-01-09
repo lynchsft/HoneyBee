@@ -31,17 +31,17 @@ func randomInt() -> Int {
 	return Int(arc4random())
 }
 
-doProccess { root in
-	root.invoke(randomInt)
-		.invoke(intToString)
-		.invoke(stringToInt)
-		.parallel { link in
-			link.invoke(printInt)
-				.terminate()
+startProccess { root in
+	root.link(randomInt)
+		.link(intToString)
+		.link(stringToInt)
+		.fork { ctx in
+			ctx.link(printInt)
+				.end()
 			
-			link.invoke(multiplyInt)
-				.invoke(printInt)
-				.terminate()
+			ctx.link(multiplyInt)
+				.link(printInt)
+				.end()
 		}
 }
 
