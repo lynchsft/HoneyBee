@@ -26,13 +26,13 @@ class ProcessLink<A,B> : Executable<A> {
 		self.function = function
 	}
 	
-	func link<C>(_ functor:  @escaping (B)->(C)) -> ProcessLink<B,C> {
-		return self.link { (b, callback) in
+	func chain<C>(_ functor:  @escaping (B)->(C)) -> ProcessLink<B,C> {
+		return self.chain { (b, callback) in
 			callback(functor(b))
 		}
 	}
 	
-	func link<C>(_ functor:  @escaping (B, @escaping (C)->Void)->Void) -> ProcessLink<B,C> {
+	func chain<C>(_ functor:  @escaping (B, @escaping (C)->Void)->Void) -> ProcessLink<B,C> {
 		let link = ProcessLink<B,C>(function: functor)
 		createdLinks.append(link)
 		return link

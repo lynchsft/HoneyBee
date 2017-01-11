@@ -44,24 +44,24 @@ func printAll(values: [Any]) {
 }
 
 startProccess { root in
-	root.link(randomInt)
-		.link(intToString)
-		.link(stringToInt)
+	root.chain(randomInt)
+		.chain(intToString)
+		.chain(stringToInt)
 		.fork { ctx in
-			ctx.link(printInt)
+			ctx.chain(printInt)
 				.end()
 			
-			ctx.link(multiplyInt)
-				.link(printInt)
+			ctx.chain(multiplyInt)
+				.chain(printInt)
 				.end()
 		}
 }
 
 startProccess { root in
-	root.link(constantInt)
-		.link(randomInts)
+	root.chain(constantInt)
+		.chain(randomInts)
 		.map(multiplyInt)
-		.link(printAll)
+		.chain(printAll)
 		.end()
 }
 
