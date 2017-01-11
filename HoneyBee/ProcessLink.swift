@@ -20,9 +20,9 @@ class ProcessLink<A,B> : Executable<A> {
 	
 	fileprivate var createdLinks: [Executable<B>] = []
 	
-	fileprivate var function: (A,(B)->Void)->Void
+	fileprivate var function: (A, @escaping (B)->Void)->Void
 	
-	fileprivate init(function:  @escaping (A,(B)->Void)->Void) {
+	fileprivate init(function:  @escaping (A, @escaping (B)->Void)->Void) {
 		self.function = function
 	}
 	
@@ -32,7 +32,7 @@ class ProcessLink<A,B> : Executable<A> {
 		}
 	}
 	
-	func link<C>(_ functor:  @escaping (B,(C)->Void)->Void) -> ProcessLink<B,C> {
+	func link<C>(_ functor:  @escaping (B, @escaping (C)->Void)->Void) -> ProcessLink<B,C> {
 		let link = ProcessLink<B,C>(function: functor)
 		createdLinks.append(link)
 		return link
@@ -54,6 +54,17 @@ class ProcessLink<A,B> : Executable<A> {
 				}
 			}
 		}
+	}
+}
+
+extension ProcessLink where B : Collection, B.IndexDistance == Int {
+	
+	func map<C>(_ transform: @escaping (B.Iterator.Element) -> C) -> ProcessLink<B,[C]> {
+		let link = ProcessLink<B,[C]>(function:{sequence, callback in
+			sequence.asyncMap(transform: transform, completion: callback)
+		})
+		createdLinks.append(link)
+		return link
 	}
 }
 

@@ -27,8 +27,20 @@ func intToString(int: Int, callback: (String)->Void) {
 	return callback("\(int)")
 }
 
+func constantInt() -> Int {
+	return 8
+}
+
 func randomInt() -> Int {
 	return Int(arc4random())
+}
+
+func randomInts(count: Int) -> [Int] {
+	return Array(0..<count).map { _ in randomInt() }
+}
+
+func printAll(values: [Any]) {
+	print(values)
 }
 
 startProccess { root in
@@ -45,4 +57,12 @@ startProccess { root in
 		}
 }
 
-sleep(3)
+startProccess { root in
+	root.link(constantInt)
+		.link(randomInts)
+		.map(multiplyInt)
+		.link(printAll)
+		.end()
+}
+
+sleep(300)
