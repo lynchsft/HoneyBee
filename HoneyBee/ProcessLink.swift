@@ -20,20 +20,34 @@ class ProcessLink<A,B> : Executable<A> {
 	
 	fileprivate var createdLinks: [Executable<B>] = []
 	
-	fileprivate var function: (A, @escaping (B)->Void)->Void
+	fileprivate var function: (A, @escaping (B)->Void) throws -> Void
+	fileprivate var errorHandler: (Error) -> Void
 	
-	fileprivate init(function:  @escaping (A, @escaping (B)->Void)->Void) {
+	fileprivate convenience init(function:  @escaping (A, @escaping (B)->Void) -> Void) {
+		self.init(function: function, errorHandler: {_ in /* no possibilty of checked error here */})
+	}
+	
+	fileprivate init(function:  @escaping (A, @escaping (B)->Void) throws -> Void, errorHandler: @escaping (Error) -> Void) {
 		self.function = function
+		self.errorHandler = errorHandler
 	}
 	
-	func chain<C>(_ functor:  @escaping (B)->(C)) -> ProcessLink<B,C> {
-		return self.chain { (b, callback) in
-			callback(functor(b))
-		}
+	func chain<C>(_ functor:  @escaping (B) -> (C) ) -> ProcessLink<B,C> {
+		return self.chain(functor, errorHandler: {_ in /* no checked errors possible */})
 	}
 	
-	func chain<C>(_ functor:  @escaping (B, @escaping (C)->Void)->Void) -> ProcessLink<B,C> {
-		let link = ProcessLink<B,C>(function: functor)
+	func chain<C>(_ functor:  @escaping (B, @escaping (C) -> Void) -> Void) -> ProcessLink<B,C> {
+		return self.chain(functor, errorHandler: {_ in /* no checked errors possible */})
+	}
+	
+	func chain<C>(_ functor:  @escaping (B) throws -> (C), errorHandler: @escaping (Error)->Void ) -> ProcessLink<B,C> {
+		return self.chain({ (b, callback) in
+			try callback(functor(b))
+		}, errorHandler: errorHandler)
+	}
+	
+	func chain<C>(_ functor:  @escaping (B, @escaping (C) -> Void) throws -> Void, errorHandler: @escaping (Error)->Void) -> ProcessLink<B,C> {
+		let link = ProcessLink<B,C>(function: functor, errorHandler: errorHandler)
 		createdLinks.append(link)
 		return link
 	}
@@ -47,12 +61,16 @@ class ProcessLink<A,B> : Executable<A> {
 	}
 	
 	override fileprivate func execute(argument: A) {
-		function(argument) { result in
-			for createdLink in self.createdLinks {
-				DispatchQueue.global().async {
-					createdLink.execute(argument: result)
+		do {
+			try self.function(argument) { result in
+				for createdLink in self.createdLinks {
+					DispatchQueue.global().async {
+						createdLink.execute(argument: result)
+					}
 				}
 			}
+		} catch {
+			self.errorHandler(error)
 		}
 	}
 }

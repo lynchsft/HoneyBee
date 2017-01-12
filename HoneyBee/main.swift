@@ -19,8 +19,17 @@ func multiplyInt(int: Int) -> Int {
 	return int * 2
 }
 
-func stringToInt(string: String) -> Int {
-	return Int(string)!
+
+func stringCat(string: String) -> String {
+	return "\(string)cat"
+}
+
+func stringToInt(string: String) throws -> Int {
+	if let int = Int(string) {
+		return int
+	} else {
+		throw NSError(domain: "couldn't convert string to int", code: -2, userInfo: ["string:": string])
+	}
 }
 
 func intToString(int: Int, callback: (String)->Void) {
@@ -43,10 +52,15 @@ func printAll(values: [Any]) {
 	print(values)
 }
 
+func stdHandleError(_ error: Error) {
+	print("Error: \(error)")
+}
+
 startProccess { root in
 	root.chain(randomInt)
 		.chain(intToString)
-		.chain(stringToInt)
+		//.chain(stringCat)
+		.chain(stringToInt) {error in stdHandleError(error)}
 		.fork { ctx in
 			ctx.chain(printInt)
 				.end()
@@ -65,4 +79,4 @@ startProccess { root in
 		.end()
 }
 
-sleep(300)
+sleep(3)
