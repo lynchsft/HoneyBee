@@ -12,6 +12,44 @@ class Executable<A> {
 	fileprivate func execute(argument: A) -> Void {}
 }
 
+class ProcessResult<A>  : Executable<A>{
+	private let resultLock = NSLock()
+	private var result: A?
+	private var callback: ((A) -> Void)?
+	
+	func yieldResult(_ callback: @escaping (A) -> Void) {
+		resultLock.lock()
+		// this needs to be atomic
+		if let result = result {
+			callback(result)
+		} else {
+			self.callback = callback
+		}
+		resultLock.unlock()
+	}
+	
+	override fileprivate func execute(argument: A) {
+		resultLock.lock()
+		result = argument
+		if let callback = callback {
+			callback(argument)
+		}
+		resultLock.unlock()
+	}
+	
+	func cojoin<B,C>(_ other: ProcessResult<B>, _ functor: @escaping (A,B) -> (C)) -> ProcessLink<Void,C>{
+		let link = ProcessLink<Void,C>(function: {_,callback in
+			self.yieldResult { a in
+				other.yieldResult { b in
+					callback(functor(a, b))
+				}
+			}
+		})
+		link.execute(argument: ())
+		return link
+	}
+}
+
 class ProcessLink<A,B> : Executable<A> {
 	
 	static func rootProcess() -> ProcessLink<Void,Void> {
@@ -58,6 +96,12 @@ class ProcessLink<A,B> : Executable<A> {
 	
 	func end() {
 		
+	}
+	
+	func joinPoint() -> ProcessResult<B> {
+		let link = ProcessResult<B>()
+		createdLinks.append(link)
+		return link
 	}
 	
 	override fileprivate func execute(argument: A) {

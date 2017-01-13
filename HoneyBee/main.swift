@@ -40,6 +40,11 @@ func constantInt() -> Int {
 	return 8
 }
 
+func constantString() -> String {
+	sleep(2)
+	return "lamb"
+}
+
 func randomInt() -> Int {
 	return Int(arc4random())
 }
@@ -54,6 +59,14 @@ func printAll(values: [Any]) {
 
 func stdHandleError(_ error: Error) {
 	print("Error: \(error)")
+}
+
+func multiplyString(string: String, count: Int) -> String {
+	var acc = ""
+	for _ in 0..<count {
+		acc.append(string)
+	}
+	return acc
 }
 
 startProccess { root in
@@ -79,4 +92,18 @@ startProccess { root in
 		.end()
 }
 
-sleep(3)
+startProccess { root in
+	root.fork { ctx in
+		let result1 = ctx.chain(constantInt)
+						 .joinPoint()
+	
+		let result2 = ctx.chain(constantString)
+						 .joinPoint()
+			
+		result2.cojoin(result1, multiplyString)
+			   .chain(printString)
+			   .end()
+	}
+}
+
+sleep(5)
