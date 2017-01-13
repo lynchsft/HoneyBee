@@ -12,12 +12,12 @@ class Executable<A> {
 	fileprivate func execute(argument: A) -> Void {}
 }
 
-class ProcessResult<A>  : Executable<A>{
+public class ProcessResult<A>  : Executable<A>{
 	private let resultLock = NSLock()
 	private var result: A?
 	private var callback: ((A) -> Void)?
 	
-	func yieldResult(_ callback: @escaping (A) -> Void) {
+	private func yieldResult(_ callback: @escaping (A) -> Void) {
 		resultLock.lock()
 		// this needs to be atomic
 		if let result = result {
@@ -37,7 +37,7 @@ class ProcessResult<A>  : Executable<A>{
 		resultLock.unlock()
 	}
 	
-	func cojoin<B,C>(_ other: ProcessResult<B>, _ functor: @escaping (A,B) -> (C)) -> ProcessLink<Void,C>{
+	public func cojoin<B,C>(_ other: ProcessResult<B>, _ functor: @escaping (A,B) -> (C)) -> ProcessLink<Void,C>{
 		let link = ProcessLink<Void,C>(function: {_,callback in
 			self.yieldResult { a in
 				other.yieldResult { b in
@@ -50,11 +50,7 @@ class ProcessResult<A>  : Executable<A>{
 	}
 }
 
-class ProcessLink<A,B> : Executable<A> {
-	
-	static func rootProcess() -> ProcessLink<Void,Void> {
-		return ProcessLink<Void, Void>(function: {_,block in block()})
-	}
+public class ProcessLink<A,B> : Executable<A> {
 	
 	fileprivate var createdLinks: [Executable<B>] = []
 	
@@ -70,38 +66,52 @@ class ProcessLink<A,B> : Executable<A> {
 		self.errorHandler = errorHandler
 	}
 	
-	func chain<C>(_ functor:  @escaping (B) -> (C) ) -> ProcessLink<B,C> {
-		return self.chain(functor, errorHandler: {_ in /* no checked errors possible */})
+	public func chain<C>(_ functor:  @escaping (B) -> (C) ) -> ProcessLink<B,C> {
+		return self.chain(functor, {_ in /* no checked errors possible */})
 	}
 	
-	func chain<C>(_ functor:  @escaping (B, @escaping (C) -> Void) -> Void) -> ProcessLink<B,C> {
-		return self.chain(functor, errorHandler: {_ in /* no checked errors possible */})
+	public func chain<C>(_ functor:  @escaping (B, @escaping (C) -> Void) -> Void) -> ProcessLink<B,C> {
+		return self.chain(functor, {_ in /* no checked errors possible */})
 	}
 	
-	func chain<C>(_ functor:  @escaping (B) throws -> (C), errorHandler: @escaping (Error)->Void ) -> ProcessLink<B,C> {
+	public func chain<C>(_ functor:  @escaping (B) throws -> (C), _ errorHandler: @escaping (Error)->Void ) -> ProcessLink<B,C> {
 		return self.chain({ (b, callback) in
 			try callback(functor(b))
-		}, errorHandler: errorHandler)
+		}, errorHandler)
 	}
 	
-	func chain<C>(_ functor:  @escaping (B, @escaping (C) -> Void) throws -> Void, errorHandler: @escaping (Error)->Void) -> ProcessLink<B,C> {
+	public func chain<C>(_ functor:  @escaping (B, @escaping (C) -> Void) throws -> Void, _ errorHandler: @escaping (Error)->Void) -> ProcessLink<B,C> {
 		let link = ProcessLink<B,C>(function: functor, errorHandler: errorHandler)
 		createdLinks.append(link)
 		return link
 	}
 	
-	func fork(_ defineBlock: (ProcessLink<A,B>)->Void) {
+	public func fork(_ defineBlock: (ProcessLink<A,B>)->Void) {
 		defineBlock(self)
 	}
 	
-	func end() {
+	public func end() {
 		
 	}
 	
-	func joinPoint() -> ProcessResult<B> {
+	public func joinPoint() -> ProcessResult<B> {
 		let link = ProcessResult<B>()
 		createdLinks.append(link)
 		return link
+	}
+	
+	public func splice<C>(_ functor: @escaping () -> C) -> ProcessLink<Void,C> {
+		return self.splice(functor, {_ in /* no checked errros possible */})
+	}
+	
+	public func splice<C>(_ functor: @escaping () throws -> C, _ errorHandler: @escaping (Error)->Void) -> ProcessLink<Void,C> {
+		let link = ProcessLink<B,Void>(function: {_,callback in
+			callback()
+		}, errorHandler: {_ in /* no error */})
+		createdLinks.append(link)
+		
+		return link.chain(functor, errorHandler)
+
 	}
 	
 	override fileprivate func execute(argument: A) {
@@ -121,7 +131,7 @@ class ProcessLink<A,B> : Executable<A> {
 
 extension ProcessLink where B : Collection, B.IndexDistance == Int {
 	
-	func map<C>(_ transform: @escaping (B.Iterator.Element) -> C) -> ProcessLink<B,[C]> {
+	public func map<C>(_ transform: @escaping (B.Iterator.Element) -> C) -> ProcessLink<B,[C]> {
 		let link = ProcessLink<B,[C]>(function:{sequence, callback in
 			sequence.asyncMap(transform: transform, completion: callback)
 		})
@@ -130,9 +140,15 @@ extension ProcessLink where B : Collection, B.IndexDistance == Int {
 	}
 }
 
-func startProccess(_ defineBlock: (ProcessLink<Void,Void>)->Void) {
-	let root = ProcessLink<Void, Void>.rootProcess()
+public func startProccess(_ defineBlock: (ProcessLink<Void,Void>)->Void) {
+	let root = ProcessLink<Void, Void>(function: {_,block in block()})
 	defineBlock(root)
 	root.execute(argument: ())
+}
+
+public func startProccess<A>(with arg: A, _ defineBlock: (ProcessLink<A,A>)->Void) {
+	let root = ProcessLink<A, A>(function: {a,block in block(a)})
+	defineBlock(root)
+	root.execute(argument: arg)
 }
 
