@@ -133,6 +133,37 @@ extension ProcessLink {
 	}
 }
 
+extension ProcessLink {
+	// secondary forms
+	
+	private func elevate<T>(_ functor: @escaping (T) -> (@escaping (Error?)->Void)->Void) -> (T, @escaping (FailableResult<T>)->Void) -> Void {
+		let wrapper: (T, @escaping (FailableResult<T>)->Void) -> Void = { t, callback in
+			functor(t)({ error in
+				if let error = error {
+					callback(.failure(error))
+				} else {
+					callback(.success(t))
+				}
+			})
+		}
+		
+		return wrapper
+	}
+	
+	private func checkResult<T>(_ result: FailableResult<T>) throws -> T{
+		switch result {
+		case let .success(t):
+			return t
+		case let .failure(error):
+			throw error
+		}
+	}
+	
+	public func chain(_ functor: @escaping (B) -> (@escaping (Error?)->Void)->Void, _ errorHandler: @escaping (Error)->Void) -> ProcessLink<FailableResult<B>,B> {
+		return self.chain(elevate(functor)).chain(checkResult, errorHandler)
+	}
+}
+
 extension ProcessLink where B : Collection, B.IndexDistance == Int {
 	
 	public func map<C>(_ transform: @escaping (B.Iterator.Element) -> C) -> ProcessLink<B,[C]> {

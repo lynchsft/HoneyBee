@@ -11,6 +11,8 @@
 		FA35D74A1E28B83E00A1059F /* LibHoneyBee.h in Headers */ = {isa = PBXBuildFile; fileRef = FA35D7481E28B83E00A1059F /* LibHoneyBee.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		FA35D74E1E28B84300A1059F /* ProcessLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB4DFBF1E210FEE008FC378 /* ProcessLink.swift */; };
 		FA35D74F1E28B84600A1059F /* AsyncSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA35D7261E2480D100A1059F /* AsyncSupport.swift */; };
+		FA6E05E41E2CFEEC004170A0 /* FailableResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA6E05E31E2CFEEC004170A0 /* FailableResult.swift */; };
+		FA6E05E51E2CFEEC004170A0 /* FailableResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA6E05E31E2CFEEC004170A0 /* FailableResult.swift */; };
 		FAB4DFB91E210FE1008FC378 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB4DFB81E210FE1008FC378 /* main.swift */; };
 		FAB4DFC01E210FEE008FC378 /* ProcessLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB4DFBF1E210FEE008FC378 /* ProcessLink.swift */; };
 /* End PBXBuildFile section */
@@ -32,6 +34,7 @@
 		FA35D7461E28B83E00A1059F /* LibHoneyBee.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = LibHoneyBee.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA35D7481E28B83E00A1059F /* LibHoneyBee.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LibHoneyBee.h; sourceTree = "<group>"; };
 		FA35D7491E28B83E00A1059F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		FA6E05E31E2CFEEC004170A0 /* FailableResult.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FailableResult.swift; sourceTree = "<group>"; };
 		FAB4DFB51E210FE1008FC378 /* HoneyBee */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = HoneyBee; sourceTree = BUILT_PRODUCTS_DIR; };
 		FAB4DFB81E210FE1008FC378 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		FAB4DFBF1E210FEE008FC378 /* ProcessLink.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProcessLink.swift; sourceTree = "<group>"; };
@@ -88,6 +91,7 @@
 				FAB4DFB81E210FE1008FC378 /* main.swift */,
 				FAB4DFBF1E210FEE008FC378 /* ProcessLink.swift */,
 				FA35D7261E2480D100A1059F /* AsyncSupport.swift */,
+				FA6E05E31E2CFEEC004170A0 /* FailableResult.swift */,
 			);
 			path = HoneyBee;
 			sourceTree = "<group>";
@@ -198,6 +202,7 @@
 			files = (
 				FA35D74F1E28B84600A1059F /* AsyncSupport.swift in Sources */,
 				FA35D74E1E28B84300A1059F /* ProcessLink.swift in Sources */,
+				FA6E05E51E2CFEEC004170A0 /* FailableResult.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -207,6 +212,7 @@
 			files = (
 				FA35D7271E2480D100A1059F /* AsyncSupport.swift in Sources */,
 				FAB4DFB91E210FE1008FC378 /* main.swift in Sources */,
+				FA6E05E41E2CFEEC004170A0 /* FailableResult.swift in Sources */,
 				FAB4DFC01E210FEE008FC378 /* ProcessLink.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
