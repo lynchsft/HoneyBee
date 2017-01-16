@@ -52,10 +52,10 @@ public class ProcessResult<A>  : Executable<A>{
 
 public class ProcessLink<A,B> : Executable<A> {
 	
-	fileprivate var createdLinks: [Executable<B>] = []
+	private var createdLinks: [Executable<B>] = []
 	
-	fileprivate var function: (A, @escaping (B)->Void) throws -> Void
-	fileprivate var errorHandler: (Error) -> Void
+	private var function: (A, @escaping (B)->Void) throws -> Void
+	private var errorHandler: (Error) -> Void
 	
 	fileprivate convenience init(function:  @escaping (A, @escaping (B)->Void) -> Void) {
 		self.init(function: function, errorHandler: {_ in /* no possibilty of checked error here */})
@@ -64,20 +64,6 @@ public class ProcessLink<A,B> : Executable<A> {
 	fileprivate init(function:  @escaping (A, @escaping (B)->Void) throws -> Void, errorHandler: @escaping (Error) -> Void) {
 		self.function = function
 		self.errorHandler = errorHandler
-	}
-	
-	public func chain<C>(_ functor:  @escaping (B) -> (C) ) -> ProcessLink<B,C> {
-		return self.chain(functor, {_ in /* no checked errors possible */})
-	}
-	
-	public func chain<C>(_ functor:  @escaping (B, @escaping (C) -> Void) -> Void) -> ProcessLink<B,C> {
-		return self.chain(functor, {_ in /* no checked errors possible */})
-	}
-	
-	public func chain<C>(_ functor:  @escaping (B) throws -> (C), _ errorHandler: @escaping (Error)->Void ) -> ProcessLink<B,C> {
-		return self.chain({ (b, callback) in
-			try callback(functor(b))
-		}, errorHandler)
 	}
 	
 	public func chain<C>(_ functor:  @escaping (B, @escaping (C) -> Void) throws -> Void, _ errorHandler: @escaping (Error)->Void) -> ProcessLink<B,C> {
@@ -90,29 +76,13 @@ public class ProcessLink<A,B> : Executable<A> {
 		defineBlock(self)
 	}
 	
-	public func end() {
-		
-	}
-	
 	public func joinPoint() -> ProcessResult<B> {
 		let link = ProcessResult<B>()
 		createdLinks.append(link)
 		return link
 	}
 	
-	public func splice<C>(_ functor: @escaping () -> C) -> ProcessLink<Void,C> {
-		return self.splice(functor, {_ in /* no checked errros possible */})
-	}
-	
-	public func splice<C>(_ functor: @escaping () throws -> C, _ errorHandler: @escaping (Error)->Void) -> ProcessLink<Void,C> {
-		let link = ProcessLink<B,Void>(function: {_,callback in
-			callback()
-		}, errorHandler: {_ in /* no error */})
-		createdLinks.append(link)
-		
-		return link.chain(functor, errorHandler)
-
-	}
+	public func end() {} // semantic convenience
 	
 	override fileprivate func execute(argument: A) {
 		do {
@@ -129,14 +99,46 @@ public class ProcessLink<A,B> : Executable<A> {
 	}
 }
 
+extension ProcessLink {
+	// simplifed forms
+	
+	public func chain<C>(_ functor:  @escaping (B) -> (C) ) -> ProcessLink<B,C> {
+		return self.chain(functor, {_ in /* no checked errors possible */})
+	}
+	
+	public func chain<C>(_ functor:  @escaping (B, @escaping (C) -> Void) -> Void) -> ProcessLink<B,C> {
+		return self.chain(functor, {_ in /* no checked errors possible */})
+	}
+	
+	public func chain<C>(_ functor:  @escaping (B) throws -> (C), _ errorHandler: @escaping (Error)->Void ) -> ProcessLink<B,C> {
+		return self.chain({ (b, callback) in
+			try callback(functor(b))
+		}, errorHandler)
+	}
+}
+
+extension ProcessLink {
+	// special forms
+	
+	public func splice<C>(_ functor: @escaping () -> C) -> ProcessLink<Void,C> {
+		return self.splice(functor, {_ in /* no checked errros possible */})
+	}
+	
+	public func splice<C>(_ functor: @escaping () throws -> C, _ errorHandler: @escaping (Error)->Void) -> ProcessLink<Void,C> {
+		let link = self.chain({(_,callback) in
+			callback()
+		})
+		
+		return link.chain(functor, errorHandler)
+	}
+}
+
 extension ProcessLink where B : Collection, B.IndexDistance == Int {
 	
 	public func map<C>(_ transform: @escaping (B.Iterator.Element) -> C) -> ProcessLink<B,[C]> {
-		let link = ProcessLink<B,[C]>(function:{sequence, callback in
+		return self.chain({sequence, callback in
 			sequence.asyncMap(transform: transform, completion: callback)
 		})
-		createdLinks.append(link)
-		return link
 	}
 }
 
