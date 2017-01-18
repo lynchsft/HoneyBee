@@ -16,6 +16,11 @@ public class ProcessResult<A>  : Executable<A>{
 	private let resultLock = NSLock()
 	private var result: A?
 	private var callback: ((A) -> Void)?
+	private var queue: DispatchQueue
+	
+	fileprivate init(queue: DispatchQueue) {
+		self.queue = queue
+	}
 	
 	private func yieldResult(_ callback: @escaping (A) -> Void) {
 		resultLock.lock()
@@ -44,7 +49,7 @@ public class ProcessResult<A>  : Executable<A>{
 					callback(functor(a, b))
 				}
 			}
-		})
+		}, queue: self.queue)
 		link.execute(argument: ())
 		return link
 	}
@@ -56,18 +61,20 @@ public class ProcessLink<A,B> : Executable<A> {
 	
 	private var function: (A, @escaping (B)->Void) throws -> Void
 	private var errorHandler: (Error) -> Void
+	private var queue: DispatchQueue
 	
-	fileprivate convenience init(function:  @escaping (A, @escaping (B)->Void) -> Void) {
-		self.init(function: function, errorHandler: {_ in /* no possibilty of checked error here */})
+	fileprivate convenience init(function:  @escaping (A, @escaping (B)->Void) -> Void, queue: DispatchQueue) {
+		self.init(function: function, errorHandler: {_ in /* no possibilty of checked error here */}, queue: queue)
 	}
 	
-	fileprivate init(function:  @escaping (A, @escaping (B)->Void) throws -> Void, errorHandler: @escaping (Error) -> Void) {
+	fileprivate init(function:  @escaping (A, @escaping (B)->Void) throws -> Void, errorHandler: @escaping (Error) -> Void, queue: DispatchQueue) {
 		self.function = function
 		self.errorHandler = errorHandler
+		self.queue = queue
 	}
 	
-	public func chain<C>(_ functor:  @escaping (B, @escaping (C) -> Void) throws -> Void, _ errorHandler: @escaping (Error)->Void) -> ProcessLink<B,C> {
-		let link = ProcessLink<B,C>(function: functor, errorHandler: errorHandler)
+	public func chain<C>(_ functor:  @escaping (B, @escaping (C) -> Void) throws -> Void, on queue: DispatchQueue? = nil, _ errorHandler: @escaping (Error)->Void) -> ProcessLink<B,C> {
+		let link = ProcessLink<B,C>(function: functor, errorHandler: errorHandler, queue: queue ?? self.queue)
 		createdLinks.append(link)
 		return link
 	}
@@ -77,7 +84,7 @@ public class ProcessLink<A,B> : Executable<A> {
 	}
 	
 	public func joinPoint() -> ProcessResult<B> {
-		let link = ProcessResult<B>()
+		let link = ProcessResult<B>(queue: self.queue)
 		createdLinks.append(link)
 		return link
 	}
@@ -88,7 +95,7 @@ public class ProcessLink<A,B> : Executable<A> {
 		do {
 			try self.function(argument) { result in
 				for createdLink in self.createdLinks {
-					DispatchQueue.global().async {
+					self.queue.async {
 						createdLink.execute(argument: result)
 					}
 				}
@@ -173,14 +180,14 @@ extension ProcessLink where B : Collection, B.IndexDistance == Int {
 	}
 }
 
-public func startProccess(_ defineBlock: (ProcessLink<Void,Void>)->Void) {
-	let root = ProcessLink<Void, Void>(function: {_,block in block()})
+public func startProccess(on queue: DispatchQueue = DispatchQueue.global(), _ defineBlock: (ProcessLink<Void,Void>)->Void) {
+	let root = ProcessLink<Void, Void>(function: {_,block in block()}, queue: queue)
 	defineBlock(root)
 	root.execute(argument: ())
 }
 
-public func startProccess<A>(with arg: A, _ defineBlock: (ProcessLink<A,A>)->Void) {
-	let root = ProcessLink<A, A>(function: {a,block in block(a)})
+public func startProccess<A>(with arg: A, on queue: DispatchQueue = DispatchQueue.global(), _ defineBlock: (ProcessLink<A,A>)->Void) {
+	let root = ProcessLink<A, A>(function: {a,block in block(a)}, queue: queue)
 	defineBlock(root)
 	root.execute(argument: arg)
 }
