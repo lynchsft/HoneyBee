@@ -101,7 +101,9 @@ public class ProcessLink<A,B> : Executable<A> {
 				}
 			}
 		} catch {
-			self.errorHandler(error)
+			self.queue.async {
+				self.errorHandler(error)
+			}
 		}
 	}
 }
