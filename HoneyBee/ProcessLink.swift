@@ -138,6 +138,10 @@ extension ProcessLink {
 		
 		return link.chain(functor, errorHandler)
 	}
+	
+	public func value<C>(_ c: C) -> ProcessLink<Void,C> {
+		return self.splice({ return c })
+	}
 }
 
 extension ProcessLink {
