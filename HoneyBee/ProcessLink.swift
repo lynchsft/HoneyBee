@@ -161,6 +161,14 @@ extension ProcessLink {
 		return wrapper
 	}
 	
+	private func elevate<T>(_ functor: @escaping (T, @escaping (Error?)->Void)->Void) -> (T, @escaping (FailableResult<T>)->Void) -> Void {
+		return elevate { t in
+			return { callback in
+				functor(t,callback)
+			}
+		}
+	}
+	
 	private func checkResult<T>(_ result: FailableResult<T>) throws -> T{
 		switch result {
 		case let .success(t):
@@ -171,6 +179,10 @@ extension ProcessLink {
 	}
 	
 	public func chain(_ functor: @escaping (B) -> (@escaping (Error?)->Void)->Void, _ errorHandler: @escaping (Error)->Void) -> ProcessLink<FailableResult<B>,B> {
+		return self.chain(elevate(functor)).chain(checkResult, errorHandler)
+	}
+	
+	public func chain(_ functor: @escaping (B, @escaping (Error?)->Void)->Void, _ errorHandler: @escaping (Error)->Void) -> ProcessLink<FailableResult<B>,B> {
 		return self.chain(elevate(functor)).chain(checkResult, errorHandler)
 	}
 }
