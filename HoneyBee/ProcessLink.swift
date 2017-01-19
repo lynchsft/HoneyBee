@@ -171,6 +171,24 @@ extension ProcessLink {
 		}
 	}
 	
+	private func elevate<T,C>(_ functor: @escaping (T, @escaping (C?, Error?)->Void)->Void) -> (T, @escaping (FailableResult<C>)->Void) -> Void {
+		let wrapper: (T, @escaping (FailableResult<C>)->Void) -> Void = { t, callback in
+			functor(t,{ c, error in
+				if let error = error {
+					callback(.failure(error))
+				} else {
+					if let c = c {
+						callback(.success(c))
+					} else {
+						callback(.failure(NSError(domain: "Unexpectedly missing value", code: -99, userInfo: nil)))
+					}
+				}
+			})
+		}
+		
+		return wrapper
+	}
+	
 	private func checkResult<T>(_ result: FailableResult<T>) throws -> T{
 		switch result {
 		case let .success(t):
@@ -185,6 +203,18 @@ extension ProcessLink {
 	}
 	
 	public func chain(_ functor: @escaping (B, @escaping (Error?)->Void)->Void, _ errorHandler: @escaping (Error)->Void) -> ProcessLink<FailableResult<B>,B> {
+		return self.chain(elevate(functor)).chain(checkResult, errorHandler)
+	}
+	
+	// This form of `chain` is not presently invocable because the compiler cannot disambiguate it from 
+	// `func chain<C>(_ functor:  @escaping (B) throws -> (C), _ errorHandler: @escaping (Error)->Void ) -> ProcessLink<B,C>`
+	// For now use the `chain2` function of the same signature.
+	public func chain<C>(_ functor: @escaping (B, @escaping (C?, Error?)->Void)->Void, _ errorHandler: @escaping (Error)->Void) -> ProcessLink<FailableResult<C>,C> {
+		return self.chain2(functor, errorHandler)
+	}
+	
+	// See comment on `chain<C>(_ functor: @escaping (B, @escaping (C?, Error?)->Void)->Void, _ errorHandler: @escaping (Error)->Void) -> ProcessLink<FailableResult<C>,C>`
+	public func chain2<C>(_ functor: @escaping (B, @escaping (C?, Error?)->Void)->Void, _ errorHandler: @escaping (Error)->Void) -> ProcessLink<FailableResult<C>,C> {
 		return self.chain(elevate(functor)).chain(checkResult, errorHandler)
 	}
 }
