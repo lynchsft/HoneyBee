@@ -9,14 +9,15 @@
 import Foundation
 
 class Executable<A> {
-	fileprivate func execute(argument: A) -> Void {}
+	fileprivate func execute(argument: A, completion: @escaping ()->Void) -> Void {}
 }
 
-public class ProcessResult<A>  : Executable<A>{
+public class JoinPoint<A>  : Executable<A>{
 	private let resultLock = NSLock()
 	private var result: A?
-	private var callback: ((A) -> Void)?
+	private var resultCallback: ((A) -> Void)?
 	private var queue: DispatchQueue
+	private var conjoinLink: Executable<Void>?
 	
 	fileprivate init(queue: DispatchQueue) {
 		self.queue = queue
@@ -28,21 +29,26 @@ public class ProcessResult<A>  : Executable<A>{
 		if let result = result {
 			callback(result)
 		} else {
-			self.callback = callback
+			self.resultCallback = callback
 		}
 		resultLock.unlock()
 	}
 	
-	override fileprivate func execute(argument: A) {
+	override fileprivate func execute(argument: A, completion: @escaping ()->Void) {
+		if let link = self.conjoinLink {
+			link.execute(argument: (), completion:  completion)
+		}
+		
 		resultLock.lock()
 		result = argument
-		if let callback = callback {
-			callback(argument)
+		
+		if let resultCallback = self.resultCallback {
+			resultCallback(argument)
 		}
 		resultLock.unlock()
 	}
 	
-	public func cojoin<B,C>(_ other: ProcessResult<B>, _ functor: @escaping (A,B) -> (C)) -> ProcessLink<Void,C>{
+	public func conjoin<B,C>(_ other: JoinPoint<B>, _ functor: @escaping (A,B) -> (C)) -> ProcessLink<Void,C>{
 		let link = ProcessLink<Void,C>(function: {_,callback in
 			self.yieldResult { a in
 				other.yieldResult { b in
@@ -50,7 +56,8 @@ public class ProcessResult<A>  : Executable<A>{
 				}
 			}
 		}, queue: self.queue)
-		link.execute(argument: ())
+		
+		self.conjoinLink = link
 		return link
 	}
 }
@@ -61,7 +68,7 @@ public class ProcessLink<A,B> : Executable<A> {
 	
 	private var function: (A, @escaping (B)->Void) throws -> Void
 	private var errorHandler: (Error) -> Void
-	private var queue: DispatchQueue
+	fileprivate var queue: DispatchQueue
 	
 	fileprivate convenience init(function:  @escaping (A, @escaping (B)->Void) -> Void, queue: DispatchQueue) {
 		self.init(function: function, errorHandler: {_ in /* no possibilty of checked error here */}, queue: queue)
@@ -83,19 +90,26 @@ public class ProcessLink<A,B> : Executable<A> {
 		defineBlock(self)
 	}
 	
-	public func joinPoint() -> ProcessResult<B> {
-		let link = ProcessResult<B>(queue: self.queue)
+	public func joinPoint() -> JoinPoint<B> {
+		let link = JoinPoint<B>(queue: self.queue)
 		createdLinks.append(link)
 		return link
 	}
 	
-	override fileprivate func execute(argument: A) {
+	override fileprivate func execute(argument: A, completion fullChainCompletion: @escaping ()->Void) {
 		do {
 			try self.function(argument) { result in
+				let group = DispatchGroup()
+				group.notify(queue: self.queue, execute: fullChainCompletion)
+				
 				for createdLink in self.createdLinks {
-					self.queue.async {
-						createdLink.execute(argument: result)
-					}
+					let workItem = DispatchWorkItem(block: {
+						createdLink.execute(argument: result) {
+							group.leave()
+						}
+					})
+					group.enter()
+					self.queue.async(group: group, execute: workItem)
 				}
 			}
 		} catch {
@@ -109,15 +123,15 @@ public class ProcessLink<A,B> : Executable<A> {
 extension ProcessLink {
 	// simplifed forms
 	
-	public func chain<C>(_ functor:  @escaping (B) -> (C) ) -> ProcessLink<B,C> {
+	@discardableResult public func chain<C>(_ functor:  @escaping (B) -> (C) ) -> ProcessLink<B,C> {
 		return self.chain(functor, {_ in /* no checked errors possible */})
 	}
 	
-	public func chain<C>(_ functor:  @escaping (B, @escaping (C) -> Void) -> Void) -> ProcessLink<B,C> {
+	@discardableResult public func chain<C>(_ functor:  @escaping (B, @escaping (C) -> Void) -> Void) -> ProcessLink<B,C> {
 		return self.chain(functor, {_ in /* no checked errors possible */})
 	}
 	
-	public func chain<C>(_ functor:  @escaping (B) throws -> (C), _ errorHandler: @escaping (Error)->Void ) -> ProcessLink<B,C> {
+	@discardableResult public func chain<C>(_ functor:  @escaping (B) throws -> (C), _ errorHandler: @escaping (Error)->Void ) -> ProcessLink<B,C> {
 		return self.chain({ (b, callback) in
 			try callback(functor(b))
 		}, errorHandler)
@@ -204,9 +218,9 @@ extension ProcessLink {
 		return self.chain(elevate(functor)).chain(checkResult, errorHandler)
 	}
 	
-	// This form of `chain` is not presently invocable because the compiler cannot disambiguate it from 
-	// `func chain<C>(_ functor:  @escaping (B) throws -> (C), _ errorHandler: @escaping (Error)->Void ) -> ProcessLink<B,C>`
-	// For now use the `chain2` function of the same signature.
+	/// This form of `chain` is not presently invocable because the compiler cannot disambiguate it from
+	/// `func chain<C>(_ functor:  @escaping (B) throws -> (C), _ errorHandler: @escaping (Error)->Void ) -> ProcessLink<B,C>`
+	/// For now use the `chain2` function of the same signature.
 	@discardableResult public func chain<C>(_ functor: @escaping (B, @escaping (C?, Error?)->Void)->Void, _ errorHandler: @escaping (Error)->Void) -> ProcessLink<FailableResult<C>,C> {
 		return self.chain2(functor, errorHandler)
 	}
@@ -226,15 +240,47 @@ extension ProcessLink where B : Collection, B.IndexDistance == Int {
 	}
 }
 
+public protocol OptionalProtocol {
+	associatedtype WrappedType
+	
+	func getWrapped() -> WrappedType?
+}
+extension Optional : OptionalProtocol {
+	public typealias WrappedType = Wrapped
+	
+	public func getWrapped() -> WrappedType? {
+		switch self {
+		case .none:
+			return nil
+		case let .some(value):
+			return value
+		}
+	}
+}
+extension ProcessLink where B : OptionalProtocol {
+	
+	@discardableResult public func optionally(_ defineBlock: @escaping (ProcessLink<B.WrappedType,B.WrappedType>)->Void) -> ProcessLink<B,Void> {
+		return self.chain { b, callback in
+			if let unwrapped = b.getWrapped() {
+				let context = ProcessLink<B.WrappedType,B.WrappedType>(function: {arg,block in block(arg)}, queue: self.queue)
+				defineBlock(context)
+				context.execute(argument: unwrapped, completion:  callback)
+			} else {
+				callback()
+			}
+		}
+	}
+}
+
 public func startProccess(on queue: DispatchQueue = DispatchQueue.global(), _ defineBlock: (ProcessLink<Void,Void>)->Void) {
 	let root = ProcessLink<Void, Void>(function: {_,block in block()}, queue: queue)
 	defineBlock(root)
-	root.execute(argument: ())
+	root.execute(argument: (), completion: {})
 }
 
 public func startProccess<A>(with arg: A, on queue: DispatchQueue = DispatchQueue.global(), _ defineBlock: (ProcessLink<A,A>)->Void) {
 	let root = ProcessLink<A, A>(function: {a,block in block(a)}, queue: queue)
 	defineBlock(root)
-	root.execute(argument: arg)
+	root.execute(argument: arg, completion: {})
 }
 

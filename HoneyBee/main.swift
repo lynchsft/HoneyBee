@@ -76,11 +76,9 @@ startProccess { root in
 		.chain(stringToInt) {error in stdHandleError(error)}
 		.fork { ctx in
 			ctx.chain(printInt)
-				.end()
 			
 			ctx.chain(multiplyInt)
-				.chain(printInt)
-				.end()
+			   .chain(printInt)
 		}
 }
 
@@ -89,7 +87,6 @@ startProccess { root in
 		.chain(randomInts)
 		.map(multiplyInt)
 		.chain(printAll)
-		.end()
 }
 
 startProccess { root in
@@ -100,9 +97,8 @@ startProccess { root in
 		let result2 = ctx.chain(constantString)
 						 .joinPoint()
 			
-		result2.cojoin(result1, multiplyString)
+		result2.conjoin(result1, multiplyString)
 			   .chain(printString)
-			   .end()
 	}
 }
 
