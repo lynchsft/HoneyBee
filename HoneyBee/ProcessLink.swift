@@ -240,6 +240,21 @@ extension ProcessLink where B : Collection, B.IndexDistance == Int {
 	}
 }
 
+extension ProcessLink where B : Sequence {
+	@discardableResult public func each(_ defineBlock: @escaping (ProcessLink<Void,B.Iterator.Element>)->Void) -> ProcessLink<B, Void>{
+		var rootLink: ProcessLink<B, Void>! = nil
+		rootLink = self.chain { (sequence) -> Void in
+			for element in sequence {
+				let elemLink = rootLink.chain({
+					return element
+				})
+				defineBlock(elemLink)
+			}
+		}
+		return rootLink
+	}
+}
+
 public protocol OptionalProtocol {
 	associatedtype WrappedType
 	
