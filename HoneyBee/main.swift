@@ -69,7 +69,7 @@ func multiplyString(string: String, count: Int) -> String {
 	return acc
 }
 
-startProccess { root in
+startProcess { root in
 	root.chain(randomInt)
 		.chain(intToString)
 		//.chain(stringCat)
@@ -82,14 +82,14 @@ startProccess { root in
 		}
 }
 
-startProccess { root in
+startProcess { root in
 	root.chain(constantInt)
 		.chain(randomInts)
 		.map(multiplyInt)
 		.chain(printAll)
 }
 
-startProccess { root in
+startProcess { root in
 	root.fork { ctx in
 		let result1 = ctx.chain(constantInt)
 						 .joinPoint()
