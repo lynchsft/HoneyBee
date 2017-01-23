@@ -20,14 +20,14 @@ extension Collection where IndexDistance == Int {
 	/*** \c completion is called from an undefined thread. Dispatch accordingly */
 	func asyncMap<B>(transform: @escaping (Iterator.Element, (B)->Void) -> Void, completion: @escaping ([B]) -> Void  ) {
 		let concurrentQueue = DispatchQueue.global(qos: .background)
-		let synchronousQueue = DispatchQueue(label: "asyncMapSyncQueue")
+		let serialQueue = DispatchQueue(label: "asyncMapSerialQueue")
 		let group = DispatchGroup()
 		var results:[B?] = Array(repeating: .none, count: self.count)
 		
 		for (index, element) in self.enumerated() {
 			let workItem = DispatchWorkItem(block: {
 				transform(element) { result in
-					synchronousQueue.async {
+					serialQueue.async {
 						results[index] = result
 						group.leave()
 					}
@@ -44,6 +44,44 @@ extension Collection where IndexDistance == Int {
 				}
 				return b
 			})
+		})
+	}
+}
+
+extension Sequence {
+	
+	/*** \c completion is called from an undefined thread. Dispatch accordingly */
+	func asyncFilter(transform: @escaping (Iterator.Element) -> Bool, completion: @escaping ([Iterator.Element]) -> Void  ) {
+		return self.asyncFilter(transform: { (element, callback) in
+			callback(transform(element))
+		}, completion: completion)
+	}
+	
+	/*** \c completion is called from an undefined thread. Dispatch accordingly */
+	func asyncFilter(transform: @escaping (Iterator.Element, (Bool)->Void) -> Void, completion: @escaping ([Iterator.Element]) -> Void  ) {
+		
+		let concurrentQueue = DispatchQueue.global(qos: .background)
+		let serialQueue = DispatchQueue(label: "asyncFilterSerialQueue")
+		let group = DispatchGroup()
+		var results:[Iterator.Element] = []
+		
+		for element in self {
+			let workItem = DispatchWorkItem(block: {
+				transform(element) { include in
+					serialQueue.async {
+						if include {
+							results.append(element)
+						}
+						group.leave()
+					}
+				}
+			})
+			group.enter()
+			concurrentQueue.async(group: group, execute: workItem)
+		}
+		
+		group.notify(queue: concurrentQueue, execute: {
+			completion(results)
 		})
 	}
 }

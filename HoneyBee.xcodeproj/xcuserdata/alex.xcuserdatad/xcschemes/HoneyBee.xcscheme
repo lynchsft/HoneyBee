@@ -14,8 +14,8 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "FAB4DFB41E210FE1008FC378"
-               BuildableName = "HoneyBee"
+               BlueprintIdentifier = "FA473BB71E352CB1007E4D61"
+               BuildableName = "HoneyBee.framework"
                BlueprintName = "HoneyBee"
                ReferencedContainer = "container:HoneyBee.xcodeproj">
             </BuildableReference>
@@ -28,12 +28,22 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "FA473BC01E352CB1007E4D61"
+               BuildableName = "HoneyBeeTests.xctest"
+               BlueprintName = "HoneyBeeTests"
+               ReferencedContainer = "container:HoneyBee.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "FAB4DFB41E210FE1008FC378"
-            BuildableName = "HoneyBee"
+            BlueprintIdentifier = "FA473BB71E352CB1007E4D61"
+            BuildableName = "HoneyBee.framework"
             BlueprintName = "HoneyBee"
             ReferencedContainer = "container:HoneyBee.xcodeproj">
          </BuildableReference>
@@ -51,16 +61,15 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "FAB4DFB41E210FE1008FC378"
-            BuildableName = "HoneyBee"
+            BlueprintIdentifier = "FA473BB71E352CB1007E4D61"
+            BuildableName = "HoneyBee.framework"
             BlueprintName = "HoneyBee"
             ReferencedContainer = "container:HoneyBee.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>
@@ -70,16 +79,15 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "FAB4DFB41E210FE1008FC378"
-            BuildableName = "HoneyBee"
+            BlueprintIdentifier = "FA473BB71E352CB1007E4D61"
+            BuildableName = "HoneyBee.framework"
             BlueprintName = "HoneyBee"
             ReferencedContainer = "container:HoneyBee.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">
