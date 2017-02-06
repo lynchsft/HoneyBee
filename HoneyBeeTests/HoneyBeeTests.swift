@@ -165,13 +165,13 @@ func failIfReached() {
 	XCTFail("This function should never be reached")
 }
 	
-func expectationReached(_ expectation: XCTestExpectation) -> (Void)->Void {
+func expectationReached(_ expectation: XCTestExpectation) -> (Void) -> Void {
 	return {
 		expectation.fulfill()
 	}
 }
 
-func assertEquals<T: Equatable>(_ t: T) -> (T)->Void {
+func assertEquals<T: Equatable>(_ t: T) -> (T) -> Void {
 	return { otherT in
 		XCTAssert(t == otherT, "Expected \(t) to equal \(otherT)")
 	}
@@ -195,7 +195,7 @@ func stringToInt(string: String) throws -> Int {
 	}
 }
 
-func intToString(int: Int, callback: (String)->Void) {
+func intToString(int: Int, callback: (String) -> Void) {
 	return callback("\(int)")
 }
 
