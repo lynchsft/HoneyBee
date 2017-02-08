@@ -4,6 +4,11 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
+		<key>CommonCrypto.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>1</integer>
+		</dict>
 		<key>HoneyBee.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
@@ -18,6 +23,11 @@
 			<true/>
 		</dict>
 		<key>FA473BC01E352CB1007E4D61</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>FA5995941E4B58B5001744ED</key>
 		<dict>
 			<key>primary</key>
 			<true/>

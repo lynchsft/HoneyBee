@@ -93,15 +93,15 @@ class HoneyBeeTests: XCTestCase {
 		startProcess { root in
 			root.fork { ctx in
 				let result1 = ctx.chain(constantInt)
-					.joinPoint()
+								 .joinPoint()
 				
 				let result2 = ctx.chain(constantString)
-					.joinPoint()
+								 .joinPoint()
 				
 				result2.conjoin(result1, multiplyString)
-					.chain(stringCat)
-					.chain(assertEquals("lamblamblamblamblamblamblamblambcat"))
-					.chain(expectationReached(expectA))
+					   .chain(stringCat)
+					   .chain(assertEquals("lamblamblamblamblamblamblamblambcat"))
+					   .chain(expectationReached(expectA))
 			}
 		}
 		

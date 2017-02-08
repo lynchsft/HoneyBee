@@ -1,0 +1,11 @@
+//
+//  CommonCrypto.xcconfig
+//  HoneyBee
+//
+//  Created by Alex Lynch on 2/8/17.
+//  Copyright © 2017 IAM Apps. All rights reserved.
+//
+
+MODULEMAP_FILE[sdk=iphoneos*]        =$(SRCROOT)/CommonCrypto/iphoneos.modulemap
+MODULEMAP_FILE[sdk=iphonesimulator*] =$(SRCROOT)/CommonCrypto/iphonesimulator.modulemap
+MODULEMAP_FILE[sdk=macosx*]          =$(SRCROOT)/CommonCrypto/macosx.modulemap

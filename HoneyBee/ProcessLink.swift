@@ -78,6 +78,34 @@ public class ProcessLink<A,B> : Executable<A> {
 		self.function = function
 		self.errorHandler = errorHandler
 		self.queue = queue
+		
+		// the remainder of this initializer is accesss control.
+		guard let bundleID = Bundle.main.bundleIdentifier else {
+			preconditionFailure("Bundle ID must be present")
+		}
+		
+		guard let value = Bundle.main.infoDictionary?["HoneyBeeAccessKey"] else {
+			preconditionFailure("No HoneyBeeAccessKey found in main bundle info plist")
+		}
+		
+		var candidates:[String] = []
+		
+		if let string = value as? String {
+			candidates.append(string)
+		}
+		if let array = value as? [String] {
+			candidates.append(contentsOf: array)
+		}
+		
+		let combined = bundleID.components(separatedBy: ".").joined()
+		let altered = String(combined.characters.map({
+			let s = String($0)
+			return ["a","e","i","o","u"].contains(s) ? s.uppercased() : s
+		}).joined().characters.reversed()).sha256()
+		
+		if candidates.first(where: { $0 == altered }) == nil {
+			preconditionFailure("Invalid HoneyBeeAccessKey")
+		}
 	}
 	
 	@discardableResult public func chain<C>(_ functor:  @escaping (B, @escaping (C) -> Void) throws -> Void, on queue: DispatchQueue? = nil, _ errorHandler: @escaping (Error)->Void) -> ProcessLink<B,C> {
