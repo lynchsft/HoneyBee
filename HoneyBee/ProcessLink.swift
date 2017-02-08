@@ -9,7 +9,7 @@
 import Foundation
 
 class Executable<A> {
-	fileprivate func execute(argument: A, completion: @escaping () -> Void) -> Void {}
+	func execute(argument: A, completion: @escaping () -> Void) -> Void {}
 }
 
 final public class JoinPoint<A> : Executable<A> {
@@ -36,7 +36,7 @@ final public class JoinPoint<A> : Executable<A> {
 		}
 	}
 	
-	override fileprivate func execute(argument: A, completion: @escaping (Void) -> Void) {
+	override func execute(argument: A, completion: @escaping (Void) -> Void) {
 		if let link = self.conjoinLink {
 			link.execute(argument: Void(), completion:  completion)
 		}
@@ -74,42 +74,14 @@ final public class ProcessLink<A, B> : Executable<A> {
 	private var errorHandler: (Error) -> Void
 	fileprivate var queue: DispatchQueue
 	
-	fileprivate convenience init(function:  @escaping (A, @escaping (B) -> Void) -> Void, queue: DispatchQueue) {
+	convenience init(function:  @escaping (A, @escaping (B) -> Void) -> Void, queue: DispatchQueue) {
 		self.init(function: function, errorHandler: {_ in /* no possibilty of checked error here */}, queue: queue)
 	}
 	
-	fileprivate init(function:  @escaping (A, @escaping (B) -> Void) throws -> Void, errorHandler: @escaping (Error) -> Void, queue: DispatchQueue) {
+	init(function:  @escaping (A, @escaping (B) -> Void) throws -> Void, errorHandler: @escaping (Error) -> Void, queue: DispatchQueue) {
 		self.function = function
 		self.errorHandler = errorHandler
 		self.queue = queue
-		
-		// the remainder of this initializer is accesss control.
-		guard let bundleID = Bundle.main.bundleIdentifier else {
-			preconditionFailure("Bundle ID must be present")
-		}
-		
-		guard let value = Bundle.main.infoDictionary?["HoneyBeeAccessKey"] else {
-			preconditionFailure("No HoneyBeeAccessKey found in main bundle info plist")
-		}
-		
-		var candidates:[String] = []
-		
-		if let string = value as? String {
-			candidates.append(string)
-		}
-		if let array = value as? [String] {
-			candidates.append(contentsOf: array)
-		}
-		
-		let combined = bundleID.components(separatedBy: ".").joined()
-		let altered = String(combined.characters.map({
-			let s = String($0)
-			return ["a","e","i","o","u"].contains(s) ? s.uppercased() : s
-		}).joined().characters.reversed()).sha256()
-		
-		if candidates.first(where: { $0 == altered }) == nil {
-			preconditionFailure("Invalid HoneyBeeAccessKey")
-		}
 	}
 	
 	@discardableResult public func chain<C>(_ function:  @escaping (B, @escaping (C) -> Void) throws -> Void, on queue: DispatchQueue? = nil, _ errorHandler: @escaping (Error) -> Void) -> ProcessLink<B, C> {
@@ -128,7 +100,7 @@ final public class ProcessLink<A, B> : Executable<A> {
 		return link
 	}
 	
-	override fileprivate func execute(argument: A, completion fullChainCompletion: @escaping () -> Void) {
+	override func execute(argument: A, completion fullChainCompletion: @escaping () -> Void) {
 		do {
 			try self.function(argument) { result in
 				let group = DispatchGroup()
@@ -313,19 +285,5 @@ extension ProcessLink where B : OptionalProtocol {
 				callback()
 			}
 		}
-	}
-}
-
-public struct HoneyBee {
-	public static func start(on queue: DispatchQueue = DispatchQueue.global(), _ defineBlock: (ProcessLink<Void, Void>) -> Void) {
-		let root = ProcessLink<Void, Void>(function: {_, block in block()}, queue: queue)
-		defineBlock(root)
-		root.execute(argument: (), completion: {})
-	}
-
-	public static func start<A>(with arg: A, on queue: DispatchQueue = DispatchQueue.global(), _ defineBlock: (ProcessLink<A, A>) -> Void) {
-		let root = ProcessLink<A, A>(function: {a, block in block(a)}, queue: queue)
-		defineBlock(root)
-		root.execute(argument: arg, completion: {})
 	}
 }

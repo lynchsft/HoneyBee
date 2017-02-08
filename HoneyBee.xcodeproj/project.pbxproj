@@ -14,6 +14,7 @@
 		FA59958E1E4B4743001744ED /* String+SHA256.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA59958C1E4B4743001744ED /* String+SHA256.swift */; };
 		FA5995A31E4B5A6E001744ED /* CommonCrypto.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA5995951E4B58B5001744ED /* CommonCrypto.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		FAC0CA191E4B5E9E00ECC0DC /* CommonCrypto.h in Headers */ = {isa = PBXBuildFile; fileRef = FAC0CA181E4B5E9E00ECC0DC /* CommonCrypto.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FAC0CA1C1E4BDB6900ECC0DC /* HoneyBee.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC0CA1B1E4BDB6900ECC0DC /* HoneyBee.swift */; };
 		FAC9DC7F1E352D6F00E21A01 /* AsyncSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC9DC7C1E352D6F00E21A01 /* AsyncSupport.swift */; };
 		FAC9DC801E352D6F00E21A01 /* FailableResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC9DC7D1E352D6F00E21A01 /* FailableResult.swift */; };
 		FAC9DC811E352D6F00E21A01 /* ProcessLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC9DC7E1E352D6F00E21A01 /* ProcessLink.swift */; };
@@ -51,6 +52,7 @@
 		FA59959F1E4B594E001744ED /* iphonesimulator.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = iphonesimulator.modulemap; sourceTree = "<group>"; };
 		FA5995A01E4B5962001744ED /* macosx.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = macosx.modulemap; sourceTree = "<group>"; };
 		FAC0CA181E4B5E9E00ECC0DC /* CommonCrypto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommonCrypto.h; sourceTree = "<group>"; };
+		FAC0CA1B1E4BDB6900ECC0DC /* HoneyBee.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HoneyBee.swift; sourceTree = "<group>"; };
 		FAC9DC7C1E352D6F00E21A01 /* AsyncSupport.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AsyncSupport.swift; sourceTree = "<group>"; };
 		FAC9DC7D1E352D6F00E21A01 /* FailableResult.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FailableResult.swift; sourceTree = "<group>"; };
 		FAC9DC7E1E352D6F00E21A01 /* ProcessLink.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProcessLink.swift; sourceTree = "<group>"; };
@@ -108,6 +110,7 @@
 			children = (
 				FAC9DC7C1E352D6F00E21A01 /* AsyncSupport.swift */,
 				FAC9DC7D1E352D6F00E21A01 /* FailableResult.swift */,
+				FAC0CA1B1E4BDB6900ECC0DC /* HoneyBee.swift */,
 				FAC9DC7E1E352D6F00E21A01 /* ProcessLink.swift */,
 				FA59958C1E4B4743001744ED /* String+SHA256.swift */,
 				FA473BBB1E352CB1007E4D61 /* HoneyBee.h */,
@@ -293,6 +296,7 @@
 			files = (
 				FAC9DC801E352D6F00E21A01 /* FailableResult.swift in Sources */,
 				FA59958D1E4B4743001744ED /* String+SHA256.swift in Sources */,
+				FAC0CA1C1E4BDB6900ECC0DC /* HoneyBee.swift in Sources */,
 				FAC9DC811E352D6F00E21A01 /* ProcessLink.swift in Sources */,
 				FAC9DC7F1E352D6F00E21A01 /* AsyncSupport.swift in Sources */,
 			);
