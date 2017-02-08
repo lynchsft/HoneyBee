@@ -316,14 +316,16 @@ extension ProcessLink where B : OptionalProtocol {
 	}
 }
 
-public func startProcess(on queue: DispatchQueue = DispatchQueue.global(), _ defineBlock: (ProcessLink<Void, Void>) -> Void) {
-	let root = ProcessLink<Void, Void>(function: {_, block in block()}, queue: queue)
-	defineBlock(root)
-	root.execute(argument: (), completion: {})
-}
+public struct HoneyBee {
+	public static func start(on queue: DispatchQueue = DispatchQueue.global(), _ defineBlock: (ProcessLink<Void, Void>) -> Void) {
+		let root = ProcessLink<Void, Void>(function: {_, block in block()}, queue: queue)
+		defineBlock(root)
+		root.execute(argument: (), completion: {})
+	}
 
-public func startProcess<A>(with arg: A, on queue: DispatchQueue = DispatchQueue.global(), _ defineBlock: (ProcessLink<A, A>) -> Void) {
-	let root = ProcessLink<A, A>(function: {a, block in block(a)}, queue: queue)
-	defineBlock(root)
-	root.execute(argument: arg, completion: {})
+	public static func start<A>(with arg: A, on queue: DispatchQueue = DispatchQueue.global(), _ defineBlock: (ProcessLink<A, A>) -> Void) {
+		let root = ProcessLink<A, A>(function: {a, block in block(a)}, queue: queue)
+		defineBlock(root)
+		root.execute(argument: arg, completion: {})
+	}
 }
