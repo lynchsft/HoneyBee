@@ -11,14 +11,14 @@ import Foundation
 extension Collection where IndexDistance == Int {
 	
 	/*** \c completion is called from an undefined thread. Dispatch accordingly */
-	func asyncMap<B>(transform: @escaping (Iterator.Element) -> B, completion: @escaping ([B]) -> Void  ) {
+	func asyncMap<B>(transform: @escaping (Iterator.Element) -> B, completion: @escaping ([B]) -> Void) {
 		self.asyncMap(transform: { (element, callback) in
 			callback(transform(element))
 		}, completion: completion)
 	}
 	
 	/*** \c completion is called from an undefined thread. Dispatch accordingly */
-	func asyncMap<B>(transform: @escaping (Iterator.Element, (B)->Void) -> Void, completion: @escaping ([B]) -> Void  ) {
+	func asyncMap<B>(transform: @escaping (Iterator.Element, (B) -> Void) -> Void, completion: @escaping ([B]) -> Void) {
 		let concurrentQueue = DispatchQueue.global(qos: .background)
 		let serialQueue = DispatchQueue(label: "asyncMapSerialQueue")
 		let group = DispatchGroup()
@@ -58,7 +58,7 @@ extension Sequence {
 	}
 	
 	/*** \c completion is called from an undefined thread. Dispatch accordingly */
-	func asyncFilter(transform: @escaping (Iterator.Element, (Bool)->Void) -> Void, completion: @escaping ([Iterator.Element]) -> Void  ) {
+	func asyncFilter(transform: @escaping (Iterator.Element, (Bool) -> Void) -> Void, completion: @escaping ([Iterator.Element]) -> Void  ) {
 		
 		let concurrentQueue = DispatchQueue.global(qos: .background)
 		let serialQueue = DispatchQueue(label: "asyncFilterSerialQueue")
@@ -93,7 +93,7 @@ extension NSArray {
 		}, completion: completion)
 	}
 	
-	@objc func asyncMap(transformBlock: @escaping (NSObject, (NSObject)->Void)-> Void, completion: @escaping (NSArray) -> Void ) {
+	@objc func asyncMap(transformBlock: @escaping (NSObject, (NSObject) -> Void)-> Void, completion: @escaping (NSArray) -> Void ) {
 		guard let array = self as? Array<NSObject> else {
 			preconditionFailure("Using this API with an NSArray which contains other than NSObject subclasses is not allowed. Use the generic swift API instead.")
 		}

@@ -1,1 +1,5 @@
 Breakpoints_v2.xcbkptlist
+Pods
+xcuserdata
+*.xccheckout
+*.generated.swift
