@@ -1,16 +1,17 @@
 //
-//  HoneyBeeTests.swift
-//  HoneyBeeTests
+//  HoneyBeeTestAppTests.swift
+//  HoneyBeeTestAppTests
 //
-//  Created by Alex Lynch on 1/22/17.
+//  Created by Alex Lynch on 2/14/17.
 //  Copyright © 2017 IAM Apps. All rights reserved.
 //
 
 import XCTest
-@testable import HoneyBee
+@testable import HoneyBeeTestApp
+import HoneyBee
 
-class HoneyBeeTests: XCTestCase {
-	
+class HoneyBeeTestAppTests: XCTestCase {
+    
 	override func setUp() {
 		super.setUp()
 		// Put setup code here. This method is called before the invocation of each test method in the class.
@@ -25,7 +26,7 @@ class HoneyBeeTests: XCTestCase {
 		let expect = expectation(description: "Simple chain should complete")
 		
 		
-		startProcess(with: 4) { root in
+		HoneyBee.start(with: 4) { root in
 			root.chain(intToString)
 				.chain(stringToInt) {error in XCTFail("Error occured during test \(error)")}
 				.chain(multiplyInt)
@@ -44,7 +45,7 @@ class HoneyBeeTests: XCTestCase {
 		let expect = expectation(description: "Chain should fail with error")
 		
 		
-		startProcess { root in
+		HoneyBee.start { root in
 			root.chain(randomInt)
 				.chain(intToString)
 				.chain(stringCat)
@@ -65,16 +66,16 @@ class HoneyBeeTests: XCTestCase {
 		let expect2 = expectation(description: "Second fork should be reached")
 		
 		
-		startProcess(with: 10) { root in
+		HoneyBee.start(with: 10) { root in
 			root.chain(intToString)
 				.chain(stringToInt) {error in stdHandleError(error)}
 				.fork { ctx in
 					ctx.chain(assertEquals(10))
-					   .chain(expectationReached(expect1))
+						.chain(expectationReached(expect1))
 					
 					ctx.chain(multiplyInt)
-					   .chain(assertEquals(20))
-					   .chain(expectationReached(expect2))
+						.chain(assertEquals(20))
+						.chain(expectationReached(expect2))
 			}
 		}
 		
@@ -90,22 +91,22 @@ class HoneyBeeTests: XCTestCase {
 		let expectB = expectation(description: "Join should be reached, path B")
 		
 		
-		startProcess { root in
+		HoneyBee.start { root in
 			root.fork { ctx in
 				let result1 = ctx.chain(constantInt)
-								 .joinPoint()
+					.joinPoint()
 				
 				let result2 = ctx.chain(constantString)
-								 .joinPoint()
+					.joinPoint()
 				
 				result2.conjoin(result1, multiplyString)
-					   .chain(stringCat)
-					   .chain(assertEquals("lamblamblamblamblamblamblamblambcat"))
-					   .chain(expectationReached(expectA))
+					.chain(stringCat)
+					.chain(assertEquals("lamblamblamblamblamblamblamblambcat"))
+					.chain(expectationReached(expectA))
 			}
 		}
 		
-		startProcess { root in
+		HoneyBee.start { root in
 			root.fork { ctx in
 				let result1 = ctx.chain(constantInt)
 					.joinPoint()
@@ -114,8 +115,8 @@ class HoneyBeeTests: XCTestCase {
 					.joinPoint()
 				
 				result1.conjoin(result2, stringLengthEquals)
-					   .chain(assertEquals(false))
-					   .chain(expectationReached(expectB))
+					.chain(assertEquals(false))
+					.chain(expectationReached(expectB))
 			}
 		}
 		waitForExpectations(timeout: 3) { error in
@@ -135,7 +136,7 @@ class HoneyBeeTests: XCTestCase {
 		
 		let finishExpectation = expectation(description: "Should reach the end of the chain")
 		
-		startProcess { root in
+		HoneyBee.start { root in
 			root.value(source)
 				.map(multiplyInt)
 				.map { int in
@@ -149,14 +150,14 @@ class HoneyBeeTests: XCTestCase {
 				.value(())
 				.chain(expectationReached(finishExpectation))
 		}
-	
+		
 		waitForExpectations(timeout: 3) { error in
 			if let error = error {
 				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
 			}
 		}
 	}
-
+	
 }
 
 // test helper functions
@@ -164,7 +165,7 @@ class HoneyBeeTests: XCTestCase {
 func failIfReached() {
 	XCTFail("This function should never be reached")
 }
-	
+
 func expectationReached(_ expectation: XCTestExpectation) -> (Void) -> Void {
 	return {
 		expectation.fulfill()

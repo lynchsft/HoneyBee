@@ -9,10 +9,20 @@
 			<key>orderHint</key>
 			<integer>1</integer>
 		</dict>
+		<key>HoneyBee Tests App.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>2</integer>
+		</dict>
 		<key>HoneyBee.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>0</integer>
+		</dict>
+		<key>HoneyBeeTestApp.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>3</integer>
 		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
@@ -28,6 +38,16 @@
 			<true/>
 		</dict>
 		<key>FA5995941E4B58B5001744ED</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>FA7AE6721E53314E007A5711</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>FA7AE6851E53314F007A5711</key>
 		<dict>
 			<key>primary</key>
 			<true/>

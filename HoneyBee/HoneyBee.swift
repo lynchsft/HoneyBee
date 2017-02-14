@@ -19,8 +19,8 @@ public struct HoneyBee {
 			preconditionFailure("Bundle ID must be present")
 		}
 		
-		guard let value = Bundle.main.infoDictionary?["HoneyBeeAccessKey"] else {
-			preconditionFailure("No HoneyBeeAccessKey found in main bundle info plist")
+		guard let value = Bundle.main.infoDictionary?["HoneyBeeLicenseKey"] else {
+			preconditionFailure("No HoneyBeeLicenseKey found in main bundle info plist")
 		}
 		
 		var candidates:[String] = []
@@ -39,7 +39,7 @@ public struct HoneyBee {
 		}).joined().characters.reversed()).sha256()
 		
 		if candidates.first(where: { $0 == altered }) == nil {
-			preconditionFailure("Invalid HoneyBeeAccessKey")
+			preconditionFailure("Invalid HoneyBeeLicenseKey")
 		}
 		
 		// the real work
