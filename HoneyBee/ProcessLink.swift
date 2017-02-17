@@ -104,7 +104,6 @@ final public class ProcessLink<A, B> : Executable<A> {
 		do {
 			try self.function(argument) { result in
 				let group = DispatchGroup()
-				group.notify(queue: self.queue, execute: fullChainCompletion)
 				
 				for createdLink in self.createdLinks {
 					let workItem = DispatchWorkItem(block: {
@@ -115,6 +114,8 @@ final public class ProcessLink<A, B> : Executable<A> {
 					group.enter()
 					self.queue.async(group: group, execute: workItem)
 				}
+				
+				group.notify(queue: self.queue, execute: fullChainCompletion)
 			}
 		} catch {
 			self.queue.async {
@@ -261,6 +262,19 @@ extension ProcessLink {
 			function(b)(callback)
 		})
 	}
+	
+	@discardableResult public func chain<C>(_ function: @escaping (B) -> (() -> C)) -> ProcessLink<B, C> {
+		return self.chain({ (b: B, callback: @escaping (C) -> Void) in
+			callback(function(b)())
+		})
+	}
+	
+	@discardableResult public func chain(_ function: @escaping (B) -> (() -> Void)) -> ProcessLink<B, Void> {
+		return self.chain({ (b: B, callback: @escaping () -> Void) in
+			function(b)()
+			callback()
+		})
+	}
 }
 
 extension ProcessLink where B : Collection, B.IndexDistance == Int {
@@ -273,18 +287,17 @@ extension ProcessLink where B : Collection, B.IndexDistance == Int {
 
 extension ProcessLink where B : Sequence {
 	@discardableResult public func each(_ defineBlock: @escaping (ProcessLink<Void, B.Iterator.Element>) -> Void) -> ProcessLink<B, Void> {
-		var rootLink: ProcessLink<B, Void>!
+		var rootLink: ProcessLink<Void, Void> = ProcessLink<Void,Void>( function: {_,callback in
+			callback()
+		}, queue: self.queue)
 		
-		rootLink = self.chain { (sequence) -> Void in
+		return self.chain { (sequence:B, callback:@escaping ()->Void) -> Void in
 			for element in sequence {
-				let elemLink = rootLink.chain({
-					return element
-				})
-				defineBlock(elemLink)
+				defineBlock(rootLink.value(element))
 			}
+			
+			rootLink.execute(argument: Void(), completion: callback)
 		}
-		
-		return rootLink
 	}
 }
 
