@@ -190,6 +190,23 @@ class HoneyBeeTestAppTests: XCTestCase {
 		}
 	}
 	
+	func testMultiParams() {
+		let finishExpectation = expectation(description: "Should reach the end of the chain")
+		
+		HoneyBee.start(with: "leg,foot") { root in
+			root.chain(decompose)
+				.chain(returnLonger)
+				.chain(assertEquals("foot"))
+				.splice(expectationReached(finishExpectation))
+		}
+		
+		waitForExpectations(timeout: 3) { error in
+			if let error = error {
+				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
+			}
+		}
+	}
+	
 }
 
 // test helper functions
@@ -267,4 +284,17 @@ func multiplyString(string: String, count: Int) -> String {
 
 func stringLengthEquals(length: Int, string: String) -> Bool {
 	return string.characters.count == length
+}
+
+func decompose(string: String, callback:(String,String)->Void) {
+	let comps = string.components(separatedBy: ",")
+	callback(comps[0],comps[1])
+}
+
+func returnLonger(first: String, second: String) -> String {
+	if first.characters.count > second.characters.count {
+		return first
+	} else {
+		return second
+	}
 }
