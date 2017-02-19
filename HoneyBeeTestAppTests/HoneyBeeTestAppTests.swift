@@ -306,8 +306,8 @@ func randomInt() -> Int {
 	return Int(arc4random())
 }
 
-func isEven(int: Int) -> Bool {
-	return int%2 == 0
+func isEven(int: Int, callback:(Bool)->Void) -> Void {
+	callback(int%2 == 0)
 }
 
 func randomInts(count: Int) -> [Int] {
