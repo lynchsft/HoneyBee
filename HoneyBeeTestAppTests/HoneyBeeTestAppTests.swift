@@ -139,13 +139,36 @@ class HoneyBeeTestAppTests: XCTestCase {
 		HoneyBee.start { root in
 			root.value(source)
 				.map(multiplyInt)
-				.map { int in
-					let sourceValue = int/2
-					if let exepct = intsToExpectations[sourceValue]  {
-						exepct.fulfill()
-					} else {
-						XCTFail("Map source value not found \(sourceValue)")
+				.each { ctx in
+					ctx.chain { (int:Int) -> Void in
+						let sourceValue = int/2
+						if let exepct = intsToExpectations[sourceValue]  {
+							exepct.fulfill()
+						} else {
+							XCTFail("Map source value not found \(sourceValue)")
+						}
 					}
+				}
+				.splice(expectationReached(finishExpectation))
+		}
+		
+		waitForExpectations(timeout: 3) { error in
+			if let error = error {
+				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
+			}
+		}
+	}
+	
+	func testMapQueue() {
+		let source = Array(0...10)
+		
+		let finishExpectation = expectation(description: "Should reach the end of the chain")
+		
+		HoneyBee.start(on: DispatchQueue.main) { root in
+			root.value(source)
+				.map { (int:Int) -> Int in
+					XCTAssert(Thread.current.isMainThread, "Not main thread")
+					return int*2
 				}
 				.splice(expectationReached(finishExpectation))
 		}

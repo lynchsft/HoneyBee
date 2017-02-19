@@ -10,34 +10,33 @@ import Foundation
 
 extension Collection where IndexDistance == Int {
 	
-	/*** \c completion is called from an undefined thread. Dispatch accordingly */
-	func asyncMap<B>(transform: @escaping (Iterator.Element) -> B, completion: @escaping ([B]) -> Void) {
-		self.asyncMap(transform: { (element, callback) in
+	/*** \c completion is called from \c queue */
+	func asyncMap<B>(on queue: DispatchQueue = DispatchQueue.global(qos: .background), transform: @escaping (Iterator.Element) -> B, completion: @escaping ([B]) -> Void) {
+		self.asyncMap(on: queue, transform: { (element, callback) in
 			callback(transform(element))
 		}, completion: completion)
 	}
 	
-	/*** \c completion is called from an undefined thread. Dispatch accordingly */
-	func asyncMap<B>(transform: @escaping (Iterator.Element, (B) -> Void) -> Void, completion: @escaping ([B]) -> Void) {
-		let concurrentQueue = DispatchQueue.global(qos: .background)
-		let serialQueue = DispatchQueue(label: "asyncMapSerialQueue")
+	/*** \c completion is called from \c queue */
+	func asyncMap<B>(on queue: DispatchQueue = DispatchQueue.global(qos: .background), transform: @escaping (Iterator.Element, (B) -> Void) -> Void, completion: @escaping ([B]) -> Void) {
+		let integrationSerialQueue = DispatchQueue(label: "asyncMapSerialQueue")
 		let group = DispatchGroup()
 		var results:[B?] = Array(repeating: .none, count: self.count)
 		
 		for (index, element) in self.enumerated() {
 			let workItem = DispatchWorkItem(block: {
 				transform(element) { result in
-					serialQueue.async {
+					integrationSerialQueue.async {
 						results[index] = result
 						group.leave()
 					}
 				}
 			})
 			group.enter()
-			concurrentQueue.async(group: group, execute: workItem)
+			queue.async(group: group, execute: workItem)
 		}
 		
-		group.notify(queue: concurrentQueue, execute: {
+		group.notify(queue: queue, execute: {
 			completion(results.map {
 				guard let b = $0 else {
 					preconditionFailure("asyncMap failed to fully populate the result set")
@@ -50,17 +49,16 @@ extension Collection where IndexDistance == Int {
 
 extension Sequence {
 	
-	/*** \c completion is called from an undefined thread. Dispatch accordingly */
-	func asyncFilter(transform: @escaping (Iterator.Element) -> Bool, completion: @escaping ([Iterator.Element]) -> Void  ) {
-		return self.asyncFilter(transform: { (element, callback) in
+	/*** \c completion is called from \c queue */
+	func asyncFilter(on queue: DispatchQueue = DispatchQueue.global(qos: .background), transform: @escaping (Iterator.Element) -> Bool, completion: @escaping ([Iterator.Element]) -> Void  ) {
+		return self.asyncFilter(on:queue, transform: { (element, callback) in
 			callback(transform(element))
 		}, completion: completion)
 	}
 	
-	/*** \c completion is called from an undefined thread. Dispatch accordingly */
-	func asyncFilter(transform: @escaping (Iterator.Element, (Bool) -> Void) -> Void, completion: @escaping ([Iterator.Element]) -> Void  ) {
+	/*** \c completion is called from \c queue */
+	func asyncFilter(on queue: DispatchQueue = DispatchQueue.global(qos: .background), transform: @escaping (Iterator.Element, (Bool) -> Void) -> Void, completion: @escaping ([Iterator.Element]) -> Void  ) {
 		
-		let concurrentQueue = DispatchQueue.global(qos: .background)
 		let serialQueue = DispatchQueue(label: "asyncFilterSerialQueue")
 		let group = DispatchGroup()
 		var results:[Iterator.Element] = []

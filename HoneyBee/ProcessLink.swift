@@ -280,7 +280,7 @@ extension ProcessLink {
 extension ProcessLink where B : Collection, B.IndexDistance == Int {
 	public func map<C>(_ transform: @escaping (B.Iterator.Element) -> C) -> ProcessLink<B, [C]> {
 		return self.chain({(sequence: B, callback: @escaping ([C]) -> Void) in
-			sequence.asyncMap(transform: transform, completion: callback)
+			sequence.asyncMap(on: self.queue, transform: transform, completion: callback)
 		})
 	}
 }
