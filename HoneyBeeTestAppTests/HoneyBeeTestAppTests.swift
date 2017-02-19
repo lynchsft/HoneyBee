@@ -180,6 +180,27 @@ class HoneyBeeTestAppTests: XCTestCase {
 		}
 	}
 	
+	func testFilter() {
+		let source = Array(0...10)
+		let result = [0,2,4,6,8,10]
+		
+		let finishExpectation = expectation(description: "Should reach the end of the chain")
+		
+		HoneyBee.start(with:source) { root in
+			root.filter(isEven)
+				.chain(Array.sorted)
+				.chain{ XCTAssert($0 == result, "Filter failed. expected: \(result). Received: \($0).") }
+				.splice(expectationReached(finishExpectation))
+		}
+		
+		waitForExpectations(timeout: 3) { error in
+			if let error = error {
+				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
+			}
+		}
+	}
+
+	
 	func testEach() {
 		var expectations:[XCTestExpectation] = []
 		let countLock = NSLock()
@@ -283,6 +304,10 @@ func constantString() -> String {
 
 func randomInt() -> Int {
 	return Int(arc4random())
+}
+
+func isEven(int: Int) -> Bool {
+	return int%2 == 0
 }
 
 func randomInts(count: Int) -> [Int] {

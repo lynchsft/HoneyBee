@@ -75,10 +75,10 @@ extension Sequence {
 				}
 			})
 			group.enter()
-			concurrentQueue.async(group: group, execute: workItem)
+			queue.async(group: group, execute: workItem)
 		}
 		
-		group.notify(queue: concurrentQueue, execute: {
+		group.notify(queue: queue, execute: {
 			completion(results)
 		})
 	}
