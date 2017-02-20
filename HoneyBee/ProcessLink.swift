@@ -52,11 +52,11 @@ final public class JoinPoint<A> : Executable<A> {
 		}
 	}
 	
-	public func conjoin<B, C>(_ other: JoinPoint<B>, _ function: @escaping (A, B) -> (C)) -> ProcessLink<Void, C> {
-		let link = ProcessLink<Void, C>(function: {[unowned self] _, callback in
+	public func conjoin<B>(_ other: JoinPoint<B>) -> ProcessLink<Void, (A,B)> {
+		let link = ProcessLink<Void, (A,B)>(function: {[unowned self] _, callback in
 			self.yieldResult { a in
 				other.yieldResult { b in
-					callback(function(a, b))
+					callback((a, b))
 				}
 			}
 		}, queue: self.queue)
@@ -158,20 +158,8 @@ extension ProcessLink {
 extension ProcessLink {
 	// special forms
 	
-	@discardableResult public func splice<C>(_ function: @escaping () -> C) -> ProcessLink<Void, C> {
-		return self.splice(function, {_ in /* no checked errros possible */})
-	}
-	
-	@discardableResult public func splice<C>(_ function: @escaping () throws -> C, _ errorHandler: @escaping (Error) -> Void) -> ProcessLink<Void, C> {
-		let link = self.chain({ (b: B, callback: @escaping () -> Void) in
-			callback()
-		})
-		
-		return link.chain(function, errorHandler)
-	}
-	
-	public func value<C>(_ c: C) -> ProcessLink<Void, C> {
-		return self.splice({ return c })
+	public func value<C>(_ c: C) -> ProcessLink<B, C> {
+		return self.chain({_ in return c })
 	}
 }
 

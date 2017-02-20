@@ -28,10 +28,11 @@ class HoneyBeeTestAppTests: XCTestCase {
 		
 		HoneyBee.start(with: 4) { root in
 			root.chain(intToString)
-				.chain(stringToInt) {error in XCTFail("Error occured during test \(error)")}
+				.chain(stringToInt, fail)
 				.chain(multiplyInt)
 				.chain(assertEquals(8))
-				.chain(expectationReached(expect))
+				.chain(expect.fulfill)
+		}
 		}
 		
 		waitForExpectations(timeout: 1) { error in
@@ -51,7 +52,8 @@ class HoneyBeeTestAppTests: XCTestCase {
 				.chain(stringCat)
 				.chain(stringToInt) {error in expect.fulfill()}
 				.chain(multiplyInt)
-				.splice(failIfReached)
+				.value(Void())
+				.chain(failIfReached)
 		}
 		
 		waitForExpectations(timeout: 1) { error in
@@ -71,11 +73,11 @@ class HoneyBeeTestAppTests: XCTestCase {
 				.chain(stringToInt) {error in stdHandleError(error)}
 				.fork { ctx in
 					ctx.chain(assertEquals(10))
-						.chain(expectationReached(expect1))
+						.chain(expect1.fulfill)
 					
 					ctx.chain(multiplyInt)
 						.chain(assertEquals(20))
-						.chain(expectationReached(expect2))
+						.chain(expect2.fulfill)
 			}
 		}
 		
@@ -99,10 +101,11 @@ class HoneyBeeTestAppTests: XCTestCase {
 				let result2 = ctx.chain(constantString)
 					.joinPoint()
 				
-				result2.conjoin(result1, multiplyString)
+				result2.conjoin(result1)
+					.chain(multiplyString)
 					.chain(stringCat)
 					.chain(assertEquals("lamblamblamblamblamblamblamblambcat"))
-					.chain(expectationReached(expectA))
+					.chain(expectA.fulfill)
 			}
 		}
 		
@@ -114,9 +117,10 @@ class HoneyBeeTestAppTests: XCTestCase {
 				let result2 = ctx.chain(constantString)
 					.joinPoint()
 				
-				result1.conjoin(result2, stringLengthEquals)
+				result1.conjoin(result2)
+					.chain(stringLengthEquals)
 					.chain(assertEquals(false))
-					.chain(expectationReached(expectB))
+					.chain(expectB.fulfill)
 			}
 		}
 		waitForExpectations(timeout: 3) { error in
@@ -136,9 +140,8 @@ class HoneyBeeTestAppTests: XCTestCase {
 		
 		let finishExpectation = expectation(description: "Should reach the end of the chain")
 		
-		HoneyBee.start { root in
-			root.value(source)
-				.map(multiplyInt)
+		HoneyBee.start(with: source) { root in
+			root.map(multiplyInt)
 				.each { ctx in
 					ctx.chain { (int:Int) -> Void in
 						let sourceValue = int/2
@@ -149,7 +152,7 @@ class HoneyBeeTestAppTests: XCTestCase {
 						}
 					}
 				}
-				.splice(expectationReached(finishExpectation))
+				.chain(finishExpectation.fulfill)
 		}
 		
 		waitForExpectations(timeout: 3) { error in
@@ -164,13 +167,13 @@ class HoneyBeeTestAppTests: XCTestCase {
 		
 		let finishExpectation = expectation(description: "Should reach the end of the chain")
 		
-		HoneyBee.start(on: DispatchQueue.main) { root in
-			root.value(source)
-				.map { (int:Int) -> Int in
+		HoneyBee.start(with:source, on: DispatchQueue.main) { root in
+			root.map { (int:Int) -> Int in
 					XCTAssert(Thread.current.isMainThread, "Not main thread")
 					return int*2
 				}
-				.splice(expectationReached(finishExpectation))
+				.value(Void())
+				.chain(finishExpectation.fulfill)
 		}
 		
 		waitForExpectations(timeout: 3) { error in
@@ -190,7 +193,7 @@ class HoneyBeeTestAppTests: XCTestCase {
 			root.filter(isEven)
 				.chain(Array.sorted)
 				.chain{ XCTAssert($0 == result, "Filter failed. expected: \(result). Received: \($0).") }
-				.splice(expectationReached(finishExpectation))
+				.chain(finishExpectation.fulfill)
 		}
 		
 		waitForExpectations(timeout: 3) { error in
@@ -215,16 +218,16 @@ class HoneyBeeTestAppTests: XCTestCase {
 		HoneyBee.start(with:expectations) { root in
 			root.each { ctx in
 				ctx.chain(XCTestExpectation.fulfill)
-				   .splice {
+				   .chain { () -> Void in
 						countLock.lock()
 						filledExpectationCount += 1
 						countLock.unlock()
 					}
 				}
-				.splice { () -> Void in
+				.chain { () -> Void in
 					XCTAssert(filledExpectationCount == expectations.count, "All expectations should be filled by now, but was actually \(filledExpectationCount) != \(expectations.count)")
 				}
-				.chain(expectationReached(finishExpectation))
+				.chain(finishExpectation.fulfill)
 		}
 		
 		waitForExpectations(timeout: 3) { error in
@@ -241,7 +244,7 @@ class HoneyBeeTestAppTests: XCTestCase {
 			root.chain(decompose)
 				.chain(returnLonger)
 				.chain(assertEquals("foot"))
-				.splice(expectationReached(finishExpectation))
+				.chain(finishExpectation.fulfill)
 		}
 		
 		waitForExpectations(timeout: 3) { error in
@@ -259,12 +262,6 @@ func failIfReached() {
 	XCTFail("This function should never be reached")
 }
 
-func expectationReached(_ expectation: XCTestExpectation) -> (Void) -> Void {
-	return {
-		expectation.fulfill()
-	}
-}
-
 func assertEquals<T: Equatable>(_ t: T) -> (T) -> Void {
 	return { otherT in
 		XCTAssert(t == otherT, "Expected \(t) to equal \(otherT)")
@@ -279,6 +276,10 @@ func multiplyInt(int: Int) -> Int {
 
 func stringCat(string: String) -> String {
 	return "\(string)cat"
+}
+
+func dangerous() throws -> Int {
+	return try stringToInt(string: "27")
 }
 
 func stringToInt(string: String) throws -> Int {
@@ -345,4 +346,8 @@ func returnLonger(first: String, second: String) -> String {
 	} else {
 		return second
 	}
+}
+
+func fail(on error: Error) {
+	XCTFail("Error occured during test \(error)")
 }
