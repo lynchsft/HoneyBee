@@ -12,7 +12,7 @@ class Executable<A> {
 	func execute(argument: A, completion: @escaping () -> Void) -> Void {}
 }
 
-final public class JoinPoint<A> : Executable<A> {
+final fileprivate class JoinPoint<A> : Executable<A> {
 	private let resultLock = NSLock()
 	private var result: A?
 	private var resultCallback: ((A) -> Void)?
@@ -52,7 +52,7 @@ final public class JoinPoint<A> : Executable<A> {
 		}
 	}
 	
-	public func conjoin<B>(_ other: JoinPoint<B>) -> ProcessLink<Void, (A,B)> {
+	fileprivate func conjoin<B>(_ other: JoinPoint<B>) -> ProcessLink<Void, (A,B)> {
 		let link = ProcessLink<Void, (A,B)>(function: {[unowned self] _, callback in
 			self.yieldResult { a in
 				other.yieldResult { b in
@@ -94,7 +94,7 @@ final public class ProcessLink<A, B> : Executable<A> {
 		defineBlock(self)
 	}
 	
-	public func joinPoint() -> JoinPoint<B> {
+	fileprivate func joinPoint() -> JoinPoint<B> {
 		let link = JoinPoint<B>(queue: self.queue)
 		self.createdLinks.append(link)
 		return link
@@ -160,6 +160,10 @@ extension ProcessLink {
 	
 	public func value<C>(_ c: C) -> ProcessLink<B, C> {
 		return self.chain({_ in return c })
+	}
+	
+	public func conjoin<C,X>(_ other: ProcessLink<X,C>) -> ProcessLink<Void, (B,C)> {
+		return self.joinPoint().conjoin(other.joinPoint())
 	}
 }
 

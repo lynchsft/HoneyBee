@@ -96,10 +96,8 @@ class HoneyBeeTestAppTests: XCTestCase {
 		HoneyBee.start { root in
 			root.fork { ctx in
 				let result1 = ctx.chain(constantInt)
-					.joinPoint()
 				
 				let result2 = ctx.chain(constantString)
-					.joinPoint()
 				
 				result2.conjoin(result1)
 					.chain(multiplyString)
@@ -112,10 +110,8 @@ class HoneyBeeTestAppTests: XCTestCase {
 		HoneyBee.start { root in
 			root.fork { ctx in
 				let result1 = ctx.chain(constantInt)
-					.joinPoint()
 				
 				let result2 = ctx.chain(constantString)
-					.joinPoint()
 				
 				result1.conjoin(result2)
 					.chain(stringLengthEquals)
