@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FA256FB61E5DB490008FB7C0 /* JoinPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA256FB51E5DB490008FB7C0 /* JoinPoint.swift */; };
 		FA473BC91E352CB1007E4D61 /* HoneyBee.h in Headers */ = {isa = PBXBuildFile; fileRef = FA473BBB1E352CB1007E4D61 /* HoneyBee.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		FA59958D1E4B4743001744ED /* String+SHA256.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA59958C1E4B4743001744ED /* String+SHA256.swift */; };
 		FA5995A31E4B5A6E001744ED /* CommonCrypto.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA5995951E4B58B5001744ED /* CommonCrypto.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -43,6 +44,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		FA256FB51E5DB490008FB7C0 /* JoinPoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JoinPoint.swift; sourceTree = "<group>"; };
 		FA473BB81E352CB1007E4D61 /* HoneyBee.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = HoneyBee.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA473BBB1E352CB1007E4D61 /* HoneyBee.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HoneyBee.h; sourceTree = "<group>"; };
 		FA473BBC1E352CB1007E4D61 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -133,6 +135,7 @@
 				FAC9DC7C1E352D6F00E21A01 /* AsyncSupport.swift */,
 				FAC9DC7D1E352D6F00E21A01 /* FailableResult.swift */,
 				FAC0CA1B1E4BDB6900ECC0DC /* HoneyBee.swift */,
+				FA256FB51E5DB490008FB7C0 /* JoinPoint.swift */,
 				FA6089931E59F1C1004E6D9B /* OperatorSyntax.swift */,
 				FAC9DC7E1E352D6F00E21A01 /* ProcessLink.swift */,
 				FA59958C1E4B4743001744ED /* String+SHA256.swift */,
@@ -371,6 +374,7 @@
 				FAC0CA1C1E4BDB6900ECC0DC /* HoneyBee.swift in Sources */,
 				FAC9DC811E352D6F00E21A01 /* ProcessLink.swift in Sources */,
 				FAC9DC7F1E352D6F00E21A01 /* AsyncSupport.swift in Sources */,
+				FA256FB61E5DB490008FB7C0 /* JoinPoint.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

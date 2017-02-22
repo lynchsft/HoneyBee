@@ -8,63 +8,6 @@
 
 import Foundation
 
-class Executable<A> {
-	func execute(argument: A, completion: @escaping () -> Void) -> Void {}
-}
-
-final fileprivate class JoinPoint<A> : Executable<A> {
-	private let resultLock = NSLock()
-	private var result: A?
-	private var resultCallback: ((A) -> Void)?
-	private var queue: DispatchQueue
-	private var conjoinLink: Executable<Void>?
-	
-	fileprivate init(queue: DispatchQueue) {
-		self.queue = queue
-	}
-	
-	private func yieldResult(_ callback: @escaping (A) -> Void) {
-		self.resultLock.lock()
-		defer {
-			self.resultLock.unlock()
-		}
-		// this needs to be atomic
-		if let result = result {
-			callback(result)
-		} else {
-			self.resultCallback = callback
-		}
-	}
-	
-	override func execute(argument: A, completion: @escaping (Void) -> Void) {
-		if let link = self.conjoinLink {
-			link.execute(argument: Void(), completion:  completion)
-		}
-		
-		self.resultLock.lock()
-		defer {
-			self.resultLock.unlock()
-		}
-		result = argument
-		
-		if let resultCallback = self.resultCallback {
-			resultCallback(argument)
-		}
-	}
-	
-	fileprivate func conjoin<B>(_ other: JoinPoint<B>) -> ProcessLink<Void, (A,B)> {
-		let link = ProcessLink<Void, (A,B)>(function: {[unowned self] _, callback in
-			self.yieldResult { a in
-				other.yieldResult { b in
-					callback((a, b))
-				}
-			}
-		}, queue: self.queue)
-		
-		self.conjoinLink = link
-		return link
-	}
-}
 
 final public class ProcessLink<A, B> : Executable<A> {
 	
