@@ -162,28 +162,32 @@ extension ProcessLink {
 		}
 	}
 	
-	@discardableResult public func chain(_ function: @escaping (B) -> (@escaping (Error?) -> Void) -> Void, _ errorHandler: @escaping (Error) -> Void) -> ProcessLink<FailableResult<B>, B> {
-		return self.chain(elevate(function)).chain(checkResult, errorHandler)
+	private func identity<T>(_ value: T) -> T {
+		return value
 	}
 	
-	@discardableResult public func chain(_ function: @escaping (B) -> (((Error?) -> Void)?) -> Void, _ errorHandler: @escaping (Error) -> Void) -> ProcessLink<FailableResult<B>, B> {
-		return self.chain(elevate(function)).chain(checkResult, errorHandler)
+	@discardableResult public func chain(_ function: @escaping (B) -> (@escaping (Error?) -> Void) -> Void, _ errorHandler: @escaping (Error) -> Void) -> ProcessLink<B, B> {
+		return self.chain(elevate(function)).chain(checkResult, errorHandler).chain(identity)
 	}
 	
-	@discardableResult public func chain(_ function: @escaping (B, @escaping (Error?) -> Void) -> Void, _ errorHandler: @escaping (Error) -> Void) -> ProcessLink<FailableResult<B>, B> {
-		return self.chain(elevate(function)).chain(checkResult, errorHandler)
+	@discardableResult public func chain(_ function: @escaping (B) -> (((Error?) -> Void)?) -> Void, _ errorHandler: @escaping (Error) -> Void) -> ProcessLink<B, B> {
+		return self.chain(elevate(function)).chain(checkResult, errorHandler).chain(identity)
 	}
 	
-	@discardableResult public func chain(_ function: @escaping (B, ((Error?) -> Void)?) -> Void, _ errorHandler: @escaping (Error) -> Void) -> ProcessLink<FailableResult<B>, B> {
-		return self.chain(elevate(function)).chain(checkResult, errorHandler)
+	@discardableResult public func chain(_ function: @escaping (B, @escaping (Error?) -> Void) -> Void, _ errorHandler: @escaping (Error) -> Void) -> ProcessLink<B, B> {
+		return self.chain(elevate(function)).chain(checkResult, errorHandler).chain(identity)
 	}
 	
-	@discardableResult public func chain<C>(_ function: @escaping (B, @escaping (C?, Error?) -> Void) -> Void, _ errorHandler: @escaping (Error) -> Void) -> ProcessLink<FailableResult<C>, C> {
-		return self.chain(elevate(function)).chain(checkResult, errorHandler)
+	@discardableResult public func chain(_ function: @escaping (B, ((Error?) -> Void)?) -> Void, _ errorHandler: @escaping (Error) -> Void) -> ProcessLink<B, B> {
+		return self.chain(elevate(function)).chain(checkResult, errorHandler).chain(identity)
 	}
 	
-	@discardableResult public func chain<C>(_ function: @escaping (B, ((C?, Error?) -> Void)?) -> Void, _ errorHandler: @escaping (Error) -> Void) -> ProcessLink<FailableResult<C>, C> {
-		return self.chain(elevate(function)).chain(checkResult, errorHandler)
+	@discardableResult public func chain<C>(_ function: @escaping (B, @escaping (C?, Error?) -> Void) -> Void, _ errorHandler: @escaping (Error) -> Void) -> ProcessLink<C, C> {
+		return self.chain(elevate(function)).chain(checkResult, errorHandler).chain(identity)
+	}
+	
+	@discardableResult public func chain<C>(_ function: @escaping (B, ((C?, Error?) -> Void)?) -> Void, _ errorHandler: @escaping (Error) -> Void) -> ProcessLink<C, C> {
+		return self.chain(elevate(function)).chain(checkResult, errorHandler).chain(identity)
 	}
 	
 	@discardableResult public func chain<C>(_ function: @escaping (B) -> (@escaping (C) -> Void) -> Void) -> ProcessLink<B, C> {

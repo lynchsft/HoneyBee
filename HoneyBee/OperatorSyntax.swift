@@ -51,27 +51,27 @@ public struct FunctionWithErrorHandler<F> {
 	return left.chain(right.function, right.errorHandler)
 }
 
-@discardableResult public func ^^<A,B>(left: ProcessLink<A,B>, right: FunctionWithErrorHandler<(B) -> ((Error?) -> Void) -> Void>) -> ProcessLink<FailableResult<B>, B>{
+@discardableResult public func ^^<A,B>(left: ProcessLink<A,B>, right: FunctionWithErrorHandler<(B) -> ((Error?) -> Void) -> Void>) -> ProcessLink<B, B>{
 	return left.chain(right.function, right.errorHandler)
 }
 
-@discardableResult public func ^^<A,B>(left: ProcessLink<A,B>, right: FunctionWithErrorHandler<(B) -> (((Error?) -> Void)?) -> Void>) -> ProcessLink<FailableResult<B>, B>{
+@discardableResult public func ^^<A,B>(left: ProcessLink<A,B>, right: FunctionWithErrorHandler<(B) -> (((Error?) -> Void)?) -> Void>) -> ProcessLink<B, B>{
 	return left.chain(right.function, right.errorHandler)
 }
 
-@discardableResult public func ^^<A,B>(left: ProcessLink<A,B>, right: FunctionWithErrorHandler<(B, (Error?) -> Void) -> Void>) -> ProcessLink<FailableResult<B>, B>{
+@discardableResult public func ^^<A,B>(left: ProcessLink<A,B>, right: FunctionWithErrorHandler<(B, (Error?) -> Void) -> Void>) -> ProcessLink<B, B>{
 	return left.chain(right.function, right.errorHandler)
 }
 
-@discardableResult public func ^^<A,B>(left: ProcessLink<A,B>, right: FunctionWithErrorHandler<(B, ((Error?) -> Void)?) -> Void>) -> ProcessLink<FailableResult<B>, B>{
+@discardableResult public func ^^<A,B>(left: ProcessLink<A,B>, right: FunctionWithErrorHandler<(B, ((Error?) -> Void)?) -> Void>) -> ProcessLink<B, B>{
 	return left.chain(right.function, right.errorHandler)
 }
 
-@discardableResult public func ^^<A,B,C>(left: ProcessLink<A,B>, right: FunctionWithErrorHandler<(B, (C?, Error?) -> Void) -> Void>) -> ProcessLink<FailableResult<C>,C>{
+@discardableResult public func ^^<A,B,C>(left: ProcessLink<A,B>, right: FunctionWithErrorHandler<(B, (C?, Error?) -> Void) -> Void>) -> ProcessLink<C,C>{
 	return left.chain(right.function, right.errorHandler)
 }
 
-@discardableResult public func ^^<A,B,C>(left: ProcessLink<A,B>, right: FunctionWithErrorHandler<(B, ((C?, Error?) -> Void)?) -> Void>) -> ProcessLink<FailableResult<C>,C>{
+@discardableResult public func ^^<A,B,C>(left: ProcessLink<A,B>, right: FunctionWithErrorHandler<(B, ((C?, Error?) -> Void)?) -> Void>) -> ProcessLink<C,C>{
 	return left.chain(right.function, right.errorHandler)
 }
 

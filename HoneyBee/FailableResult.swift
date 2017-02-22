@@ -8,7 +8,7 @@
 
 import Foundation
 
-public enum FailableResult<T> {
+enum FailableResult<T> {
 	case success(T)
 	case failure(Swift.Error)
 }
