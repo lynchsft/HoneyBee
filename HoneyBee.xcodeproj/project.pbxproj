@@ -10,6 +10,7 @@
 		FA473BC91E352CB1007E4D61 /* HoneyBee.h in Headers */ = {isa = PBXBuildFile; fileRef = FA473BBB1E352CB1007E4D61 /* HoneyBee.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		FA59958D1E4B4743001744ED /* String+SHA256.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA59958C1E4B4743001744ED /* String+SHA256.swift */; };
 		FA5995A31E4B5A6E001744ED /* CommonCrypto.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA5995951E4B58B5001744ED /* CommonCrypto.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		FA6089941E59F1C1004E6D9B /* OperatorSyntax.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA6089931E59F1C1004E6D9B /* OperatorSyntax.swift */; };
 		FA7AE6761E53314E007A5711 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA7AE6751E53314E007A5711 /* AppDelegate.swift */; };
 		FA7AE6781E53314E007A5711 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA7AE6771E53314E007A5711 /* ViewController.swift */; };
 		FA7AE67B1E53314E007A5711 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FA7AE6791E53314E007A5711 /* Main.storyboard */; };
@@ -52,6 +53,7 @@
 		FA59959E1E4B5936001744ED /* iphoneos.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = iphoneos.modulemap; sourceTree = "<group>"; };
 		FA59959F1E4B594E001744ED /* iphonesimulator.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = iphonesimulator.modulemap; sourceTree = "<group>"; };
 		FA5995A01E4B5962001744ED /* macosx.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = macosx.modulemap; sourceTree = "<group>"; };
+		FA6089931E59F1C1004E6D9B /* OperatorSyntax.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OperatorSyntax.swift; sourceTree = "<group>"; };
 		FA7AE6731E53314E007A5711 /* HoneyBeeTestApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HoneyBeeTestApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA7AE6751E53314E007A5711 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		FA7AE6771E53314E007A5711 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -131,6 +133,7 @@
 				FAC9DC7C1E352D6F00E21A01 /* AsyncSupport.swift */,
 				FAC9DC7D1E352D6F00E21A01 /* FailableResult.swift */,
 				FAC0CA1B1E4BDB6900ECC0DC /* HoneyBee.swift */,
+				FA6089931E59F1C1004E6D9B /* OperatorSyntax.swift */,
 				FAC9DC7E1E352D6F00E21A01 /* ProcessLink.swift */,
 				FA59958C1E4B4743001744ED /* String+SHA256.swift */,
 				FA473BBB1E352CB1007E4D61 /* HoneyBee.h */,
@@ -363,6 +366,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				FAC9DC801E352D6F00E21A01 /* FailableResult.swift in Sources */,
+				FA6089941E59F1C1004E6D9B /* OperatorSyntax.swift in Sources */,
 				FA59958D1E4B4743001744ED /* String+SHA256.swift in Sources */,
 				FAC0CA1C1E4BDB6900ECC0DC /* HoneyBee.swift in Sources */,
 				FAC9DC811E352D6F00E21A01 /* ProcessLink.swift in Sources */,
@@ -704,6 +708,7 @@
 				FA7AE68E1E53314F007A5711 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		FA7AE6921E53314F007A5711 /* Build configuration list for PBXNativeTarget "HoneyBeeTestAppTests" */ = {
 			isa = XCConfigurationList;
@@ -712,6 +717,7 @@
 				FA7AE6901E53314F007A5711 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

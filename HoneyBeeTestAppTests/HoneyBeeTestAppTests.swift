@@ -33,6 +33,73 @@ class HoneyBeeTestAppTests: XCTestCase {
 				.chain(assertEquals(8))
 				.chain(expect.fulfill)
 		}
+		
+		waitForExpectations(timeout: 1) { error in
+			if let error = error {
+				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
+			}
+		}
+	}
+	
+	func testOperatorSyntax() {
+		let expect = expectation(description: "Expect should be reached")
+		let optionalExpect = expectation(description: "Optional expect should be reached")
+		
+		HoneyBee.start(with: 4) { __ in
+			__
+			^^ intToString
+			^^ stringToInt ^! fail
+			^< { __ in
+				let a = __
+						^^ intToString
+						^^ stringCat
+				
+				let b = __
+						^^ multiplyInt
+				
+				(a ^+ b)
+						^^ multiplyString
+						^^ assertEquals("4cat4cat4cat4cat4cat4cat4cat4cat")
+						^% Optional(7)
+						^? {__ in
+							__
+							^^ assertEquals(7)
+							^^ optionalExpect.fulfill
+						}
+						^^ expect.fulfill
+			}
+		}
+		
+		waitForExpectations(timeout: 1) { error in
+			if let error = error {
+				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
+			}
+		}
+	}
+	
+	func testOperatorSyntaxComparison() {
+		let expect = expectation(description: "Expect should be reached")
+		let optionalExpect = expectation(description: "Optional expect should be reached")
+		
+		HoneyBee.start(with: 4) { root in
+			root.chain(intToString)
+				.chain(stringToInt, fail)
+				.fork { ctx in
+					let a = ctx.chain(intToString)
+							   .chain(stringCat)
+					
+					let b = ctx.chain(multiplyInt)
+					
+					a.conjoin(b)
+						.chain(multiplyString)
+						.chain(assertEquals("4cat4cat4cat4cat4cat4cat4cat4cat"))
+						.value(Optional(7))
+						.optionally { ctx in
+							ctx.chain(assertEquals(7))
+							   .chain(optionalExpect.fulfill)
+						}
+						.chain(expect.fulfill)
+			}
 		}
 		
 		waitForExpectations(timeout: 1) { error in
@@ -70,7 +137,7 @@ class HoneyBeeTestAppTests: XCTestCase {
 		
 		HoneyBee.start(with: 10) { root in
 			root.chain(intToString)
-				.chain(stringToInt) {error in stdHandleError(error)}
+				.chain(stringToInt, fail)
 				.fork { ctx in
 					ctx.chain(assertEquals(10))
 						.chain(expect1.fulfill)
@@ -313,10 +380,6 @@ func randomInts(count: Int) -> [Int] {
 
 func printAll(values: [Any]) {
 	print(values)
-}
-
-func stdHandleError(_ error: Error) {
-	print("Error: \(error)")
 }
 
 func multiplyString(string: String, count: Int) -> String {
