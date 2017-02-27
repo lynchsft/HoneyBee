@@ -16,6 +16,7 @@ final public class ProcessLink<A, B> : Executable<A> {
 	private var function: (A, @escaping (B) -> Void) throws -> Void
 	private var errorHandler: (Error) -> Void
 	fileprivate var queue: DispatchQueue
+	fileprivate var maxParallelContexts:Int?
 	
 	convenience init(function:  @escaping (A, @escaping (B) -> Void) -> Void, queue: DispatchQueue) {
 		self.init(function: function, errorHandler: {_ in /* no possibilty of checked error here */}, queue: queue)
@@ -43,14 +44,26 @@ final public class ProcessLink<A, B> : Executable<A> {
 		return link
 	}
 	
+	private var rateLimter:DispatchSemaphore? {
+		if let maxParallelContexts = self.maxParallelContexts {
+			return DispatchSemaphore(value: maxParallelContexts)
+		} else {
+			return nil
+		}
+	}
+	
 	override func execute(argument: A, completion fullChainCompletion: @escaping () -> Void) {
 		do {
 			try self.function(argument) { result in
 				let group = DispatchGroup()
+				let rateLimiter = self.rateLimter
+				
 				
 				for createdLink in self.createdLinks {
+					rateLimiter?.wait()
 					let workItem = DispatchWorkItem(block: {
 						createdLink.execute(argument: result) {
+							rateLimiter?.signal()
 							group.leave()
 						}
 					})
@@ -245,10 +258,11 @@ extension ProcessLink where B : Sequence {
 }
 
 extension ProcessLink where B : Sequence {
-	@discardableResult public func each(_ defineBlock: @escaping (ProcessLink<Void, B.Iterator.Element>) -> Void) -> ProcessLink<B, Void> {
-		var rootLink: ProcessLink<Void, Void> = ProcessLink<Void,Void>( function: {_,callback in
+	@discardableResult public func each(maxParallel:Int? = nil, _ defineBlock: @escaping (ProcessLink<Void, B.Iterator.Element>) -> Void) -> ProcessLink<B, Void> {
+		let rootLink: ProcessLink<Void, Void> = ProcessLink<Void,Void>( function: {_,callback in
 			callback()
 		}, queue: self.queue)
+		rootLink.maxParallelContexts = maxParallel
 		
 		return self.chain { (sequence:B, callback:@escaping ()->Void) -> Void in
 			for element in sequence {

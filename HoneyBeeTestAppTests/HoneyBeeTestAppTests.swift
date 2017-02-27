@@ -300,6 +300,39 @@ class HoneyBeeTestAppTests: XCTestCase {
 		}
 	}
 	
+	func testEachWithRateLimiter() {
+		var expectations:[XCTestExpectation] = []
+		let countLock = NSLock()
+		var filledExpectationCount = 0
+		
+		for int in 0..<10 {
+			expectations.append(expectation(description: "Expected to evaluate \(int)"))
+		}
+		
+		let finishExpectation = expectation(description: "Should reach the end of the chain")
+		
+		HoneyBee.start(with: expectations) { root in
+			root.each(maxParallel: 3) { ctx in
+				ctx.chain(XCTestExpectation.fulfill)
+					.chain { () -> Void in
+						countLock.lock()
+						filledExpectationCount += 1
+						countLock.unlock()
+				}
+				}
+				.chain { () -> Void in
+					XCTAssert(filledExpectationCount == expectations.count, "All expectations should be filled by now, but was actually \(filledExpectationCount) != \(expectations.count)")
+				}
+				.chain(finishExpectation.fulfill)
+		}
+		
+		waitForExpectations(timeout: 3) { error in
+			if let error = error {
+				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
+			}
+		}
+	}
+	
 	func testMultiParams() {
 		let finishExpectation = expectation(description: "Should reach the end of the chain")
 		
