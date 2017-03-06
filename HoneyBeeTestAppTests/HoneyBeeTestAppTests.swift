@@ -311,18 +311,22 @@ class HoneyBeeTestAppTests: XCTestCase {
 		
 		let finishExpectation = expectation(description: "Should reach the end of the chain")
 		
+		func incrementFullfilledExpectCount() {
+			countLock.lock()
+			filledExpectationCount += 1
+			countLock.unlock()
+		}
+		
+		func assertAllExpectationsFullfilled() {
+			XCTAssert(filledExpectationCount == expectations.count, "All expectations should be filled by now, but was actually \(filledExpectationCount) != \(expectations.count)")
+		}
+		
 		HoneyBee.start(with: expectations) { root in
 			root.each(maxParallel: 3) { ctx in
 				ctx.chain(XCTestExpectation.fulfill)
-					.chain { () -> Void in
-						countLock.lock()
-						filledExpectationCount += 1
-						countLock.unlock()
+				   .chain(incrementFullfilledExpectCount)
 				}
-				}
-				.chain { () -> Void in
-					XCTAssert(filledExpectationCount == expectations.count, "All expectations should be filled by now, but was actually \(filledExpectationCount) != \(expectations.count)")
-				}
+				.chain(assertAllExpectationsFullfilled)
 				.chain(finishExpectation.fulfill)
 		}
 		
