@@ -209,6 +209,7 @@
 				FA473BB31E352CB1007E4D61 /* Sources */,
 				FA473BB41E352CB1007E4D61 /* Frameworks */,
 				FA473BB51E352CB1007E4D61 /* Headers */,
+				FACA52421E6D918E00A78AD3 /* Set Build Number */,
 				FA473BB61E352CB1007E4D61 /* Resources */,
 			);
 			buildRules = (
@@ -362,6 +363,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		FACA52421E6D918E00A78AD3 /* Set Build Number */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Set Build Number";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ \"$CONFIGURATION\" != \"Debug\" ]; then\nbuildNumber=$(git log | wc -l | tr -d '[[:space:]]')\nbuildNumber=$(($buildNumber))\n/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $buildNumber\" \"${PROJECT_DIR}/${INFOPLIST_FILE}\"\nfi";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		FA473BB31E352CB1007E4D61 /* Sources */ = {
