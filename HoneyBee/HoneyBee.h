@@ -6,7 +6,7 @@
 //  Copyright © 2017 IAM Apps. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
 
 //! Project version number for HoneyBee.
 FOUNDATION_EXPORT double HoneyBeeVersionNumber;

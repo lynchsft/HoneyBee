@@ -6,7 +6,7 @@
 //  Copyright © 2017 IAM Apps. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import <Foundatoin/Foundation.h>
 
 //! Project version number for CommonCrypto.
 FOUNDATION_EXPORT double CommonCryptoVersionNumber;
