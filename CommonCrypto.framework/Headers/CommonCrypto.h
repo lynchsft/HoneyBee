@@ -2,11 +2,11 @@
 //  CommonCrypto.h
 //  CommonCrypto
 //
-//  Created by Alex Lynch on 2/8/17.
+//  Created by Alex Lynch on 3/8/17.
 //  Copyright © 2017 IAM Apps. All rights reserved.
 //
 
-#import <Foundatoin/Foundation.h>
+#import <Foundation/Foundation.h>
 
 //! Project version number for CommonCrypto.
 FOUNDATION_EXPORT double CommonCryptoVersionNumber;
