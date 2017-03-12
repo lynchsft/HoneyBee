@@ -1,0 +1,54 @@
+#! /usr/bin/env ruby
+
+puts "Cleaning"
+puts `rm -rf products/*`
+
+puts "Building"
+puts `xcodebuild archive -project HoneyBee.xcodeproj -scheme HoneyBee`
+
+puts "Documenting"
+puts `jazzy --xcodebuild-arguments -scheme,HoneyBee  --output products/docs/`
+
+version_string = `/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' ./products/HoneyBee.framework/Info.plist`.strip
+
+puts "Zipping"
+zip_file = "HoneyBee-#{version_string}.zip"
+puts `rsync -r LICENSE CommonCrypto.framework products/`
+puts `cd products; /usr/bin/zip -r #{zip_file} LICENSE HoneyBee.framework/ CommonCrypto.framework/`
+
+puts "Pushing"
+puts `cd products; rsync -r #{zip_file} docs iamwebservices@iamwebservices.com:iamwebservices/current/public/HoneyBee/#{version_string}/`
+
+spec = %[
+Pod::Spec.new do |s|
+  s.name         = "HoneyBee"
+  s.version      = "#{version_string}"
+  s.summary      = "A swift library to increase the expressiveness of asynchronous and multi-parallel code."
+
+  s.description  = <<-DESC
+	HoneyBee reduces the clutter and complexity of asynchronous and multi-parallel code. 
+	By handing the noise of data routing and error handling, HoneyBee provides a higher-level, more expressive perspective on asynchronous programming.
+                   DESC
+
+  s.homepage     = "http://iamapps.net/HoneyBee/#{version_string}/docs/index.html"
+
+  s.license      = { :type=>"Commercial" }
+
+  s.author       = { "Alex Lynch" => "alex@iamapps.com" }
+
+  s.ios.deployment_target = "9.0"
+  #s.osx.deployment_target = "10.7"
+  #s.watchos.deployment_target = "2.0"
+  #s.tvos.deployment_target = "9.0"
+
+  s.source       = { :http => "http://iamapps.net/HoneyBee/#{version_string}/HoneyBee-#{version_string}.zip"}
+
+  s.vendored_frameworks = 'HoneyBee.framework', 'CommonCrypto.framework'
+
+end	
+]
+
+File.open("HoneyBee.podspec",'w') {|f| f.puts spec}
+
+puts "Publishing"
+puts `pod trunk push HoneyBee.podspec`
