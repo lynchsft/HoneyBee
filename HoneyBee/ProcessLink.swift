@@ -114,6 +114,7 @@ extension ProcessLink {
 extension ProcessLink {
 	// special forms
 	
+	@available(*, deprecated)
 	public func value<C>(_ c: C) -> ProcessLink<B, C> {
 		return self.chain({_ in return c })
 	}
@@ -229,6 +230,16 @@ extension ProcessLink {
 	}
 }
 
+extension ProcessLink {
+	// void forms
+	@discardableResult public func chain(_ function: @escaping () -> Void) -> ProcessLink<B, Void> {
+		return self.chain { (_: B, callback:@escaping () -> Void) in
+			function()
+			callback()
+		}
+	}
+}
+
 extension ProcessLink where B : Collection, B.IndexDistance == Int {
 	public func map<C>(_ transform: @escaping (B.Iterator.Element) -> C) -> ProcessLink<B, [C]> {
 		return self.chain({(collection: B, callback: @escaping ([C]) -> Void) in
@@ -266,7 +277,7 @@ extension ProcessLink where B : Sequence {
 		
 		return self.chain { (sequence:B, callback:@escaping ()->Void) -> Void in
 			for element in sequence {
-				defineBlock(rootLink.value(element))
+				defineBlock(rootLink.chain{element})
 			}
 			
 			rootLink.execute(argument: Void(), completion: callback)

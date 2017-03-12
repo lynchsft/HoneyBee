@@ -108,6 +108,7 @@ public func ^+ <A,B,C,X>(left: ProcessLink<A,B>, right: ProcessLink<X,C>) -> Pro
 
 infix operator ^% : LogicalConjunctionPrecedence
 
+@available(*, deprecated)
 public func ^% <A,B,C>(left: ProcessLink<A,B>, right: C) -> ProcessLink<B, C> {
 	return left.value(right)
 }

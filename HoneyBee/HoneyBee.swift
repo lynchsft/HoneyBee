@@ -10,10 +10,6 @@ import Foundation
 
 public struct HoneyBee {
 	public static func start(on queue: DispatchQueue = DispatchQueue.global(), _ defineBlock: @escaping (ProcessLink<Void, Void>) -> Void) {
-		self.start(with: Void(), on: queue, defineBlock)
-	}
-	
-	public static func start<A>(with arg: A, on queue: DispatchQueue = DispatchQueue.global(), _ defineBlock: @escaping (ProcessLink<A, A>) -> Void) {
 		// access control
 		guard let bundleID = Bundle.main.bundleIdentifier else {
 			preconditionFailure("Bundle ID must be present")
@@ -43,10 +39,18 @@ public struct HoneyBee {
 		}
 		
 		// the real work
-		let root = ProcessLink<A, A>(function: {a, block in block(a)}, queue: queue)
+		let root = ProcessLink<Void, Void>(function: {a, block in block(a)}, queue: queue)
 		queue.async {
 			defineBlock(root)
-			root.execute(argument: arg, completion: {})
+			root.execute(argument: Void(), completion: {})
+		}
+	}
+	
+	@available(*, deprecated)
+	public static func start<A>(with arg: A, on queue: DispatchQueue = DispatchQueue.global(), _ defineBlock: @escaping (ProcessLink<Void, A>) -> Void) {
+		self.start(on: queue) { ctx in
+			let link = ctx.chain { arg }
+			defineBlock(link)
 		}
 	}
 }
