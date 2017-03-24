@@ -114,7 +114,6 @@ extension ProcessLink {
 extension ProcessLink {
 	// special forms
 	
-	@available(*, deprecated)
 	public func value<C>(_ c: C) -> ProcessLink<B, C> {
 		return self.chain({_ in return c })
 	}
@@ -228,16 +227,34 @@ extension ProcessLink {
 			callback()
 		})
 	}
+	
+	// special void forms
+	
+	@discardableResult public func chain(_ function: @escaping (@escaping (Error?) -> Void) -> Void, _ errorHandler: @escaping (Error) -> Void) -> ProcessLink<B, B> {
+		let wrapper = {(_:B,callback:@escaping (Error?) -> Void) in
+			function(callback)
+		}
+		return self.chain(elevate(wrapper)).chain(checkResult, errorHandler).chain(identity)
+	}
 }
 
 extension ProcessLink {
 	// void forms
+	
 	@discardableResult public func chain(_ function: @escaping () -> Void) -> ProcessLink<B, Void> {
 		return self.chain { (_: B, callback:@escaping () -> Void) in
 			function()
 			callback()
 		}
 	}
+	
+	@discardableResult public func chain<C>(_ function:  @escaping (((C) -> Void)?) -> Void) -> ProcessLink<B, C> {
+		return self.chain { (b: B, callback: @escaping (C) -> Void) in
+			function(callback)
+		}
+	}
+	
+	
 }
 
 extension ProcessLink where B : Collection, B.IndexDistance == Int {
