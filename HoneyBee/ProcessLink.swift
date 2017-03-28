@@ -28,7 +28,11 @@ final public class ProcessLink<A, B> : Executable<A> {
 		self.queue = queue
 	}
 	
-	@discardableResult public func chain<C>(_ function:  @escaping (B, @escaping (C) -> Void) throws -> Void, on queue: DispatchQueue? = nil, _ errorHandler: @escaping (Error) -> Void) -> ProcessLink<B, C> {
+	@discardableResult public func chain<C>(_ function:  @escaping (B, @escaping (C) -> Void) throws -> Void, _ errorHandler: @escaping (Error) -> Void) -> ProcessLink<B, C> {
+		return self.chain(function, on: nil, errorHandler)
+	}
+	
+	@discardableResult public func chain<C>(_ function:  @escaping (B, @escaping (C) -> Void) throws -> Void, on queue: DispatchQueue?, _ errorHandler: @escaping (Error) -> Void) -> ProcessLink<B, C> {
 		let link = ProcessLink<B, C>(function: function, errorHandler: errorHandler, queue: queue ?? self.queue)
 		self.createdLinks.append(link)
 		return link
@@ -82,6 +86,19 @@ final public class ProcessLink<A, B> : Executable<A> {
 }
 
 extension ProcessLink {
+	// special forms
+	
+	public func value<C>(_ c: C) -> ProcessLink<B, C> {
+		return self.chain({_ in return c })
+	}
+	
+	public func conjoin<C,X>(_ other: ProcessLink<X,C>) -> ProcessLink<Void, (B,C)> {
+		return self.joinPoint().conjoin(other.joinPoint())
+	}
+}
+
+extension ProcessLink : Chainable {
+	
 	// simplifed forms
 	
 	@discardableResult public func chain<C>(_ function:  @escaping (B) -> (C) ) -> ProcessLink<B, C> {
@@ -109,21 +126,7 @@ extension ProcessLink {
 			try function(b,callback)
 		}, errorHandler)
 	}
-}
 
-extension ProcessLink {
-	// special forms
-	
-	public func value<C>(_ c: C) -> ProcessLink<B, C> {
-		return self.chain({_ in return c })
-	}
-	
-	public func conjoin<C,X>(_ other: ProcessLink<X,C>) -> ProcessLink<Void, (B,C)> {
-		return self.joinPoint().conjoin(other.joinPoint())
-	}
-}
-
-extension ProcessLink {
 	// secondary forms
 	
 	private func elevate<T>(_ function: @escaping (T) -> (@escaping (Error?) -> Void) -> Void) -> (T, @escaping (FailableResult<T>) -> Void) -> Void {
@@ -195,12 +198,24 @@ extension ProcessLink {
 		return self.chain(elevate(function)).chain(checkResult, errorHandler).chain(identity)
 	}
 	
-	@discardableResult public func chain<C>(_ function: @escaping (B, @escaping (C?, Error?) -> Void) -> Void, _ errorHandler: @escaping (Error) -> Void) -> ProcessLink<C, C> {
-		return self.chain(elevate(function)).chain(checkResult, errorHandler).chain(identity)
+	@discardableResult public func chain<C>(_ function: @escaping (B, @escaping (C?, Error?) -> Void) -> Void, _ errorHandler: @escaping (Error) -> Void) -> ProcessLink<B, C> {
+		// This one is really messy because the most natural result here would be a ProcessLink<C, C>, but that breaks our contract
+		var storedB: B! = nil
+		var storedC: C! = nil
+		return self.chain({ (b:B, callback: @escaping (FailableResult<C>) -> Void) in
+				storedB = b
+				self.elevate(function)(b,callback)
+		}).chain(checkResult, errorHandler).chain({storedC = $0}).value(storedB!).value(storedC!)
 	}
 	
-	@discardableResult public func chain<C>(_ function: @escaping (B, ((C?, Error?) -> Void)?) -> Void, _ errorHandler: @escaping (Error) -> Void) -> ProcessLink<C, C> {
-		return self.chain(elevate(function)).chain(checkResult, errorHandler).chain(identity)
+	@discardableResult public func chain<C>(_ function: @escaping (B, ((C?, Error?) -> Void)?) -> Void, _ errorHandler: @escaping (Error) -> Void) -> ProcessLink<B, C> {
+		// This one is really messy because the most natural result here would be a ProcessLink<C, C>, but that breaks our contract
+		var storedB: B! = nil
+		var storedC: C! = nil
+		return self.chain({ (b:B, callback: @escaping (FailableResult<C>) -> Void) in
+			storedB = b
+			self.elevate(function)(b,callback)
+		}).chain(checkResult, errorHandler).chain({storedC = $0}).value(storedB!).value(storedC!)
 	}
 	
 	@discardableResult public func chain<C>(_ function: @escaping (B) -> (@escaping (C) -> Void) -> Void) -> ProcessLink<B, C> {
@@ -221,10 +236,10 @@ extension ProcessLink {
 		})
 	}
 	
-	@discardableResult public func chain(_ function: @escaping (B) -> (() -> Void)) -> ProcessLink<B, Void> {
-		return self.chain({ (b: B, callback: @escaping () -> Void) in
+	@discardableResult public func chain(_ function: @escaping (B) -> (() -> Void)) -> ProcessLink<B, B> {
+		return self.chain({ (b: B, callback: @escaping (B) -> Void) in
 			function(b)()
-			callback()
+			callback(b)
 		})
 	}
 	
@@ -236,15 +251,13 @@ extension ProcessLink {
 		}
 		return self.chain(elevate(wrapper)).chain(checkResult, errorHandler).chain(identity)
 	}
-}
-
-extension ProcessLink {
+	
 	// void forms
 	
-	@discardableResult public func chain(_ function: @escaping () -> Void) -> ProcessLink<B, Void> {
-		return self.chain { (_: B, callback:@escaping () -> Void) in
+	@discardableResult public func chain(_ function: @escaping () -> Void) -> ProcessLink<B, B> {
+		return self.chain { (b: B, callback:@escaping (B) -> Void) in
 			function()
-			callback()
+			callback(b)
 		}
 	}
 	

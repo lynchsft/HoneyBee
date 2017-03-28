@@ -1,5 +1,5 @@
 //
-//  SyntacticSugar.swift
+//  OperatorSyntax.swift
 //  HoneyBee
 //
 //  Created by Alex Lynch on 2/19/17.
@@ -8,89 +8,7 @@
 
 import Foundation
 
-precedencegroup HoneyBeeErrorHandlingPrecedence {
-	associativity: left
-	higherThan: LogicalConjunctionPrecedence
-}
-
-infix operator ^! : HoneyBeeErrorHandlingPrecedence
-
-public func ^!<F>(left: F, right: @escaping (Error) -> Void) -> FunctionWithErrorHandler<F> {
-	return FunctionWithErrorHandler(function: left, errorHandler: right)
-}
-
-
-infix operator ^^ : LogicalConjunctionPrecedence
-
-public struct FunctionWithErrorHandler<F> {
-	let function: F
-	let errorHandler: (Error) -> Void
-}
-
-@discardableResult public func ^^<A,B,C>(left: ProcessLink<A,B>, right: FunctionWithErrorHandler<(B, (C) -> Void) throws -> Void>) -> ProcessLink<B, C> {
-	return left.chain(right.function, right.errorHandler)
-}
-
-@discardableResult public func ^^<A,B,C>(left: ProcessLink<A,B>, right:@escaping (B)->(C)) -> ProcessLink<B,C>{
-	return left.chain(right)
-}
-
-@discardableResult public func ^^<A,B,C>(left: ProcessLink<A,B>, right:@escaping (B,(C)->Void)->Void) -> ProcessLink<B,C>{
-	return left.chain(right)
-}
-
-@discardableResult public func ^^<A,B,C>(left: ProcessLink<A,B>, right: FunctionWithErrorHandler<(B) throws -> (C)>) -> ProcessLink<B,C>{
-	return left.chain(right.function, right.errorHandler)
-}
-
-@discardableResult public func ^^<A,B,C>(left: ProcessLink<A,B>, right:@escaping (B, ((C) -> Void)?) -> Void) -> ProcessLink<B,C>{
-	return left.chain(right)
-}
-
-@discardableResult public func ^^<A,B,C>(left: ProcessLink<A,B>, right: FunctionWithErrorHandler<(B, ((C) -> Void)?) throws -> Void>) -> ProcessLink<B,C>{
-	return left.chain(right.function, right.errorHandler)
-}
-
-@discardableResult public func ^^<A,B>(left: ProcessLink<A,B>, right: FunctionWithErrorHandler<(B) -> ((Error?) -> Void) -> Void>) -> ProcessLink<B, B>{
-	return left.chain(right.function, right.errorHandler)
-}
-
-@discardableResult public func ^^<A,B>(left: ProcessLink<A,B>, right: FunctionWithErrorHandler<(B) -> (((Error?) -> Void)?) -> Void>) -> ProcessLink<B, B>{
-	return left.chain(right.function, right.errorHandler)
-}
-
-@discardableResult public func ^^<A,B>(left: ProcessLink<A,B>, right: FunctionWithErrorHandler<(B, (Error?) -> Void) -> Void>) -> ProcessLink<B, B>{
-	return left.chain(right.function, right.errorHandler)
-}
-
-@discardableResult public func ^^<A,B>(left: ProcessLink<A,B>, right: FunctionWithErrorHandler<(B, ((Error?) -> Void)?) -> Void>) -> ProcessLink<B, B>{
-	return left.chain(right.function, right.errorHandler)
-}
-
-@discardableResult public func ^^<A,B,C>(left: ProcessLink<A,B>, right: FunctionWithErrorHandler<(B, (C?, Error?) -> Void) -> Void>) -> ProcessLink<C,C>{
-	return left.chain(right.function, right.errorHandler)
-}
-
-@discardableResult public func ^^<A,B,C>(left: ProcessLink<A,B>, right: FunctionWithErrorHandler<(B, ((C?, Error?) -> Void)?) -> Void>) -> ProcessLink<C,C>{
-	return left.chain(right.function, right.errorHandler)
-}
-
-@discardableResult public func ^^<A,B,C>(left: ProcessLink<A,B>, right:@escaping (B) -> ((C) -> Void) -> Void) -> ProcessLink<B,C>{
-	return left.chain(right)
-}
-
-@discardableResult public func ^^<A,B,C>(left: ProcessLink<A,B>, right:@escaping (B) -> (((C) -> Void)?) -> Void) -> ProcessLink<B,C>{
-	return left.chain(right)
-}
-
-@discardableResult public func ^^<A,B,C>(left: ProcessLink<A,B>, right:@escaping (B) -> (() -> C)) -> ProcessLink<B,C>{
-	return left.chain(right)
-}
-
-@discardableResult public func ^^<A,B>(left: ProcessLink<A,B>, right:@escaping (B) -> (() -> Void)) -> ProcessLink<B,Void>{
-	return left.chain(right)
-}
-
+// N.B. Other operator syntaxes are declared in files named XXXOperator.swift
 
 infix operator ^< : LogicalConjunctionPrecedence
 
@@ -108,7 +26,6 @@ public func ^+ <A,B,C,X>(left: ProcessLink<A,B>, right: ProcessLink<X,C>) -> Pro
 
 infix operator ^% : LogicalConjunctionPrecedence
 
-@available(*, deprecated)
 public func ^% <A,B,C>(left: ProcessLink<A,B>, right: C) -> ProcessLink<B, C> {
 	return left.value(right)
 }
