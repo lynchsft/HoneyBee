@@ -9,7 +9,12 @@ puts `xcodebuild archive -project HoneyBee.xcodeproj -scheme HoneyBee`
 puts "Documenting"
 puts `jazzy --xcodebuild-arguments -scheme,HoneyBee  --output products/docs/`
 
+`swiftc -v 2>&1` =~ /Apple\s+Swift\s+version\s+(\S+)/
+swiftc_version = $1
+
 version_string = `/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' ./products/HoneyBee.framework/Info.plist`.strip
+version_string << "+swiftc.#{swiftc_version}"
+
 
 puts "Zipping"
 zip_file = "HoneyBee-#{version_string}.zip"
