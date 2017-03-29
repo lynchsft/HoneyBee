@@ -13,7 +13,7 @@ puts `jazzy --xcodebuild-arguments -scheme,HoneyBee  --output products/docs/`
 swiftc_version = $1
 
 version_string = `/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' ./products/HoneyBee.framework/Info.plist`.strip
-version_string << "+swiftc.#{swiftc_version}"
+# version_string << "+swiftc.#{swiftc_version}"
 
 
 puts "Zipping"
