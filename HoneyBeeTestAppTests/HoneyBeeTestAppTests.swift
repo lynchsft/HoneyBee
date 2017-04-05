@@ -357,8 +357,6 @@ class HoneyBeeTestAppTests: XCTestCase {
 		let source = Array(0..<3)
 		let sleepSeconds = 3
 		
-		let serialQueue = DispatchQueue(label: "testSerialQueue")
-		
 		let lock = NSLock()
 		
 		func asynchronouslyHoldLock(iteration: Int, completion: @escaping (Int)->Void) {
