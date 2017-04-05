@@ -57,28 +57,28 @@ final public class ProcessLink<A, B> : Executable<A> {
 	}
 	
 	override func execute(argument: A, completion fullChainCompletion: @escaping () -> Void) {
-		do {
-			try self.function(argument) { result in
-				let group = DispatchGroup()
-				let rateLimiter = self.rateLimter
-				
-				
-				for createdLink in self.createdLinks {
-					rateLimiter?.wait()
-					let workItem = DispatchWorkItem(block: {
-						createdLink.execute(argument: result) {
-							rateLimiter?.signal()
-							group.leave()
-						}
-					})
-					group.enter()
-					self.queue.async(group: group, execute: workItem)
+		self.queue.async {
+			do {
+				try self.function(argument) { result in
+					let group = DispatchGroup()
+					let rateLimiter = self.rateLimter
+					
+					
+					for createdLink in self.createdLinks {
+						rateLimiter?.wait()
+						let workItem = DispatchWorkItem(block: {
+							createdLink.execute(argument: result) {
+								rateLimiter?.signal()
+								group.leave()
+							}
+						})
+						group.enter()
+						self.queue.async(group: group, execute: workItem)
+					}
+					
+					group.notify(queue: self.queue, execute: fullChainCompletion)
 				}
-				
-				group.notify(queue: self.queue, execute: fullChainCompletion)
-			}
-		} catch {
-			self.queue.async {
+			} catch {
 				self.errorHandler(error)
 			}
 		}

@@ -53,8 +53,9 @@ final class JoinPoint<A> : Executable<A> {
 	}
 	
 	func conjoin<B>(_ other: JoinPoint<B>) -> ProcessLink<Void, (A,B)> {
-		let link = ProcessLink<Void, (A,B)>(function: {[unowned self] _, callback in
-			self.yieldResult { a in
+		let yeildFunction = self.yieldResult
+		let link = ProcessLink<Void, (A,B)>(function: { _, callback in
+			yeildFunction { a in
 				other.yieldResult { b in
 					callback((a, b))
 				}

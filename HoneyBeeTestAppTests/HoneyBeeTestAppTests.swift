@@ -352,6 +352,43 @@ class HoneyBeeTestAppTests: XCTestCase {
 		}
 	}
 	
+	func testEachWithMutextRateLimiter() {
+		
+		let source = Array(0..<3)
+		let sleepSeconds = 3
+		
+		let serialQueue = DispatchQueue(label: "testSerialQueue")
+		
+		let lock = NSLock()
+		
+		func asynchronouslyHoldLock(iteration: Int, completion: @escaping (Int)->Void) {
+			if !lock.try() {
+				XCTFail("Lock should never be held at this point. Implies parallel execution. Iteration: \(iteration)")
+			}
+			
+			DispatchQueue.global(qos: .background).async {
+				sleep(UInt32(sleepSeconds))
+				lock.unlock()
+				completion(iteration)
+			}
+		}
+		
+		let finishExpectation = expectation(description: "Should reach the end of the chain")
+		
+		HoneyBee.start(with: source) { ctx in
+			ctx.each(maxParallel: 1) { ctx in
+				ctx.chain(asynchronouslyHoldLock)
+			}
+			.chain(finishExpectation.fulfill)
+		}
+		
+		waitForExpectations(timeout: TimeInterval(source.count * sleepSeconds + 1)) { error in
+			if let error = error {
+				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
+			}
+		}
+	}
+	
 }
 
 // test helper functions
