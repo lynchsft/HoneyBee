@@ -276,8 +276,8 @@ extension ProcessLink where B : Collection, B.IndexDistance == Int {
 			collection.asyncMap(on: self.queue, transform: transform, completion: callback)
 		})
 	}
-	
-	public func map<C>(_ transform: @escaping (B.Iterator.Element, (C)->Void) -> Void) -> ProcessLink<B, [C]> {
+		
+	public func map<C>(_ transform: @escaping (B.Iterator.Element, @escaping (C)->Void) -> Void) -> ProcessLink<B, [C]> {
 		return self.chain({(collection: B, callback: @escaping ([C]) -> Void) in
 			collection.asyncMap(on: self.queue, transform: transform, completion: callback)
 		})

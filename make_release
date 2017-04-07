@@ -9,17 +9,15 @@ puts `xcodebuild archive -project HoneyBee.xcodeproj -scheme HoneyBee`
 puts "Documenting"
 puts `jazzy --xcodebuild-arguments -scheme,HoneyBee  --output products/docs/`
 
-`swiftc -v 2>&1` =~ /Apple\s+Swift\s+version\s+(\S+)/
-swiftc_version = $1
+puts "Copying"
+puts `rsync HoneyBee/*.swift products/HoneyBee/`
+puts `rsync LICENSE products/`
 
-version_string = `/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' ./products/HoneyBee.framework/Info.plist`.strip
-# version_string << "+swiftc.#{swiftc_version}"
-
+version_string = `/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' HoneyBee/Info.plist`.strip
 
 puts "Zipping"
 zip_file = "HoneyBee-#{version_string}.zip"
-puts `rsync -r LICENSE CommonCrypto.framework products/`
-puts `cd products; /usr/bin/zip -r #{zip_file} LICENSE HoneyBee.framework/ CommonCrypto.framework/`
+puts `cd products; /usr/bin/zip -r #{zip_file} LICENSE HoneyBee`
 
 puts "Pushing"
 puts `cd products; rsync -r #{zip_file} docs iamwebservices@iamwebservices.com:iamwebservices/current/public/HoneyBee/#{version_string}/`
@@ -37,7 +35,7 @@ Pod::Spec.new do |s|
 
   s.homepage     = "http://iamapps.net/HoneyBee/#{version_string}/docs/index.html"
 
-  s.license      = { :type=>"Commercial" }
+  s.license      = { :type=>"MIT", :file => 'LICENSE' }
 
   s.author       = { "Alex Lynch" => "alex@iamapps.com" }
 
@@ -48,7 +46,7 @@ Pod::Spec.new do |s|
 
   s.source       = { :http => "http://iamapps.net/HoneyBee/#{version_string}/HoneyBee-#{version_string}.zip"}
 
-  s.vendored_frameworks = 'HoneyBee.framework', 'CommonCrypto.framework'
+  s.source_files = "HoneyBee/*.swift"
 
 end	
 ]

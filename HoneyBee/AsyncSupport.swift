@@ -18,7 +18,7 @@ extension Collection where IndexDistance == Int {
 	}
 	
 	/*** \c completion is called from \c queue */
-	func asyncMap<B>(on queue: DispatchQueue = DispatchQueue.global(qos: .background), transform: @escaping (Iterator.Element, (B) -> Void) -> Void, completion: @escaping ([B]) -> Void) {
+	func asyncMap<B>(on queue: DispatchQueue = DispatchQueue.global(qos: .background), transform: @escaping (Iterator.Element, @escaping (B) -> Void) -> Void, completion: @escaping ([B]) -> Void) {
 		let integrationSerialQueue = DispatchQueue(label: "asyncMapSerialQueue")
 		let group = DispatchGroup()
 		var results:[B?] = Array(repeating: .none, count: self.count)
