@@ -8,16 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		FA256FB61E5DB490008FB7C0 /* JoinPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA256FB51E5DB490008FB7C0 /* JoinPoint.swift */; };
+		FA41097B1E9CFBC4002A6BA6 /* HoneyBeeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA41097A1E9CFBC4002A6BA6 /* HoneyBeeTests.swift */; };
+		FA41097D1E9CFBC4002A6BA6 /* HoneyBee.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA473BB81E352CB1007E4D61 /* HoneyBee.framework */; };
 		FA473BC91E352CB1007E4D61 /* HoneyBee.h in Headers */ = {isa = PBXBuildFile; fileRef = FA473BBB1E352CB1007E4D61 /* HoneyBee.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		FA4E8D3C1E8752E400D751B3 /* Chainable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA4E8D3B1E8752E400D751B3 /* Chainable.swift */; };
 		FA6089941E59F1C1004E6D9B /* OperatorSyntax.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA6089931E59F1C1004E6D9B /* OperatorSyntax.swift */; };
-		FA7AE6761E53314E007A5711 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA7AE6751E53314E007A5711 /* AppDelegate.swift */; };
-		FA7AE6781E53314E007A5711 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA7AE6771E53314E007A5711 /* ViewController.swift */; };
-		FA7AE67B1E53314E007A5711 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FA7AE6791E53314E007A5711 /* Main.storyboard */; };
-		FA7AE67D1E53314E007A5711 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FA7AE67C1E53314E007A5711 /* Assets.xcassets */; };
-		FA7AE6801E53314E007A5711 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FA7AE67E1E53314E007A5711 /* LaunchScreen.storyboard */; };
-		FA7AE68B1E53314F007A5711 /* HoneyBeeTestAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA7AE68A1E53314F007A5711 /* HoneyBeeTestAppTests.swift */; };
-		FA7AE6931E5331BF007A5711 /* HoneyBee.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA473BB81E352CB1007E4D61 /* HoneyBee.framework */; };
 		FAC0CA1C1E4BDB6900ECC0DC /* HoneyBee.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC0CA1B1E4BDB6900ECC0DC /* HoneyBee.swift */; };
 		FAC975571E8B194500D27B22 /* ChainOperator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC975561E8B194500D27B22 /* ChainOperator.swift */; };
 		FAC9DC7F1E352D6F00E21A01 /* AsyncSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC9DC7C1E352D6F00E21A01 /* AsyncSupport.swift */; };
@@ -26,45 +21,20 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		FA5FA32F1E71895F00625996 /* PBXContainerItemProxy */ = {
+		FA41097E1E9CFBC4002A6BA6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = FA473BAF1E352CB1007E4D61 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = FA473BB71E352CB1007E4D61;
 			remoteInfo = HoneyBee;
 		};
-		FA7AE6871E53314F007A5711 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = FA473BAF1E352CB1007E4D61 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = FA7AE6721E53314E007A5711;
-			remoteInfo = HoneyBeeTestApp;
-		};
 /* End PBXContainerItemProxy section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		FA8189DF1E74F745007E0103 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		FA8189E21E74F786007E0103 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		FA256FB51E5DB490008FB7C0 /* JoinPoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JoinPoint.swift; sourceTree = "<group>"; };
+		FA4109781E9CFBC4002A6BA6 /* HoneyBeeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HoneyBeeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		FA41097A1E9CFBC4002A6BA6 /* HoneyBeeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HoneyBeeTests.swift; sourceTree = "<group>"; };
+		FA41097C1E9CFBC4002A6BA6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FA473BB81E352CB1007E4D61 /* HoneyBee.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = HoneyBee.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA473BBB1E352CB1007E4D61 /* HoneyBee.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HoneyBee.h; sourceTree = "<group>"; };
 		FA473BBC1E352CB1007E4D61 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -72,16 +42,6 @@
 		FA4E8D3B1E8752E400D751B3 /* Chainable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Chainable.swift; sourceTree = "<group>"; };
 		FA5FA32C1E70DE4B00625996 /* CommonCrypto.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = CommonCrypto.framework; sourceTree = "<group>"; };
 		FA6089931E59F1C1004E6D9B /* OperatorSyntax.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OperatorSyntax.swift; sourceTree = "<group>"; };
-		FA7AE6731E53314E007A5711 /* HoneyBeeTestApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HoneyBeeTestApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		FA7AE6751E53314E007A5711 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		FA7AE6771E53314E007A5711 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		FA7AE67A1E53314E007A5711 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		FA7AE67C1E53314E007A5711 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		FA7AE67F1E53314E007A5711 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		FA7AE6811E53314E007A5711 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		FA7AE6861E53314F007A5711 /* HoneyBeeTestAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HoneyBeeTestAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		FA7AE68A1E53314F007A5711 /* HoneyBeeTestAppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HoneyBeeTestAppTests.swift; sourceTree = "<group>"; };
-		FA7AE68C1E53314F007A5711 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FAC0CA1B1E4BDB6900ECC0DC /* HoneyBee.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HoneyBee.swift; sourceTree = "<group>"; };
 		FAC975561E8B194500D27B22 /* ChainOperator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChainOperator.swift; sourceTree = "<group>"; };
 		FAC9DC7C1E352D6F00E21A01 /* AsyncSupport.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AsyncSupport.swift; sourceTree = "<group>"; };
@@ -90,6 +50,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		FA4109751E9CFBC4002A6BA6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FA41097D1E9CFBC4002A6BA6 /* HoneyBee.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		FA473BB41E352CB1007E4D61 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -97,30 +65,23 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		FA7AE6701E53314E007A5711 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		FA7AE6831E53314F007A5711 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				FA7AE6931E5331BF007A5711 /* HoneyBee.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		FA4109791E9CFBC4002A6BA6 /* HoneyBeeTests */ = {
+			isa = PBXGroup;
+			children = (
+				FA41097A1E9CFBC4002A6BA6 /* HoneyBeeTests.swift */,
+				FA41097C1E9CFBC4002A6BA6 /* Info.plist */,
+			);
+			path = HoneyBeeTests;
+			sourceTree = "<group>";
+		};
 		FA473BAE1E352CB1007E4D61 = {
 			isa = PBXGroup;
 			children = (
 				FA473BBA1E352CB1007E4D61 /* HoneyBee */,
-				FA7AE6741E53314E007A5711 /* HoneyBeeTestApp */,
-				FA7AE6891E53314F007A5711 /* HoneyBeeTestAppTests */,
+				FA4109791E9CFBC4002A6BA6 /* HoneyBeeTests */,
 				FA473BB91E352CB1007E4D61 /* Products */,
 				FA5FA32B1E70DE4B00625996 /* Frameworks */,
 			);
@@ -130,8 +91,7 @@
 			isa = PBXGroup;
 			children = (
 				FA473BB81E352CB1007E4D61 /* HoneyBee.framework */,
-				FA7AE6731E53314E007A5711 /* HoneyBeeTestApp.app */,
-				FA7AE6861E53314F007A5711 /* HoneyBeeTestAppTests.xctest */,
+				FA4109781E9CFBC4002A6BA6 /* HoneyBeeTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -162,28 +122,6 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		FA7AE6741E53314E007A5711 /* HoneyBeeTestApp */ = {
-			isa = PBXGroup;
-			children = (
-				FA7AE6751E53314E007A5711 /* AppDelegate.swift */,
-				FA7AE6771E53314E007A5711 /* ViewController.swift */,
-				FA7AE6791E53314E007A5711 /* Main.storyboard */,
-				FA7AE67C1E53314E007A5711 /* Assets.xcassets */,
-				FA7AE67E1E53314E007A5711 /* LaunchScreen.storyboard */,
-				FA7AE6811E53314E007A5711 /* Info.plist */,
-			);
-			path = HoneyBeeTestApp;
-			sourceTree = "<group>";
-		};
-		FA7AE6891E53314F007A5711 /* HoneyBeeTestAppTests */ = {
-			isa = PBXGroup;
-			children = (
-				FA7AE68A1E53314F007A5711 /* HoneyBeeTestAppTests.swift */,
-				FA7AE68C1E53314F007A5711 /* Info.plist */,
-			);
-			path = HoneyBeeTestAppTests;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -198,6 +136,24 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		FA4109771E9CFBC4002A6BA6 /* HoneyBeeTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FA4109821E9CFBC4002A6BA6 /* Build configuration list for PBXNativeTarget "HoneyBeeTests" */;
+			buildPhases = (
+				FA4109741E9CFBC4002A6BA6 /* Sources */,
+				FA4109751E9CFBC4002A6BA6 /* Frameworks */,
+				FA4109761E9CFBC4002A6BA6 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				FA41097F1E9CFBC4002A6BA6 /* PBXTargetDependency */,
+			);
+			name = HoneyBeeTests;
+			productName = HoneyBeeTests;
+			productReference = FA4109781E9CFBC4002A6BA6 /* HoneyBeeTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		FA473BB71E352CB1007E4D61 /* HoneyBee */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = FA473BCC1E352CB1007E4D61 /* Build configuration list for PBXNativeTarget "HoneyBee" */;
@@ -217,70 +173,26 @@
 			productReference = FA473BB81E352CB1007E4D61 /* HoneyBee.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		FA7AE6721E53314E007A5711 /* HoneyBeeTestApp */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = FA7AE6911E53314F007A5711 /* Build configuration list for PBXNativeTarget "HoneyBeeTestApp" */;
-			buildPhases = (
-				FA7AE66F1E53314E007A5711 /* Sources */,
-				FA8189E21E74F786007E0103 /* CopyFiles */,
-				FA7AE6701E53314E007A5711 /* Frameworks */,
-				FA7AE6711E53314E007A5711 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				FA5FA3301E71895F00625996 /* PBXTargetDependency */,
-			);
-			name = HoneyBeeTestApp;
-			productName = HoneyBeeTestApp;
-			productReference = FA7AE6731E53314E007A5711 /* HoneyBeeTestApp.app */;
-			productType = "com.apple.product-type.application";
-		};
-		FA7AE6851E53314F007A5711 /* HoneyBeeTestAppTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = FA7AE6921E53314F007A5711 /* Build configuration list for PBXNativeTarget "HoneyBeeTestAppTests" */;
-			buildPhases = (
-				FA7AE6821E53314F007A5711 /* Sources */,
-				FA8189DF1E74F745007E0103 /* CopyFiles */,
-				FA7AE6831E53314F007A5711 /* Frameworks */,
-				FA7AE6841E53314F007A5711 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				FA7AE6881E53314F007A5711 /* PBXTargetDependency */,
-			);
-			name = HoneyBeeTestAppTests;
-			productName = HoneyBeeTestAppTests;
-			productReference = FA7AE6861E53314F007A5711 /* HoneyBeeTestAppTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
 		FA473BAF1E352CB1007E4D61 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 0820;
+				LastSwiftUpdateCheck = 0830;
 				LastUpgradeCheck = 0820;
 				ORGANIZATIONNAME = "IAM Apps";
 				TargetAttributes = {
+					FA4109771E9CFBC4002A6BA6 = {
+						CreatedOnToolsVersion = 8.3.1;
+						DevelopmentTeam = A4Q9SQ9LHR;
+						ProvisioningStyle = Automatic;
+					};
 					FA473BB71E352CB1007E4D61 = {
 						CreatedOnToolsVersion = 8.2.1;
 						DevelopmentTeam = A4Q9SQ9LHR;
 						LastSwiftMigration = 0820;
 						ProvisioningStyle = Automatic;
-					};
-					FA7AE6721E53314E007A5711 = {
-						CreatedOnToolsVersion = 8.2.1;
-						DevelopmentTeam = A4Q9SQ9LHR;
-						ProvisioningStyle = Automatic;
-					};
-					FA7AE6851E53314F007A5711 = {
-						CreatedOnToolsVersion = 8.2.1;
-						DevelopmentTeam = A4Q9SQ9LHR;
-						ProvisioningStyle = Automatic;
-						TestTargetID = FA7AE6721E53314E007A5711;
 					};
 				};
 			};
@@ -298,31 +210,20 @@
 			projectRoot = "";
 			targets = (
 				FA473BB71E352CB1007E4D61 /* HoneyBee */,
-				FA7AE6721E53314E007A5711 /* HoneyBeeTestApp */,
-				FA7AE6851E53314F007A5711 /* HoneyBeeTestAppTests */,
+				FA4109771E9CFBC4002A6BA6 /* HoneyBeeTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		FA4109761E9CFBC4002A6BA6 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		FA473BB61E352CB1007E4D61 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		FA7AE6711E53314E007A5711 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				FA7AE6801E53314E007A5711 /* LaunchScreen.storyboard in Resources */,
-				FA7AE67D1E53314E007A5711 /* Assets.xcassets in Resources */,
-				FA7AE67B1E53314E007A5711 /* Main.storyboard in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		FA7AE6841E53314F007A5711 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -349,6 +250,14 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		FA4109741E9CFBC4002A6BA6 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FA41097B1E9CFBC4002A6BA6 /* HoneyBeeTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		FA473BB31E352CB1007E4D61 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -364,58 +273,45 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		FA7AE66F1E53314E007A5711 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				FA7AE6781E53314E007A5711 /* ViewController.swift in Sources */,
-				FA7AE6761E53314E007A5711 /* AppDelegate.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		FA7AE6821E53314F007A5711 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				FA7AE68B1E53314F007A5711 /* HoneyBeeTestAppTests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		FA5FA3301E71895F00625996 /* PBXTargetDependency */ = {
+		FA41097F1E9CFBC4002A6BA6 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = FA473BB71E352CB1007E4D61 /* HoneyBee */;
-			targetProxy = FA5FA32F1E71895F00625996 /* PBXContainerItemProxy */;
-		};
-		FA7AE6881E53314F007A5711 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = FA7AE6721E53314E007A5711 /* HoneyBeeTestApp */;
-			targetProxy = FA7AE6871E53314F007A5711 /* PBXContainerItemProxy */;
+			targetProxy = FA41097E1E9CFBC4002A6BA6 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
-/* Begin PBXVariantGroup section */
-		FA7AE6791E53314E007A5711 /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				FA7AE67A1E53314E007A5711 /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
-		FA7AE67E1E53314E007A5711 /* LaunchScreen.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				FA7AE67F1E53314E007A5711 /* Base */,
-			);
-			name = LaunchScreen.storyboard;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
-
 /* Begin XCBuildConfiguration section */
+		FA4109801E9CFBC4002A6BA6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				DEVELOPMENT_TEAM = A4Q9SQ9LHR;
+				INFOPLIST_FILE = HoneyBeeTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.iamapps.HoneyBeeTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+			};
+			name = Debug;
+		};
+		FA4109811E9CFBC4002A6BA6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				DEVELOPMENT_TEAM = A4Q9SQ9LHR;
+				INFOPLIST_FILE = HoneyBeeTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.iamapps.HoneyBeeTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+			};
+			name = Release;
+		};
 		FA473BCA1E352CB1007E4D61 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -568,81 +464,18 @@
 			};
 			name = Release;
 		};
-		FA7AE68D1E53314F007A5711 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = A4Q9SQ9LHR;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)",
-				);
-				INFOPLIST_FILE = HoneyBeeTestApp/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.iamapps.HoneyBeeTestApp;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
-			};
-			name = Debug;
-		};
-		FA7AE68E1E53314F007A5711 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = A4Q9SQ9LHR;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)",
-				);
-				INFOPLIST_FILE = HoneyBeeTestApp/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.iamapps.HoneyBeeTestApp;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
-			};
-			name = Release;
-		};
-		FA7AE68F1E53314F007A5711 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = A4Q9SQ9LHR;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)",
-				);
-				INFOPLIST_FILE = HoneyBeeTestAppTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.iamapps.HoneyBeeTestAppTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/HoneyBeeTestApp.app/HoneyBeeTestApp";
-			};
-			name = Debug;
-		};
-		FA7AE6901E53314F007A5711 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = A4Q9SQ9LHR;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)",
-				);
-				INFOPLIST_FILE = HoneyBeeTestAppTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.iamapps.HoneyBeeTestAppTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/HoneyBeeTestApp.app/HoneyBeeTestApp";
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		FA4109821E9CFBC4002A6BA6 /* Build configuration list for PBXNativeTarget "HoneyBeeTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FA4109801E9CFBC4002A6BA6 /* Debug */,
+				FA4109811E9CFBC4002A6BA6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		FA473BB21E352CB1007E4D61 /* Build configuration list for PBXProject "HoneyBee" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -657,24 +490,6 @@
 			buildConfigurations = (
 				FA473BCD1E352CB1007E4D61 /* Debug */,
 				FA473BCE1E352CB1007E4D61 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		FA7AE6911E53314F007A5711 /* Build configuration list for PBXNativeTarget "HoneyBeeTestApp" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				FA7AE68D1E53314F007A5711 /* Debug */,
-				FA7AE68E1E53314F007A5711 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		FA7AE6921E53314F007A5711 /* Build configuration list for PBXNativeTarget "HoneyBeeTestAppTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				FA7AE68F1E53314F007A5711 /* Debug */,
-				FA7AE6901E53314F007A5711 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

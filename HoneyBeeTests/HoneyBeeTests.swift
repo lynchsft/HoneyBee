@@ -1,17 +1,17 @@
 //
-//  HoneyBeeTestAppTests.swift
-//  HoneyBeeTestAppTests
+//  HoneyBeeTests.swift
+//  HoneyBeeTests
 //
-//  Created by Alex Lynch on 2/14/17.
+//  Created by Alex Lynch on 4/11/17.
 //  Copyright © 2017 IAM Apps. All rights reserved.
 //
 
 import XCTest
-@testable import HoneyBeeTestApp
 import HoneyBee
 
-class HoneyBeeTestAppTests: XCTestCase {
+class HoneyBeeTests: XCTestCase {
     
+	
 	override func setUp() {
 		super.setUp()
 		// Put setup code here. This method is called before the invocation of each test method in the class.
@@ -47,24 +47,24 @@ class HoneyBeeTestAppTests: XCTestCase {
 		
 		HoneyBee.start(with: 4) { __ in
 			__
-			^^ intToString
-			^^ stringToInt ^! fail
-			^< { __ in
-				let a = __
+				^^ intToString
+				^^ stringToInt ^! fail
+				^< { __ in
+					let a = __
 						^^ intToString
 						^^ stringCat
-				
-				let b = __
+					
+					let b = __
 						^^ multiplyInt
-				
-				(a ^+ b)
+					
+					(a ^+ b)
 						^^ multiplyString
 						^^ assertEquals("4cat4cat4cat4cat4cat4cat4cat4cat")
 						^% Optional(7)
 						^? {__ in
 							__
-							^^ assertEquals(7)
-							^^ optionalExpect.fulfill
+								^^ assertEquals(7)
+								^^ optionalExpect.fulfill
 						}
 						^^ expect.fulfill
 			}
@@ -86,7 +86,7 @@ class HoneyBeeTestAppTests: XCTestCase {
 				.chain(stringToInt, fail)
 				.fork { ctx in
 					let a = ctx.chain(intToString)
-							   .chain(stringCat)
+						.chain(stringCat)
 					
 					let b = ctx.chain(multiplyInt)
 					
@@ -96,7 +96,7 @@ class HoneyBeeTestAppTests: XCTestCase {
 						.value(Optional(7))
 						.optionally { ctx in
 							ctx.chain(assertEquals(7))
-							   .chain(optionalExpect.fulfill)
+								.chain(optionalExpect.fulfill)
 						}
 						.chain(expect.fulfill)
 			}
@@ -231,8 +231,8 @@ class HoneyBeeTestAppTests: XCTestCase {
 		
 		HoneyBee.start(with:source, on: DispatchQueue.main) { root in
 			root.map { (int:Int) -> Int in
-					XCTAssert(Thread.current.isMainThread, "Not main thread")
-					return int*2
+				XCTAssert(Thread.current.isMainThread, "Not main thread")
+				return int*2
 				}
 				.chain(finishExpectation.fulfill)
 		}
@@ -263,7 +263,7 @@ class HoneyBeeTestAppTests: XCTestCase {
 			}
 		}
 	}
-
+	
 	
 	func testEach() {
 		var expectations:[XCTestExpectation] = []
@@ -279,11 +279,11 @@ class HoneyBeeTestAppTests: XCTestCase {
 		HoneyBee.start(with:expectations) { root in
 			root.each { ctx in
 				ctx.chain(XCTestExpectation.fulfill)
-				   .chain { () -> Void in
+					.chain { () -> Void in
 						countLock.lock()
 						filledExpectationCount += 1
 						countLock.unlock()
-					}
+				}
 				}
 				.chain { () -> Void in
 					XCTAssert(filledExpectationCount == expectations.count, "All expectations should be filled by now, but was actually \(filledExpectationCount) != \(expectations.count)")
@@ -322,7 +322,7 @@ class HoneyBeeTestAppTests: XCTestCase {
 		HoneyBee.start(with: expectations) { root in
 			root.each(maxParallel: 3) { ctx in
 				ctx.chain(XCTestExpectation.fulfill)
-				   .chain(incrementFullfilledExpectCount)
+					.chain(incrementFullfilledExpectCount)
 				}
 				.chain(assertAllExpectationsFullfilled)
 				.chain(finishExpectation.fulfill)
@@ -376,8 +376,8 @@ class HoneyBeeTestAppTests: XCTestCase {
 		HoneyBee.start(with: source) { ctx in
 			ctx.each(maxParallel: 1) { ctx in
 				ctx.chain(asynchronouslyHoldLock)
-			}
-			.chain(finishExpectation.fulfill)
+				}
+				.chain(finishExpectation.fulfill)
 		}
 		
 		waitForExpectations(timeout: TimeInterval(source.count * sleepSeconds + 1)) { error in
@@ -480,3 +480,4 @@ func returnLonger(first: String, second: String) -> String {
 func fail(on error: Error) {
 	XCTFail("Error occured during test \(error)")
 }
+
