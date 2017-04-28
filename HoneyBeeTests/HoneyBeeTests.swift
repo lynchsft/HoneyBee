@@ -216,7 +216,7 @@ class HoneyBeeTests: XCTestCase {
 						}
 					}
 				}
-				.chain(finishExpectation.fulfill)
+				.splice(finishExpectation.fulfill)
 		}
 		
 		waitForExpectations(timeout: 3) { error in
@@ -289,7 +289,7 @@ class HoneyBeeTests: XCTestCase {
 					cntx.chain(XCTestExpectation.fulfill)
 						.chain(incrementFullfilledExpectCount)
 				}
-				.chain { () -> Void in
+				.splice {
 					XCTAssert(filledExpectationCount == expectations.count, "All expectations should be filled by now, but was actually \(filledExpectationCount) != \(expectations.count)")
 				}
 				.chain(finishExpectation.fulfill)
@@ -328,7 +328,7 @@ class HoneyBeeTests: XCTestCase {
 				ctx.chain(XCTestExpectation.fulfill)
 					.chain(incrementFullfilledExpectCount)
 				}
-				.chain(assertAllExpectationsFullfilled)
+				.splice(assertAllExpectationsFullfilled)
 				.chain(finishExpectation.fulfill)
 		}
 		
@@ -379,9 +379,9 @@ class HoneyBeeTests: XCTestCase {
 		
 		HoneyBee.start(with: source) { ctx in
 			ctx.each(maxParallel: 1) { ctx in
-				ctx.chain(asynchronouslyHoldLock)
+					ctx.chain(asynchronouslyHoldLock)
 				}
-				.chain(finishExpectation.fulfill)
+				.splice(finishExpectation.fulfill)
 		}
 		
 		waitForExpectations(timeout: TimeInterval(source.count * sleepSeconds + 1)) { error in

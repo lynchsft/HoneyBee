@@ -380,18 +380,20 @@ extension ProcessLink where B : Collection, B.IndexDistance == Int {
 }
 
 extension ProcessLink where B : Sequence {
-	@discardableResult public func each(maxParallel:Int? = nil, _ defineBlock: @escaping (ProcessLink<Void, B.Iterator.Element>) -> Void) -> ProcessLink<B, Void> {
+	@discardableResult public func each(maxParallel:Int? = nil, _ defineBlock: @escaping (ProcessLink<Void, B.Iterator.Element>) -> Void) -> ProcessLink<B, B> {
 		let rootLink: ProcessLink<Void, Void> = ProcessLink<Void,Void>( function: {_,callback in
 			callback()
 		}, queue: self.queue)
 		rootLink.maxParallelContexts = maxParallel
 		
-		return self.chain { (sequence:B, callback:@escaping ()->Void) -> Void in
+		return self.chain { (sequence:B, callback:@escaping (B)->Void) -> Void in
 			for element in sequence {
 				defineBlock(rootLink.value(element))
 			}
 			
-			rootLink.execute(argument: Void(), completion: callback)
+			rootLink.execute(argument: Void()) {
+				callback(sequence)
+			}
 		}
 	}
 }
