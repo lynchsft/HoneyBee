@@ -209,7 +209,7 @@ extension ProcessLink : Chainable {
 		return self.chain({ (b:B, callback: @escaping (FailableResult<C>) -> Void) in
 			storedB = b
 			body(b,callback)
-		}).chain(checkResult, errorHandler).chain({storedC = $0}).value(storedB!).value(storedC!)
+		}).chain(checkResult, errorHandler).chain({storedC = $0}).chain{_ in return storedB!}.chain{_ in return storedC!}
 	}
 	
 	@discardableResult public func chain(_ function: @escaping (B) -> (@escaping (Error?) -> Void) -> Void, _ errorHandler: @escaping (Error) -> Void) -> ProcessLink<B, B> {
