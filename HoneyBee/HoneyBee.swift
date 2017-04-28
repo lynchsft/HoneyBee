@@ -17,6 +17,7 @@ public struct HoneyBee {
 		}
 	}
 	
+	@available(*, deprecated)
 	public static func start<A>(with arg: A, on queue: DispatchQueue = DispatchQueue.global(), _ defineBlock: @escaping (ProcessLink<Void, A>) -> Void) {
 		self.start(on: queue) { ctx in
 			let link = ctx.value(arg)

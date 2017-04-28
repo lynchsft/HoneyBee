@@ -45,9 +45,6 @@ extension Collection where IndexDistance == Int {
 			})
 		})
 	}
-}
-
-extension Sequence {
 	
 	/*** \c completion is called from \c queue */
 	func asyncFilter(on queue: DispatchQueue = DispatchQueue.global(qos: .background), transform: @escaping (Iterator.Element) -> Bool, completion: @escaping ([Iterator.Element]) -> Void  ) {
@@ -61,14 +58,14 @@ extension Sequence {
 		
 		let serialQueue = DispatchQueue(label: "asyncFilterSerialQueue")
 		let group = DispatchGroup()
-		var results:[Iterator.Element] = []
+		var results:[Iterator.Element?] = Array(repeating: .none, count: self.count)
 		
-		for element in self {
+		for (index, element) in self.enumerated() {
 			let workItem = DispatchWorkItem(block: {
 				transform(element) { include in
 					serialQueue.async {
 						if include {
-							results.append(element)
+							results[index] = element
 						}
 						group.leave()
 					}
@@ -79,7 +76,16 @@ extension Sequence {
 		}
 		
 		group.notify(queue: queue, execute: {
-			completion(results)
+			let final = results.filter({ (optional) -> Bool in
+				if let _ = optional {
+					return true
+				} else{
+					return false
+				}
+			}).map({ (optional) -> Iterator.Element in
+				optional!
+			})
+			completion(final)
 		})
 	}
 }

@@ -30,7 +30,7 @@ class HoneyBeeTests: XCTestCase {
 			root.chain(intToString)
 				.chain(stringToInt, fail)
 				.chain(multiplyInt)
-				.chain(assertEquals(8))
+				.chain(assertEquals =<< 8)
 				.chain(expect.fulfill)
 		}
 		
@@ -45,28 +45,29 @@ class HoneyBeeTests: XCTestCase {
 		let expect = expectation(description: "Expect should be reached")
 		let optionalExpect = expectation(description: "Optional expect should be reached")
 		
-		HoneyBee.start(with: 4) { __ in
+		HoneyBee.start { __ in
 			__
-				^^ intToString
-				^^ stringToInt ^! fail
-				^< { __ in
-					let a = __
-						^^ intToString
-						^^ stringCat
-					
-					let b = __
-						^^ multiplyInt
-					
-					(a ^+ b)
-						^^ multiplyString
-						^^ assertEquals("4cat4cat4cat4cat4cat4cat4cat4cat")
-						^% Optional(7)
-						^? {__ in
-							__
-								^^ assertEquals(7)
-								^^ optionalExpect.fulfill
-						}
-						^^ expect.fulfill
+			^% 4
+			^^ intToString
+			^^ stringToInt ^! fail
+			^< { __ in
+				let a = __
+					^^ intToString
+					^^ stringCat
+				
+				let b = __
+					^^ multiplyInt
+				
+				(a ^+ b)
+					^^ multiplyString
+					^^ assertEquals =<< "4cat4cat4cat4cat4cat4cat4cat4cat"
+					^% Optional(7)
+					^? {__ in
+						__
+							^^ assertEquals =<< 7
+							^^ optionalExpect.fulfill
+					}
+					^^ expect.fulfill
 			}
 		}
 		
@@ -81,8 +82,9 @@ class HoneyBeeTests: XCTestCase {
 		let expect = expectation(description: "Expect should be reached")
 		let optionalExpect = expectation(description: "Optional expect should be reached")
 		
-		HoneyBee.start(with: 4) { root in
-			root.chain(intToString)
+		HoneyBee.start { root in
+			root.value(4)
+				.chain(intToString)
 				.chain(stringToInt, fail)
 				.fork { ctx in
 					let a = ctx.chain(intToString)
@@ -92,10 +94,10 @@ class HoneyBeeTests: XCTestCase {
 					
 					a.conjoin(b)
 						.chain(multiplyString)
-						.chain(assertEquals("4cat4cat4cat4cat4cat4cat4cat4cat"))
+						.chain(assertEquals =<< "4cat4cat4cat4cat4cat4cat4cat4cat")
 						.value(Optional(7))
-						.optionally { ctx in
-							ctx.chain(assertEquals(7))
+						.optionally { cntx in
+							cntx.chain(assertEquals =<< 7)
 								.chain(optionalExpect.fulfill)
 						}
 						.chain(expect.fulfill)
@@ -119,7 +121,7 @@ class HoneyBeeTests: XCTestCase {
 				.chain(stringCat)
 				.chain(stringToInt) {error in expect.fulfill()}
 				.chain(multiplyInt)
-				.chain(failIfReached)
+				.splice(failIfReached)
 		}
 		
 		waitForExpectations(timeout: 1) { error in
@@ -137,12 +139,12 @@ class HoneyBeeTests: XCTestCase {
 		HoneyBee.start(with: 10) { root in
 			root.chain(intToString)
 				.chain(stringToInt, fail)
-				.fork { ctx in
-					ctx.chain(assertEquals(10))
+				.fork { cntx in
+					cntx.chain(assertEquals =<< 10)
 						.chain(expect1.fulfill)
 					
-					ctx.chain(multiplyInt)
-						.chain(assertEquals(20))
+					cntx.chain(multiplyInt)
+						.chain(assertEquals =<< 20)
 						.chain(expect2.fulfill)
 			}
 		}
@@ -168,7 +170,7 @@ class HoneyBeeTests: XCTestCase {
 				result2.conjoin(result1)
 					.chain(multiplyString)
 					.chain(stringCat)
-					.chain(assertEquals("lamblamblamblamblamblamblamblambcat"))
+					.chain(assertEquals =<< "lamblamblamblamblamblamblamblambcat")
 					.chain(expectA.fulfill)
 			}
 		}
@@ -181,7 +183,7 @@ class HoneyBeeTests: XCTestCase {
 				
 				result1.conjoin(result2)
 					.chain(stringLengthEquals)
-					.chain(assertEquals(false))
+					.chain(assertEquals =<< false)
 					.chain(expectB.fulfill)
 			}
 		}
@@ -234,7 +236,7 @@ class HoneyBeeTests: XCTestCase {
 				XCTAssert(Thread.current.isMainThread, "Not main thread")
 				return int*2
 				}
-				.chain(finishExpectation.fulfill)
+				.splice(finishExpectation.fulfill)
 		}
 		
 		waitForExpectations(timeout: 3) { error in
@@ -252,7 +254,6 @@ class HoneyBeeTests: XCTestCase {
 		
 		HoneyBee.start(with:source) { root in
 			root.filter(isEven)
-				.chain(Array.sorted)
 				.chain{ XCTAssert($0 == result, "Filter failed. expected: \(result). Received: \($0).") }
 				.chain(finishExpectation.fulfill)
 		}
@@ -274,16 +275,19 @@ class HoneyBeeTests: XCTestCase {
 			expectations.append(expectation(description: "Expected to evaluate \(int)"))
 		}
 		
+		func incrementFullfilledExpectCount() {
+			countLock.lock()
+			filledExpectationCount += 1
+			countLock.unlock()
+		}
+		
 		let finishExpectation = expectation(description: "Should reach the end of the chain")
 		
-		HoneyBee.start(with:expectations) { root in
-			root.each { ctx in
-				ctx.chain(XCTestExpectation.fulfill)
-					.chain { () -> Void in
-						countLock.lock()
-						filledExpectationCount += 1
-						countLock.unlock()
-				}
+		HoneyBee.start { root in
+			root.value(expectations)
+				.each { cntx in
+					cntx.chain(XCTestExpectation.fulfill)
+						.chain(incrementFullfilledExpectCount)
 				}
 				.chain { () -> Void in
 					XCTAssert(filledExpectationCount == expectations.count, "All expectations should be filled by now, but was actually \(filledExpectationCount) != \(expectations.count)")
@@ -341,7 +345,7 @@ class HoneyBeeTests: XCTestCase {
 		HoneyBee.start(with: "leg,foot") { root in
 			root.chain(decompose)
 				.chain(returnLonger)
-				.chain(assertEquals("foot"))
+				.chain(assertEquals =<< "foot")
 				.chain(finishExpectation.fulfill)
 		}
 		
@@ -395,10 +399,8 @@ func failIfReached() {
 	XCTFail("This function should never be reached")
 }
 
-func assertEquals<T: Equatable>(_ t: T) -> (T) -> Void {
-	return { otherT in
-		XCTAssert(t == otherT, "Expected \(t) to equal \(otherT)")
-	}
+func assertEquals<T: Equatable>(t1: T, t2: T) -> Void {
+	XCTAssert(t1 == t2, "Expected \(t1) to equal \(t2)")
 }
 
 // mock functions
