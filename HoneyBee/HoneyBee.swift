@@ -10,7 +10,7 @@ import Foundation
 
 public struct HoneyBee {
 	public static func start(on queue: DispatchQueue = DispatchQueue.global(), _ defineBlock: @escaping (ProcessLink<Void, Void>) -> Void) {
-		let root = ProcessLink<Void, Void>(function: {a, block in block(a)}, queue: queue)
+		let root = ProcessLink<Void, Void>(function: {a, block in block(a)}, queue: queue, path: ["root"])
 		queue.async {
 			defineBlock(root)
 			root.execute(argument: Void(), completion: {})

@@ -8,8 +8,11 @@
 
 import Foundation
 
+fileprivate func tname(_ t: Any) -> String {
+	return String(describing: type(of: t))
+}
 
-final public class ProcessLink<A, B> : Executable<A> {
+final public class ProcessLink<A, B> : Executable<A>, PathDescribing {
 	
 	private var createdLinks: [Executable<B>] = []
 	
@@ -17,15 +20,17 @@ final public class ProcessLink<A, B> : Executable<A> {
 	private var errorHandler: (Error) -> Void
 	fileprivate var queue: DispatchQueue
 	fileprivate var maxParallelContexts:Int?
+	let path: [String]
 	
-	convenience init(function:  @escaping (A, @escaping (B) -> Void) -> Void, queue: DispatchQueue) {
-		self.init(function: function, errorHandler: {_ in /* no possibilty of checked error here */}, queue: queue)
+	convenience init(function:  @escaping (A, @escaping (B) -> Void) -> Void, queue: DispatchQueue, path: [String]) {
+		self.init(function: function, errorHandler: {_ in /* no possibilty of checked error here */}, queue: queue, path: path)
 	}
 	
-	init(function:  @escaping (A, @escaping (B) -> Void) throws -> Void, errorHandler: @escaping (Error) -> Void, queue: DispatchQueue) {
+	init(function:  @escaping (A, @escaping (B) -> Void) throws -> Void, errorHandler: @escaping (Error) -> Void, queue: DispatchQueue, path: [String]) {
 		self.function = function
 		self.errorHandler = errorHandler
 		self.queue = queue
+		self.path = path
 	}
 	
 	@discardableResult public func chain<C>(_ function:  @escaping (B, @escaping (C) -> Void) throws -> Void, _ errorHandler: @escaping (Error) -> Void) -> ProcessLink<B, C> {
@@ -33,7 +38,7 @@ final public class ProcessLink<A, B> : Executable<A> {
 	}
 	
 	@discardableResult public func chain<C>(_ function:  @escaping (B, @escaping (C) -> Void) throws -> Void, on queue: DispatchQueue?, _ errorHandler: @escaping (Error) -> Void) -> ProcessLink<B, C> {
-		let link = ProcessLink<B, C>(function: function, errorHandler: errorHandler, queue: queue ?? self.queue)
+		let link = ProcessLink<B, C>(function: function, errorHandler: errorHandler, queue: queue ?? self.queue, path: self.path + [tname(function)])
 		self.createdLinks.append(link)
 		return link
 	}
@@ -59,7 +64,19 @@ final public class ProcessLink<A, B> : Executable<A> {
 	override func execute(argument: A, completion fullChainCompletion: @escaping () -> Void) {
 		self.queue.async {
 			do {
+				var callbackInvoked = false
+				let callbackInvokedLock = NSLock()
+				
 				try self.function(argument) { result in
+					callbackInvokedLock.lock()
+					defer {
+						callbackInvokedLock.unlock()
+					}
+					guard !callbackInvoked else {
+						return // protect ourselves against clients invoking the callback more than once
+					}
+					callbackInvoked = true
+					
 					let group = DispatchGroup()
 					let rateLimiter = self.rateLimter
 					
@@ -383,7 +400,7 @@ extension ProcessLink where B : Sequence {
 	@discardableResult public func each(maxParallel:Int? = nil, _ defineBlock: @escaping (ProcessLink<Void, B.Iterator.Element>) -> Void) -> ProcessLink<B, B> {
 		let rootLink: ProcessLink<Void, Void> = ProcessLink<Void,Void>( function: {_,callback in
 			callback()
-		}, queue: self.queue)
+		}, queue: self.queue, path: self.path + ["each"])
 		rootLink.maxParallelContexts = maxParallel
 		
 		return self.chain { (sequence:B, callback:@escaping (B)->Void) -> Void in
@@ -416,7 +433,7 @@ extension ProcessLink where B : OptionalProtocol {
 	@discardableResult public func optionally(_ defineBlock: @escaping (ProcessLink<B.WrappedType, B.WrappedType>) -> Void) -> ProcessLink<B, Void> {
 		return self.chain { (b: B, callback: @escaping ()->Void) in
 			if let unwrapped = b.getWrapped() {
-				let context = ProcessLink<B.WrappedType, B.WrappedType>(function: {arg, block in block(arg)}, queue: self.queue)
+				let context = ProcessLink<B.WrappedType, B.WrappedType>(function: {arg, block in block(arg)}, queue: self.queue, path: self.path + ["optionally"])
 				defineBlock(context)
 				context.execute(argument: unwrapped, completion: callback)
 			} else {

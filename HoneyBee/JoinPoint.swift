@@ -60,7 +60,7 @@ final class JoinPoint<A> : Executable<A> {
 					callback((a, b))
 				}
 			}
-			}, queue: self.queue)
+		}, queue: self.queue, path: ["conjoin"])
 		
 		self.conjoinLink = link
 		return link

@@ -20,6 +20,7 @@
 		FAC9DC7F1E352D6F00E21A01 /* AsyncSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC9DC7C1E352D6F00E21A01 /* AsyncSupport.swift */; };
 		FAC9DC801E352D6F00E21A01 /* FailableResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC9DC7D1E352D6F00E21A01 /* FailableResult.swift */; };
 		FAC9DC811E352D6F00E21A01 /* ProcessLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC9DC7E1E352D6F00E21A01 /* ProcessLink.swift */; };
+		FAD1DCA01EB757D600A6D912 /* PathDescribing.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD1DC9F1EB757D600A6D912 /* PathDescribing.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,6 +52,7 @@
 		FAC9DC7C1E352D6F00E21A01 /* AsyncSupport.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AsyncSupport.swift; sourceTree = "<group>"; };
 		FAC9DC7D1E352D6F00E21A01 /* FailableResult.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FailableResult.swift; sourceTree = "<group>"; };
 		FAC9DC7E1E352D6F00E21A01 /* ProcessLink.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProcessLink.swift; sourceTree = "<group>"; };
+		FAD1DC9F1EB757D600A6D912 /* PathDescribing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PathDescribing.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -112,6 +114,7 @@
 				FAC0CA1B1E4BDB6900ECC0DC /* HoneyBee.swift */,
 				FA256FB51E5DB490008FB7C0 /* JoinPoint.swift */,
 				FA6089931E59F1C1004E6D9B /* OperatorSyntax.swift */,
+				FAD1DC9F1EB757D600A6D912 /* PathDescribing.swift */,
 				FAC9DC7E1E352D6F00E21A01 /* ProcessLink.swift */,
 				FA473BBB1E352CB1007E4D61 /* HoneyBee.h */,
 				FA473BBC1E352CB1007E4D61 /* Info.plist */,
@@ -272,6 +275,7 @@
 				FA4E8D3C1E8752E400D751B3 /* Chainable.swift in Sources */,
 				FAC975571E8B194500D27B22 /* ChainOperator.swift in Sources */,
 				FA6089941E59F1C1004E6D9B /* OperatorSyntax.swift in Sources */,
+				FAD1DCA01EB757D600A6D912 /* PathDescribing.swift in Sources */,
 				FAC0CA1C1E4BDB6900ECC0DC /* HoneyBee.swift in Sources */,
 				FA48E16D1E947B1300729F09 /* Bind.swift in Sources */,
 				FA205F1E1EB2DADB005B01FB /* BindOperator.swift in Sources */,
