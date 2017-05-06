@@ -26,8 +26,9 @@ class HoneyBeeTests: XCTestCase {
 		let expect = expectation(description: "Simple chain should complete")
 		
 		
-		HoneyBee.start(with: 4) { root in
-			root.chain(intToString)
+		HoneyBee.start { root in
+			root.value(4)
+				.chain(intToString)
 				.chain(stringToInt, fail)
 				.chain(multiplyInt)
 				.chain(assertEquals =<< 8)
@@ -136,8 +137,9 @@ class HoneyBeeTests: XCTestCase {
 		let expect2 = expectation(description: "Second fork should be reached")
 		
 		
-		HoneyBee.start(with: 10) { root in
-			root.chain(intToString)
+		HoneyBee.start { root in
+			root.value(10)
+				.chain(intToString)
 				.chain(stringToInt, fail)
 				.fork { cntx in
 					cntx.chain(assertEquals =<< 10)
@@ -204,8 +206,9 @@ class HoneyBeeTests: XCTestCase {
 		
 		let finishExpectation = expectation(description: "Should reach the end of the chain")
 		
-		HoneyBee.start(with: source) { root in
-			root.map(multiplyInt)
+		HoneyBee.start { root in
+			root.value(source)
+				.map(multiplyInt)
 				.each { ctx in
 					ctx.chain { (int:Int) -> Void in
 						let sourceValue = int/2
@@ -231,8 +234,9 @@ class HoneyBeeTests: XCTestCase {
 		
 		let finishExpectation = expectation(description: "Should reach the end of the chain")
 		
-		HoneyBee.start(with:source, on: DispatchQueue.main) { root in
-			root.map { (int:Int) -> Int in
+		HoneyBee.start(on: DispatchQueue.main) { root in
+			root.value(source)
+				.map { (int:Int) -> Int in
 				XCTAssert(Thread.current.isMainThread, "Not main thread")
 				return int*2
 				}
@@ -252,8 +256,9 @@ class HoneyBeeTests: XCTestCase {
 		
 		let finishExpectation = expectation(description: "Should reach the end of the chain")
 		
-		HoneyBee.start(with:source) { root in
-			root.filter(isEven)
+		HoneyBee.start { root in
+			root.value(source)
+				.filter(isEven)
 				.chain{ XCTAssert($0 == result, "Filter failed. expected: \(result). Received: \($0).") }
 				.chain(finishExpectation.fulfill)
 		}
@@ -323,8 +328,9 @@ class HoneyBeeTests: XCTestCase {
 			XCTAssert(filledExpectationCount == expectations.count, "All expectations should be filled by now, but was actually \(filledExpectationCount) != \(expectations.count)")
 		}
 		
-		HoneyBee.start(with: expectations) { root in
-			root.each(maxParallel: 3) { ctx in
+		HoneyBee.start { root in
+			root.value(expectations)
+				.each(maxParallel: 3) { ctx in
 				ctx.chain(XCTestExpectation.fulfill)
 					.chain(incrementFullfilledExpectCount)
 				}
@@ -342,8 +348,9 @@ class HoneyBeeTests: XCTestCase {
 	func testMultiParams() {
 		let finishExpectation = expectation(description: "Should reach the end of the chain")
 		
-		HoneyBee.start(with: "leg,foot") { root in
-			root.chain(decompose)
+		HoneyBee.start { root in
+			root.value("leg,foot")
+				.chain(decompose)
 				.chain(returnLonger)
 				.chain(assertEquals =<< "foot")
 				.chain(finishExpectation.fulfill)
@@ -377,8 +384,9 @@ class HoneyBeeTests: XCTestCase {
 		
 		let finishExpectation = expectation(description: "Should reach the end of the chain")
 		
-		HoneyBee.start(with: source) { ctx in
-			ctx.each(maxParallel: 1) { ctx in
+		HoneyBee.start { root in
+			root.value(source)
+				.each(maxParallel: 1) { ctx in
 					ctx.chain(asynchronouslyHoldLock)
 				}
 				.splice(finishExpectation.fulfill)
@@ -479,7 +487,7 @@ func returnLonger(first: String, second: String) -> String {
 	}
 }
 
-func fail(on error: Error) {
+func fail(on error: Error,cause: Any) {
 	XCTFail("Error occured during test \(error)")
 }
 

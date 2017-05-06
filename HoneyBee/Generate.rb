@@ -61,7 +61,7 @@ def generate_chainable()
 
 	@chain_function_signatures.each {|function_signature|
 		include_error_handler = signature_declares_error(function_signature)
-		error_handler_string = include_error_handler ? ", _ errorHandler: @escaping (Error) -> Void" : ""
+		error_handler_string = include_error_handler ? ", _ errorHandler: @escaping (Error,B) -> Void" : ""
 		transform_result_type = function_signature =~ /C/ ? "C" : "B"
 		extra_generic_parameter = transform_result_type != "B" ? "<C>" : ""
 		void_receiving = function_signature =~ /^\(\)/
@@ -92,7 +92,7 @@ def generate_chain_operator()
 
 	@chain_function_signatures.each {|function_signature|
 		include_error_handler = signature_declares_error(function_signature)
-		right_hand_side = include_error_handler ? "FunctionWithErrorHandler<#{function_signature}>" : "@escaping #{function_signature}"
+		right_hand_side = include_error_handler ? "FunctionWithErrorHandler<#{function_signature},B>" : "@escaping #{function_signature}"
 		transform_result_type = function_signature =~ /C/ ? "C" : "B"
 		generic_parameters = transform_result_type != "B" ? "<A,B,C>" : "<A,B>"
 		void_receiving = function_signature =~ /^\(\)/
@@ -110,9 +110,9 @@ def generate_chain_operator()
 	chain_operator_string = %[
 /// Generated chain operator functions.
 
-public struct FunctionWithErrorHandler<F> {
-	let function: F
-	let errorHandler: (Error) -> Void
+public struct FunctionWithErrorHandler<Func,Cause> {
+	let function: Func
+	let errorHandler: (Error,Cause) -> Void
 }
 
 precedencegroup HoneyBeeErrorHandlingPrecedence {
@@ -122,7 +122,7 @@ precedencegroup HoneyBeeErrorHandlingPrecedence {
 
 infix operator ^! : HoneyBeeErrorHandlingPrecedence
 
-public func ^!<F>(left: F, right: @escaping (Error) -> Void) -> FunctionWithErrorHandler<F> {
+public func ^!<F,Cause>(left: F, right: @escaping (Error,Cause) -> Void) -> FunctionWithErrorHandler<F,Cause> {
 	return FunctionWithErrorHandler(function: left, errorHandler: right)
 }
 
