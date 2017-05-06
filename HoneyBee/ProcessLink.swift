@@ -48,7 +48,7 @@ final public class ProcessLink<A, B> : Executable<A>, PathDescribing {
 	}
 	
 	fileprivate func joinPoint() -> JoinPoint<B> {
-		let link = JoinPoint<B>(queue: self.queue)
+		let link = JoinPoint<B>(queue: self.queue, path: self.path+["joinpoint"])
 		self.createdLinks.append(link)
 		return link
 	}

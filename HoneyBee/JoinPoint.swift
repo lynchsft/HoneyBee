@@ -12,15 +12,17 @@ class Executable<A> {
 	func execute(argument: A, completion: @escaping () -> Void) -> Void {}
 }
 
-final class JoinPoint<A> : Executable<A> {
+final class JoinPoint<A> : Executable<A>, PathDescribing {
 	private let resultLock = NSLock()
 	private var result: A?
 	private var resultCallback: ((A) -> Void)?
 	private var queue: DispatchQueue
 	private var conjoinLink: Executable<Void>?
+	let path: [String]
 	
-	init(queue: DispatchQueue) {
+	init(queue: DispatchQueue, path: [String]) {
 		self.queue = queue
+		self.path = path
 	}
 	
 	private func yieldResult(_ callback: @escaping (A) -> Void) {
@@ -60,7 +62,7 @@ final class JoinPoint<A> : Executable<A> {
 					callback((a, b))
 				}
 			}
-		}, queue: self.queue, path: ["conjoin"])
+		}, queue: self.queue, path: self.path+["conjoin"])
 		
 		self.conjoinLink = link
 		return link
