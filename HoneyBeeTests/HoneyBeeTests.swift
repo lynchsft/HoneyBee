@@ -79,30 +79,41 @@ class HoneyBeeTests: XCTestCase {
 		}
 	}
 	
-	func testOperatorSyntaxComparison() {
+	func testOptionally() {
 		let expect = expectation(description: "Expect should be reached")
 		let optionalExpect = expectation(description: "Optional expect should be reached")
 		
+		var optionallyCompleted = false
+		
 		HoneyBee.start { root in
-			root.value(4)
-				.chain(intToString)
-				.chain(stringToInt, fail)
-				.fork { ctx in
-					let a = ctx.chain(intToString)
-						.chain(stringCat)
-					
-					let b = ctx.chain(multiplyInt)
-					
-					a.conjoin(b)
-						.chain(multiplyString)
-						.chain(assertEquals =<< "4cat4cat4cat4cat4cat4cat4cat4cat")
-						.value(Optional(7))
-						.optionally { cntx in
-							cntx.chain(assertEquals =<< 7)
-								.chain(optionalExpect.fulfill)
-						}
-						.chain(expect.fulfill)
+			root.value(Optional(7))
+				.optionally { cntx in
+					cntx.chain(assertEquals =<< 7)
+						.chain(optionalExpect.fulfill)
+						.chain { optionallyCompleted = true }
+				}
+				.chain { XCTAssert(optionallyCompleted, "Optionally chain should have completed by now") }
+				.chain(expect.fulfill)
+		}
+		
+		waitForExpectations(timeout: 1) { error in
+			if let error = error {
+				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
 			}
+		}
+	}
+	
+	func testOptionallylNegative() {
+		let expect = expectation(description: "Expect should be reached")
+		let optionalExpect = expectation(description: "Optional expect should not be reached")
+		optionalExpect.isInverted = true
+		
+		HoneyBee.start { root in
+			root.value(Optional<Int>(nilLiteral: ()))
+				.optionally { cntx in
+					cntx.splice(optionalExpect.fulfill)
+				}
+				.chain(expect.fulfill)
 		}
 		
 		waitForExpectations(timeout: 1) { error in
@@ -330,9 +341,11 @@ class HoneyBeeTests: XCTestCase {
 		
 		HoneyBee.start { root in
 			root.value(expectations)
-				.each(maxParallel: 3) { ctx in
-				ctx.chain(XCTestExpectation.fulfill)
-					.chain(incrementFullfilledExpectCount)
+				.each { cntx in
+					cntx.limit(3) { cntx in
+						cntx.chain(XCTestExpectation.fulfill)
+							.chain(incrementFullfilledExpectCount)
+					}
 				}
 				.splice(assertAllExpectationsFullfilled)
 				.chain(finishExpectation.fulfill)
@@ -366,7 +379,7 @@ class HoneyBeeTests: XCTestCase {
 	func testEachWithMutextRateLimiter() {
 		
 		let source = Array(0..<3)
-		let sleepSeconds = 3
+		let sleepSeconds = 1
 		
 		let lock = NSLock()
 		
@@ -386,13 +399,153 @@ class HoneyBeeTests: XCTestCase {
 		
 		HoneyBee.start { root in
 			root.value(source)
-				.each(maxParallel: 1) { ctx in
-					ctx.chain(asynchronouslyHoldLock)
+				.each { cntx in
+					cntx.limit(1) { cntx in
+						cntx.chain(asynchronouslyHoldLock)
+					}
 				}
 				.splice(finishExpectation.fulfill)
 		}
 		
 		waitForExpectations(timeout: TimeInterval(source.count * sleepSeconds + 1)) { error in
+			if let error = error {
+				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
+			}
+		}
+	}
+	
+	func testFinallyNoError() {
+		var counter = 0
+		let incrementCounter = { counter += 1 }
+		let finishExpectation = expectation(description: "Should reach the end of the chain")
+		
+		HoneyBee.start { root in
+			root.finally { cntx in
+					cntx.chain { XCTAssert(counter == 3, "counter should be 3: was actually \(counter)") }
+						.chain(incrementCounter)
+				}.finally { cntx in
+					cntx.chain { XCTAssert(counter == 4, "counter should be 4: was actually \(counter)") ; finishExpectation.fulfill() }
+				}
+				.chain { XCTAssert(counter == 0, "counter should be 0") }
+				.chain(incrementCounter)
+				.chain { XCTAssert(counter == 1, "counter should be 1") }
+				.chain(incrementCounter)
+				.chain { XCTAssert(counter == 2, "counter should be 2") }
+				.chain(incrementCounter)
+			
+		}
+		
+		waitForExpectations(timeout: 3) { error in
+			if let error = error {
+				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
+			}
+		}
+	}
+	
+	
+	func testFinallyError() {
+		var counter = 0
+		let incrementCounter = { counter += 1 }
+		let finishExpectation = expectation(description: "Should reach the end of the chain")
+		
+		func handleError(_ error: Error, arg: Any) {} // we cause an error on purpose
+		
+		HoneyBee.start { root in
+			root.finally { cntx in
+					cntx.chain { XCTAssert(counter == 2, "counter should be 2") ; finishExpectation.fulfill() }
+				}
+				.chain { XCTAssert(counter == 0, "counter should be 0") }
+				.chain(incrementCounter)
+				.chain { XCTAssert(counter == 1, "counter should be 1") }
+				.chain(incrementCounter)
+				.chain({ throw NSError(domain: "An expected error", code: -1, userInfo: nil) }, handleError)
+				.chain(incrementCounter)
+			
+		}
+		
+		waitForExpectations(timeout: 3) { error in
+			if let error = error {
+				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
+			}
+		}
+	}
+	
+	func testLimit() {
+		let source = Array(0..<3)
+		let sleepSeconds = 1
+		
+		let lock = NSLock()
+		
+		func asynchronouslyHoldLock(iteration: Int, completion: @escaping (Int)->Void) {
+			if !lock.try() {
+				XCTFail("Lock should never be held at this point. Implies parallel execution. Iteration: \(iteration)")
+			}
+			
+			DispatchQueue.global(qos: .background).async {
+				sleep(UInt32(sleepSeconds))
+				lock.unlock()
+				completion(iteration)
+			}
+		}
+		
+		let finishExpectation = expectation(description: "Should reach the end of the chain")
+		let startParalleCodeExpectation = expectation(description: "Should start parallel code")
+		startParalleCodeExpectation.expectedFulfillmentCount = UInt(source.count)
+		let finishParalleCodeExpectation = expectation(description: "Should finish parallel code")
+		finishParalleCodeExpectation.expectedFulfillmentCount = UInt(source.count)
+		var parallelCodeFinished = false
+		
+		HoneyBee.start { root in
+			root.value(source)
+				.each() { cntx in
+					cntx.limit(1) { cntx in
+						cntx.chain(asynchronouslyHoldLock)
+							.chain(asynchronouslyHoldLock)
+							.chain(asynchronouslyHoldLock)
+					}
+					.splice(startParalleCodeExpectation.fulfill)
+					.fork { cntx in
+						
+						// parallelize
+						let a = cntx.chain { _ in sleep(UInt32(sleepSeconds)) }
+						let b = cntx.chain { _ in sleep(UInt32(sleepSeconds)) }
+						let c = cntx.chain { _ in sleep(UInt32(sleepSeconds)) }
+						
+						(a ^+ b)
+							 .splice(finishParalleCodeExpectation.fulfill)
+							 .splice({parallelCodeFinished = true})
+					}
+				}
+				.splice{ XCTAssert(parallelCodeFinished, "the parallel code should have finished before this") }
+				.chain(finishExpectation.fulfill)
+		}
+		
+		waitForExpectations(timeout: TimeInterval(source.count * sleepSeconds * 4 + 1)) { error in
+			if let error = error {
+				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
+			}
+		}
+	}
+	
+	func testLimitReturnChain() {
+		
+		let intermediateExpectation = expectation(description: "Should reach the intermediate end")
+		let finishExpectation = expectation(description: "Should reach the end of the chain")
+		
+		var intermediateFullfilled = false
+		
+		HoneyBee.start { root in
+			root.limit(29) { cntx in
+				cntx.value("Right")
+					.chain(stringCat)
+					.splice(intermediateExpectation.fulfill)
+					.chain { intermediateFullfilled = true }	
+			}
+			.splice { XCTAssert(intermediateFullfilled, "Intermediate expectation not fullfilled") }
+			.chain(finishExpectation.fulfill)
+		}
+		
+		waitForExpectations(timeout: 3) { error in
 			if let error = error {
 				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
 			}

@@ -9,15 +9,17 @@
 import Foundation
 
 class Executable<A> {
-	func execute(argument: A, completion: @escaping () -> Void) -> Void {}
+	typealias Continue = Bool
+	func execute(argument: A, completion: @escaping (Continue) -> Void) -> Void {}
 }
 
 final class JoinPoint<A> : Executable<A>, PathDescribing {
+	typealias ExecutionResult = (A, (Continue) -> Void)
+	
 	private let resultLock = NSLock()
-	private var result: A?
-	private var resultCallback: ((A) -> Void)?
+	private var executionResult: ExecutionResult?
+	private var resultCallback: ((ExecutionResult) -> Void)?
 	private var queue: DispatchQueue
-	private var conjoinLink: Executable<Void>?
 	let path: [String]
 	
 	init(queue: DispatchQueue, path: [String]) {
@@ -25,46 +27,48 @@ final class JoinPoint<A> : Executable<A>, PathDescribing {
 		self.path = path
 	}
 	
-	private func yieldResult(_ callback: @escaping (A) -> Void) {
+	private func yieldResult(_ callback: @escaping (ExecutionResult) -> Void) {
 		self.resultLock.lock()
 		defer {
 			self.resultLock.unlock()
 		}
 		// this needs to be atomic
-		if let result = result {
+		if let result = executionResult {
 			callback(result)
 		} else {
 			self.resultCallback = callback
 		}
 	}
 	
-	override func execute(argument: A, completion: @escaping (Void) -> Void) {
-		if let link = self.conjoinLink {
-			link.execute(argument: Void(), completion:  completion)
-		}
-		
+	override func execute(argument: A, completion: @escaping (Continue) -> Void) {
 		self.resultLock.lock()
 		defer {
 			self.resultLock.unlock()
 		}
-		result = argument
+		executionResult = (argument, completion)
 		
 		if let resultCallback = self.resultCallback {
-			resultCallback(argument)
+			resultCallback((argument, completion))
 		}
 	}
 	
 	func conjoin<B>(_ other: JoinPoint<B>) -> ProcessLink<Void, (A,B)> {
-		let yeildFunction = self.yieldResult
+		var tuple: (A,B)! = nil
+		
 		let link = ProcessLink<Void, (A,B)>(function: { _, callback in
-			yeildFunction { a in
-				other.yieldResult { b in
-					callback((a, b))
-				}
-			}
+			callback(tuple!)
 		}, queue: self.queue, path: self.path+["conjoin"])
 		
-		self.conjoinLink = link
+		self.yieldResult { a, myCompletion in
+			other.yieldResult { b, otherCompletion in
+				tuple = (a, b)
+				link.execute(argument: Void(), completion: { (cont) in
+					myCompletion(cont)
+					otherCompletion(cont)
+				})
+			}
+		}
+		
 		return link
 	}
 }

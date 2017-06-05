@@ -9,19 +9,11 @@
 import Foundation
 
 public struct HoneyBee {
-	public static func start(on queue: DispatchQueue = DispatchQueue.global(), _ defineBlock: @escaping (ProcessLink<Void, Void>) -> Void) {
-		let root = ProcessLink<Void, Void>(function: {a, block in block(a)}, queue: queue, path: ["root"])
+	public static func start(on queue: DispatchQueue = DispatchQueue.global(), file: StaticString = #file, line: UInt = #line, _ defineBlock: @escaping (ProcessLink<Void, Void>) -> Void) {
+		let root = ProcessLink<Void, Void>(function: {a, block in block(a)}, queue: queue, path: ["start: \(file):\(line)"])
 		queue.async {
 			defineBlock(root)
-			root.execute(argument: Void(), completion: {})
-		}
-	}
-	
-	@available(*, deprecated)
-	public static func start<A>(with arg: A, on queue: DispatchQueue = DispatchQueue.global(), _ defineBlock: @escaping (ProcessLink<Void, A>) -> Void) {
-		self.start(on: queue) { ctx in
-			let link = ctx.value(arg)
-			defineBlock(link)
+			root.execute(argument: Void(), completion: {success in })
 		}
 	}
 }

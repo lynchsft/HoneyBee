@@ -33,7 +33,7 @@ public func ^% <A,B,C>(left: ProcessLink<A,B>, right: C) -> ProcessLink<B, C> {
 
 infix operator ^? : LogicalConjunctionPrecedence
 
-@discardableResult public func ^? <A,B : OptionalProtocol>(left: ProcessLink<A,B>, right: @escaping (ProcessLink<B.WrappedType, B.WrappedType>) -> Void) -> ProcessLink<B,Void> {
+@discardableResult public func ^? <A,B : OptionalProtocol, X, Y>(left: ProcessLink<A,B>, right: @escaping (ProcessLink<B.WrappedType, B.WrappedType>) -> ProcessLink<X, Y>) -> ProcessLink<Void,Void> {
 	return left.optionally(right)
 }
 

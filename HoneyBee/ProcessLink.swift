@@ -15,11 +15,20 @@ fileprivate func tname(_ t: Any) -> String {
 final public class ProcessLink<A, B> : Executable<A>, PathDescribing {
 	
 	private var createdLinks: [Executable<B>] = []
+	fileprivate var finalLink: ProcessLink<A,A>?
 	
 	private var function: (A, @escaping (B) -> Void) throws -> Void
 	private var errorHandler: (Error, A) -> Void
 	fileprivate var queue: DispatchQueue
-	fileprivate var maxParallelContexts:Int?
+	fileprivate var maxParallelContexts:Int? {
+		didSet {
+			if let maxParallelContexts = self.maxParallelContexts {
+				self.rateLimiter = DispatchSemaphore(value: maxParallelContexts)
+			}
+		}
+	}
+	fileprivate var rateLimiter:DispatchSemaphore?
+	
 	let path: [String]
 	
 	convenience init(function:  @escaping (A, @escaping (B) -> Void) -> Void, queue: DispatchQueue, path: [String]) {
@@ -47,27 +56,36 @@ final public class ProcessLink<A, B> : Executable<A>, PathDescribing {
 		defineBlock(self)
 	}
 	
+	public func finally(_ defineBlock: @escaping (ProcessLink<A,A>) -> Void ) -> ProcessLink<A,B> {
+		if let oldFinalLink = self.finalLink {
+			let _ = oldFinalLink.finally(defineBlock)
+		} else {
+			let newFinalLink = ProcessLink<A,A>(function: { (a: A, completion: @escaping (A) -> Void) in
+				completion(a)
+			},
+											   queue: self.queue,
+											   path: self.path+["finally"])
+			self.finalLink = newFinalLink
+			
+			defineBlock(newFinalLink)
+		}
+		return self
+	}
+	
 	fileprivate func joinPoint() -> JoinPoint<B> {
 		let link = JoinPoint<B>(queue: self.queue, path: self.path+["joinpoint"])
 		self.createdLinks.append(link)
 		return link
 	}
 	
-	private var rateLimter:DispatchSemaphore? {
-		if let maxParallelContexts = self.maxParallelContexts {
-			return DispatchSemaphore(value: maxParallelContexts)
-		} else {
-			return nil
-		}
-	}
 	
-	override func execute(argument: A, completion fullChainCompletion: @escaping () -> Void) {
+	override func execute(argument: A, completion fullChainCompletion: @escaping (Continue) -> Void) {
 		self.queue.async {
 			do {
 				var callbackInvoked = false
 				let callbackInvokedLock = NSLock()
 				
-				try self.function(argument) { result in
+				try self.function(argument) { (result: B) in
 					callbackInvokedLock.lock()
 					defer {
 						callbackInvokedLock.unlock()
@@ -78,25 +96,56 @@ final public class ProcessLink<A, B> : Executable<A>, PathDescribing {
 					callbackInvoked = true
 					
 					let group = DispatchGroup()
-					let rateLimiter = self.rateLimter
+					let rateLimiter = self.rateLimiter
 					
 					
+					var continueExecuting = true
 					for createdLink in self.createdLinks {
 						rateLimiter?.wait()
 						let workItem = DispatchWorkItem(block: {
-							createdLink.execute(argument: result) {
+							func cleanup() {
 								rateLimiter?.signal()
 								group.leave()
+							}
+							
+							if continueExecuting {
+								createdLink.execute(argument: result) { cont in
+									if continueExecuting {
+										continueExecuting = cont
+									}
+									cleanup()
+								}
+							} else {
+								cleanup()
 							}
 						})
 						group.enter()
 						self.queue.async(group: group, execute: workItem)
 					}
 					
-					group.notify(queue: self.queue, execute: fullChainCompletion)
+					group.notify(queue: self.queue, execute: {
+						if let finalLink = self.finalLink {
+							if continueExecuting {
+								finalLink.execute(argument: argument, completion: fullChainCompletion)
+							} else {
+								finalLink.execute(argument: argument) { _ in // doesn't matter how the finally chain ended
+									fullChainCompletion(false) // don't continue
+								}
+							}
+						} else {
+							fullChainCompletion(continueExecuting)
+						}
+					})
 				}
 			} catch {
 				self.errorHandler(error, argument)
+				if let finalLink = self.finalLink {
+					finalLink.execute(argument: argument) { _ in // doesn't matter how the finally chain ended
+						fullChainCompletion(false) // don't continue
+					}
+				} else {
+					fullChainCompletion(false) // don't continue
+				}
 			}
 		}
 	}
@@ -418,21 +467,23 @@ extension ProcessLink where B : Collection, B.IndexDistance == Int {
 }
 
 extension ProcessLink where B : Sequence {
-	@discardableResult public func each(maxParallel:Int? = nil, _ defineBlock: @escaping (ProcessLink<Void, B.Iterator.Element>) -> Void) -> ProcessLink<B, B> {
-		let rootLink: ProcessLink<Void, Void> = ProcessLink<Void,Void>( function: {_,callback in
-			callback()
-		}, queue: self.queue, path: self.path + ["each"])
-		rootLink.maxParallelContexts = maxParallel
+	@discardableResult public func each(_ defineBlock: @escaping (ProcessLink<Void, B.Iterator.Element>) -> Void) -> ProcessLink<B, B> {
+		var rootLink: ProcessLink<B, Void>!
 		
-		return self.chain { (sequence:B, callback:@escaping (B)->Void) -> Void in
+		rootLink = self.chain { (sequence: B) -> Void in
 			for element in sequence {
-				defineBlock(rootLink.value(element))
-			}
-			
-			rootLink.execute(argument: Void()) {
-				callback(sequence)
+				let elemLink = rootLink.value(element)
+				defineBlock(elemLink)
 			}
 		}
+		
+		let returnLink = ProcessLink<B,B>(function: { (b, callback) in
+			callback(b)
+		}, queue: self.queue, path: self.path+["each"])
+		
+		rootLink.finalLink = returnLink
+		
+		return returnLink
 	}
 }
 
@@ -451,15 +502,65 @@ extension Optional : OptionalProtocol {
 }
 
 extension ProcessLink where B : OptionalProtocol {
-	@discardableResult public func optionally(_ defineBlock: @escaping (ProcessLink<B.WrappedType, B.WrappedType>) -> Void) -> ProcessLink<B, Void> {
-		return self.chain { (b: B, callback: @escaping ()->Void) in
+	@discardableResult public func optionally<X,Y>(_ defineBlock: @escaping (ProcessLink<B.WrappedType, B.WrappedType>) -> ProcessLink<X, Y>) -> ProcessLink<Void, Void> {
+		
+		let returnLink = ProcessLink<Void, Void>(function: {_, block in block()},
+		                                                           queue: self.queue,
+		                                                           path: self.path + ["optionally"])
+		
+		var immediateChain: ProcessLink<B,Void>! = nil
+		
+		immediateChain = self.chain { (b: B, callback: @escaping ()->Void) in
 			if let unwrapped = b.getWrapped() {
-				let context = ProcessLink<B.WrappedType, B.WrappedType>(function: {arg, block in block(arg)}, queue: self.queue, path: self.path + ["optionally"])
-				defineBlock(context)
-				context.execute(argument: unwrapped, completion: callback)
+				let unwrappedContext = ProcessLink<B.WrappedType, B.WrappedType>(function: {_, block in block(unwrapped)},
+				                                                                 queue: self.queue,
+				                                                                 path: self.path + ["optionally"])
+				
+				let lastLinkOfPostivePath = defineBlock(unwrappedContext)
+				let _  = lastLinkOfPostivePath.finally { cntx in
+							cntx.value(Void())
+								.value(Void())
+								.finalLink = returnLink
+				}
+				
+				let _ = immediateChain.finally { cntx in
+					cntx.value(unwrapped)
+						.value(unwrapped)
+						.finalLink = unwrappedContext
+				}
+				callback()
 			} else {
+				let _  = immediateChain.finally { cntx in
+					cntx.value(Void())
+						.value(Void())
+						.finalLink = returnLink
+				}
+
 				callback()
 			}
 		}
+		
+		return returnLink
+	}
+}
+
+fileprivate let limitPathsToSemaphoresLock = NSLock()
+fileprivate var limitPathsToSemaphores: [String:DispatchSemaphore] = [:]
+
+extension ProcessLink  {
+	@discardableResult public func limit<I,J>(_ maxParallel: Int, _ defineBlock: @escaping (ProcessLink<A,B>) -> ProcessLink<I,J>) -> ProcessLink<I,J> {
+		
+		let pathString = self.path.joined()
+		
+		limitPathsToSemaphoresLock.lock()
+		let semaphore = limitPathsToSemaphores[pathString] ?? DispatchSemaphore(value: maxParallel)
+		limitPathsToSemaphores[pathString] = semaphore
+		limitPathsToSemaphoresLock.unlock()
+		
+		self.rateLimiter = semaphore
+			
+		let lastLink = defineBlock(self)
+		
+		return lastLink
 	}
 }
