@@ -14,9 +14,7 @@
 		FA473BC91E352CB1007E4D61 /* HoneyBee.h in Headers */ = {isa = PBXBuildFile; fileRef = FA473BBB1E352CB1007E4D61 /* HoneyBee.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		FA48E16D1E947B1300729F09 /* Bind.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA48E16C1E947B1300729F09 /* Bind.swift */; };
 		FA4E8D3C1E8752E400D751B3 /* Chainable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA4E8D3B1E8752E400D751B3 /* Chainable.swift */; };
-		FA6089941E59F1C1004E6D9B /* OperatorSyntax.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA6089931E59F1C1004E6D9B /* OperatorSyntax.swift */; };
 		FAC0CA1C1E4BDB6900ECC0DC /* HoneyBee.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC0CA1B1E4BDB6900ECC0DC /* HoneyBee.swift */; };
-		FAC975571E8B194500D27B22 /* ChainOperator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC975561E8B194500D27B22 /* ChainOperator.swift */; };
 		FAC9DC7F1E352D6F00E21A01 /* AsyncSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC9DC7C1E352D6F00E21A01 /* AsyncSupport.swift */; };
 		FAC9DC801E352D6F00E21A01 /* FailableResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC9DC7D1E352D6F00E21A01 /* FailableResult.swift */; };
 		FAC9DC811E352D6F00E21A01 /* ProcessLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC9DC7E1E352D6F00E21A01 /* ProcessLink.swift */; };
@@ -46,9 +44,7 @@
 		FA4E8D3A1E874EB600D751B3 /* Generate.rb */ = {isa = PBXFileReference; lastKnownFileType = text.script.ruby; path = Generate.rb; sourceTree = "<group>"; };
 		FA4E8D3B1E8752E400D751B3 /* Chainable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Chainable.swift; sourceTree = "<group>"; };
 		FA5FA32C1E70DE4B00625996 /* CommonCrypto.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = CommonCrypto.framework; sourceTree = "<group>"; };
-		FA6089931E59F1C1004E6D9B /* OperatorSyntax.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OperatorSyntax.swift; sourceTree = "<group>"; };
 		FAC0CA1B1E4BDB6900ECC0DC /* HoneyBee.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HoneyBee.swift; sourceTree = "<group>"; };
-		FAC975561E8B194500D27B22 /* ChainOperator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChainOperator.swift; sourceTree = "<group>"; };
 		FAC9DC7C1E352D6F00E21A01 /* AsyncSupport.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AsyncSupport.swift; sourceTree = "<group>"; };
 		FAC9DC7D1E352D6F00E21A01 /* FailableResult.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FailableResult.swift; sourceTree = "<group>"; };
 		FAC9DC7E1E352D6F00E21A01 /* ProcessLink.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProcessLink.swift; sourceTree = "<group>"; };
@@ -109,11 +105,9 @@
 				FA48E16C1E947B1300729F09 /* Bind.swift */,
 				FA205F1D1EB2DADB005B01FB /* BindOperator.swift */,
 				FA4E8D3B1E8752E400D751B3 /* Chainable.swift */,
-				FAC975561E8B194500D27B22 /* ChainOperator.swift */,
 				FAC9DC7D1E352D6F00E21A01 /* FailableResult.swift */,
 				FAC0CA1B1E4BDB6900ECC0DC /* HoneyBee.swift */,
 				FA256FB51E5DB490008FB7C0 /* JoinPoint.swift */,
-				FA6089931E59F1C1004E6D9B /* OperatorSyntax.swift */,
 				FAD1DC9F1EB757D600A6D912 /* PathDescribing.swift */,
 				FAC9DC7E1E352D6F00E21A01 /* ProcessLink.swift */,
 				FA473BBB1E352CB1007E4D61 /* HoneyBee.h */,
@@ -273,8 +267,6 @@
 			files = (
 				FAC9DC801E352D6F00E21A01 /* FailableResult.swift in Sources */,
 				FA4E8D3C1E8752E400D751B3 /* Chainable.swift in Sources */,
-				FAC975571E8B194500D27B22 /* ChainOperator.swift in Sources */,
-				FA6089941E59F1C1004E6D9B /* OperatorSyntax.swift in Sources */,
 				FAD1DCA01EB757D600A6D912 /* PathDescribing.swift in Sources */,
 				FAC0CA1C1E4BDB6900ECC0DC /* HoneyBee.swift in Sources */,
 				FA48E16D1E947B1300729F09 /* Bind.swift in Sources */,

@@ -87,55 +87,6 @@ protocol Chainable {
 	output_to_file_if_different("Chainable.swift",chainable_protocol_string)
 end
 
-def generate_chain_operator() 
-	generated_chain_declarations = []
-
-	@chain_function_signatures.each {|function_signature|
-		include_error_handler = signature_declares_error(function_signature)
-		right_hand_side = include_error_handler ? "FunctionWithErrorHandler<#{function_signature},B>" : "@escaping #{function_signature}"
-		transform_result_type = function_signature =~ /C/ ? "C" : "B"
-		generic_parameters = transform_result_type != "B" ? "<A,B,C>" : "<A,B>"
-		void_receiving = function_signature =~ /^\(\)/
-		symbol_name = void_receiving ?  "^-" : "^^"
-		method_name = void_receiving ?  "splice" : "chain"
-		implementation = include_error_handler ? "return left.#{method_name}(right.function, right.errorHandler)" : "return left.#{method_name}(right)"
-		
-		generated_chain_declarations << "///operator syntax for ProcessLink.chain"
-		generated_chain_declarations << "@discardableResult public func #{symbol_name}#{generic_parameters}(left: ProcessLink<A,B>, right: #{right_hand_side}) -> ProcessLink<B, #{transform_result_type}> {"
-		generated_chain_declarations << "\t#{implementation}"
-		generated_chain_declarations << "}"
-		generated_chain_declarations << ""
-	}
-	
-	chain_operator_string = %[
-/// Generated chain operator functions.
-
-public struct FunctionWithErrorHandler<Func,Cause> {
-	let function: Func
-	let errorHandler: (Error,Cause) -> Void
-}
-
-precedencegroup HoneyBeeErrorHandlingPrecedence {
-	associativity: left
-	higherThan: LogicalConjunctionPrecedence
-}
-
-infix operator ^! : HoneyBeeErrorHandlingPrecedence
-
-public func ^!<F,Cause>(left: F, right: @escaping (Error,Cause) -> Void) -> FunctionWithErrorHandler<F,Cause> {
-	return FunctionWithErrorHandler(function: left, errorHandler: right)
-}
-
-infix operator ^^ : LogicalConjunctionPrecedence
-
-infix operator ^- : LogicalConjunctionPrecedence
-
-#{generated_chain_declarations.join("\n")}
-]
-
-	output_to_file_if_different("ChainOperator.swift",chain_operator_string)
-end
-
 def output_to_file_if_different(filename, contnet)
 	output_file = File.join(File.dirname(__FILE__),filename)
 
@@ -223,6 +174,5 @@ infix operator =<< : HoneyBeeBindPrecedence
 end
 
 generate_chainable()
-generate_chain_operator()
 generate_bind()
 

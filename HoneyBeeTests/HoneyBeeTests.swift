@@ -42,43 +42,6 @@ class HoneyBeeTests: XCTestCase {
 		}
 	}
 	
-	func testOperatorSyntax() {
-		let expect = expectation(description: "Expect should be reached")
-		let optionalExpect = expectation(description: "Optional expect should be reached")
-		
-		HoneyBee.start { __ in
-			__
-			^% 4
-			^^ intToString
-			^^ stringToInt ^! fail
-			^< { __ in
-				let a = __
-					^^ intToString
-					^^ stringCat
-				
-				let b = __
-					^^ multiplyInt
-				
-				(a ^+ b)
-					^^ multiplyString
-					^^ assertEquals =<< "4cat4cat4cat4cat4cat4cat4cat4cat"
-					^% Optional(7)
-					^? {__ in
-						__
-							^^ assertEquals =<< 7
-							^^ optionalExpect.fulfill
-					}
-					^^ expect.fulfill
-			}
-		}
-		
-		waitForExpectations(timeout: 1) { error in
-			if let error = error {
-				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
-			}
-		}
-	}
-	
 	func testOptionally() {
 		let expect = expectation(description: "Expect should be reached")
 		let optionalExpect = expectation(description: "Optional expect should be reached")
@@ -511,7 +474,7 @@ class HoneyBeeTests: XCTestCase {
 						let b = cntx.chain { _ in sleep(UInt32(sleepSeconds)) }
 						let c = cntx.chain { _ in sleep(UInt32(sleepSeconds)) }
 						
-						(a ^+ b)
+						a.conjoin(b).conjoin(c)
 							 .splice(finishParalleCodeExpectation.fulfill)
 							 .splice({parallelCodeFinished = true})
 					}
