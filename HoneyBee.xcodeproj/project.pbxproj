@@ -11,7 +11,6 @@
 		FA256FB61E5DB490008FB7C0 /* JoinPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA256FB51E5DB490008FB7C0 /* JoinPoint.swift */; };
 		FA41097B1E9CFBC4002A6BA6 /* HoneyBeeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA41097A1E9CFBC4002A6BA6 /* HoneyBeeTests.swift */; };
 		FA41097D1E9CFBC4002A6BA6 /* HoneyBee.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA473BB81E352CB1007E4D61 /* HoneyBee.framework */; };
-		FA473BC91E352CB1007E4D61 /* HoneyBee.h in Headers */ = {isa = PBXBuildFile; fileRef = FA473BBB1E352CB1007E4D61 /* HoneyBee.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		FA48E16D1E947B1300729F09 /* Bind.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA48E16C1E947B1300729F09 /* Bind.swift */; };
 		FA4E8D3C1E8752E400D751B3 /* Chainable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA4E8D3B1E8752E400D751B3 /* Chainable.swift */; };
 		FAC0CA1C1E4BDB6900ECC0DC /* HoneyBee.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC0CA1B1E4BDB6900ECC0DC /* HoneyBee.swift */; };
@@ -38,10 +37,9 @@
 		FA41097A1E9CFBC4002A6BA6 /* HoneyBeeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HoneyBeeTests.swift; sourceTree = "<group>"; };
 		FA41097C1E9CFBC4002A6BA6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FA473BB81E352CB1007E4D61 /* HoneyBee.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = HoneyBee.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		FA473BBB1E352CB1007E4D61 /* HoneyBee.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HoneyBee.h; sourceTree = "<group>"; };
-		FA473BBC1E352CB1007E4D61 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		FA473BBC1E352CB1007E4D61 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = HoneyBee/Info.plist; sourceTree = "<group>"; };
 		FA48E16C1E947B1300729F09 /* Bind.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bind.swift; sourceTree = "<group>"; };
-		FA4E8D3A1E874EB600D751B3 /* Generate.rb */ = {isa = PBXFileReference; lastKnownFileType = text.script.ruby; path = Generate.rb; sourceTree = "<group>"; };
+		FA4E8D3A1E874EB600D751B3 /* Generate.rb */ = {isa = PBXFileReference; lastKnownFileType = text.script.ruby; name = Generate.rb; path = HoneyBee/Generate.rb; sourceTree = "<group>"; };
 		FA4E8D3B1E8752E400D751B3 /* Chainable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Chainable.swift; sourceTree = "<group>"; };
 		FA5FA32C1E70DE4B00625996 /* CommonCrypto.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = CommonCrypto.framework; sourceTree = "<group>"; };
 		FAC0CA1B1E4BDB6900ECC0DC /* HoneyBee.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HoneyBee.swift; sourceTree = "<group>"; };
@@ -83,6 +81,7 @@
 			isa = PBXGroup;
 			children = (
 				FA473BBA1E352CB1007E4D61 /* HoneyBee */,
+				FADE8BE81EE4F36400A1D2BA /* Supporting Files */,
 				FA4109791E9CFBC4002A6BA6 /* HoneyBeeTests */,
 				FA473BB91E352CB1007E4D61 /* Products */,
 				FA5FA32B1E70DE4B00625996 /* Frameworks */,
@@ -110,9 +109,6 @@
 				FA256FB51E5DB490008FB7C0 /* JoinPoint.swift */,
 				FAD1DC9F1EB757D600A6D912 /* PathDescribing.swift */,
 				FAC9DC7E1E352D6F00E21A01 /* ProcessLink.swift */,
-				FA473BBB1E352CB1007E4D61 /* HoneyBee.h */,
-				FA473BBC1E352CB1007E4D61 /* Info.plist */,
-				FA4E8D3A1E874EB600D751B3 /* Generate.rb */,
 			);
 			path = HoneyBee;
 			sourceTree = "<group>";
@@ -125,6 +121,15 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		FADE8BE81EE4F36400A1D2BA /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				FA4E8D3A1E874EB600D751B3 /* Generate.rb */,
+				FA473BBC1E352CB1007E4D61 /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -132,7 +137,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FA473BC91E352CB1007E4D61 /* HoneyBee.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
