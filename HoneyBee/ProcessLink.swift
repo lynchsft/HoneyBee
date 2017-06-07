@@ -19,15 +19,8 @@ final public class ProcessLink<A, B> : Executable<A>, PathDescribing {
 	
 	private var function: (A, @escaping (B) -> Void) throws -> Void
 	private var errorHandler: (Error, A) -> Void
-	fileprivate var queue: DispatchQueue
-	fileprivate var maxParallelContexts:Int? {
-		didSet {
-			if let maxParallelContexts = self.maxParallelContexts {
-				self.rateLimiter = DispatchSemaphore(value: maxParallelContexts)
-			}
-		}
-	}
-	fileprivate var rateLimiter:DispatchSemaphore?
+	fileprivate var queue: DispatchQueue // This is the queue which is passed on to chains
+	fileprivate var executionQueue: DispatchQueue // This is the queue which executes this chain. Usually they are the same.
 	
 	let path: [String]
 	
@@ -39,6 +32,7 @@ final public class ProcessLink<A, B> : Executable<A>, PathDescribing {
 		self.function = function
 		self.errorHandler = errorHandler
 		self.queue = queue
+		self.executionQueue = queue
 		self.path = path
 	}
 	
@@ -80,7 +74,7 @@ final public class ProcessLink<A, B> : Executable<A>, PathDescribing {
 	
 	
 	override func execute(argument: A, completion fullChainCompletion: @escaping (Continue) -> Void) {
-		self.queue.async {
+		self.executionQueue.async {
 			do {
 				var callbackInvoked = false
 				let callbackInvokedLock = NSLock()
@@ -96,34 +90,27 @@ final public class ProcessLink<A, B> : Executable<A>, PathDescribing {
 					callbackInvoked = true
 					
 					let group = DispatchGroup()
-					let rateLimiter = self.rateLimiter
-					
 					
 					var continueExecuting = true
 					for createdLink in self.createdLinks {
-						rateLimiter?.wait()
 						let workItem = DispatchWorkItem(block: {
-							func cleanup() {
-								rateLimiter?.signal()
-								group.leave()
-							}
 							
 							if continueExecuting {
 								createdLink.execute(argument: result) { cont in
 									if continueExecuting {
 										continueExecuting = cont
 									}
-									cleanup()
+									group.leave()
 								}
 							} else {
-								cleanup()
+								group.leave()
 							}
 						})
 						group.enter()
-						self.queue.async(group: group, execute: workItem)
+						self.executionQueue.async(group: group, execute: workItem)
 					}
 					
-					group.notify(queue: self.queue, execute: {
+					group.notify(queue: self.executionQueue, execute: {
 						if let finalLink = self.finalLink {
 							if continueExecuting {
 								finalLink.execute(argument: argument, completion: fullChainCompletion)
@@ -548,7 +535,7 @@ fileprivate let limitPathsToSemaphoresLock = NSLock()
 fileprivate var limitPathsToSemaphores: [String:DispatchSemaphore] = [:]
 
 extension ProcessLink  {
-	@discardableResult public func limit<I,J>(_ maxParallel: Int, _ defineBlock: @escaping (ProcessLink<A,B>) -> ProcessLink<I,J>) -> ProcessLink<I,J> {
+	@discardableResult public func limit<I,J>(_ maxParallel: Int, _ defineBlock: @escaping (ProcessLink<B,B>) -> ProcessLink<I,J>) -> ProcessLink<J,J> {
 		
 		let pathString = self.path.joined()
 		
@@ -557,10 +544,21 @@ extension ProcessLink  {
 		limitPathsToSemaphores[pathString] = semaphore
 		limitPathsToSemaphoresLock.unlock()
 		
-		self.rateLimiter = semaphore
-			
-		let lastLink = defineBlock(self)
+		let openingLink = self.chain { (b:B) -> B in
+			semaphore.wait()
+			return b
+		}
 		
-		return lastLink
+		openingLink.executionQueue = DispatchQueue.global()
+		
+		let lastLink = defineBlock(openingLink)
+		
+		let returnLink = lastLink.chain { (j:J) -> J in
+			semaphore.signal()
+			return j
+		}
+		
+		
+		return returnLink
 	}
 }

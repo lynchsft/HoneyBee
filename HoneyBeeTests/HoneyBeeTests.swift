@@ -467,17 +467,10 @@ class HoneyBeeTests: XCTestCase {
 							.chain(asynchronouslyHoldLock)
 					}
 					.splice(startParalleCodeExpectation.fulfill)
-					.fork { cntx in
-						
-						// parallelize
-						let a = cntx.chain { _ in sleep(UInt32(sleepSeconds)) }
-						let b = cntx.chain { _ in sleep(UInt32(sleepSeconds)) }
-						let c = cntx.chain { _ in sleep(UInt32(sleepSeconds)) }
-						
-						a.conjoin(b).conjoin(c)
-							 .splice(finishParalleCodeExpectation.fulfill)
-							 .splice({parallelCodeFinished = true})
-					}
+					// parallelize
+					.chain { _ in sleep(UInt32(sleepSeconds * 3)) }
+					.splice(finishParalleCodeExpectation.fulfill)
+					.splice({parallelCodeFinished = true})
 				}
 				.splice{ XCTAssert(parallelCodeFinished, "the parallel code should have finished before this") }
 				.chain(finishExpectation.fulfill)
