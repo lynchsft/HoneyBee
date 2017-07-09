@@ -48,8 +48,7 @@ chain_function_signatures_text = %[
 	ret = signature
 	unless signature_declares_error(signature)
 		insertion_index = signature.rindex(" ->")
-		ret = [signature,
-					signature.dup.insert(insertion_index," throws")]
+		ret = [signature.insert(insertion_index," throws")]
 	end
 	ret
 }.flatten
@@ -61,7 +60,6 @@ def generate_chainable()
 
 	@chain_function_signatures.each {|function_signature|
 		include_error_handler = signature_declares_error(function_signature)
-		error_handler_string = include_error_handler ? ", _ errorHandler: @escaping (Error,B) -> Void" : ""
 		transform_result_type = function_signature =~ /C/ ? "C" : "B"
 		extra_generic_parameter = transform_result_type != "B" ? "<C>" : ""
 		void_receiving = function_signature =~ /^\(\)/
@@ -71,7 +69,7 @@ def generate_chainable()
 			"///Creates a new ProcessLink which passes through argument of type B and appends the link to the execution list of this ProcessLink"
 		
 		generated_chain_declarations << documentation
-		generated_chain_declarations << "@discardableResult func #{method_name}#{extra_generic_parameter}(_ function: @escaping #{function_signature}#{error_handler_string} ) -> ProcessLink<B,#{transform_result_type}>"
+		generated_chain_declarations << "@discardableResult func #{method_name}#{extra_generic_parameter}(_ function: @escaping #{function_signature} ) -> ProcessLink<B,#{transform_result_type}>"
 		generated_chain_declarations << ""
 	}
 

@@ -20,11 +20,13 @@ final class JoinPoint<A> : Executable<A>, PathDescribing {
 	private var executionResult: ExecutionResult?
 	private var resultCallback: ((ExecutionResult) -> Void)?
 	private var queue: DispatchQueue
+	private let errorHandler: ((Error, Any) -> Void)
 	let path: [String]
 	
-	init(queue: DispatchQueue, path: [String]) {
+	init(queue: DispatchQueue, path: [String], errorHandler: @escaping ((Error, Any) -> Void)) {
 		self.queue = queue
 		self.path = path
+		self.errorHandler = errorHandler
 	}
 	
 	private func yieldResult(_ callback: @escaping (ExecutionResult) -> Void) {
@@ -57,7 +59,7 @@ final class JoinPoint<A> : Executable<A>, PathDescribing {
 		
 		let link = ProcessLink<Void, (A,B)>(function: { _, callback in
 			callback(tuple!)
-		}, queue: self.queue, path: self.path+["conjoin"])
+		}, errorHandler: self.errorHandler, queue: self.queue, path: self.path+["conjoin"])
 		
 		self.yieldResult { a, myCompletion in
 			other.yieldResult { b, otherCompletion in

@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		FA205F1E1EB2DADB005B01FB /* BindOperator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA205F1D1EB2DADB005B01FB /* BindOperator.swift */; };
 		FA256FB61E5DB490008FB7C0 /* JoinPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA256FB51E5DB490008FB7C0 /* JoinPoint.swift */; };
+		FA3837CF1F10F7450021412C /* RootLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA3837CE1F10F7450021412C /* RootLink.swift */; };
 		FA41097B1E9CFBC4002A6BA6 /* HoneyBeeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA41097A1E9CFBC4002A6BA6 /* HoneyBeeTests.swift */; };
 		FA41097D1E9CFBC4002A6BA6 /* HoneyBee.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA473BB81E352CB1007E4D61 /* HoneyBee.framework */; };
 		FA48E16D1E947B1300729F09 /* Bind.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA48E16C1E947B1300729F09 /* Bind.swift */; };
@@ -18,6 +19,7 @@
 		FAC9DC801E352D6F00E21A01 /* FailableResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC9DC7D1E352D6F00E21A01 /* FailableResult.swift */; };
 		FAC9DC811E352D6F00E21A01 /* ProcessLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC9DC7E1E352D6F00E21A01 /* ProcessLink.swift */; };
 		FAD1DCA01EB757D600A6D912 /* PathDescribing.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD1DC9F1EB757D600A6D912 /* PathDescribing.swift */; };
+		FADDE62B1F0DD02D00C19F5E /* ErrorHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = FADDE62A1F0DD02D00C19F5E /* ErrorHandling.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -33,6 +35,7 @@
 /* Begin PBXFileReference section */
 		FA205F1D1EB2DADB005B01FB /* BindOperator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BindOperator.swift; sourceTree = "<group>"; };
 		FA256FB51E5DB490008FB7C0 /* JoinPoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JoinPoint.swift; sourceTree = "<group>"; };
+		FA3837CE1F10F7450021412C /* RootLink.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RootLink.swift; sourceTree = "<group>"; };
 		FA4109781E9CFBC4002A6BA6 /* HoneyBeeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HoneyBeeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA41097A1E9CFBC4002A6BA6 /* HoneyBeeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HoneyBeeTests.swift; sourceTree = "<group>"; };
 		FA41097C1E9CFBC4002A6BA6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -47,6 +50,7 @@
 		FAC9DC7D1E352D6F00E21A01 /* FailableResult.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FailableResult.swift; sourceTree = "<group>"; };
 		FAC9DC7E1E352D6F00E21A01 /* ProcessLink.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProcessLink.swift; sourceTree = "<group>"; };
 		FAD1DC9F1EB757D600A6D912 /* PathDescribing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PathDescribing.swift; sourceTree = "<group>"; };
+		FADDE62A1F0DD02D00C19F5E /* ErrorHandling.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ErrorHandling.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -104,11 +108,13 @@
 				FA48E16C1E947B1300729F09 /* Bind.swift */,
 				FA205F1D1EB2DADB005B01FB /* BindOperator.swift */,
 				FA4E8D3B1E8752E400D751B3 /* Chainable.swift */,
+				FADDE62A1F0DD02D00C19F5E /* ErrorHandling.swift */,
 				FAC9DC7D1E352D6F00E21A01 /* FailableResult.swift */,
 				FAC0CA1B1E4BDB6900ECC0DC /* HoneyBee.swift */,
 				FA256FB51E5DB490008FB7C0 /* JoinPoint.swift */,
 				FAD1DC9F1EB757D600A6D912 /* PathDescribing.swift */,
 				FAC9DC7E1E352D6F00E21A01 /* ProcessLink.swift */,
+				FA3837CE1F10F7450021412C /* RootLink.swift */,
 			);
 			path = HoneyBee;
 			sourceTree = "<group>";
@@ -275,7 +281,9 @@
 				FAC0CA1C1E4BDB6900ECC0DC /* HoneyBee.swift in Sources */,
 				FA48E16D1E947B1300729F09 /* Bind.swift in Sources */,
 				FA205F1E1EB2DADB005B01FB /* BindOperator.swift in Sources */,
+				FA3837CF1F10F7450021412C /* RootLink.swift in Sources */,
 				FAC9DC811E352D6F00E21A01 /* ProcessLink.swift in Sources */,
+				FADDE62B1F0DD02D00C19F5E /* ErrorHandling.swift in Sources */,
 				FAC9DC7F1E352D6F00E21A01 /* AsyncSupport.swift in Sources */,
 				FA256FB61E5DB490008FB7C0 /* JoinPoint.swift in Sources */,
 			);

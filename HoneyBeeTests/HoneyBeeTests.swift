@@ -27,9 +27,10 @@ class HoneyBeeTests: XCTestCase {
 		
 		
 		HoneyBee.start { root in
-			root.value(4)
+			root.errorHandler(fail)
+				.value(4)
 				.chain(intToString)
-				.chain(stringToInt, fail)
+				.chain(stringToInt)
 				.chain(multiplyInt)
 				.chain(assertEquals =<< 8)
 				.chain(expect.fulfill)
@@ -49,7 +50,8 @@ class HoneyBeeTests: XCTestCase {
 		var optionallyCompleted = false
 		
 		HoneyBee.start { root in
-			root.value(Optional(7))
+			root.noError()
+				.value(Optional(7))
 				.optionally { cntx in
 					cntx.chain(assertEquals =<< 7)
 						.chain(optionalExpect.fulfill)
@@ -72,7 +74,8 @@ class HoneyBeeTests: XCTestCase {
 		optionalExpect.isInverted = true
 		
 		HoneyBee.start { root in
-			root.value(Optional<Int>(nilLiteral: ()))
+			root.noError()
+				.value(Optional<Int>(nilLiteral: ()))
 				.optionally { cntx in
 					cntx.splice(optionalExpect.fulfill)
 				}
@@ -91,10 +94,11 @@ class HoneyBeeTests: XCTestCase {
 		
 		
 		HoneyBee.start { root in
-			root.chain(randomInt)
+			root.errorHandler {error in expect.fulfill()}
+				.chain(randomInt)
 				.chain(intToString)
 				.chain(stringCat)
-				.chain(stringToInt) {error in expect.fulfill()}
+				.chain(stringToInt)
 				.chain(multiplyInt)
 				.splice(failIfReached)
 		}
@@ -112,9 +116,10 @@ class HoneyBeeTests: XCTestCase {
 		
 		
 		HoneyBee.start { root in
-			root.value(10)
+			root.errorHandler(fail)
+				.value(10)
 				.chain(intToString)
-				.chain(stringToInt, fail)
+				.chain(stringToInt)
 				.fork { cntx in
 					cntx.chain(assertEquals =<< 10)
 						.chain(expect1.fulfill)
@@ -138,10 +143,11 @@ class HoneyBeeTests: XCTestCase {
 		
 		
 		HoneyBee.start { root in
-			root.fork { ctx in
-				let result1 = ctx.chain(constantInt)
+			root.noError()
+				.fork { cntx in
+				let result1 = cntx.chain(constantInt)
 				
-				let result2 = ctx.chain(constantString)
+				let result2 = cntx.chain(constantString)
 				
 				result2.conjoin(result1)
 					.chain(multiplyString)
@@ -152,10 +158,11 @@ class HoneyBeeTests: XCTestCase {
 		}
 		
 		HoneyBee.start { root in
-			root.fork { ctx in
-				let result1 = ctx.chain(constantInt)
+			root.noError()
+				.fork { cntx in
+				let result1 = cntx.chain(constantInt)
 				
-				let result2 = ctx.chain(constantString)
+				let result2 = cntx.chain(constantString)
 				
 				result1.conjoin(result2)
 					.chain(stringLengthEquals)
@@ -181,10 +188,11 @@ class HoneyBeeTests: XCTestCase {
 		let finishExpectation = expectation(description: "Should reach the end of the chain")
 		
 		HoneyBee.start { root in
-			root.value(source)
+			root.noError()
+				.value(source)
 				.map(multiplyInt)
-				.each { ctx in
-					ctx.chain { (int:Int) -> Void in
+				.each { cntx in
+					cntx.chain { (int:Int) -> Void in
 						let sourceValue = int/2
 						if let exepct = intsToExpectations[sourceValue]  {
 							exepct.fulfill()
@@ -209,7 +217,8 @@ class HoneyBeeTests: XCTestCase {
 		let finishExpectation = expectation(description: "Should reach the end of the chain")
 		
 		HoneyBee.start(on: DispatchQueue.main) { root in
-			root.value(source)
+			root.noError()
+				.value(source)
 				.map { (int:Int) -> Int in
 				XCTAssert(Thread.current.isMainThread, "Not main thread")
 				return int*2
@@ -231,7 +240,8 @@ class HoneyBeeTests: XCTestCase {
 		let finishExpectation = expectation(description: "Should reach the end of the chain")
 		
 		HoneyBee.start { root in
-			root.value(source)
+			root.noError()
+				.value(source)
 				.filter(isEven)
 				.chain{ XCTAssert($0 == result, "Filter failed. expected: \(result). Received: \($0).") }
 				.chain(finishExpectation.fulfill)
@@ -263,7 +273,8 @@ class HoneyBeeTests: XCTestCase {
 		let finishExpectation = expectation(description: "Should reach the end of the chain")
 		
 		HoneyBee.start { root in
-			root.value(expectations)
+			root.noError()
+				.value(expectations)
 				.each { cntx in
 					cntx.chain(XCTestExpectation.fulfill)
 						.chain(incrementFullfilledExpectCount)
@@ -303,7 +314,8 @@ class HoneyBeeTests: XCTestCase {
 		}
 		
 		HoneyBee.start { root in
-			root.value(expectations)
+			root.noError()
+				.value(expectations)
 				.each { cntx in
 					cntx.limit(3) { cntx in
 						cntx.chain(XCTestExpectation.fulfill)
@@ -325,7 +337,8 @@ class HoneyBeeTests: XCTestCase {
 		let finishExpectation = expectation(description: "Should reach the end of the chain")
 		
 		HoneyBee.start { root in
-			root.value("leg,foot")
+			root.noError()
+				.value("leg,foot")
 				.chain(decompose)
 				.chain(returnLonger)
 				.chain(assertEquals =<< "foot")
@@ -361,7 +374,8 @@ class HoneyBeeTests: XCTestCase {
 		let finishExpectation = expectation(description: "Should reach the end of the chain")
 		
 		HoneyBee.start { root in
-			root.value(source)
+			root.noError()
+				.value(source)
 				.each { cntx in
 					cntx.limit(1) { cntx in
 						cntx.chain(asynchronouslyHoldLock)
@@ -383,11 +397,12 @@ class HoneyBeeTests: XCTestCase {
 		let finishExpectation = expectation(description: "Should reach the end of the chain")
 		
 		HoneyBee.start { root in
-			root.finally { cntx in
+			root.noError()
+				.finally { cntx in
 					cntx.chain { XCTAssert(counter == 3, "counter should be 3: was actually \(counter)") }
 						.chain(incrementCounter)
 				}.finally { cntx in
-					cntx.chain { XCTAssert(counter == 4, "counter should be 4: was actually \(counter)") ; finishExpectation.fulfill() }
+					cntx.chain { () -> Void in XCTAssert(counter == 4, "counter should be 4: was actually \(counter)") ; finishExpectation.fulfill() }
 				}
 				.chain { XCTAssert(counter == 0, "counter should be 0") }
 				.chain(incrementCounter)
@@ -395,7 +410,6 @@ class HoneyBeeTests: XCTestCase {
 				.chain(incrementCounter)
 				.chain { XCTAssert(counter == 2, "counter should be 2") }
 				.chain(incrementCounter)
-			
 		}
 		
 		waitForExpectations(timeout: 3) { error in
@@ -414,16 +428,17 @@ class HoneyBeeTests: XCTestCase {
 		func handleError(_ error: Error, arg: Any) {} // we cause an error on purpose
 		
 		HoneyBee.start { root in
-			root.finally { cntx in
-					cntx.chain { XCTAssert(counter == 2, "counter should be 2") ; finishExpectation.fulfill() }
+			root.noError() // this is just to start off with. We update the error handler below
+				.finally { cntx in
+					cntx.chain { () -> Void in XCTAssert(counter == 2, "counter should be 2") ; finishExpectation.fulfill() }
 				}
 				.chain { XCTAssert(counter == 0, "counter should be 0") }
 				.chain(incrementCounter)
 				.chain { XCTAssert(counter == 1, "counter should be 1") }
 				.chain(incrementCounter)
-				.chain({ throw NSError(domain: "An expected error", code: -1, userInfo: nil) }, handleError)
+				.errorHandler(handleError)
+				.chain({ throw NSError(domain: "An expected error", code: -1, userInfo: nil) })
 				.chain(incrementCounter)
-			
 		}
 		
 		waitForExpectations(timeout: 3) { error in
@@ -459,7 +474,8 @@ class HoneyBeeTests: XCTestCase {
 		var parallelCodeFinished = false
 		
 		HoneyBee.start { root in
-			root.value(source)
+			root.noError()
+				.value(source)
 				.each() { cntx in
 					cntx.limit(1) { cntx in
 						cntx.chain(asynchronouslyHoldLock)
@@ -491,11 +507,12 @@ class HoneyBeeTests: XCTestCase {
 		var intermediateFullfilled = false
 		
 		HoneyBee.start { root in
-			root.limit(29) { cntx in
-				cntx.value("Right")
-					.chain(stringCat)
-					.splice(intermediateExpectation.fulfill)
-					.chain { intermediateFullfilled = true }	
+			root.noError()
+				.limit(29) { cntx in
+					cntx.value("Right")
+						.chain(stringCat)
+						.splice(intermediateExpectation.fulfill)
+						.chain { intermediateFullfilled = true }	
 			}
 			.splice { XCTAssert(intermediateFullfilled, "Intermediate expectation not fullfilled") }
 			.chain(finishExpectation.fulfill)

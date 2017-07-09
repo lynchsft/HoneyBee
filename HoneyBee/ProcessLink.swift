@@ -18,17 +18,13 @@ final public class ProcessLink<A, B> : Executable<A>, PathDescribing {
 	fileprivate var finalLink: ProcessLink<A,A>?
 	
 	private var function: (A, @escaping (B) -> Void) throws -> Void
-	private var errorHandler: (Error, A) -> Void
+	fileprivate var errorHandler: ((Error, Any) -> Void)
 	fileprivate var queue: DispatchQueue // This is the queue which is passed on to chains
 	fileprivate var executionQueue: DispatchQueue // This is the queue which executes this chain. Usually they are the same.
 	
 	let path: [String]
 	
-	convenience init(function:  @escaping (A, @escaping (B) -> Void) -> Void, queue: DispatchQueue, path: [String]) {
-		self.init(function: function, errorHandler: {_ in /* no possibilty of checked error here */}, queue: queue, path: path)
-	}
-	
-	init(function:  @escaping (A, @escaping (B) -> Void) throws -> Void, errorHandler: @escaping (Error, A) -> Void, queue: DispatchQueue, path: [String]) {
+	init(function:  @escaping (A, @escaping (B) -> Void) throws -> Void, errorHandler: @escaping ((Error, Any) -> Void), queue: DispatchQueue, path: [String]) {
 		self.function = function
 		self.errorHandler = errorHandler
 		self.queue = queue
@@ -36,12 +32,12 @@ final public class ProcessLink<A, B> : Executable<A>, PathDescribing {
 		self.path = path
 	}
 	
-	@discardableResult public func chain<C>(_ function:  @escaping (B, @escaping (C) -> Void) throws -> Void, _ errorHandler: @escaping (Error, B) -> Void) -> ProcessLink<B, C> {
-		return self.chain(function, on: nil, errorHandler)
+	@discardableResult public func chain<C>(_ function:  @escaping (B, @escaping (C) -> Void) throws -> Void) -> ProcessLink<B, C> {
+		return self.chain(function, on: nil)
 	}
 	
-	@discardableResult public func chain<C>(_ function:  @escaping (B, @escaping (C) -> Void) throws -> Void, on queue: DispatchQueue?, _ errorHandler: @escaping (Error, B) -> Void) -> ProcessLink<B, C> {
-		let link = ProcessLink<B, C>(function: function, errorHandler: errorHandler, queue: queue ?? self.queue, path: self.path + [tname(function)])
+	@discardableResult public func chain<C>(_ function:  @escaping (B, @escaping (C) -> Void) throws -> Void, on queue: DispatchQueue?) -> ProcessLink<B, C> {
+		let link = ProcessLink<B, C>(function: function, errorHandler: self.errorHandler, queue: queue ?? self.queue, path: self.path + [tname(function)])
 		self.createdLinks.append(link)
 		return link
 	}
@@ -56,9 +52,9 @@ final public class ProcessLink<A, B> : Executable<A>, PathDescribing {
 		} else {
 			let newFinalLink = ProcessLink<A,A>(function: { (a: A, completion: @escaping (A) -> Void) in
 				completion(a)
-			},
-											   queue: self.queue,
-											   path: self.path+["finally"])
+			}, errorHandler: self.errorHandler,
+			   queue: self.queue,
+			   path: self.path+["finally"])
 			self.finalLink = newFinalLink
 			
 			defineBlock(newFinalLink)
@@ -67,7 +63,7 @@ final public class ProcessLink<A, B> : Executable<A>, PathDescribing {
 	}
 	
 	fileprivate func joinPoint() -> JoinPoint<B> {
-		let link = JoinPoint<B>(queue: self.queue, path: self.path+["joinpoint"])
+		let link = JoinPoint<B>(queue: self.queue, path: self.path+["joinpoint"], errorHandler: self.errorHandler)
 		self.createdLinks.append(link)
 		return link
 	}
@@ -142,7 +138,7 @@ extension ProcessLink {
 	// special forms
 	
 	public func value<C>(_ c: C) -> ProcessLink<B, C> {
-		return self.chain { (b:B) in return c }
+		return self.chain { (b:B, callback: (C) -> Void) in callback(c) }
 	}
 	
 	public func conjoin<C,X>(_ other: ProcessLink<X,C>) -> ProcessLink<Void, (B,C)> {
@@ -150,32 +146,25 @@ extension ProcessLink {
 	}
 }
 
+extension ProcessLink : ErrorHandling {
+	public func errorHandler(_ errorHandler: @escaping (Error, Any) -> Void ) -> ProcessLink<A,B> {
+		self.errorHandler = errorHandler
+		return self
+	}	
+}
+
 extension ProcessLink : Chainable {
 	
-	@discardableResult public func chain<C>(_ function:  @escaping (B) -> (C) ) -> ProcessLink<B, C> {
-		return self.chain(function, {_ in /* no checked errors possible */})
-	}
-	
-	@discardableResult public func chain<C>(_ function:  @escaping (B, @escaping (C) -> Void) -> Void) -> ProcessLink<B, C> {
-		return self.chain(function, {_ in /* no checked errors possible */})
-	}
-	
-	@discardableResult public func chain<C>(_ function:  @escaping (B) throws -> (C), _ errorHandler: @escaping (Error,B) -> Void ) -> ProcessLink<B, C> {
+	@discardableResult public func chain<C>(_ function:  @escaping (B) throws -> (C) ) -> ProcessLink<B, C> {
 		return self.chain({ (b: B, callback: @escaping (C) -> Void) in
 			try callback(function(b))
-		}, errorHandler)
-	}
-	
-	@discardableResult public func chain<C>(_ function:  @escaping (B, ((C) -> Void)?) -> Void) -> ProcessLink<B, C> {
-		return self.chain({ (b: B, callback: @escaping (C) -> Void) in
-			function(b,callback)
 		})
 	}
-	
-	@discardableResult public func chain<C>(_ function:  @escaping (B, ((C) -> Void)?) throws -> Void, _ errorHandler: @escaping (Error,B) -> Void) -> ProcessLink<B, C> {
+
+	@discardableResult public func chain<C>(_ function:  @escaping (B, ((C) -> Void)?) throws -> Void) -> ProcessLink<B, C> {
 		return self.chain({ (b: B, callback: @escaping (C) -> Void) throws in
 			try function(b,callback)
-		}, errorHandler)
+		})
 	}
 	
 	private func objcErrorCallbackToSwift(_ function: @escaping (@escaping (Error?)->Void ) -> Void) -> (@escaping (FailableResult<Void>) -> Void) -> Void {
@@ -264,166 +253,127 @@ extension ProcessLink : Chainable {
 		return value
 	}
 	
-	private func failableResultWrapper<C>(_ body:@escaping (B, @escaping (FailableResult<C>)->Void) -> Void, _ errorHandler: @escaping (Error,B) -> Void) -> ProcessLink<B,C>{
+	private func failableResultWrapper<C>(_ body:@escaping (B, @escaping (FailableResult<C>)->Void) -> Void) -> ProcessLink<B,C>{
 		var storedB: B! = nil
 		var storedC: C! = nil
 		return self.chain({ (b:B, callback: @escaping (FailableResult<C>) -> Void) in
 			storedB = b
 			body(b,callback)
-		}).chain(checkResult, {e,_ in errorHandler(e,storedB!)}).chain({storedC = $0}).chain{_ in return storedB!}.chain{_ in return storedC!}
+		}).chain(checkResult).chain({storedC = $0}).chain{_ in return storedB!}.chain{_ in return storedC!}
 	}
 	
-	private func failableResultWrapper(_ body:@escaping (B, @escaping (FailableResult<B>)->Void) -> Void, _ errorHandler: @escaping (Error,B) -> Void) -> ProcessLink<B,B>{
-		var storedB: B! = nil
+	private func failableResultWrapper(_ body:@escaping (B, @escaping (FailableResult<B>)->Void) -> Void) -> ProcessLink<B,B>{
 		return self.chain({ (b:B, callback: @escaping (FailableResult<B>) -> Void) in
-			storedB = b
 			body(b,callback)
-		}).chain(checkResult, {e,_ in errorHandler(e,storedB!)}).chain(identity)
+		}).chain(checkResult).chain(identity)
 	}
 	
-	@discardableResult public func chain(_ function: @escaping (B) -> (@escaping (Error?) -> Void) -> Void, _ errorHandler: @escaping (Error,B) -> Void) -> ProcessLink<B, B> {
+	@discardableResult public func chain(_ function: @escaping (B) -> (((Error?) -> Void)?) -> Void) -> ProcessLink<B, B> {
 		return self.failableResultWrapper({ (b:B, callback: @escaping (FailableResult<B>) -> Void) in
 			self.elevate(function)(b,callback)
-		}, errorHandler)
-	}
-	
-	@discardableResult public func chain(_ function: @escaping (B) -> (((Error?) -> Void)?) -> Void, _ errorHandler: @escaping (Error,B) -> Void) -> ProcessLink<B, B> {
-		return self.failableResultWrapper({ (b:B, callback: @escaping (FailableResult<B>) -> Void) in
-			self.elevate(function)(b,callback)
-		}, errorHandler)
-	}
-	
-	@discardableResult public func chain(_ function: @escaping (B, @escaping (Error?) -> Void) -> Void, _ errorHandler: @escaping (Error,B) -> Void) -> ProcessLink<B, B> {
-		return self.failableResultWrapper({ (b:B, callback: @escaping (FailableResult<B>) -> Void) in
-			self.elevate(function)(b,callback)
-		}, errorHandler)
-	}
-	
-	@discardableResult public func chain(_ function: @escaping (B, ((Error?) -> Void)?) -> Void, _ errorHandler: @escaping (Error,B) -> Void) -> ProcessLink<B, B> {
-		return self.failableResultWrapper({ (b:B, callback: @escaping (FailableResult<B>) -> Void) in
-			self.elevate(function)(b,callback)
-		}, errorHandler)
-	}
-	
-	@discardableResult public func chain<C>(_ function: @escaping (B, @escaping (C?, Error?) -> Void) -> Void, _ errorHandler: @escaping (Error,B) -> Void) -> ProcessLink<B, C> {
-		return self.failableResultWrapper({ (b:B, callback: @escaping (FailableResult<C>)->Void) in
-			self.elevate(function)(b,callback)
-		}, errorHandler)
-	}
-	
-	@discardableResult public func chain<C>(_ function: @escaping (B, ((C?, Error?) -> Void)?) -> Void, _ errorHandler: @escaping (Error,B) -> Void) -> ProcessLink<B, C> {
-		return self.failableResultWrapper({ (b:B, callback: @escaping (FailableResult<C>)->Void) in
-			self.elevate(function)(b,callback)
-		}, errorHandler)
-	}
-	
-	@discardableResult public func chain<C>(_ function: @escaping (B) -> (@escaping (C) -> Void) -> Void) -> ProcessLink<B, C> {
-		return self.chain({ (b: B, callback: @escaping (C) -> Void) in
-			function(b)(callback)
 		})
 	}
 	
-	@discardableResult public func chain<C>(_ function: @escaping (B) -> (((C) -> Void)?) -> Void) -> ProcessLink<B, C> {
-		return self.chain({ (b: B, callback: @escaping (C) -> Void) in
-			function(b)(callback)
-		})
-	}
-	
-	@discardableResult public func chain<C>(_ function: @escaping (B) -> () -> C) -> ProcessLink<B, C> {
-		return self.chain({ (b: B, callback: @escaping (C) -> Void) in
-			callback(function(b)())
-		})
-	}
-	
-	@discardableResult public func chain<C>(_ function: @escaping (B) -> () throws -> C, _ errorHandler: @escaping (Error,B) -> Void) -> ProcessLink<B, C> {
-		return self.chain({ (b: B, callback: @escaping (C) -> Void) in
-			try callback(function(b)())
-		}, errorHandler)
-	}
-	
-	@discardableResult public func chain(_ function: @escaping (@escaping (Error?) -> Void) -> Void, _ errorHandler: @escaping (Error,B) -> Void) -> ProcessLink<B, B> {
+	@discardableResult public func chain(_ function: @escaping (B) -> (@escaping (Error?) -> Void) -> Void) -> ProcessLink<B, B> {
 		return self.failableResultWrapper({ (b:B, callback: @escaping (FailableResult<B>) -> Void) in
 			self.elevate(function)(b,callback)
-		}, errorHandler)
+		})
 	}
 	
-	@discardableResult public func chain<C>(_ function:  @escaping (((C) -> Void)?) -> Void) -> ProcessLink<B, C> {
-		return self.chain { (b: B, callback: @escaping (C) -> Void) in
-			function(callback)
-		}
+	@discardableResult public func chain(_ function: @escaping (B, ((Error?) -> Void)?) -> Void) -> ProcessLink<B, B> {
+		return self.failableResultWrapper({ (b:B, callback: @escaping (FailableResult<B>) -> Void) in
+			self.elevate(function)(b,callback)
+		})
 	}
 	
-	@discardableResult public func chain<C>(_ function: @escaping (((C?, Error?) -> Void)?) -> Void, _ errorHandler: @escaping (Error,B) -> Void) -> ProcessLink<B, C> {
+	@discardableResult public func chain(_ function: @escaping (B, @escaping (Error?) -> Void) -> Void) -> ProcessLink<B, B> {
+		return self.failableResultWrapper({ (b:B, callback: @escaping (FailableResult<B>) -> Void) in
+			self.elevate(function)(b,callback)
+		})
+	}
+	
+	@discardableResult public func chain<C>(_ function: @escaping (B, ((C?, Error?) -> Void)?) -> Void) -> ProcessLink<B, C> {
 		return self.failableResultWrapper({ (b:B, callback: @escaping (FailableResult<C>)->Void) in
-			self.objcErrorCallbackToSwift(function)(callback)
-		}, errorHandler)
+			self.elevate(function)(b,callback)
+		})
 	}
 	
-	@discardableResult public func chain<C>(_ function: @escaping (B) -> (@escaping (C?, Error?) -> Void) -> Void, _ errorHandler: @escaping (Error,B) -> Void) -> ProcessLink<B, C> {
+	@discardableResult public func chain<C>(_ function: @escaping (B, @escaping (C?, Error?) -> Void) -> Void) -> ProcessLink<B, C> {
 		return self.failableResultWrapper({ (b:B, callback: @escaping (FailableResult<C>)->Void) in
-			self.objcErrorCallbackToSwift(function(b))(callback)
-		}, errorHandler)
+			self.elevate(function)(b,callback)
+		})
 	}
 	
-	
-	@discardableResult public func chain<C>(_ function: @escaping (@escaping (C?, Error?) -> Void) -> Void, _ errorHandler: @escaping (Error,B) -> Void) -> ProcessLink<B, C> {
-		return self.failableResultWrapper({ (b:B, callback: @escaping (FailableResult<C>)->Void) in
-			self.objcErrorCallbackToSwift(function)(callback)
-		}, errorHandler)
-	}
-	
-	@discardableResult public func chain<C>(_ function: @escaping (B) -> (@escaping (C) -> Void) throws -> Void, _ errorHandler: @escaping (Error,B) -> Void) -> ProcessLink<B, C> {
+	@discardableResult public func chain<C>(_ function: @escaping (B) -> (@escaping (C) -> Void) throws -> Void) -> ProcessLink<B, C> {
 		return self.chain({ (b: B, callback: @escaping (C) -> Void) throws -> Void in
 			try function(b)(callback)
-		}, errorHandler)
-	}
-	
-	@discardableResult public func chain<C>(_ function: @escaping (@escaping (C) -> Void) throws -> Void, _ errorHandler: @escaping (Error,B) -> Void) -> ProcessLink<B, C> {
-		return self.chain( { (b:B, callback: @escaping (C) -> Void) throws -> Void in
-			try function(callback)
-		}, errorHandler)
-	}
-	
-	@discardableResult public func chain<C>(_ function: @escaping (((C) -> Void)?) throws -> Void, _ errorHandler: @escaping (Error,B) -> Void) -> ProcessLink<B, C> {
-		return self.chain( { (b:B, callback: @escaping (C) -> Void) throws -> Void in
-			try function(callback)
-		}, errorHandler)
-	}
-	
-	@discardableResult public func chain<C>(_ function: @escaping (@escaping (C) -> Void) -> Void) -> ProcessLink<B, C> {
-		return self.chain( { (b:B, callback: @escaping (C) -> Void) -> Void in
-			function(callback)
 		})
-	}
-	
-	@discardableResult public func chain(_ function: @escaping (((Error?) -> Void)?) -> Void, _ errorHandler: @escaping (Error,B) -> Void) -> ProcessLink<B, B> {
-		return self.failableResultWrapper({ (b:B, callback: @escaping (FailableResult<B>) -> Void) in
-			self.elevate(function)(b,callback)
-		}, errorHandler)
-	}
-	
-	@discardableResult public func chain<C>(_ function: @escaping (B) -> (((C?, Error?) -> Void)?) -> Void, _ errorHandler: @escaping (Error,B) -> Void) -> ProcessLink<B, C> {
-		return self.failableResultWrapper({ (b:B, callback: @escaping (FailableResult<C>)->Void) in
-			self.objcErrorCallbackToSwift(function(b))(callback)
-		}, errorHandler)
-	}
-	
-	@discardableResult public func chain<C>(_ function: @escaping (B) -> (((C) -> Void)?) throws -> Void, _ errorHandler: @escaping (Error,B) -> Void) -> ProcessLink<B, C> {
-		return self.chain({ (b:B, callback: @escaping (C) -> Void) throws -> Void in
-			try function(b)(callback)
-		}, errorHandler)
 	}
 
-	@discardableResult public func splice<C>(_ function: @escaping () -> C ) -> ProcessLink<B,C> {
-		return self.chain({ (b:B, callback: @escaping (C) -> Void) in
-			callback(function())
+	@discardableResult public func chain<C>(_ function: @escaping (B) -> () throws -> C) -> ProcessLink<B, C> {
+		return self.chain({ (b: B, callback: @escaping (C) -> Void) in
+			try callback(function(b)())
 		})
 	}
 	
-	@discardableResult public func splice<C>(_ function: @escaping () throws -> C, _ errorHandler: @escaping (Error,B) -> Void ) -> ProcessLink<B,C> {
+	@discardableResult public func chain<C>(_ function: @escaping (B) -> (@escaping (C?, Error?) -> Void) -> Void) -> ProcessLink<B, C> {
+		return self.failableResultWrapper({ (b:B, callback: @escaping (FailableResult<C>)->Void) in
+			self.objcErrorCallbackToSwift(function(b))(callback)
+		})
+	}
+
+	@discardableResult public func chain(_ function: @escaping (@escaping (Error?) -> Void) -> Void) -> ProcessLink<B, B> {
+		return self.failableResultWrapper({ (b:B, callback: @escaping (FailableResult<B>) -> Void) in
+			self.elevate(function)(b,callback)
+		})
+	}
+	
+	@discardableResult public func chain<C>(_ function: @escaping (@escaping (C) -> Void) throws -> Void) -> ProcessLink<B, C> {
+		return self.chain( { (b:B, callback: @escaping (C) -> Void) throws -> Void in
+			try function(callback)
+		})
+	}
+
+	@discardableResult public func chain<C>(_ function: @escaping (((C?, Error?) -> Void)?) -> Void) -> ProcessLink<B, C> {
+		return self.failableResultWrapper({ (b:B, callback: @escaping (FailableResult<C>)->Void) in
+			self.objcErrorCallbackToSwift(function)(callback)
+		})
+	}
+	
+	@discardableResult public func chain<C>(_ function: @escaping (@escaping (C?, Error?) -> Void) -> Void) -> ProcessLink<B, C> {
+		return self.failableResultWrapper({ (b:B, callback: @escaping (FailableResult<C>)->Void) in
+			self.objcErrorCallbackToSwift(function)(callback)
+		})
+	}
+	
+	@discardableResult public func chain<C>(_ function: @escaping (((C) -> Void)?) throws -> Void) -> ProcessLink<B, C> {
+		return self.chain( { (b:B, callback: @escaping (C) -> Void) throws -> Void in
+			try function(callback)
+		})
+	}
+	
+	@discardableResult public func chain(_ function: @escaping (((Error?) -> Void)?) -> Void) -> ProcessLink<B, B> {
+		return self.failableResultWrapper({ (b:B, callback: @escaping (FailableResult<B>) -> Void) in
+			self.elevate(function)(b,callback)
+		})
+	}
+	
+	@discardableResult public func chain<C>(_ function: @escaping (B) -> (((C?, Error?) -> Void)?) -> Void) -> ProcessLink<B, C> {
+		return self.failableResultWrapper({ (b:B, callback: @escaping (FailableResult<C>)->Void) in
+			self.objcErrorCallbackToSwift(function(b))(callback)
+		})
+	}
+	
+	@discardableResult public func chain<C>(_ function: @escaping (B) -> (((C) -> Void)?) throws -> Void) -> ProcessLink<B, C> {
+		return self.chain({ (b:B, callback: @escaping (C) -> Void) throws -> Void in
+			try function(b)(callback)
+		})
+	}
+	
+	@discardableResult public func splice<C>(_ function: @escaping () throws -> C ) -> ProcessLink<B,C> {
 		return self.chain({ (b:B, callback: @escaping (C) -> Void) throws -> Void in
 			try callback(function())
-		}, errorHandler)
+		})
 	}
 }
 
@@ -466,7 +416,7 @@ extension ProcessLink where B : Sequence {
 		
 		let returnLink = ProcessLink<B,B>(function: { (b, callback) in
 			callback(b)
-		}, queue: self.queue, path: self.path+["each"])
+		}, errorHandler: self.errorHandler, queue: self.queue, path: self.path+["each"])
 		
 		rootLink.finalLink = returnLink
 		
@@ -492,14 +442,16 @@ extension ProcessLink where B : OptionalProtocol {
 	@discardableResult public func optionally<X,Y>(_ defineBlock: @escaping (ProcessLink<B.WrappedType, B.WrappedType>) -> ProcessLink<X, Y>) -> ProcessLink<Void, Void> {
 		
 		let returnLink = ProcessLink<Void, Void>(function: {_, block in block()},
-		                                                           queue: self.queue,
-		                                                           path: self.path + ["optionally"])
+		                                         errorHandler: self.errorHandler,
+		                                         queue: self.queue,
+		                                         path: self.path + ["optionally"])
 		
 		var immediateChain: ProcessLink<B,Void>! = nil
 		
 		immediateChain = self.chain { (b: B, callback: @escaping ()->Void) in
 			if let unwrapped = b.getWrapped() {
 				let unwrappedContext = ProcessLink<B.WrappedType, B.WrappedType>(function: {_, block in block(unwrapped)},
+				                                                                 errorHandler: self.errorHandler,
 				                                                                 queue: self.queue,
 				                                                                 path: self.path + ["optionally"])
 				
