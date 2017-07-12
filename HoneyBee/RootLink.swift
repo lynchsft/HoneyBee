@@ -19,20 +19,14 @@ final public class RootLink<T> : Executable<T>, ErrorHandling {
 		self.path = path
 	}
 	
-	public func errorHandler(_ errorHandler: @escaping (Error, Any) -> Void ) -> ProcessLink<T,T> {
+	public func setErrorHandler(_ errorHandler: @escaping (Error, Any) -> Void ) -> ProcessLink<T,T> {
 		let function = {(a: T, block: @escaping (T) -> Void) throws -> Void
 			in block(a)
 		}
 		self.firstLink = ProcessLink<T, T>(function: function, errorHandler: errorHandler, queue: self.queue, path: self.path + ["root"])
 		return firstLink!
 	}
-	
-	public func noError() -> ProcessLink<T, T> {
-		return self.errorHandler({ (error: Error, value: Any) -> Void in
-			preconditionFailure(".noError() promises that process definition will not error. Error encountered.")
-		})
-	}
-	
+		
 	override func execute(argument: T, completion: @escaping (Continue) -> Void) -> Void {
 		guard let firstLink = self.firstLink else {
 			preconditionFailure("Must supply an error handler before executing")

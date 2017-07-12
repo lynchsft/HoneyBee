@@ -13,5 +13,5 @@ public protocol ErrorHandling {
 	associatedtype A
 	associatedtype B
 	
-	func errorHandler(_ errorHandler: @escaping (Error, Any) -> Void ) -> ProcessLink<A, B>
+	func setErrorHandler(_ errorHandler: @escaping (Error, Any) -> Void ) -> ProcessLink<A, B>
 }

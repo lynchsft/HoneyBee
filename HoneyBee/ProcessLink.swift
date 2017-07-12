@@ -147,7 +147,7 @@ extension ProcessLink {
 }
 
 extension ProcessLink : ErrorHandling {
-	public func errorHandler(_ errorHandler: @escaping (Error, Any) -> Void ) -> ProcessLink<A,B> {
+	public func setErrorHandler(_ errorHandler: @escaping (Error, Any) -> Void ) -> ProcessLink<A,B> {
 		self.errorHandler = errorHandler
 		return self
 	}	
