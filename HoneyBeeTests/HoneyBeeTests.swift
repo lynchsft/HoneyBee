@@ -525,6 +525,35 @@ class HoneyBeeTests: XCTestCase {
 		}
 	}
 	
+	func testQueueChange() {
+		func testSimpleChain() {
+			let expect = expectation(description: "Simple chain should complete")
+			
+			func isMainThread() -> Bool{
+				return Thread.isMainThread
+			}
+			
+			HoneyBee.start(on: DispatchQueue.main) { root in
+				root.setErrorHandler(fail)
+					.value(4)
+					.chain(intToString)
+					.setQueue(DispatchQueue.global())
+					.splice(isMainThread)
+					.chain(assertEquals =<< false)
+					.setQueue(DispatchQueue.main)
+					.splice(isMainThread)
+					.chain(assertEquals =<< true)
+					.chain(expect.fulfill)
+			}
+			
+			waitForExpectations(timeout: 1) { error in
+				if let error = error {
+					XCTFail("waitForExpectationsWithTimeout errored: \(error)")
+				}
+			}
+		}
+	}
+	
 }
 
 // test helper functions

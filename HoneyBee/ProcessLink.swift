@@ -377,6 +377,14 @@ extension ProcessLink : Chainable {
 	}
 }
 
+extension ProcessLink {
+	// queue management
+	public func setQueue(_ queue: DispatchQueue) -> ProcessLink<A,B> {
+		self.queue = queue
+		return self
+	}
+}
+
 extension ProcessLink where B : Collection, B.IndexDistance == Int {
 	public func map<C>(_ transform: @escaping (B.Iterator.Element) -> C) -> ProcessLink<B, [C]> {
 		return self.chain({(collection: B, callback: @escaping ([C]) -> Void) in
