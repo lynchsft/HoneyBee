@@ -12,6 +12,23 @@ fileprivate func tname(_ t: Any) -> String {
 	return String(describing: type(of: t))
 }
 
+/**
+`ProcessLink` is the primary interface for HoneyBee processes.
+A link represents a single asynchronous function, as well as it's execution context.
+The execution context includes:
+
+1. A `DispatchQueue` execution context
+2. An error handling function for when things go wrong
+3. A list of child `ProcessLink`s to execute using the result of this link.
+
+A single link's execution process is as follows:
+
+1. Private method `execute(_:)` is called with the execution parameter A.
+2. This method's function is executed with argument A. If the function throws, then the error is given to this links registered error handler along with A, for context
+3. (If the function does not throw) The result value B is captured.
+4. This link's child links are individually, in parallel executed in this link's `DispatchQueue`
+5. When _all_ of the child links have completed their execution, then this link signals that it has completed execution, via callback.
+*/
 final public class ProcessLink<A, B> : Executable<A>, PathDescribing {
 	
 	private var createdLinks: [Executable<B>] = []
@@ -32,20 +49,58 @@ final public class ProcessLink<A, B> : Executable<A>, PathDescribing {
 		self.path = path
 	}
 	
-	@discardableResult public func chain<C>(_ function:  @escaping (B, @escaping (C) -> Void) throws -> Void) -> ProcessLink<B, C> {
-		return self.chain(function, on: nil)
-	}
 	
-	@discardableResult public func chain<C>(_ function:  @escaping (B, @escaping (C) -> Void) throws -> Void, on queue: DispatchQueue?) -> ProcessLink<B, C> {
-		let link = ProcessLink<B, C>(function: function, errorHandler: self.errorHandler, queue: queue ?? self.queue, path: self.path + [tname(function)])
+	/// Primary chain form. All other forms translate into this form.
+	///
+	/// - Parameter function: will be executed as a child link of this `ProcessLink`. Receives `B` (the result of this `ProcessLink` and generates `C`.
+	/// - Returns: The child link which has been added to this `ProcessLink`'s child list. Children are executed in parallel. See `ProcessLink`'s description.
+	@discardableResult public func chain<C>(_ function:  @escaping (B, @escaping (C) -> Void) throws -> Void) -> ProcessLink<B, C> {
+		let link = ProcessLink<B, C>(function: function, errorHandler: self.errorHandler, queue: self.queue, path: self.path + [tname(function)])
 		self.createdLinks.append(link)
 		return link
 	}
 	
+	/// Yields self to a new definition block. Within the block the caller may invoke chaining methods on block multiple times, thus achieving parallel chains. Example:
+	///
+	///     link.fork { cntx in
+	///       cntx.chain(func1)
+	///           .chain(func2)
+	///
+	///       cntx.chain(func3)
+	///           .chain(func4)
+	///     }
+	///
+	/// In the preceding example, when `link` is executed it will start the links containing `func1` and `func3` in parallel.
+	/// `func2` will execute when `func1` is finished. Likewise `func4` will execute when `func3` is finished.
+	///
+	/// - Parameter defineBlock: the block to which this `ProcessLink` yields itself.
 	public func fork(_ defineBlock: (ProcessLink<A, B>) -> Void) {
 		defineBlock(self)
 	}
 	
+	/**
+	 `finally` creates a subchain which will be executed whether or not the proceeding chain errors.
+	 In the case that no error occurs in the proceeding chain, finally is executed after the final link of the chain, as though it had been directly appended there.
+	 In the case that an error, the subchain defined by `finally` will be executed after the error handler has finished.
+	 If there is no error, the subchain defined by `finally` will be executed after all subsequent changes have finished.
+	 Example:
+	
+	     HoneyBee.start { root in
+	        root.errorHandler(funcE)
+	            .chain(funcA)
+	            .finally { cntx in
+	                cntx.chain(funcZ)
+	            }
+                .chain(funcB)
+	            .chain(funcC)
+	     }
+
+	 In the preceding example, if no error occurs then the functions will execute in this order: `funcA`, `funcB`, `funcC`, `funcZ`. The error handler, `funcE` will not be executed.
+	 If `funcB` produces an error, then execution is as follows: `funcA`, `funcB`, `funcE`, `funcZ`. The links after the error, (`funcC`), will not be executed.
+
+	 - Parameter defineBlock: context within which to define the finally chain.
+	 - Returns: a `ProcessLink` with the same execution context as self, but with a finally chain registered.
+	*/
 	public func finally(_ defineBlock: @escaping (ProcessLink<A,A>) -> Void ) -> ProcessLink<A,B> {
 		if let oldFinalLink = self.finalLink {
 			let _ = oldFinalLink.finally(defineBlock)
@@ -67,7 +122,6 @@ final public class ProcessLink<A, B> : Executable<A>, PathDescribing {
 		self.createdLinks.append(link)
 		return link
 	}
-	
 	
 	override func execute(argument: A, completion fullChainCompletion: @escaping (Continue) -> Void) {
 		self.executionQueue.async {
@@ -137,20 +191,36 @@ final public class ProcessLink<A, B> : Executable<A>, PathDescribing {
 extension ProcessLink {
 	// special forms
 	
+	/// `value` inserts a value of any type into the chain data flow.
+	///
+	/// - Parameter c: Any value
+	/// - Returns: a `ProcessLink` whose child links will receive `c` as their function argument.
 	public func value<C>(_ c: C) -> ProcessLink<B, C> {
 		return self.chain { (b:B, callback: (C) -> Void) in callback(c) }
 	}
 	
+	/// `conjoin` is a compliment to `fork`.
+	/// Within the context of a `fork` it is natural and expected to create parallel execution chains.
+	/// If the process definition wishes at some point to combine the results of these execution chains, then `conjoin` should be used.
+	/// `conjoin` returns a `ProcessLink` which waits for both the receiver and the argument `ProcessLink`s have created results. Those results are combined into a tuple `(B,C)` which is passed to the child links of the returned `ProcessLink`
+	///
+	/// - Parameter other: the `ProcessLink` to join with
+	/// - Returns: A `ProcessLink` which combines the receiver and the arguments results.
 	public func conjoin<C,X>(_ other: ProcessLink<X,C>) -> ProcessLink<Void, (B,C)> {
 		return self.joinPoint().conjoin(other.joinPoint())
 	}
 }
 
 extension ProcessLink : ErrorHandling {
+	
+	/// Establishes a new error handler for this link and all descendant links.
+	///
+	/// - Parameter errorHandler: a function which takes an Error and an `Any` context object. The context object is usual the object which was being acted upon when the error occurred.
+	/// - Returns: A `ProcessLink` which has `errorHandler` installed
 	public func setErrorHandler(_ errorHandler: @escaping (Error, Any) -> Void ) -> ProcessLink<A,B> {
 		self.errorHandler = errorHandler
 		return self
-	}	
+	}
 }
 
 extension ProcessLink : Chainable {
@@ -379,6 +449,22 @@ extension ProcessLink : Chainable {
 
 extension ProcessLink {
 	// queue management
+	
+	
+	/// Set the execution queue for all descendant links. N.B. *this does not change the execution queue for the receiver's function.*
+	/// Example
+	///
+	///     HoneyBee.start(on: .main) { root in
+	///        root.setErrorHandlder(handleError)
+    ///            .chain(funcA)
+	///            .setQueue(.global())
+	///            .chain(funcB)
+	///     }
+	///
+	/// In the preceding example, `funcA` will run on `DispatchQueue.main` and `funcB` will run on `DispatchQueue.global()`
+	///
+	/// - Parameter queue: the new `DispatchQueue` for child links
+	/// - Returns: the receiver
 	public func setQueue(_ queue: DispatchQueue) -> ProcessLink<A,B> {
 		self.queue = queue
 		return self
@@ -386,32 +472,57 @@ extension ProcessLink {
 }
 
 extension ProcessLink where B : Collection, B.IndexDistance == Int {
+	
+	/// When the inbound type is a `Collection` with `Int` indexes (most are), then you may call `map` to asynchronously map over the elements of B in parallel, transforming them with `transform`.
+	///
+	/// - Parameter transform: the transformation function which converts `B.Iterator.Element` to `C`
+	/// - Returns: a `ProcessLink` which will yield an array of `C`s to it's child links.
 	public func map<C>(_ transform: @escaping (B.Iterator.Element) -> C) -> ProcessLink<B, [C]> {
 		return self.chain({(collection: B, callback: @escaping ([C]) -> Void) in
 			collection.asyncMap(on: self.queue, transform: transform, completion: callback)
 		})
 	}
-		
+	
+	/// When the inbound type is a `Collection` with `Int` indexes (most are), then you may call `map` to asynchronously map over the elements of B in parallel, transforming them with `transform`.
+	///
+	/// - Parameter transform: the transformation function which converts `B.Iterator.Element` to `C`
+	/// - Returns: a `ProcessLink` which will yield an array of `C`s to it's child links.
 	public func map<C>(_ transform: @escaping (B.Iterator.Element, @escaping (C)->Void) -> Void) -> ProcessLink<B, [C]> {
 		return self.chain({(collection: B, callback: @escaping ([C]) -> Void) in
 			collection.asyncMap(on: self.queue, transform: transform, completion: callback)
 		})
 	}
-
-	public func filter(_ transform: @escaping (B.Iterator.Element) -> Bool) -> ProcessLink<B, [B.Iterator.Element]> {
+	
+	/// When the inbound type is a `Collection` with `Int` indexes (most are), then you may call `filter` to asynchronously filter the elements of B in parallel, using `filter`
+	///
+	/// - Parameter filter: the filter function
+	/// - Returns: a `ProcessLink` which will yield to it's child links an array containing those `B.Iterator.Element`s which `filter` approved.
+	public func filter(_ filter: @escaping (B.Iterator.Element) -> Bool) -> ProcessLink<B, [B.Iterator.Element]> {
 		return self.chain({(sequence: B, callback: @escaping ([B.Iterator.Element]) -> Void) in
-			sequence.asyncFilter(on: self.queue, transform: transform, completion: callback)
+			sequence.asyncFilter(on: self.queue, transform: filter, completion: callback)
 		})
 	}
 	
-	public func filter(_ transform: @escaping (B.Iterator.Element, (Bool)->Void) -> Void) -> ProcessLink<B, [B.Iterator.Element]> {
+	/// When the inbound type is a `Collection` with `Int` indexes (most are), then you may call `filter` to asynchronously filter the elements of B in parallel, using `filter`
+	///
+	/// - Parameter filter: the filter function
+	/// - Returns: a `ProcessLink` which will yield to it's child links an array containing those `B.Iterator.Element`s which `filter` approved.
+	public func filter(_ filter: @escaping (B.Iterator.Element, (Bool)->Void) -> Void) -> ProcessLink<B, [B.Iterator.Element]> {
 		return self.chain({(sequence: B, callback: @escaping ([B.Iterator.Element]) -> Void) in
-			sequence.asyncFilter(on: self.queue, transform: transform, completion: callback)
+			sequence.asyncFilter(on: self.queue, transform: filter, completion: callback)
 		})
 	}
 }
 
 extension ProcessLink where B : Sequence {
+	
+	
+	/// When the inbound type is a `Sequence` you may call `each`
+	/// Each accepts a define block which creates a subchain which will be invoked once per element of the sequence.
+	/// The `ProcessLink` which is given as argument to the define block will pass to it's child links the element of the sequence which is currently being processed.
+	///
+	/// - Parameter defineBlock: a block which creates a subchain for each element of the sequence
+	/// - Returns: a ProcessLink which will pass the `Sequence` `B` to its child links
 	@discardableResult public func each(_ defineBlock: @escaping (ProcessLink<Void, B.Iterator.Element>) -> Void) -> ProcessLink<B, B> {
 		var rootLink: ProcessLink<B, Void>!
 		
@@ -432,21 +543,34 @@ extension ProcessLink where B : Sequence {
 	}
 }
 
+/// Protocol for handling Optionals as a protocol. Useful for generic constraints
 public protocol OptionalProtocol {
+	/// The type which this optional wraps
 	associatedtype WrappedType
 	
+	/// Return an optional value of the wrapped type.
+	///
+	/// - Returns: an optional value
 	func getWrapped() -> WrappedType?
 }
 
+/// Optional implements OptionalProtocol for use in generic constraints
 extension Optional : OptionalProtocol {
+	/// The type which this optional wraps
 	public typealias WrappedType = Wrapped
 	
+	/// return self
 	public func getWrapped() -> WrappedType? {
 		return self
 	}
 }
 
 extension ProcessLink where B : OptionalProtocol {
+	/// When `B` is an `Optional` you may call `optionally`. The supplied define block creates a subchain which will be run if the Optional value is non-nil. The `ProcessLink` given to the define block yields a non-optional value of `B.WrappedType` to its child links
+	/// This function returns a `ProcessLink` with a void result value, because the subchain defined by optionally will not be executed if `B` is `nil`.
+	///
+	/// - Parameter defineBlock: a block which creates a subchain to run if B is non-nil
+	/// - Returns: a `ProcessLink` with a void value type.
 	@discardableResult public func optionally<X,Y>(_ defineBlock: @escaping (ProcessLink<B.WrappedType, B.WrappedType>) -> ProcessLink<X, Y>) -> ProcessLink<Void, Void> {
 		
 		let returnLink = ProcessLink<Void, Void>(function: {_, block in block()},
@@ -495,6 +619,20 @@ fileprivate let limitPathsToSemaphoresLock = NSLock()
 fileprivate var limitPathsToSemaphores: [String:DispatchSemaphore] = [:]
 
 extension ProcessLink  {
+	/// `limit` defines a subchain with special runtime protections. The links within the `limit` subchain are guaranteed to have at most `maxParallel` parallel executions. `limit` is particularly useful in the context of a fully parallel process when part of the process must access a limited resource pool such as CPU execution contexts or network resources.
+	/// This method returns a `ProcessLink` whose execution result `J` is the result of the final link of the subchain. This permits the chain to proceed naturally after limit. For example:
+	///
+	///      .limit(5) { cntx in
+	///         cntx.chain(resourceLimitedIntGenerator)
+	///		}
+	///     .chain(multiplyInt)
+	///
+	/// In the example above `resourceLimitedIntGenerator` results in an `Int` and that int is passed along to `multipyInt` after the `limit` context has finished.
+	///
+	/// - Parameters:
+	///   - maxParallel: the maximum number of parallel executions permitted for the subchains defined by `defineBlock`
+	///   - defineBlock: a block which creates a subchain to be limited.
+	/// - Returns: a `ProcessLink` whose execution result `J` is the result of the final link of the subchain.
 	@discardableResult public func limit<I,J>(_ maxParallel: Int, _ defineBlock: @escaping (ProcessLink<B,B>) -> ProcessLink<I,J>) -> ProcessLink<J,J> {
 		
 		let pathString = self.path.joined()

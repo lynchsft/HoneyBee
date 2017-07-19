@@ -8,6 +8,7 @@
 
 import Foundation
 
+/// `RootLink` is returned by `HoneyBee.start()`. The only operation supported by `RootLink` is `setErrorHandler`
 final public class RootLink<T> : Executable<T>, ErrorHandling {
 	
 	let path: [String]

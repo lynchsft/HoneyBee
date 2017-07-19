@@ -8,8 +8,26 @@
 
 import Foundation
 
+/// The `HoneyBee` struct is the starting point for all HoneyBee processes. See `start(on:)` for more details.
 public struct HoneyBee {
-	public static func start(on queue: DispatchQueue = DispatchQueue.global(), file: StaticString = #file, line: UInt = #line, _ defineBlock: @escaping (RootLink<Void>) -> Void) {
+	
+	/// `start()` defines and executes a HoneyBee process. For example:
+	///
+	///     HoneyBee.start { root in
+	///         root.errorHandler(funcE)
+	///             .chain(funcA)
+	///             .chain(funcB)
+	///     }
+	///
+	/// The above example declares a HoneyBee process with error handling provided by `funcE` and a serial execution of `funcA` then `funcB`.
+	/// For more possible HoneyBee declaration patterns see `ProcessLink`
+	///
+	/// - Parameters:
+	///   - queue: The execution queue to begin the process in.
+	///   - file: used for debugging
+	///   - line: used for debugging
+	///   - defineBlock: the define block is where you declare your process chain. The value passed into `defineBlock` is a `RootLink`.
+	public static func start(on queue: DispatchQueue = .global(), file: StaticString = #file, line: UInt = #line, _ defineBlock: @escaping (RootLink<Void>) -> Void) {
 		let root = RootLink<Void>(queue: queue, path: ["start: \(file):\(line)"])
 		queue.async {
 			defineBlock(root)

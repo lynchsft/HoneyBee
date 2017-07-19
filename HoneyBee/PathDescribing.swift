@@ -8,6 +8,8 @@
 
 import Foundation
 
+
+/// A protocol that to support documenting complex string paths.
 protocol PathDescribing : CustomDebugStringConvertible {
 	/// the path to the implementor must be non-zero in length
 	/// that is, if the implementor is a root node, there should be one element in the path array
@@ -15,6 +17,7 @@ protocol PathDescribing : CustomDebugStringConvertible {
 }
 
 extension PathDescribing  {
+	/// joins the path components with \\n
 	public var debugDescription: String {
 		return self.path.joined(separator: "\n")
 	}
