@@ -19,12 +19,12 @@ final class JoinPoint<A> : Executable<A>, PathDescribing {
 	private let resultLock = NSLock()
 	private var executionResult: ExecutionResult?
 	private var resultCallback: ((ExecutionResult) -> Void)?
-	private var queue: DispatchQueue
+	private var blockPerformer: AsyncBlockPerformer
 	private let errorHandler: ((Error, Any) -> Void)
 	let path: [String]
 	
-	init(queue: DispatchQueue, path: [String], errorHandler: @escaping ((Error, Any) -> Void)) {
-		self.queue = queue
+	init(blockPerformer: AsyncBlockPerformer, path: [String], errorHandler: @escaping ((Error, Any) -> Void)) {
+		self.blockPerformer = blockPerformer
 		self.path = path
 		self.errorHandler = errorHandler
 	}
@@ -59,7 +59,7 @@ final class JoinPoint<A> : Executable<A>, PathDescribing {
 		
 		let link = ProcessLink<Void, (A,B)>(function: { _, callback in
 			callback(tuple!)
-		}, errorHandler: self.errorHandler, queue: self.queue, path: self.path+["conjoin"])
+		}, errorHandler: self.errorHandler, blockPerformer: self.blockPerformer, path: self.path+["conjoin"])
 		
 		self.yieldResult { a, myCompletion in
 			other.yieldResult { b, otherCompletion in

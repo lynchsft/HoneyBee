@@ -27,9 +27,9 @@ public struct HoneyBee {
 	///   - file: used for debugging
 	///   - line: used for debugging
 	///   - defineBlock: the define block is where you declare your process chain. The value passed into `defineBlock` is a `RootLink`.
-	public static func start(on queue: DispatchQueue = .global(), file: StaticString = #file, line: UInt = #line, _ defineBlock: @escaping (RootLink<Void>) -> Void) {
-		let root = RootLink<Void>(queue: queue, path: ["start: \(file):\(line)"])
-		queue.async {
+	public static func start(on blockPerformer: AsyncBlockPerformer = DispatchQueue.global(), file: StaticString = #file, line: UInt = #line, _ defineBlock: @escaping (RootLink<Void>) -> Void) {
+		let root = RootLink<Void>(blockPerformer: blockPerformer, path: ["start: \(file):\(line)"])
+		blockPerformer.asyncPerform {
 			defineBlock(root)
 			root.execute(argument: Void(), completion: {success in })
 		}

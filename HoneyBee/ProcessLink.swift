@@ -17,7 +17,7 @@ fileprivate func tname(_ t: Any) -> String {
 A link represents a single asynchronous function, as well as it's execution context.
 The execution context includes:
 
-1. A `DispatchQueue` execution context
+1. A `AsyncBlockPerformer` execution context
 2. An error handling function for when things go wrong
 3. A list of child `ProcessLink`s to execute using the result of this link.
 
@@ -26,7 +26,7 @@ A single link's execution process is as follows:
 1. Private method `execute(_:)` is called with the execution parameter A.
 2. This method's function is executed with argument A. If the function throws, then the error is given to this links registered error handler along with A, for context
 3. (If the function does not throw) The result value B is captured.
-4. This link's child links are individually, in parallel executed in this link's `DispatchQueue`
+4. This link's child links are individually, in parallel executed in this link's `AsyncBlockPerformer`
 5. When _all_ of the child links have completed their execution, then this link signals that it has completed execution, via callback.
 */
 final public class ProcessLink<A, B> : Executable<A>, PathDescribing {
@@ -36,14 +36,14 @@ final public class ProcessLink<A, B> : Executable<A>, PathDescribing {
 	
 	private var function: (A, @escaping (B) -> Void) throws -> Void
 	fileprivate var errorHandler: ((Error, Any) -> Void)
-	fileprivate var queue: DispatchQueue // This is the queue which is passed on to chains
+	fileprivate var blockPerformer: AsyncBlockPerformer // This is the queue which is passed on to chains
 	
 	let path: [String]
 	
-	init(function:  @escaping (A, @escaping (B) -> Void) throws -> Void, errorHandler: @escaping ((Error, Any) -> Void), queue: DispatchQueue, path: [String]) {
+	init(function:  @escaping (A, @escaping (B) -> Void) throws -> Void, errorHandler: @escaping ((Error, Any) -> Void), blockPerformer: AsyncBlockPerformer, path: [String]) {
 		self.function = function
 		self.errorHandler = errorHandler
-		self.queue = queue
+		self.blockPerformer = blockPerformer
 		self.path = path
 	}
 	
@@ -53,7 +53,7 @@ final public class ProcessLink<A, B> : Executable<A>, PathDescribing {
 	/// - Parameter function: will be executed as a child link of this `ProcessLink`. Receives `B` (the result of this `ProcessLink` and generates `C`.
 	/// - Returns: The child link which has been added to this `ProcessLink`'s child list. Children are executed in parallel. See `ProcessLink`'s description.
 	@discardableResult public func chain<C>(_ function:  @escaping (B, @escaping (C) -> Void) throws -> Void) -> ProcessLink<B, C> {
-		let link = ProcessLink<B, C>(function: function, errorHandler: self.errorHandler, queue: self.queue, path: self.path + [tname(function)])
+		let link = ProcessLink<B, C>(function: function, errorHandler: self.errorHandler, blockPerformer: self.blockPerformer, path: self.path + [tname(function)])
 		self.createdLinks.append(link)
 		return link
 	}
@@ -106,7 +106,7 @@ final public class ProcessLink<A, B> : Executable<A>, PathDescribing {
 			let newFinalLink = ProcessLink<A,A>(function: { (a: A, completion: @escaping (A) -> Void) in
 				completion(a)
 			}, errorHandler: self.errorHandler,
-			   queue: self.queue,
+			   blockPerformer: self.blockPerformer,
 			   path: self.path+["finally"])
 			self.finalLink = newFinalLink
 			
@@ -116,13 +116,13 @@ final public class ProcessLink<A, B> : Executable<A>, PathDescribing {
 	}
 	
 	fileprivate func joinPoint() -> JoinPoint<B> {
-		let link = JoinPoint<B>(queue: self.queue, path: self.path+["joinpoint"], errorHandler: self.errorHandler)
+		let link = JoinPoint<B>(blockPerformer: self.blockPerformer, path: self.path+["joinpoint"], errorHandler: self.errorHandler)
 		self.createdLinks.append(link)
 		return link
 	}
 	
 	override func execute(argument: A, completion fullChainCompletion: @escaping (Continue) -> Void) {
-		self.queue.async {
+		self.blockPerformer.asyncPerform {
 			do {
 				var callbackInvoked = false
 				let callbackInvokedLock = NSLock()
@@ -141,8 +141,7 @@ final public class ProcessLink<A, B> : Executable<A>, PathDescribing {
 					
 					var continueExecuting = true
 					for createdLink in self.createdLinks {
-						let workItem = DispatchWorkItem(block: {
-							
+						let workItem = {
 							if continueExecuting {
 								createdLink.execute(argument: result) { cont in
 									if continueExecuting {
@@ -153,22 +152,24 @@ final public class ProcessLink<A, B> : Executable<A>, PathDescribing {
 							} else {
 								group.leave()
 							}
-						})
+						}
 						group.enter()
-						self.queue.async(group: group, execute: workItem)
+						self.blockPerformer.asyncPerform(workItem)
 					}
 					
-					group.notify(queue: self.queue, execute: {
-						if let finalLink = self.finalLink {
-							if continueExecuting {
-								finalLink.execute(argument: argument, completion: fullChainCompletion)
-							} else {
-								finalLink.execute(argument: argument) { _ in // doesn't matter how the finally chain ended
-									fullChainCompletion(false) // don't continue
+					group.notify(queue: .global(), execute: {
+						self.blockPerformer.asyncPerform {
+							if let finalLink = self.finalLink {
+								if continueExecuting {
+									finalLink.execute(argument: argument, completion: fullChainCompletion)
+								} else {
+									finalLink.execute(argument: argument) { _ in // doesn't matter how the finally chain ended
+										fullChainCompletion(false) // don't continue
+									}
 								}
+							} else {
+								fullChainCompletion(continueExecuting)
 							}
-						} else {
-							fullChainCompletion(continueExecuting)
 						}
 					})
 				}
@@ -463,8 +464,8 @@ extension ProcessLink {
 	///
 	/// - Parameter queue: the new `DispatchQueue` for child links
 	/// - Returns: the receiver
-	public func setQueue(_ queue: DispatchQueue) -> ProcessLink<A,B> {
-		self.queue = queue
+	public func setBlockPerformer(_ blockPerformer: AsyncBlockPerformer) -> ProcessLink<A,B> {
+		self.blockPerformer = blockPerformer
 		return self
 	}
 }
@@ -477,7 +478,7 @@ extension ProcessLink where B : Collection, B.IndexDistance == Int {
 	/// - Returns: a `ProcessLink` which will yield an array of `C`s to it's child links.
 	public func map<C>(_ transform: @escaping (B.Iterator.Element) -> C) -> ProcessLink<B, [C]> {
 		return self.chain({(collection: B, callback: @escaping ([C]) -> Void) in
-			collection.asyncMap(on: self.queue, transform: transform, completion: callback)
+			collection.asyncMap(on: self.blockPerformer, transform: transform, completion: callback)
 		})
 	}
 	
@@ -487,7 +488,7 @@ extension ProcessLink where B : Collection, B.IndexDistance == Int {
 	/// - Returns: a `ProcessLink` which will yield an array of `C`s to it's child links.
 	public func map<C>(_ transform: @escaping (B.Iterator.Element, @escaping (C)->Void) -> Void) -> ProcessLink<B, [C]> {
 		return self.chain({(collection: B, callback: @escaping ([C]) -> Void) in
-			collection.asyncMap(on: self.queue, transform: transform, completion: callback)
+			collection.asyncMap(on: self.blockPerformer, transform: transform, completion: callback)
 		})
 	}
 	
@@ -497,7 +498,7 @@ extension ProcessLink where B : Collection, B.IndexDistance == Int {
 	/// - Returns: a `ProcessLink` which will yield to it's child links an array containing those `B.Iterator.Element`s which `filter` approved.
 	public func filter(_ filter: @escaping (B.Iterator.Element) -> Bool) -> ProcessLink<B, [B.Iterator.Element]> {
 		return self.chain({(sequence: B, callback: @escaping ([B.Iterator.Element]) -> Void) in
-			sequence.asyncFilter(on: self.queue, transform: filter, completion: callback)
+			sequence.asyncFilter(on: self.blockPerformer, transform: filter, completion: callback)
 		})
 	}
 	
@@ -507,7 +508,7 @@ extension ProcessLink where B : Collection, B.IndexDistance == Int {
 	/// - Returns: a `ProcessLink` which will yield to it's child links an array containing those `B.Iterator.Element`s which `filter` approved.
 	public func filter(_ filter: @escaping (B.Iterator.Element, (Bool)->Void) -> Void) -> ProcessLink<B, [B.Iterator.Element]> {
 		return self.chain({(sequence: B, callback: @escaping ([B.Iterator.Element]) -> Void) in
-			sequence.asyncFilter(on: self.queue, transform: filter, completion: callback)
+			sequence.asyncFilter(on: self.blockPerformer, transform: filter, completion: callback)
 		})
 	}
 }
@@ -533,7 +534,7 @@ extension ProcessLink where B : Sequence {
 		
 		let returnLink = ProcessLink<B,B>(function: { (b, callback) in
 			callback(b)
-		}, errorHandler: self.errorHandler, queue: self.queue, path: self.path+["each"])
+		}, errorHandler: self.errorHandler, blockPerformer: self.blockPerformer, path: self.path+["each"])
 		
 		rootLink.finalLink = returnLink
 		
@@ -573,7 +574,7 @@ extension ProcessLink where B : OptionalProtocol {
 		
 		let returnLink = ProcessLink<Void, Void>(function: {_, block in block()},
 		                                         errorHandler: self.errorHandler,
-		                                         queue: self.queue,
+		                                         blockPerformer: self.blockPerformer,
 		                                         path: self.path + ["optionally"])
 		
 		var immediateChain: ProcessLink<B,Void>! = nil
@@ -582,7 +583,7 @@ extension ProcessLink where B : OptionalProtocol {
 			if let unwrapped = b.getWrapped() {
 				let unwrappedContext = ProcessLink<B.WrappedType, B.WrappedType>(function: {_, block in block(unwrapped)},
 				                                                                 errorHandler: self.errorHandler,
-				                                                                 queue: self.queue,
+				                                                                 blockPerformer: self.blockPerformer,
 				                                                                 path: self.path + ["optionally"])
 				
 				let lastLinkOfPostivePath = defineBlock(unwrappedContext)
@@ -645,7 +646,7 @@ extension ProcessLink  {
 			return b
 		}
 		
-		openingLink.queue = DispatchQueue.global()
+		openingLink.blockPerformer = DispatchQueue.global()
 		
 		let lastLink = defineBlock(openingLink)
 		

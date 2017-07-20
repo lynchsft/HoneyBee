@@ -12,11 +12,11 @@ import Foundation
 final public class RootLink<T> : Executable<T>, ErrorHandling {
 	
 	let path: [String]
-	let queue: DispatchQueue
+	let blockPerformer: AsyncBlockPerformer
 	var firstLink: ProcessLink<T,T>?
 	
-	init(queue: DispatchQueue, path: [String]) {
-		self.queue = queue
+	init(blockPerformer: AsyncBlockPerformer, path: [String]) {
+		self.blockPerformer = blockPerformer
 		self.path = path
 	}
 	
@@ -24,7 +24,7 @@ final public class RootLink<T> : Executable<T>, ErrorHandling {
 		let function = {(a: T, block: @escaping (T) -> Void) throws -> Void
 			in block(a)
 		}
-		self.firstLink = ProcessLink<T, T>(function: function, errorHandler: errorHandler, queue: self.queue, path: self.path + ["root"])
+		self.firstLink = ProcessLink<T, T>(function: function, errorHandler: errorHandler, blockPerformer: self.blockPerformer, path: self.path + ["root"])
 		return firstLink!
 	}
 		

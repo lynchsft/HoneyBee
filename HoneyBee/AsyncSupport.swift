@@ -10,58 +10,60 @@ import Foundation
 
 extension Collection where IndexDistance == Int {
 	
-	/*** \c completion is called from \c queue */
-	func asyncMap<B>(on queue: DispatchQueue = DispatchQueue.global(qos: .background), transform: @escaping (Iterator.Element) -> B, completion: @escaping ([B]) -> Void) {
-		self.asyncMap(on: queue, transform: { (element, callback) in
+	/*** \c completion is called from \c blockPerformer */
+	func asyncMap<B>(on blockPerformer: AsyncBlockPerformer = DispatchQueue.global(qos: .background), transform: @escaping (Iterator.Element) -> B, completion: @escaping ([B]) -> Void) {
+		self.asyncMap(on: blockPerformer, transform: { (element, callback) in
 			callback(transform(element))
 		}, completion: completion)
 	}
 	
-	/*** \c completion is called from \c queue */
-	func asyncMap<B>(on queue: DispatchQueue = DispatchQueue.global(qos: .background), transform: @escaping (Iterator.Element, @escaping (B) -> Void) -> Void, completion: @escaping ([B]) -> Void) {
+	/*** \c completion is called from \c blockPerformer */
+	func asyncMap<B>(on blockPerformer: AsyncBlockPerformer = DispatchQueue.global(qos: .background), transform: @escaping (Iterator.Element, @escaping (B) -> Void) -> Void, completion: @escaping ([B]) -> Void) {
 		let integrationSerialQueue = DispatchQueue(label: "asyncMapSerialQueue")
 		let group = DispatchGroup()
 		var results:[B?] = Array(repeating: .none, count: self.count)
 		
 		for (index, element) in self.enumerated() {
-			let workItem = DispatchWorkItem(block: {
+			let workItem = {
 				transform(element) { result in
 					integrationSerialQueue.async {
 						results[index] = result
 						group.leave()
 					}
 				}
-			})
+			}
 			group.enter()
-			queue.async(group: group, execute: workItem)
+			blockPerformer.asyncPerform(workItem)
 		}
 		
-		group.notify(queue: queue, execute: {
-			completion(results.map {
-				guard let b = $0 else {
-					preconditionFailure("asyncMap failed to fully populate the result set")
-				}
-				return b
-			})
+		group.notify(queue: .global(), execute: {
+			blockPerformer.asyncPerform {
+				completion(results.map {
+					guard let b = $0 else {
+						preconditionFailure("asyncMap failed to fully populate the result set")
+					}
+					return b
+				})
+			}
 		})
 	}
 	
-	/*** \c completion is called from \c queue */
-	func asyncFilter(on queue: DispatchQueue = DispatchQueue.global(qos: .background), transform: @escaping (Iterator.Element) -> Bool, completion: @escaping ([Iterator.Element]) -> Void  ) {
-		return self.asyncFilter(on:queue, transform: { (element, callback) in
+	/*** \c completion is called from \c blockPerformer */
+	func asyncFilter(on blockPerformer: AsyncBlockPerformer = DispatchQueue.global(qos: .background), transform: @escaping (Iterator.Element) -> Bool, completion: @escaping ([Iterator.Element]) -> Void  ) {
+		return self.asyncFilter(on:blockPerformer, transform: { (element, callback) in
 			callback(transform(element))
 		}, completion: completion)
 	}
 	
-	/*** \c completion is called from \c queue */
-	func asyncFilter(on queue: DispatchQueue = DispatchQueue.global(qos: .background), transform: @escaping (Iterator.Element, (Bool) -> Void) -> Void, completion: @escaping ([Iterator.Element]) -> Void  ) {
+	/*** \c completion is called from \c blockPerformer */
+	func asyncFilter(on blockPerformer: AsyncBlockPerformer = DispatchQueue.global(qos: .background), transform: @escaping (Iterator.Element, (Bool) -> Void) -> Void, completion: @escaping ([Iterator.Element]) -> Void  ) {
 		
 		let serialQueue = DispatchQueue(label: "asyncFilterSerialQueue")
 		let group = DispatchGroup()
 		var results:[Iterator.Element?] = Array(repeating: .none, count: self.count)
 		
 		for (index, element) in self.enumerated() {
-			let workItem = DispatchWorkItem(block: {
+			let workItem = {
 				transform(element) { include in
 					serialQueue.async {
 						if include {
@@ -70,22 +72,24 @@ extension Collection where IndexDistance == Int {
 						group.leave()
 					}
 				}
-			})
+			}
 			group.enter()
-			queue.async(group: group, execute: workItem)
+			blockPerformer.asyncPerform(workItem)
 		}
 		
-		group.notify(queue: queue, execute: {
-			let final = results.filter({ (optional) -> Bool in
-				if let _ = optional {
-					return true
-				} else{
-					return false
-				}
-			}).map({ (optional) -> Iterator.Element in
-				optional!
-			})
-			completion(final)
+		group.notify(queue: .global(), execute: {
+			blockPerformer.asyncPerform {
+				let final = results.filter({ (optional) -> Bool in
+					if let _ = optional {
+						return true
+					} else{
+						return false
+					}
+				}).map({ (optional) -> Iterator.Element in
+					optional!
+				})
+				completion(final)
+			}
 		})
 	}
 }
