@@ -37,7 +37,6 @@ final public class ProcessLink<A, B> : Executable<A>, PathDescribing {
 	private var function: (A, @escaping (B) -> Void) throws -> Void
 	fileprivate var errorHandler: ((Error, Any) -> Void)
 	fileprivate var queue: DispatchQueue // This is the queue which is passed on to chains
-	fileprivate var executionQueue: DispatchQueue // This is the queue which executes this chain. Usually they are the same.
 	
 	let path: [String]
 	
@@ -45,7 +44,6 @@ final public class ProcessLink<A, B> : Executable<A>, PathDescribing {
 		self.function = function
 		self.errorHandler = errorHandler
 		self.queue = queue
-		self.executionQueue = queue
 		self.path = path
 	}
 	
@@ -124,7 +122,7 @@ final public class ProcessLink<A, B> : Executable<A>, PathDescribing {
 	}
 	
 	override func execute(argument: A, completion fullChainCompletion: @escaping (Continue) -> Void) {
-		self.executionQueue.async {
+		self.queue.async {
 			do {
 				var callbackInvoked = false
 				let callbackInvokedLock = NSLock()
@@ -157,10 +155,10 @@ final public class ProcessLink<A, B> : Executable<A>, PathDescribing {
 							}
 						})
 						group.enter()
-						self.executionQueue.async(group: group, execute: workItem)
+						self.queue.async(group: group, execute: workItem)
 					}
 					
-					group.notify(queue: self.executionQueue, execute: {
+					group.notify(queue: self.queue, execute: {
 						if let finalLink = self.finalLink {
 							if continueExecuting {
 								finalLink.execute(argument: argument, completion: fullChainCompletion)
@@ -647,7 +645,7 @@ extension ProcessLink  {
 			return b
 		}
 		
-		openingLink.executionQueue = DispatchQueue.global()
+		openingLink.queue = DispatchQueue.global()
 		
 		let lastLink = defineBlock(openingLink)
 		
