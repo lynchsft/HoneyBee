@@ -36,7 +36,10 @@ final public class ProcessLink<A, B> : Executable<A>, PathDescribing {
 	
 	private var function: (A, @escaping (B) -> Void) throws -> Void
 	fileprivate var errorHandler: ((Error, Any) -> Void)
-	fileprivate var blockPerformer: AsyncBlockPerformer // This is the queue which is passed on to chains
+	/// This is the queue which is passed on to sub chains
+	fileprivate var blockPerformer: AsyncBlockPerformer
+	/// This is the queue which is used to execute this chain. This and `blockPerformer` are the same `setBlockPerformer(_:)` is called
+	fileprivate var myBlockPerformer: AsyncBlockPerformer
 	
 	let path: [String]
 	
@@ -44,6 +47,7 @@ final public class ProcessLink<A, B> : Executable<A>, PathDescribing {
 		self.function = function
 		self.errorHandler = errorHandler
 		self.blockPerformer = blockPerformer
+		self.myBlockPerformer = blockPerformer
 		self.path = path
 	}
 	
@@ -122,7 +126,7 @@ final public class ProcessLink<A, B> : Executable<A>, PathDescribing {
 	}
 	
 	override func execute(argument: A, completion fullChainCompletion: @escaping (Continue) -> Void) {
-		self.blockPerformer.asyncPerform {
+		self.myBlockPerformer.asyncPerform {
 			do {
 				var callbackInvoked = false
 				let callbackInvokedLock = NSLock()
@@ -154,11 +158,11 @@ final public class ProcessLink<A, B> : Executable<A>, PathDescribing {
 							}
 						}
 						group.enter()
-						self.blockPerformer.asyncPerform(workItem)
+						self.myBlockPerformer.asyncPerform(workItem)
 					}
 					
 					group.notify(queue: .global(), execute: {
-						self.blockPerformer.asyncPerform {
+						self.myBlockPerformer.asyncPerform {
 							if let finalLink = self.finalLink {
 								if continueExecuting {
 									finalLink.execute(argument: argument, completion: fullChainCompletion)
@@ -465,7 +469,7 @@ extension ProcessLink {
 	/// - Parameter queue: the new `DispatchQueue` for child links
 	/// - Returns: the receiver
 	public func setBlockPerformer(_ blockPerformer: AsyncBlockPerformer) -> ProcessLink<A,B> {
-		self.blockPerformer = blockPerformer
+		self.blockPerformer = blockPerformer // set the performer for sub chains, not for this link
 		return self
 	}
 }
@@ -645,8 +649,6 @@ extension ProcessLink  {
 			semaphore.wait()
 			return b
 		}
-		
-		openingLink.blockPerformer = DispatchQueue.global()
 		
 		let lastLink = defineBlock(openingLink)
 		

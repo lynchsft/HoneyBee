@@ -526,30 +526,27 @@ class HoneyBeeTests: XCTestCase {
 	}
 	
 	func testQueueChange() {
-		func testSimpleChain() {
-			let expect = expectation(description: "Simple chain should complete")
-			
-			func isMainThread() -> Bool{
-				return Thread.isMainThread
-			}
-			
-			HoneyBee.start(on: DispatchQueue.main) { root in
-				root.setErrorHandler(fail)
-					.value(4)
-					.chain(intToString)
-					.setBlockPerformer(DispatchQueue.global())
-					.splice(isMainThread)
-					.chain(assertEquals =<< false)
-					.setBlockPerformer(DispatchQueue.main)
-					.splice(isMainThread)
-					.chain(assertEquals =<< true)
-					.chain(expect.fulfill)
-			}
-			
-			waitForExpectations(timeout: 1) { error in
-				if let error = error {
-					XCTFail("waitForExpectationsWithTimeout errored: \(error)")
-				}
+		let expect = expectation(description: "Simple chain should complete")
+		
+		func assertThreadIsMain(_ isMain: Bool){
+			XCTAssert(Thread.isMainThread == isMain, "Thead-mainness expected to be \(isMain) but is \(Thread.isMainThread)")
+		}
+		
+		HoneyBee.start(on: DispatchQueue.main) { root in
+			root.setErrorHandler(fail)
+				.value(4)
+				.chain(intToString)
+				.splice(assertThreadIsMain =<< true)
+				.setBlockPerformer(DispatchQueue.global())
+				.splice(assertThreadIsMain =<< false)
+				.setBlockPerformer(DispatchQueue.main)
+				.splice(assertThreadIsMain =<< true)
+				.chain(expect.fulfill)
+		}
+		
+		waitForExpectations(timeout: 1) { error in
+			if let error = error {
+				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
 			}
 		}
 	}
