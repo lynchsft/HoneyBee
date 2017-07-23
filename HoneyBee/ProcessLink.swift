@@ -35,7 +35,7 @@ final public class ProcessLink<A, B> : Executable<A>, PathDescribing {
 	fileprivate var finalLink: ProcessLink<A,A>?
 	
 	private var function: (A, @escaping (B) -> Void) throws -> Void
-	fileprivate var errorHandler: ((Error, Any) -> Void)
+	fileprivate var errorHandler: ((Error, ErrorContext) -> Void)
 	/// This is the queue which is passed on to sub chains
 	fileprivate var blockPerformer: AsyncBlockPerformer
 	/// This is the queue which is used to execute this chain. This and `blockPerformer` are the same `setBlockPerformer(_:)` is called
@@ -43,7 +43,7 @@ final public class ProcessLink<A, B> : Executable<A>, PathDescribing {
 	
 	let path: [String]
 	
-	init(function:  @escaping (A, @escaping (B) -> Void) throws -> Void, errorHandler: @escaping ((Error, Any) -> Void), blockPerformer: AsyncBlockPerformer, path: [String]) {
+	init(function:  @escaping (A, @escaping (B) -> Void) throws -> Void, errorHandler: @escaping ((Error, ErrorContext) -> Void), blockPerformer: AsyncBlockPerformer, path: [String]) {
 		self.function = function
 		self.errorHandler = errorHandler
 		self.blockPerformer = blockPerformer
@@ -178,7 +178,8 @@ final public class ProcessLink<A, B> : Executable<A>, PathDescribing {
 					})
 				}
 			} catch {
-				self.errorHandler(error, argument)
+				let errorContext = ErrorContext(subject: argument)
+				self.errorHandler(error, errorContext)
 				if let finalLink = self.finalLink {
 					finalLink.execute(argument: argument) { _ in // doesn't matter how the finally chain ended
 						fullChainCompletion(false) // don't continue
@@ -220,7 +221,7 @@ extension ProcessLink : ErrorHandling {
 	///
 	/// - Parameter errorHandler: a function which takes an Error and an `Any` context object. The context object is usual the object which was being acted upon when the error occurred.
 	/// - Returns: A `ProcessLink` which has `errorHandler` installed
-	public func setErrorHandler(_ errorHandler: @escaping (Error, Any) -> Void ) -> ProcessLink<A,B> {
+	public func setErrorHandler(_ errorHandler: @escaping (Error, ErrorContext) -> Void ) -> ProcessLink<A,B> {
 		self.errorHandler = errorHandler
 		return self
 	}

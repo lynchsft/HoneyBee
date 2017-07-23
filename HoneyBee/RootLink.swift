@@ -20,7 +20,7 @@ final public class RootLink<T> : Executable<T>, ErrorHandling {
 		self.path = path
 	}
 	
-	public func setErrorHandler(_ errorHandler: @escaping (Error, Any) -> Void ) -> ProcessLink<T,T> {
+	public func setErrorHandler(_ errorHandler: @escaping (Error, ErrorContext) -> Void ) -> ProcessLink<T,T> {
 		let function = {(a: T, block: @escaping (T) -> Void) throws -> Void
 			in block(a)
 		}

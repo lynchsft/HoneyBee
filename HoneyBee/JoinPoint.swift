@@ -20,10 +20,10 @@ final class JoinPoint<A> : Executable<A>, PathDescribing {
 	private var executionResult: ExecutionResult?
 	private var resultCallback: ((ExecutionResult) -> Void)?
 	private var blockPerformer: AsyncBlockPerformer
-	private let errorHandler: ((Error, Any) -> Void)
+	private let errorHandler: ((Error, ErrorContext) -> Void)
 	let path: [String]
 	
-	init(blockPerformer: AsyncBlockPerformer, path: [String], errorHandler: @escaping ((Error, Any) -> Void)) {
+	init(blockPerformer: AsyncBlockPerformer, path: [String], errorHandler: @escaping ((Error, ErrorContext) -> Void)) {
 		self.blockPerformer = blockPerformer
 		self.path = path
 		self.errorHandler = errorHandler

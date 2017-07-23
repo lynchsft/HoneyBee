@@ -492,7 +492,7 @@ class HoneyBeeTests: XCTestCase {
 				.chain(finishExpectation.fulfill)
 		}
 		
-		waitForExpectations(timeout: TimeInterval(source.count * sleepSeconds * 4 + 1)) { error in
+		waitForExpectations(timeout: TimeInterval(source.count * sleepSeconds * 4 + 2)) { error in
 			if let error = error {
 				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
 			}
@@ -545,6 +545,35 @@ class HoneyBeeTests: XCTestCase {
 		}
 		
 		waitForExpectations(timeout: 1) { error in
+			if let error = error {
+				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
+			}
+		}
+	}
+	
+	func testErrorContext() {
+		let expect = expectation(description: "Chain should fail with error")
+		
+		func errorHanlderWithContext(_ error: Error, errorContext: ErrorContext) {
+			if let subjectString = errorContext.subject as? String  {
+				XCTAssert(subjectString == "7cat")
+				expect.fulfill()
+			} else {
+				XCTFail("Subject is of unexpected type: \(errorContext.subject)")
+			}
+		}
+		
+		HoneyBee.start { root in
+			root.setErrorHandler(errorHanlderWithContext)
+				.value(7)
+				.chain(intToString)
+				.chain(stringCat)
+				.chain(stringToInt)
+				.chain(multiplyInt)
+				.splice(failIfReached)
+		}
+		
+		waitForExpectations(timeout: 2) { error in
 			if let error = error {
 				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
 			}
@@ -639,7 +668,7 @@ func returnLonger(first: String, second: String) -> String {
 	}
 }
 
-func fail(on error: Error,cause: Any) {
+func fail(on error: Error) {
 	XCTFail("Error occured during test \(error)")
 }
 

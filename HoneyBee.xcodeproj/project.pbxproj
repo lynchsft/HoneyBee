@@ -10,6 +10,7 @@
 		FA205F1E1EB2DADB005B01FB /* BindOperator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA205F1D1EB2DADB005B01FB /* BindOperator.swift */; };
 		FA256FB61E5DB490008FB7C0 /* JoinPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA256FB51E5DB490008FB7C0 /* JoinPoint.swift */; };
 		FA3837CF1F10F7450021412C /* RootLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA3837CE1F10F7450021412C /* RootLink.swift */; };
+		FA3E405A1F25073D00E295B0 /* ErrorContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA3E40591F25073D00E295B0 /* ErrorContext.swift */; };
 		FA41097B1E9CFBC4002A6BA6 /* HoneyBeeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA41097A1E9CFBC4002A6BA6 /* HoneyBeeTests.swift */; };
 		FA41097D1E9CFBC4002A6BA6 /* HoneyBee.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA473BB81E352CB1007E4D61 /* HoneyBee.framework */; };
 		FA48E16D1E947B1300729F09 /* Bind.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA48E16C1E947B1300729F09 /* Bind.swift */; };
@@ -37,6 +38,7 @@
 		FA205F1D1EB2DADB005B01FB /* BindOperator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BindOperator.swift; sourceTree = "<group>"; };
 		FA256FB51E5DB490008FB7C0 /* JoinPoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JoinPoint.swift; sourceTree = "<group>"; };
 		FA3837CE1F10F7450021412C /* RootLink.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RootLink.swift; sourceTree = "<group>"; };
+		FA3E40591F25073D00E295B0 /* ErrorContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorContext.swift; sourceTree = "<group>"; };
 		FA4109781E9CFBC4002A6BA6 /* HoneyBeeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HoneyBeeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA41097A1E9CFBC4002A6BA6 /* HoneyBeeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HoneyBeeTests.swift; sourceTree = "<group>"; };
 		FA41097C1E9CFBC4002A6BA6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -111,6 +113,7 @@
 				FA48E16C1E947B1300729F09 /* Bind.swift */,
 				FA205F1D1EB2DADB005B01FB /* BindOperator.swift */,
 				FA4E8D3B1E8752E400D751B3 /* Chainable.swift */,
+				FA3E40591F25073D00E295B0 /* ErrorContext.swift */,
 				FADDE62A1F0DD02D00C19F5E /* ErrorHandling.swift */,
 				FAC9DC7D1E352D6F00E21A01 /* FailableResult.swift */,
 				FAC0CA1B1E4BDB6900ECC0DC /* HoneyBee.swift */,
@@ -285,6 +288,7 @@
 				FA48E16D1E947B1300729F09 /* Bind.swift in Sources */,
 				FA205F1E1EB2DADB005B01FB /* BindOperator.swift in Sources */,
 				FA3837CF1F10F7450021412C /* RootLink.swift in Sources */,
+				FA3E405A1F25073D00E295B0 /* ErrorContext.swift in Sources */,
 				FAC9DC811E352D6F00E21A01 /* ProcessLink.swift in Sources */,
 				FADDE62B1F0DD02D00C19F5E /* ErrorHandling.swift in Sources */,
 				FAC9DC7F1E352D6F00E21A01 /* AsyncSupport.swift in Sources */,
