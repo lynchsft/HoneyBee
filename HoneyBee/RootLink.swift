@@ -24,7 +24,7 @@ final public class RootLink<T> : Executable<T>, ErrorHandling {
 		let function = {(a: T, block: @escaping (T) -> Void) throws -> Void
 			in block(a)
 		}
-		self.firstLink = ProcessLink<T, T>(function: function, errorHandler: errorHandler, blockPerformer: self.blockPerformer, path: self.path + ["root"])
+		self.firstLink = ProcessLink<T, T>(function: function, errorHandler: errorHandler, blockPerformer: self.blockPerformer, path: self.path + ["root"], functionFile: #file, functionLine: #line)
 		return firstLink!
 	}
 		

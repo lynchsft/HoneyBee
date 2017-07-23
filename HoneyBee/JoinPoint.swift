@@ -59,7 +59,11 @@ final class JoinPoint<A> : Executable<A>, PathDescribing {
 		
 		let link = ProcessLink<Void, (A,B)>(function: { _, callback in
 			callback(tuple!)
-		}, errorHandler: self.errorHandler, blockPerformer: self.blockPerformer, path: self.path+["conjoin"])
+		}, errorHandler: self.errorHandler,
+		   blockPerformer: self.blockPerformer,
+		   path: self.path+["conjoin"],
+		   functionFile: #file,
+		   functionLine: #line)
 		
 		self.yieldResult { a, myCompletion in
 			other.yieldResult { b, otherCompletion in
