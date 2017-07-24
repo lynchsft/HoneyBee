@@ -8,7 +8,24 @@
 
 import Foundation
 
-enum FailableResult<T> {
+public protocol FailableResultProtocol {
+	associatedtype Wrapped
+	
+	func value() throws -> Wrapped
+}
+
+public enum FailableResult<T> : FailableResultProtocol{
 	case success(T)
 	case failure(Swift.Error)
+	
+	public func value() throws -> T {
+		switch(self) {
+		case let .success(t) :
+			return t
+		case let .failure(error) :
+			throw error
+		}
+	}
 }
+
+

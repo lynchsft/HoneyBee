@@ -241,19 +241,8 @@ extension ProcessLink : ErrorHandling {
 	}
 }
 
-extension ProcessLink : Chainable {
-	
-	@discardableResult public func chain<C>(file: StaticString = #file, line: UInt = #line, _ function:  @escaping (B) throws -> (C) ) -> ProcessLink<B, C> {
-		return self.chain(file: file, line: line) { (b: B, callback: @escaping (C) -> Void) in
-			try callback(function(b))
-		}
-	}
-
-	@discardableResult public func chain<C>(file: StaticString = #file, line: UInt = #line, _ function:  @escaping (B, ((C) -> Void)?) throws -> Void) -> ProcessLink<B, C> {
-		return self.chain(file: file, line: line) { (b: B, callback: @escaping (C) -> Void) throws in
-			try function(b,callback)
-		}
-	}
+extension ProcessLink {
+	// function mutation
 	
 	private func objcErrorCallbackToSwift(_ function: @escaping (@escaping (Error?)->Void ) -> Void) -> (@escaping (FailableResult<Void>) -> Void) -> Void {
 		return {(callback: @escaping ((FailableResult<Void>) -> Void)) in
@@ -292,7 +281,11 @@ extension ProcessLink : Chainable {
 		}
 	}
 	
-	private func elevate<T>(_ function: @escaping (T) -> (@escaping (Error?) -> Void) -> Void) -> (T, @escaping (FailableResult<T>) -> Void) -> Void {
+	fileprivate func identity<T>(_ value: T) -> T {
+		return value
+	}
+	
+	fileprivate func elevate<T>(_ function: @escaping (T) -> (@escaping (Error?) -> Void) -> Void) -> (T, @escaping (FailableResult<T>) -> Void) -> Void {
 		return { (t: T, callback: @escaping (FailableResult<T>) -> Void) -> Void in
 			self.objcErrorCallbackToSwift(function(t))({ result in
 				callback(self.populateVoid(failableResult: result, with: t))
@@ -300,7 +293,7 @@ extension ProcessLink : Chainable {
 		}
 	}
 	
-	private func elevate<T>(_ function: @escaping (T, @escaping (Error?) -> Void) -> Void) -> (T, @escaping (FailableResult<T>) -> Void) -> Void {
+	fileprivate func elevate<T>(_ function: @escaping (T, @escaping (Error?) -> Void) -> Void) -> (T, @escaping (FailableResult<T>) -> Void) -> Void {
 		return { (t: T, callback: @escaping (FailableResult<T>) -> Void) -> Void in
 			self.objcErrorCallbackToSwift(function =<< t)({ result in
 				callback(self.populateVoid(failableResult: result, with: t))
@@ -308,7 +301,7 @@ extension ProcessLink : Chainable {
 		}
 	}
 	
-	private func elevate<T>(_ function: @escaping (@escaping (Error?) -> Void) -> Void) -> (T, @escaping (FailableResult<T>) -> Void) -> Void {
+	fileprivate func elevate<T>(_ function: @escaping (@escaping (Error?) -> Void) -> Void) -> (T, @escaping (FailableResult<T>) -> Void) -> Void {
 		return { (t: T, callback: @escaping (FailableResult<T>) -> Void) -> Void in
 			self.objcErrorCallbackToSwift(function)({ result in
 				callback(self.populateVoid(failableResult: result, with: t))
@@ -316,83 +309,72 @@ extension ProcessLink : Chainable {
 		}
 	}
 	
-	private func elevate<T, C>(_ function: @escaping (T, @escaping (C?, Error?) -> Void) -> Void) -> (T, @escaping (FailableResult<C>) -> Void) -> Void {
+	fileprivate func elevate<T, C>(_ function: @escaping (T, @escaping (C?, Error?) -> Void) -> Void) -> (T, @escaping (FailableResult<C>) -> Void) -> Void {
 		return { (t: T, callback: @escaping (FailableResult<C>) -> Void) -> Void in
 			self.objcErrorCallbackToSwift(bind(function, t))(callback)
 		}
 	}
 	
-	private func elevate<C>(_ function: @escaping (@escaping (C?, Error?) -> Void) -> Void) -> (@escaping (FailableResult<C>) -> Void) -> Void {
+	fileprivate func elevate<C>(_ function: @escaping (@escaping (C?, Error?) -> Void) -> Void) -> (@escaping (FailableResult<C>) -> Void) -> Void {
 		return { (callback: @escaping (FailableResult<C>) -> Void) -> Void in
 			self.objcErrorCallbackToSwift(function)(callback)
 		}
 	}
 	
-	private func checkResult<T>(_ result: FailableResult<T>) throws -> T {
-		switch result {
-		case let .success(t):
-			return t
-		case let .failure(error):
-			throw error
+	fileprivate func elevate<T, C>(_ function: @escaping (T) -> (@escaping (C?, Error?) -> Void) -> Void) -> (T, @escaping (FailableResult<C>) -> Void) -> Void {
+		return { (t: T, callback: @escaping (FailableResult<C>) -> Void) -> Void in
+			self.objcErrorCallbackToSwift(function(t))(callback)
 		}
 	}
+}
+
+extension ProcessLink : Chainable {
 	
-	private func identity<T>(_ value: T) -> T {
-		return value
+	@discardableResult public func chain<C>(file: StaticString = #file, line: UInt = #line, _ function:  @escaping (B) throws -> (C) ) -> ProcessLink<B, C> {
+		return self.chain(file: file, line: line) { (b: B, callback: @escaping (C) -> Void) in
+			try callback(function(b))
+		}
 	}
-	
-	private func failableResultWrapper<C>(file: StaticString, line: UInt, _ body:@escaping (B, @escaping (FailableResult<C>)->Void) -> Void) -> ProcessLink<B,C>{
-		var storedB: B! = nil
-		var storedC: C! = nil
-		return self.chain(file: file, line: line) { (b:B, callback: @escaping (FailableResult<C>) -> Void) in
-			storedB = b
-			body(b,callback)
-		}.chain(file: file, line: line, checkResult)
-			.chain(file: file, line: line) {storedC = $0}
-			.chain(file: file, line: line) {_ in return storedB!}
-			.chain(file: file, line: line) {_ in return storedC!}
-	}
-	
-	private func failableResultWrapper(file: StaticString, line: UInt, _ body:@escaping (B, @escaping (FailableResult<B>)->Void) -> Void) -> ProcessLink<B,B>{
-		return self.chain(file: file, line: line) { (b:B, callback: @escaping (FailableResult<B>) -> Void) in
-			body(b,callback)
-		}.chain(file: file, line: line, checkResult)
-			.chain(file: file, line: line, identity)
+
+	@discardableResult public func chain<C>(file: StaticString = #file, line: UInt = #line, _ function:  @escaping (B, ((C) -> Void)?) throws -> Void) -> ProcessLink<B, C> {
+		return self.chain(file: file, line: line) { (b: B, callback: @escaping (C) -> Void) throws in
+			try function(b,callback)
+		}
 	}
 	
 	@discardableResult public func chain(file: StaticString = #file, line: UInt = #line, _ function: @escaping (B) -> (((Error?) -> Void)?) -> Void) -> ProcessLink<B, B> {
-		return self.failableResultWrapper(file: file, line: line) { (b:B, callback: @escaping (FailableResult<B>) -> Void) in
+		return self.chain(file: file, line: line, { (b: B, callback: @escaping (FailableResult<B>) -> Void) in
 			self.elevate(function)(b,callback)
-		}
+		}).chain(identity)
 	}
 	
 	@discardableResult public func chain(file: StaticString = #file, line: UInt = #line, _ function: @escaping (B) -> (@escaping (Error?) -> Void) -> Void) -> ProcessLink<B, B> {
-		return self.failableResultWrapper(file: file, line: line) { (b:B, callback: @escaping (FailableResult<B>) -> Void) in
+		return self.chain(file: file, line: line) { (b:B, callback: @escaping (FailableResult<B>) -> Void) in
 			self.elevate(function)(b,callback)
-		}
+		}.chain(identity)
 	}
 	
 	@discardableResult public func chain(file: StaticString = #file, line: UInt = #line, _ function: @escaping (B, ((Error?) -> Void)?) -> Void) -> ProcessLink<B, B> {
-		return self.failableResultWrapper(file: file, line: line) { (b:B, callback: @escaping (FailableResult<B>) -> Void) in
+		return self.chain(file: file, line: line) { (b:B, callback: @escaping (FailableResult<B>) -> Void) in
 			self.elevate(function)(b,callback)
-		}
+		}.chain(identity)
 	}
 	
 	@discardableResult public func chain(file: StaticString = #file, line: UInt = #line, _ function: @escaping (B, @escaping (Error?) -> Void) -> Void) -> ProcessLink<B, B> {
-		return self.failableResultWrapper(file: file, line: line) { (b:B, callback: @escaping (FailableResult<B>) -> Void) in
+		return self.chain(file: file, line: line) { (b:B, callback: @escaping (FailableResult<B>) -> Void) in
 			self.elevate(function)(b,callback)
-		}
+		}.chain(identity)
 	}
 	
 	@discardableResult public func chain<C>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (B, ((C?, Error?) -> Void)?) -> Void) -> ProcessLink<B, C> {
-		return self.failableResultWrapper(file: file, line: line) { (b:B, callback: @escaping (FailableResult<C>)->Void) in
-			self.elevate(function)(b,callback)
+		return self.chain(file: file, line: line) { (b:B, callback: @escaping (FailableResult<C>)->Void) in
+			self.elevate(function)(b, callback)
 		}
 	}
 	
 	@discardableResult public func chain<C>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (B, @escaping (C?, Error?) -> Void) -> Void) -> ProcessLink<B, C> {
-		return self.failableResultWrapper(file: file, line: line) { (b:B, callback: @escaping (FailableResult<C>)->Void) in
-			self.elevate(function)(b,callback)
+		return self.chain(file: file, line: line) { (b:B, callback: @escaping (FailableResult<C>)->Void) in
+			self.elevate(function)(b, callback)
 		}
 	}
 	
@@ -409,15 +391,15 @@ extension ProcessLink : Chainable {
 	}
 	
 	@discardableResult public func chain<C>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (B) -> (@escaping (C?, Error?) -> Void) -> Void) -> ProcessLink<B, C> {
-		return self.failableResultWrapper(file: file, line: line) { (b:B, callback: @escaping (FailableResult<C>)->Void) in
-			self.objcErrorCallbackToSwift(function(b))(callback)
+		return self.chain(file: file, line: line) { (b: B, callback: @escaping (FailableResult<C>) -> Void) in
+			self.elevate(function)(b, callback)
 		}
 	}
 
 	@discardableResult public func chain(file: StaticString = #file, line: UInt = #line, _ function: @escaping (@escaping (Error?) -> Void) -> Void) -> ProcessLink<B, B> {
-		return self.failableResultWrapper(file: file, line: line) { (b:B, callback: @escaping (FailableResult<B>) -> Void) in
+		return self.chain(file: file, line: line) { (b:B, callback: @escaping (FailableResult<B>) -> Void) in
 			self.elevate(function)(b,callback)
-		}
+		}.chain(identity)
 	}
 	
 	@discardableResult public func chain<C>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (@escaping (C) -> Void) throws -> Void) -> ProcessLink<B, C> {
@@ -427,14 +409,14 @@ extension ProcessLink : Chainable {
 	}
 
 	@discardableResult public func chain<C>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (((C?, Error?) -> Void)?) -> Void) -> ProcessLink<B, C> {
-		return self.failableResultWrapper(file: file, line: line) { (b:B, callback: @escaping (FailableResult<C>)->Void) in
-			self.objcErrorCallbackToSwift(function)(callback)
+		return self.chain(file: file, line: line) { (b:B, callback: @escaping (FailableResult<C>)->Void) in
+			self.elevate(function)(callback)
 		}
 	}
 	
 	@discardableResult public func chain<C>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (@escaping (C?, Error?) -> Void) -> Void) -> ProcessLink<B, C> {
-		return self.failableResultWrapper(file: file, line: line) { (b:B, callback: @escaping (FailableResult<C>)->Void) in
-			self.objcErrorCallbackToSwift(function)(callback)
+		return self.chain(file: file, line: line) { (b:B, callback: @escaping (FailableResult<C>)->Void) in
+			self.elevate(function)(callback)
 		}
 	}
 	
@@ -445,14 +427,14 @@ extension ProcessLink : Chainable {
 	}
 	
 	@discardableResult public func chain(file: StaticString = #file, line: UInt = #line, _ function: @escaping (((Error?) -> Void)?) -> Void) -> ProcessLink<B, B> {
-		return self.failableResultWrapper(file: file, line: line) { (b:B, callback: @escaping (FailableResult<B>) -> Void) in
+		return self.chain(file: file, line: line) { (b:B, callback: @escaping (FailableResult<B>) -> Void) in
 			self.elevate(function)(b,callback)
-		}
+		}.chain(identity)
 	}
 	
 	@discardableResult public func chain<C>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (B) -> (((C?, Error?) -> Void)?) -> Void) -> ProcessLink<B, C> {
-		return self.failableResultWrapper(file: file, line: line) { (b:B, callback: @escaping (FailableResult<C>)->Void) in
-			self.objcErrorCallbackToSwift(function(b))(callback)
+		return self.chain(file: file, line: line) { (b:B, callback: @escaping (FailableResult<C>)->Void) in
+			self.elevate(function)(b, callback)
 		}
 	}
 	
@@ -466,6 +448,51 @@ extension ProcessLink : Chainable {
 		return self.chain(file: file, line: line) { (b:B, callback: @escaping (C) -> Void) throws -> Void in
 			try callback(function())
 		}
+	}
+}
+
+extension ProcessLink {
+	private func failableWrapper<C,Failable>(file: StaticString, line: UInt, body: @escaping (ProcessLink<B,B>) -> ProcessLink<B,Failable>) -> ProcessLink<B, C> where Failable : FailableResultProtocol, Failable.Wrapped == C {
+		var storedB: B! = nil
+		var storedFailable: Failable! = nil
+
+		return body(self.chain(file: file, line: line) { (b:B) -> B in
+			storedB = b
+			return b
+			})
+			.chain(file: file, line: line) {storedFailable = $0}
+			.chain(file: file, line: line) {_ in return storedB!}
+			.chain(file: file, line: line) {_ in return try storedFailable.value()}
+	}
+	
+	@discardableResult public func chain<C,Failable>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (B, @escaping (Failable) -> Void) -> Void) -> ProcessLink<B, C> where Failable : FailableResultProtocol, Failable.Wrapped == C {
+		return self.failableWrapper(file: file, line: line, body: { (link: ProcessLink<B, B>) -> ProcessLink<B, Failable> in
+			link.chain(file: file, line: line, function)
+		})
+	}
+	
+	@discardableResult public func chain<C,Failable>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (B, ((Failable) -> Void)?) -> Void) -> ProcessLink<B, C> where Failable : FailableResultProtocol, Failable.Wrapped == C {
+		return self.failableWrapper(file: file, line: line, body: { (link: ProcessLink<B, B>) -> ProcessLink<B, Failable> in
+			link.chain(file: file, line: line, function)
+		})
+	}
+	
+	@discardableResult public func chain<C,Failable>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (B) -> (@escaping (Failable) -> Void) -> Void) -> ProcessLink<B, C> where Failable : FailableResultProtocol, Failable.Wrapped == C {
+		return self.failableWrapper(file: file, line: line, body: { (link: ProcessLink<B, B>) -> ProcessLink<B, Failable> in
+			link.chain(file: file, line: line, function)
+		})
+	}
+	
+	@discardableResult public func chain<C,Failable>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (B) -> (((Failable) -> Void)?) -> Void) -> ProcessLink<B, C> where Failable : FailableResultProtocol, Failable.Wrapped == C {
+		return self.failableWrapper(file: file, line: line, body: { (link: ProcessLink<B, B>) -> ProcessLink<B, Failable> in
+			link.chain(file: file, line: line, function)
+		})
+	}
+	
+	@discardableResult public func chain<C,Failable>(file: StaticString = #file, line: UInt = #line, _ function: @escaping ((Failable) -> Void) -> Void) -> ProcessLink<B, C> where Failable : FailableResultProtocol, Failable.Wrapped == C {
+		return self.failableWrapper(file: file, line: line, body: { (link: ProcessLink<B, B>) -> ProcessLink<B, Failable> in
+			link.chain(file: file, line: line, function)
+		})
 	}
 }
 

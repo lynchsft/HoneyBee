@@ -554,12 +554,12 @@ class HoneyBeeTests: XCTestCase {
 	func testErrorContext() {
 		let expect = expectation(description: "Chain should fail with error")
 		
-		func errorHanlderWithContext(_ error: Error, errorContext: ErrorContext) {
-			if let subjectString = errorContext.subject as? String  {
+		func errorHanlderWithContext(_ error: Error, context: ErrorContext) {
+			if let subjectString = context.subject as? String  {
 				XCTAssert(subjectString == "7cat")
 				expect.fulfill()
 			} else {
-				XCTFail("Subject is of unexpected type: \(errorContext.subject)")
+				XCTFail("Subject is of unexpected type: \(context.subject)")
 			}
 		}
 		
@@ -602,15 +602,12 @@ func stringCat(string: String) -> String {
 	return "\(string)cat"
 }
 
-func dangerous() throws -> Int {
-	return try stringToInt(string: "27")
-}
-
-func stringToInt(string: String) throws -> Int {
+func stringToInt(string: String, callback: (FailableResult<Int>) -> Void) {
 	if let int = Int(string) {
-		return int
+		callback(.success(int))
 	} else {
-		throw NSError(domain: "couldn't convert string to int", code: -2, userInfo: ["string:": string])
+		let error = NSError(domain: "couldn't convert string to int", code: -2, userInfo: ["string:": string])
+		callback(.failure(error))
 	}
 }
 
