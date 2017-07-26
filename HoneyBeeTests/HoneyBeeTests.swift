@@ -553,10 +553,19 @@ class HoneyBeeTests: XCTestCase {
 	
 	func testErrorContext() {
 		let expect = expectation(description: "Chain should fail with error")
+		var expectedFile: StaticString! = nil
+		var expectedLine: UInt! = nil
 		
 		func errorHanlderWithContext(_ error: Error, context: ErrorContext) {
 			if let subjectString = context.subject as? String  {
 				XCTAssert(subjectString == "7cat")
+				if let expectedFile = expectedFile, let expectedLine = expectedLine {
+					XCTAssertEqual(context.file.description, expectedFile.description)
+					XCTAssertEqual(context.line, expectedLine)
+				} else {
+					XCTFail("expected variables not setup")
+				}
+				
 				expect.fulfill()
 			} else {
 				XCTFail("Subject is of unexpected type: \(context.subject)")
@@ -568,7 +577,7 @@ class HoneyBeeTests: XCTestCase {
 				.value(7)
 				.chain(intToString)
 				.chain(stringCat)
-				.chain(stringToInt)
+				.chain{(string:String) -> String in expectedFile = #file; expectedLine = #line; return string}.chain(stringToInt)
 				.chain(multiplyInt)
 				.splice(failIfReached)
 		}

@@ -44,8 +44,8 @@ final public class ProcessLink<A, B> : Executable<A>, PathDescribing {
 	// Debug info
 	
 	let path: [String]
-	let functionFile: StaticString
-	let functionLine: UInt
+	private let functionFile: StaticString
+	private let functionLine: UInt
 	
 	init(function:  @escaping (A, @escaping (B) -> Void) throws -> Void, errorHandler: @escaping ((Error, ErrorContext) -> Void), blockPerformer: AsyncBlockPerformer, path: [String], functionFile: StaticString, functionLine: UInt) {
 		self.function = function
@@ -67,8 +67,8 @@ final public class ProcessLink<A, B> : Executable<A>, PathDescribing {
 		                             errorHandler: self.errorHandler,
 		                             blockPerformer: self.blockPerformer,
 		                             path: self.path + [tname(function)],
-		                             functionFile: functionFile,
-		                             functionLine: functionLine)
+		                             functionFile: file,
+		                             functionLine: line)
 		self.createdLinks.append(link)
 		return link
 	}
