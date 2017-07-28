@@ -69,7 +69,7 @@ def generate_chainable()
 			"///Creates a new ProcessLink which passes through argument of type B and appends the link to the execution list of this ProcessLink"
 		
 		generated_chain_declarations << documentation
-		generated_chain_declarations << "@discardableResult func #{method_name}#{extra_generic_parameter}(file: StaticString, line: UInt, _ function: @escaping #{function_signature} ) -> ProcessLink<B,#{transform_result_type}>"
+		generated_chain_declarations << "@discardableResult func #{method_name}#{extra_generic_parameter}(file: StaticString, line: UInt, functionDescription: String?, _ function: @escaping #{function_signature} ) -> ProcessLink<B,#{transform_result_type}>"
 		generated_chain_declarations << ""
 	}
 
