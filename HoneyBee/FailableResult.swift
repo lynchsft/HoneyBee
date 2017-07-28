@@ -26,6 +26,15 @@ public enum FailableResult<T> : FailableResultProtocol{
 			throw error
 		}
 	}
+	
+	internal init<Failable>(_ failable: Failable) where Failable : FailableResultProtocol, Failable.Wrapped == T {
+		do {
+			let t =  try failable.value()
+			self = .success(t)
+		} catch {
+			self = .failure(error)
+		}
+	}
 }
 
 

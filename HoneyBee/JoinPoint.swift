@@ -58,7 +58,7 @@ final class JoinPoint<A> : Executable, PathDescribing {
 		var tuple: (A,B)! = nil
 		
 		let link = ProcessLink<(A,B)>(function: { _, callback in
-			callback(tuple!)
+			callback(.success(tuple!))
 		}, errorHandler: self.errorHandler,
 		   blockPerformer: self.blockPerformer,
 		   path: self.path+["conjoin"],

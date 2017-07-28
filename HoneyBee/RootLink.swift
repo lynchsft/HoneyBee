@@ -21,11 +21,11 @@ final public class RootLink<T> : Executable, ErrorHandling {
 	}
 	
 	public func setErrorHandler(_ errorHandler: @escaping (Error, ErrorContext) -> Void ) -> ProcessLink<T> {
-		let function = {(a: Any, block: @escaping (T) -> Void) throws -> Void in
+		let function = {(a: Any, block: @escaping (FailableResult<T>) -> Void) -> Void in
 			guard let t = a as? T else {
 				preconditionFailure("a is not of type T")
 			}
-			block(t)
+			block(.success(t))
 		}
 		self.firstLink = ProcessLink<T>(function: function, errorHandler: errorHandler, blockPerformer: self.blockPerformer, path: self.path, functionFile: #file, functionLine: #line)
 		return firstLink!
