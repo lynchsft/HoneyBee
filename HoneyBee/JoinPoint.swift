@@ -8,13 +8,13 @@
 
 import Foundation
 
-class Executable<A> {
+public class Executable {
 	typealias Continue = Bool
-	func execute(argument: A, completion: @escaping (Continue) -> Void) -> Void {}
+	func execute(argument: Any, completion: @escaping (Continue) -> Void) -> Void {}
 }
 
-final class JoinPoint<A> : Executable<A>, PathDescribing {
-	typealias ExecutionResult = (A, (Continue) -> Void)
+final class JoinPoint<A> : Executable, PathDescribing {
+	typealias ExecutionResult = (Any, (Continue) -> Void)
 	
 	private let resultLock = NSLock()
 	private var executionResult: ExecutionResult?
@@ -42,7 +42,7 @@ final class JoinPoint<A> : Executable<A>, PathDescribing {
 		}
 	}
 	
-	override func execute(argument: A, completion: @escaping (Continue) -> Void) {
+	override func execute(argument: Any, completion: @escaping (Continue) -> Void) {
 		self.resultLock.lock()
 		defer {
 			self.resultLock.unlock()
@@ -54,10 +54,10 @@ final class JoinPoint<A> : Executable<A>, PathDescribing {
 		}
 	}
 	
-	func conjoin<B>(_ other: JoinPoint<B>) -> ProcessLink<Void, (A,B)> {
+	func conjoin<B>(_ other: JoinPoint<B>) -> ProcessLink<(A,B)> {
 		var tuple: (A,B)! = nil
 		
-		let link = ProcessLink<Void, (A,B)>(function: { _, callback in
+		let link = ProcessLink<(A,B)>(function: { _, callback in
 			callback(tuple!)
 		}, errorHandler: self.errorHandler,
 		   blockPerformer: self.blockPerformer,
@@ -67,7 +67,13 @@ final class JoinPoint<A> : Executable<A>, PathDescribing {
 		
 		self.yieldResult { a, myCompletion in
 			other.yieldResult { b, otherCompletion in
-				tuple = (a, b)
+				guard let aa = a as? A else {
+					preconditionFailure("a is not of type A")
+				}
+				guard let bb = b as? B else {
+					preconditionFailure("b is not of type B")
+				}
+				tuple = (aa, bb)
 				link.execute(argument: Void(), completion: { (cont) in
 					myCompletion(cont)
 					otherCompletion(cont)

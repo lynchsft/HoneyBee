@@ -9,26 +9,29 @@
 import Foundation
 
 /// `RootLink` is returned by `HoneyBee.start()`. The only operation supported by `RootLink` is `setErrorHandler`
-final public class RootLink<T> : Executable<T>, ErrorHandling {
+final public class RootLink<T> : Executable, ErrorHandling {
 	
 	let path: [String]
 	let blockPerformer: AsyncBlockPerformer
-	var firstLink: ProcessLink<T,T>?
+	var firstLink: ProcessLink<T>?
 	
 	init(blockPerformer: AsyncBlockPerformer, path: [String]) {
 		self.blockPerformer = blockPerformer
 		self.path = path
 	}
 	
-	public func setErrorHandler(_ errorHandler: @escaping (Error, ErrorContext) -> Void ) -> ProcessLink<T,T> {
-		let function = {(a: T, block: @escaping (T) -> Void) throws -> Void
-			in block(a)
+	public func setErrorHandler(_ errorHandler: @escaping (Error, ErrorContext) -> Void ) -> ProcessLink<T> {
+		let function = {(a: Any, block: @escaping (T) -> Void) throws -> Void in
+			guard let t = a as? T else {
+				preconditionFailure("a is not of type T")
+			}
+			block(t)
 		}
-		self.firstLink = ProcessLink<T, T>(function: function, errorHandler: errorHandler, blockPerformer: self.blockPerformer, path: self.path, functionFile: #file, functionLine: #line)
+		self.firstLink = ProcessLink<T>(function: function, errorHandler: errorHandler, blockPerformer: self.blockPerformer, path: self.path, functionFile: #file, functionLine: #line)
 		return firstLink!
 	}
 		
-	override func execute(argument: T, completion: @escaping (Continue) -> Void) -> Void {
+	override func execute(argument: Any, completion: @escaping (Continue) -> Void) -> Void {
 		guard let firstLink = self.firstLink else {
 			preconditionFailure("Must supply an error handler before executing")
 		}
