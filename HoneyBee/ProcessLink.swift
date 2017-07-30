@@ -23,9 +23,9 @@ The execution context includes:
 
 A single link's execution process is as follows:
 
-1. Private method `execute(_:)` is called with the execution parameter A.
-2. This method's function is executed with argument A. If the function throws, then the error is given to this links registered error handler along with A, for context
-3. (If the function does not throw) The result value B is captured.
+1. Private method `execute(_:)` is called with the execution parameter, an Any. The parameter's runtime type is known to the client that created the `ProcessLink`
+2. This method's function is executed with argument. If the function errors, then the error is given to this link's registered error handler along with an optional `ErrorContext`
+3. (If the function does not error) The result value B is captured.
 4. This link's child links are individually, in parallel executed in this link's `AsyncBlockPerformer`
 5. When _all_ of the child links have completed their execution, then this link signals that it has completed execution, via callback.
 */
@@ -469,7 +469,7 @@ extension ProcessLink : Chainable {
 	}
 }
 
-extension ProcessLink {
+extension ProcessLink : ChainableFailable {
 	
 	@discardableResult public func chain<C,Failable>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B, ((Failable) -> Void)?) -> Void) -> ProcessLink<C> where Failable : FailableResultProtocol, Failable.Wrapped == C {
 		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b: B, callback: @escaping (FailableResult<C>) -> Void) in
@@ -480,15 +480,27 @@ extension ProcessLink {
 	}
 	
 	@discardableResult public func chain<C,Failable>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B) -> (@escaping (Failable) -> Void) -> Void) -> ProcessLink<C> where Failable : FailableResultProtocol, Failable.Wrapped == C {
-		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function), function)
+		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b: B, callback: @escaping (FailableResult<C>) -> Void) in
+			function(b)( { (failable: Failable) -> Void in
+				callback(FailableResult(failable))
+			})
+		}
 	}
 	
 	@discardableResult public func chain<C,Failable>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B) -> (((Failable) -> Void)?) -> Void) -> ProcessLink<C> where Failable : FailableResultProtocol, Failable.Wrapped == C {
-		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function), function)
+		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b: B, callback: @escaping (FailableResult<C>) -> Void) in
+			function(b)( { (failable: Failable) -> Void in
+				callback(FailableResult(failable))
+			})
+		}
 	}
 	
 	@discardableResult public func chain<C,Failable>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping ((Failable) -> Void) -> Void) -> ProcessLink<C> where Failable : FailableResultProtocol, Failable.Wrapped == C {
-		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function), function)
+		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b: B, callback: @escaping (FailableResult<C>) -> Void) in
+			function( { (failable: Failable) -> Void in
+				callback(FailableResult(failable))
+			})
+		}
 	}
 }
 

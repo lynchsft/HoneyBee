@@ -8,6 +8,7 @@
 
 import Foundation
 
+/// Super type of executable types.
 public class Executable {
 	typealias Continue = Bool
 	func execute(argument: Any, completion: @escaping (Continue) -> Void) -> Void {}
