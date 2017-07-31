@@ -141,13 +141,15 @@ class HoneyBeeTests: XCTestCase {
 		let expectA = expectation(description: "Join should be reached, path A")
 		let expectB = expectation(description: "Join should be reached, path B")
 		
+		let sleepTime:UInt32 = 1
 		
 		HoneyBee.start { root in
 			root.setErrorHandler(fail)
 				.fork { cntx in
 				let result1 = cntx.chain(constantInt)
 				
-				let result2 = cntx.chain(constantString)
+				let result2 = cntx.chain(sleep =<< sleepTime)
+								  .splice(constantString)
 				
 				result2.conjoin(result1)
 					.chain(multiplyString)
@@ -162,7 +164,8 @@ class HoneyBeeTests: XCTestCase {
 				.fork { cntx in
 				let result1 = cntx.chain(constantInt)
 				
-				let result2 = cntx.chain(constantString)
+				let result2 = cntx.chain(sleep =<< sleepTime)
+								  .splice(constantString)
 				
 				result1.conjoin(result2)
 					.chain(stringLengthEquals)
@@ -450,7 +453,7 @@ class HoneyBeeTests: XCTestCase {
 	
 	func testLimit() {
 		let source = Array(0..<3)
-		let sleepSeconds = 1
+		let sleepNanoSeconds:UInt32 = 100
 		
 		let lock = NSLock()
 		
@@ -460,7 +463,7 @@ class HoneyBeeTests: XCTestCase {
 			}
 			
 			DispatchQueue.global(qos: .background).async {
-				sleep(UInt32(sleepSeconds))
+				usleep(sleepNanoSeconds)
 				lock.unlock()
 				completion(iteration)
 			}
@@ -484,7 +487,7 @@ class HoneyBeeTests: XCTestCase {
 					}
 					.splice(startParalleCodeExpectation.fulfill)
 					// parallelize
-					.chain { _ in sleep(UInt32(sleepSeconds * 3)) }
+					.chain { _ in usleep(sleepNanoSeconds * 3) }
 					.splice(finishParalleCodeExpectation.fulfill)
 					.splice({parallelCodeFinished = true})
 				}
@@ -492,7 +495,8 @@ class HoneyBeeTests: XCTestCase {
 				.chain(finishExpectation.fulfill)
 		}
 		
-		waitForExpectations(timeout: TimeInterval(source.count * sleepSeconds * 4 + 2)) { error in
+		let sleepSeconds = (Double(sleepNanoSeconds)/1000.0)
+		waitForExpectations(timeout: TimeInterval(Double(source.count) * sleepSeconds * 4.0 + 2.0)) { error in
 			if let error = error {
 				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
 			}
@@ -589,6 +593,34 @@ class HoneyBeeTests: XCTestCase {
 		}
 	}
 	
+	func testFailableResultChains() {
+		let expect1 = expectation(description: "Chain 1 should complete")
+		let expect2 = expectation(description: "Chain 2 should complete")
+		
+		let generator = FibonaciGenerator()
+		HoneyBee.start { root in
+			root.setErrorHandler(fail)
+				.value(generator)
+				.chain(FibonaciGenerator.ready)
+				.chain(assertEquals =<< true)
+				.chain(expect1.fulfill)
+		}
+		
+		HoneyBee.start { root in
+			root.setErrorHandler(fail)
+				.value(generator)
+				.chain(FibonaciGenerator.next)
+				.chain(assertEquals =<< 1)
+				.chain(expect2.fulfill)
+		}
+		
+		waitForExpectations(timeout: 1) { error in
+			if let error = error {
+				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
+			}
+		}
+
+	}
 }
 
 // test helper functions
@@ -611,12 +643,12 @@ func stringCat(string: String) -> String {
 	return "\(string)cat"
 }
 
-func stringToInt(string: String, callback: (FailableResult<Int>) -> Void) {
+func stringToInt(string: String, callback: ((FailableResult<Int>) -> Void)?) {
 	if let int = Int(string) {
-		callback(.success(int))
+		callback?(.success(int))
 	} else {
 		let error = NSError(domain: "couldn't convert string to int", code: -2, userInfo: ["string:": string])
-		callback(.failure(error))
+		callback?(.failure(error))
 	}
 }
 
@@ -624,12 +656,11 @@ func intToString(int: Int, callback: (String) -> Void) {
 	return callback("\(int)")
 }
 
-func constantInt() -> Int {
-	return 8
+func constantInt(callback:(FailableResult<Int>)->Void) {
+	callback(.success(8))
 }
 
 func constantString() -> String {
-	sleep(2)
 	return "lamb"
 }
 
@@ -676,5 +707,22 @@ func returnLonger(first: String, second: String) -> String {
 
 func fail(on error: Error) {
 	XCTFail("Error occured during test \(error)")
+}
+
+class FibonaciGenerator {
+	
+	private var a = 0
+	private var b = 1
+	
+	func ready(completion: ((FailableResult<Bool>) -> Void)) {
+		completion(.success(true))
+	}
+	
+	func next(completion: ((FailableResult<Int>) -> Void)? ) {
+		let next = a + b
+		a = b
+		b = next
+		completion?(.success(next))
+	}
 }
 

@@ -23,8 +23,8 @@ The execution context includes:
 
 A single link's execution process is as follows:
 
-1. Private method `execute(_:)` is called with the execution parameter, an Any. The parameter's runtime type is known to the client that created the `ProcessLink`
-2. This method's function is executed with argument. If the function errors, then the error is given to this link's registered error handler along with an optional `ErrorContext`
+1. Link is executed with the execution argument.
+2. This method's function is called with argument. If the function errors, then the error is given to this link's registered error handler along with an optional `ErrorContext`
 3. (If the function does not error) The result value B is captured.
 4. This link's child links are individually, in parallel executed in this link's `AsyncBlockPerformer`
 5. When _all_ of the child links have completed their execution, then this link signals that it has completed execution, via callback.
