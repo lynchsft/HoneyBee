@@ -495,7 +495,7 @@ extension ProcessLink : ChainableFailable {
 		}
 	}
 	
-	@discardableResult public func chain<C,Failable>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping ((Failable) -> Void) -> Void) -> ProcessLink<C> where Failable : FailableResultProtocol, Failable.Wrapped == C {
+	@discardableResult public func chain<C,Failable>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (@escaping (Failable) -> Void) -> Void) -> ProcessLink<C> where Failable : FailableResultProtocol, Failable.Wrapped == C {
 		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b: B, callback: @escaping (FailableResult<C>) -> Void) in
 			function( { (failable: Failable) -> Void in
 				callback(FailableResult(failable))

@@ -22,5 +22,5 @@ protocol ChainableFailable : Chainable {
 	@discardableResult func chain<C,Failable>(file: StaticString, line: UInt, functionDescription: String?, _ function: @escaping (B) -> (((Failable) -> Void)?) -> Void) -> ProcessLink<C> where Failable : FailableResultProtocol, Failable.Wrapped == C
 	
 	///Creates a new ProcessLink which transforms argument of type B to type C and appends the link to the execution list of this ProcessLink
-	@discardableResult func chain<C,Failable>(file: StaticString, line: UInt, functionDescription: String?, _ function: @escaping ((Failable) -> Void) -> Void) -> ProcessLink<C> where Failable : FailableResultProtocol, Failable.Wrapped == C
+	@discardableResult func chain<C,Failable>(file: StaticString, line: UInt, functionDescription: String?, _ function: @escaping (@escaping (Failable) -> Void) -> Void) -> ProcessLink<C> where Failable : FailableResultProtocol, Failable.Wrapped == C
 }
