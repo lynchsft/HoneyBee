@@ -31,14 +31,15 @@ A single link's execution process is as follows:
 */
 final public class ProcessLink<B> : Executable, PathDescribing  {
 	
-	private var createdLinks: [Executable] = []
+	fileprivate var createdLinks: [Executable] = []
+	private let createdLinksLock = NSLock()
 	fileprivate var finalLink: ProcessLink<Void>?
 	
 	private var function: (Any, @escaping (FailableResult<B>) -> Void) -> Void
 	fileprivate var errorHandler: ((Error, ErrorContext) -> Void)
 	/// This is the queue which is passed on to sub chains
 	fileprivate var blockPerformer: AsyncBlockPerformer
-	/// This is the queue which is used to execute this chain. This and `blockPerformer` are the same `setBlockPerformer(_:)` is called
+	/// This is the queue which is used to execute this chain. This and `blockPerformer` are the same until `setBlockPerformer(_:)` is called
 	fileprivate var myBlockPerformer: AsyncBlockPerformer
 	
 	// Debug info
@@ -77,7 +78,9 @@ final public class ProcessLink<B> : Executable, PathDescribing  {
 		                             path: self.path + ["chain: \(file):\(line) \(functionDescription ?? tname(function))"],
 		                             functionFile: file,
 		                             functionLine: line)
+		self.createdLinksLock.lock()
 		self.createdLinks.append(link)
+		self.createdLinksLock.unlock()
 		return link
 	}
 	
@@ -143,7 +146,9 @@ final public class ProcessLink<B> : Executable, PathDescribing  {
 	
 	fileprivate func joinPoint() -> JoinPoint<B> {
 		let link = JoinPoint<B>(blockPerformer: self.blockPerformer, path: self.path+["joinpoint"], errorHandler: self.errorHandler)
+		self.createdLinksLock.lock()
 		self.createdLinks.append(link)
+		self.createdLinksLock.unlock()
 		return link
 	}
 	
@@ -530,44 +535,106 @@ extension ProcessLink {
 
 extension ProcessLink where B : Collection, B.IndexDistance == Int {
 	
-	/// When the inbound type is a `Collection` with `Int` indexes (most are), then you may call `map` to asynchronously map over the elements of B in parallel, transforming them with `transform`.
+	/// When the inbound type is a `Collection` with `Int` indexes (most are), then you may call `map` to asynchronously map over the elements of B in parallel, transforming them with `transform` subchain.
 	///
-	/// - Parameter transform: the transformation function which converts `B.Iterator.Element` to `C`
+	/// - Parameter transform: the transformation subchain defining block which converts `B.Iterator.Element` to `C`
 	/// - Returns: a `ProcessLink` which will yield an array of `C`s to it's child links.
-	public func map<C>(_ transform: @escaping (B.Iterator.Element) -> C) -> ProcessLink<[C]> {
-		return self.chain({(collection: B, callback: @escaping ([C]) -> Void) in
-			collection.asyncMap(on: self.blockPerformer, transform: transform, completion: callback)
-		})
+	public func map<C>(_ transform: @escaping (ProcessLink<B.Iterator.Element>) -> ProcessLink<C>) -> ProcessLink<[C]> {
+		var rootLink: ProcessLink<Void>! = nil
+		
+		let returnSemaphore = DispatchSemaphore(value: 1)
+		var returnValue: [C]?
+		
+		returnSemaphore.wait()
+		
+		rootLink = self.chain { (collection: B, callback: @escaping () -> Void) -> Void in
+			let group = DispatchGroup()
+			for _ in collection {
+				group.enter()
+			}
+			group.notify(queue: .global()) {
+				assert(rootLink.createdLinks.count == collection.count)
+				callback()
+			}
+			
+			collection.asyncMap(on: self.blockPerformer, transform: { (element:B.Iterator.Element, completion:@escaping (C) -> Void) in
+				transform(rootLink.value(element))
+					.chain(completion)
+				group.leave()
+			}, completion: {(c:[C]) in
+				returnValue = c
+				returnSemaphore.signal()
+			})
+		}
+		
+		let finallyLink = ProcessLink<Void>(function: { (_, callback) in callback(.success(Void())) },
+		                                    errorHandler: self.errorHandler,
+		                                    blockPerformer: self.blockPerformer,
+		                                    path: self.path+["map"],
+		                                    functionFile: #file,
+		                                    functionLine: #line)
+		
+		rootLink.finalLink = finallyLink
+		
+		return finallyLink.chain { (_:Void, callback: ([C]) -> Void) -> Void in
+			returnSemaphore.wait()
+			guard let returnValue = returnValue else {
+				preconditionFailure("returnValue should not be nil")
+			}
+			returnSemaphore.signal()
+			callback(returnValue)
+		}
 	}
 	
-	/// When the inbound type is a `Collection` with `Int` indexes (most are), then you may call `map` to asynchronously map over the elements of B in parallel, transforming them with `transform`.
+	/// When the inbound type is a `Collection` with `Int` indexes (most are), then you may call `filter` to asynchronously filter the elements of B in parallel, using `filter` subchain
 	///
-	/// - Parameter transform: the transformation function which converts `B.Iterator.Element` to `C`
-	/// - Returns: a `ProcessLink` which will yield an array of `C`s to it's child links.
-	public func map<C>(_ transform: @escaping (B.Iterator.Element, @escaping (C)->Void) -> Void) -> ProcessLink<[C]> {
-		return self.chain({(collection: B, callback: @escaping ([C]) -> Void) in
-			collection.asyncMap(on: self.blockPerformer, transform: transform, completion: callback)
-		})
-	}
-	
-	/// When the inbound type is a `Collection` with `Int` indexes (most are), then you may call `filter` to asynchronously filter the elements of B in parallel, using `filter`
-	///
-	/// - Parameter filter: the filter function
+	/// - Parameter filter: the filter subchain which produces a Bool
 	/// - Returns: a `ProcessLink` which will yield to it's child links an array containing those `B.Iterator.Element`s which `filter` approved.
-	public func filter(_ filter: @escaping (B.Iterator.Element) -> Bool) -> ProcessLink<[B.Iterator.Element]> {
-		return self.chain({(sequence: B, callback: @escaping ([B.Iterator.Element]) -> Void) in
-			sequence.asyncFilter(on: self.blockPerformer, transform: filter, completion: callback)
-		})
-	}
-	
-	/// When the inbound type is a `Collection` with `Int` indexes (most are), then you may call `filter` to asynchronously filter the elements of B in parallel, using `filter`
-	///
-	/// - Parameter filter: the filter function
-	/// - Returns: a `ProcessLink` which will yield to it's child links an array containing those `B.Iterator.Element`s which `filter` approved.
-	public func filter(_ filter: @escaping (B.Iterator.Element, (Bool)->Void) -> Void) -> ProcessLink<[B.Iterator.Element]> {
-		return self.chain({(sequence: B, callback: @escaping ([B.Iterator.Element]) -> Void) in
-			sequence.asyncFilter(on: self.blockPerformer, transform: filter, completion: callback)
-		})
+	public func filter(_ filter: @escaping (ProcessLink<B.Iterator.Element>) -> ProcessLink<Bool>) -> ProcessLink<[B.Iterator.Element]> {
+		var rootLink: ProcessLink<Void>! = nil
+		
+		let returnSemaphore = DispatchSemaphore(value: 1)
+		var returnValue: [B.Iterator.Element]?
+		
+		returnSemaphore.wait()
+		
+		rootLink = self.chain { (collection: B, callback: @escaping () -> Void) -> Void in
+			let group = DispatchGroup()
+			for _ in collection {
+				group.enter()
+			}
+			group.notify(queue: .global()) {
+				assert(rootLink.createdLinks.count == collection.count)
+				callback()
+			}
+			
+			collection.asyncFilter(on: self.blockPerformer, transform: { (element:B.Iterator.Element, completion:@escaping (Bool) -> Void) in
+				filter(rootLink.value(element))
+					.chain(completion)
+				group.leave()
+			}, completion: {(b:[B.Iterator.Element]) in
+				returnValue = b
+				returnSemaphore.signal()
+			})
+		}
+		
+		let finallyLink = ProcessLink<Void>(function: { (_, callback) in callback(.success(Void())) },
+		                                    errorHandler: self.errorHandler,
+		                                    blockPerformer: self.blockPerformer,
+		                                    path: self.path+["filter"],
+		                                    functionFile: #file,
+		                                    functionLine: #line)
+		
+		rootLink.finalLink = finallyLink
+		
+		return finallyLink.chain { (_:Void, callback: ([B.Iterator.Element]) -> Void) -> Void in
+			returnSemaphore.wait()
+			guard let returnValue = returnValue else {
+				preconditionFailure("returnValue should not be nil")
+			}
+			returnSemaphore.signal()
+			callback(returnValue)
+		}
 	}
 }
 

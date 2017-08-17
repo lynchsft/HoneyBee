@@ -183,7 +183,7 @@ class HoneyBeeTests: XCTestCase {
 	func testMap() {
 		var intsToExpectations:[Int:XCTestExpectation] = [:]
 		
-		let source = Array(0...10)
+		let source = Array(0..<10)
 		for int in source {
 			intsToExpectations[int] = expectation(description: "Expected to map value for \(int)")
 		}
@@ -193,7 +193,9 @@ class HoneyBeeTests: XCTestCase {
 		HoneyBee.start { root in
 			root.setErrorHandler(fail)
 				.value(source)
-				.map(multiplyInt)
+				.map { cntx in
+					cntx.chain(multiplyInt)
+				}
 				.each { cntx in
 					cntx.chain { (int:Int) -> Void in
 						let sourceValue = int/2
@@ -222,9 +224,11 @@ class HoneyBeeTests: XCTestCase {
 		HoneyBee.start(on: DispatchQueue.main) { root in
 			root.setErrorHandler(fail)
 				.value(source)
-				.map { (int:Int) -> Int in
-				XCTAssert(Thread.current.isMainThread, "Not main thread")
-				return int*2
+				.map { cntx in
+					cntx.chain{ (int:Int) -> Int in
+						XCTAssert(Thread.current.isMainThread, "Not main thread")
+						return int*2
+					}
 				}
 				.splice(finishExpectation.fulfill)
 		}
@@ -245,7 +249,9 @@ class HoneyBeeTests: XCTestCase {
 		HoneyBee.start { root in
 			root.setErrorHandler(fail)
 				.value(source)
-				.filter(isEven)
+				.filter { cntx in
+					cntx.chain(isEven)
+				}
 				.chain{ XCTAssert($0 == result, "Filter failed. expected: \(result). Received: \($0).") }
 				.chain(finishExpectation.fulfill)
 		}
@@ -355,7 +361,7 @@ class HoneyBeeTests: XCTestCase {
 		}
 	}
 	
-	func testEachWithMutextRateLimiter() {
+	func testEachWithLimit() {
 		
 		let source = Array(0..<3)
 		let sleepSeconds = 1

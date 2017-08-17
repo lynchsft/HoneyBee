@@ -56,7 +56,7 @@ extension Collection where IndexDistance == Int {
 	}
 	
 	/*** \c completion is called from \c blockPerformer */
-	func asyncFilter(on blockPerformer: AsyncBlockPerformer = DispatchQueue.global(qos: .background), transform: @escaping (Iterator.Element, (Bool) -> Void) -> Void, completion: @escaping ([Iterator.Element]) -> Void  ) {
+	func asyncFilter(on blockPerformer: AsyncBlockPerformer = DispatchQueue.global(qos: .background), transform: @escaping (Iterator.Element, @escaping (Bool) -> Void) -> Void, completion: @escaping ([Iterator.Element]) -> Void  ) {
 		
 		let serialQueue = DispatchQueue(label: "asyncFilterSerialQueue")
 		let group = DispatchGroup()
@@ -101,7 +101,7 @@ extension NSArray {
 		}, completion: completion)
 	}
 	
-	@objc func asyncMap(transformBlock: @escaping (NSObject, (NSObject) -> Void)-> Void, completion: @escaping (NSArray) -> Void ) {
+	@objc func asyncMap(transformBlock: @escaping (NSObject, @escaping (NSObject) -> Void)-> Void, completion: @escaping (NSArray) -> Void ) {
 		guard let array = self as? Array<NSObject> else {
 			preconditionFailure("Using this API with an NSArray which contains other than NSObject subclasses is not allowed. Use the generic swift API instead.")
 		}
