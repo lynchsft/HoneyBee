@@ -224,12 +224,19 @@ final public class ProcessLink<B> : Executable, PathDescribing  {
 extension ProcessLink {
 	// special forms
 	
-	/// `value` inserts a value of any type into the chain data flow.
+	/// `insert` inserts a value of any type into the chain data flow.
 	///
 	/// - Parameter c: Any value
 	/// - Returns: a `ProcessLink` whose child links will receive `c` as their function argument.
-	public func value<C>(file: StaticString = #file, line: UInt = #line, _ c: C) -> ProcessLink<C> {
+	public func insert<C>(file: StaticString = #file, line: UInt = #line, _ c: C) -> ProcessLink<C> {
 		return self.chain(file: file, line:line, functionDescription: "value") { (b:B, callback: (C) -> Void) in callback(c) }
+	}
+	
+	/// `drop` ignores "drops" the inbound value and returns a `ProcessLink` whose value is `Void`
+	///
+	/// - Returns: a `ProcessLink` whose child links will receive `Void` as their function argument.
+	public func drop(file: StaticString = #file, line: UInt = #line) -> ProcessLink<Void> {
+		return self.insert(Void())
 	}
 	
 	/// `conjoin` is a compliment to `fork`.
@@ -454,13 +461,7 @@ extension ProcessLink : Chainable {
 			try function(b)(callback)
 		}
 	}
-	
-	@discardableResult public func splice<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping () throws -> C ) -> ProcessLink<C> {
-		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b:B, callback: @escaping (C) -> Void) throws -> Void in
-			try callback(function())
-		}
-	}
-	
+		
 	@discardableResult public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B, @escaping (C) -> Void) throws -> Void) -> ProcessLink<C> {
 		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b: B, callback: @escaping (FailableResult<C>) -> Void) in
 			do {
@@ -558,7 +559,7 @@ extension ProcessLink where B : Collection, B.IndexDistance == Int {
 			}
 			
 			collection.asyncMap(on: self.blockPerformer, transform: { (element:B.Iterator.Element, completion:@escaping (C) -> Void) in
-				transform(rootLink.value(element))
+				transform(rootLink.insert(element))
 					.chain(completion)
 				group.leave()
 			}, completion: {(c:[C]) in
@@ -609,7 +610,7 @@ extension ProcessLink where B : Collection, B.IndexDistance == Int {
 			}
 			
 			collection.asyncFilter(on: self.blockPerformer, transform: { (element:B.Iterator.Element, completion:@escaping (Bool) -> Void) in
-				filter(rootLink.value(element))
+				filter(rootLink.insert(element))
 					.chain(completion)
 				group.leave()
 			}, completion: {(b:[B.Iterator.Element]) in
@@ -655,7 +656,7 @@ extension ProcessLink where B : Sequence {
 		rootLink = self.chain { (sequence: B) -> Void in
 			storedB = sequence
 			for element in sequence {
-				let elemLink = rootLink.value(element)
+				let elemLink = rootLink.insert(element)
 				defineBlock(elemLink)
 			}
 		}
@@ -724,7 +725,7 @@ extension ProcessLink where B : OptionalProtocol {
 				                                                  functionFile: #file,
 				                                                  functionLine: #line)
 				
-				let unwrappedContext = immediateChainFinalLink.value(unwrapped)
+				let unwrappedContext = immediateChainFinalLink.insert(unwrapped)
 				let lastLinkOfPostivePath = defineBlock(unwrappedContext)
 				lastLinkOfPostivePath.finalLink = returnLink
 				

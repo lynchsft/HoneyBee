@@ -23,7 +23,6 @@ chain_function_signatures_text = %[
 ((Error?) -> Void) -> Void
 ((C?, Error?) -> Void) -> Void
 
-() -> C
 ]
 
 @chain_function_signatures = chain_function_signatures_text.
@@ -62,14 +61,12 @@ def generate_chainable()
 		include_error_handler = signature_declares_error(function_signature)
 		transform_result_type = function_signature =~ /C/ ? "C" : "B"
 		extra_generic_parameter = transform_result_type != "B" ? "<C>" : ""
-		void_receiving = function_signature =~ /^\(\)/
-		method_name = void_receiving ?  "splice" : "chain"
 		documentation = transform_result_type != "B" ? 
 			"///Creates a new ProcessLink which transforms argument of type B to type C and appends the link to the execution list of this ProcessLink" :
 			"///Creates a new ProcessLink which passes through argument of type B and appends the link to the execution list of this ProcessLink"
 		
 		generated_chain_declarations << documentation
-		generated_chain_declarations << "@discardableResult func #{method_name}#{extra_generic_parameter}(file: StaticString, line: UInt, functionDescription: String?, _ function: @escaping #{function_signature} ) -> ProcessLink<#{transform_result_type}>"
+		generated_chain_declarations << "@discardableResult func chain#{extra_generic_parameter}(file: StaticString, line: UInt, functionDescription: String?, _ function: @escaping #{function_signature} ) -> ProcessLink<#{transform_result_type}>"
 		generated_chain_declarations << ""
 	}
 
