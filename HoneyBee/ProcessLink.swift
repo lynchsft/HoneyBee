@@ -239,6 +239,42 @@ extension ProcessLink {
 		return self.insert(Void())
 	}
 	
+	/// `tunnel` defines a subchain with whose value is ultimately discarded. The links within the `tunnel` subchain run sequentially before the link which is the return value of `tunnel`. `tunnel` returns a `ProcessLink` whose execution result `B` is the result the receiver link. Thus the value `B` "hides" or "goes under ground" while the subchain processes and "pops back up" when it is completed.
+	/// For example:
+	///
+	///      .insert(8)
+	///      .tunnel { cntx in
+	///         cntx.chain(intToString) //convert int to string
+	///		 }
+	///      .chain(multiplyInt)
+	///
+	/// In the example above `insert` results in an `Int` into the chain and that int is passed along to `intToString` which transform the value into a `String`.
+	/// After the `tunnel` context has finished, the original value `8` (an `Int`) is passed to `multiplyInt`
+	///
+	/// - Parameters:
+	///   - defineBlock: a block which creates a subchain to be limited.
+	/// - Returns: a `ProcessLink` whose execution result `R` is discarded.
+
+	public func tunnel<R>(file: StaticString = #file, line: UInt = #line, _ defineBlock: @escaping (ProcessLink<B>) -> ProcessLink<R>) -> ProcessLink<B> {
+		var storedB: B? = nil
+		
+		let openingLink = self.chain { (b:B) -> B in
+			storedB = b
+			return b
+		}
+		
+		let lastLink = defineBlock(openingLink)
+		
+		let returnLink = lastLink.chain { (_:R) -> B in
+			guard let storedB = storedB else {
+				preconditionFailure("should not be nil: storedB")
+			}
+			return storedB
+		}
+		
+		return returnLink
+	}
+	
 	/// `conjoin` is a compliment to `fork`.
 	/// Within the context of a `fork` it is natural and expected to create parallel execution chains.
 	/// If the process definition wishes at some point to combine the results of these execution chains, then `conjoin` should be used.

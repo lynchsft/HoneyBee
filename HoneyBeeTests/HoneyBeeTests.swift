@@ -25,7 +25,6 @@ class HoneyBeeTests: XCTestCase {
 	func testSimpleChain() {
 		let expect = expectation(description: "Simple chain should complete")
 		
-		
 		HoneyBee.start { root in
 			root.setErrorHandler(fail)
 				.insert(4)
@@ -640,7 +639,30 @@ class HoneyBeeTests: XCTestCase {
 				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
 			}
 		}
-
+	}
+	
+	func testTunnel() {
+		let expectFinal = expectation(description: "Chain should complete")
+		let expectTunnel = expectation(description: "Tunnel chain should complete")
+		
+		HoneyBee.start { root in
+			root.setErrorHandler(fail)
+				.insert(4)
+				.tunnel { cntx in
+					cntx.chain(intToString)
+						.chain(assertEquals =<< "4")
+						.chain(expectTunnel.fulfill)
+				}
+				.chain(multiplyInt)
+				.chain(assertEquals =<< 8)
+				.chain(expectFinal.fulfill)
+		}
+		
+		waitForExpectations(timeout: 1) { error in
+			if let error = error {
+				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
+			}
+		}
 	}
 }
 
