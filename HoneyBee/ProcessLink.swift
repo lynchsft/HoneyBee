@@ -84,24 +84,6 @@ final public class ProcessLink<B> : Executable, PathDescribing  {
 		return link
 	}
 	
-	/// Yields self to a new definition block. Within the block the caller may invoke chaining methods on block multiple times, thus achieving parallel chains. Example:
-	///
-	///     link.fork { stem in
-	///       stem.chain(func1)
-	///           .chain(func2)
-	///
-	///       stem.chain(func3)
-	///           .chain(func4)
-	///     }
-	///
-	/// In the preceding example, when `link` is executed it will start the links containing `func1` and `func3` in parallel.
-	/// `func2` will execute when `func1` is finished. Likewise `func4` will execute when `func3` is finished.
-	///
-	/// - Parameter defineBlock: the block to which this `ProcessLink` yields itself.
-	public func fork(_ defineBlock: (ProcessLink<B>) -> Void) {
-		defineBlock(self)
-	}
-	
 	/**
 	 `finally` creates a subchain which will be executed whether or not the proceeding chain errors.
 	 In the case that no error occurs in the proceeding chain, finally is executed after the final link of the chain, as though it had been directly appended there.
@@ -254,7 +236,6 @@ extension ProcessLink {
 	/// - Parameters:
 	///   - defineBlock: a block which creates a subchain to be limited.
 	/// - Returns: a `ProcessLink` whose execution result `R` is discarded.
-
 	public func tunnel<R>(file: StaticString = #file, line: UInt = #line, _ defineBlock: @escaping (ProcessLink<B>) -> ProcessLink<R>) -> ProcessLink<B> {
 		var storedB: B? = nil
 		
@@ -275,8 +256,26 @@ extension ProcessLink {
 		return returnLink
 	}
 	
-	/// `conjoin` is a compliment to `fork`.
-	/// Within the context of a `fork` it is natural and expected to create parallel execution chains.
+	/// Yields self to a new definition block. Within the block the caller may invoke chaining methods on block multiple times, thus achieving parallel chains. Example:
+	///
+	///     link.branch { stem in
+	///       stem.chain(func1)
+	///           .chain(func2)
+	///
+	///       stem.chain(func3)
+	///           .chain(func4)
+	///     }
+	///
+	/// In the preceding example, when `link` is executed it will start the links containing `func1` and `func3` in parallel.
+	/// `func2` will execute when `func1` is finished. Likewise `func4` will execute when `func3` is finished.
+	///
+	/// - Parameter defineBlock: the block to which this `ProcessLink` yields itself.
+	public func branch(_ defineBlock: (ProcessLink<B>) -> Void) {
+		defineBlock(self)
+	}
+	
+	/// `conjoin` is a compliment to `branch`.
+	/// Within the context of a `branch` it is natural and expected to create parallel execution chains.
 	/// If the process definition wishes at some point to combine the results of these execution chains, then `conjoin` should be used.
 	/// `conjoin` returns a `ProcessLink` which waits for both the receiver and the argument `ProcessLink`s have created results. Those results are combined into a tuple `(B,C)` which is passed to the child links of the returned `ProcessLink`
 	///
@@ -284,6 +283,11 @@ extension ProcessLink {
 	/// - Returns: A `ProcessLink` which combines the receiver and the arguments results.
 	public func conjoin<C>(_ other: ProcessLink<C>) -> ProcessLink<(B,C)> {
 		return self.joinPoint().conjoin(other.joinPoint())
+	}
+	
+	/// operator syntax for `conjoin` function
+	public static func +<C>(lhs: ProcessLink<B>, rhs: ProcessLink<C>) -> ProcessLink<(B,C)> {
+		return lhs.conjoin(rhs)
 	}
 }
 

@@ -112,8 +112,8 @@ class HoneyBeeTests: XCTestCase {
 	}
 	
 	func testFork() {
-		let expect1 = expectation(description: "First fork should be reached")
-		let expect2 = expectation(description: "Second fork should be reached")
+		let expect1 = expectation(description: "First branch should be reached")
+		let expect2 = expectation(description: "Second branch should be reached")
 		
 		
 		HoneyBee.start { root in
@@ -121,7 +121,7 @@ class HoneyBeeTests: XCTestCase {
 				.insert(10)
 				.chain(intToString)
 				.chain(stringToInt)
-				.fork { stem in
+				.branch { stem in
 					stem.chain(assertEquals =<< 10)
 						.chain(expect1.fulfill)
 					
@@ -146,14 +146,14 @@ class HoneyBeeTests: XCTestCase {
 		
 		HoneyBee.start { root in
 			root.setErrorHandler(fail)
-				.fork { stem in
+				.branch { stem in
 				let result1 = stem.chain(constantInt)
 				
 				let result2 = stem.chain(sleep =<< sleepTime)
 								  .drop()
 								  .chain(constantString)
 				
-				result2.conjoin(result1)
+				(result2 + result1)
 					.chain(multiplyString)
 					.chain(stringCat)
 					.chain(assertEquals =<< "lamblamblamblamblamblamblamblambcat")
@@ -163,14 +163,14 @@ class HoneyBeeTests: XCTestCase {
 		
 		HoneyBee.start { root in
 			root.setErrorHandler(fail)
-				.fork { stem in
+				.branch { stem in
 				let result1 = stem.chain(constantInt)
 				
 				let result2 = stem.chain(sleep =<< sleepTime)
 								  .drop()
 								  .chain(constantString)
 				
-				result1.conjoin(result2)
+				(result1 + result2)
 					.chain(stringLengthEquals)
 					.chain(assertEquals =<< false)
 					.chain(expectB.fulfill)
