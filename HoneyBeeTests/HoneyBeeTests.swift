@@ -51,8 +51,8 @@ class HoneyBeeTests: XCTestCase {
 		HoneyBee.start { root in
 			root.setErrorHandler(fail)
 				.insert(Optional(7))
-				.optionally { cntx in
-					cntx.chain(assertEquals =<< 7)
+				.optionally { link in
+					link.chain(assertEquals =<< 7)
 						.chain(optionalExpect.fulfill)
 						.chain{ optionallyCompleted = true }
 				}
@@ -75,8 +75,8 @@ class HoneyBeeTests: XCTestCase {
 		HoneyBee.start { root in
 			root.setErrorHandler(fail)
 				.insert(Optional<Int>(nilLiteral: ()))
-				.optionally { cntx in
-					cntx.drop()
+				.optionally { link in
+					link.drop()
 						.chain(optionalExpect.fulfill)
 				}
 				.chain(expect.fulfill)
@@ -121,11 +121,11 @@ class HoneyBeeTests: XCTestCase {
 				.insert(10)
 				.chain(intToString)
 				.chain(stringToInt)
-				.fork { cntx in
-					cntx.chain(assertEquals =<< 10)
+				.fork { stem in
+					stem.chain(assertEquals =<< 10)
 						.chain(expect1.fulfill)
 					
-					cntx.chain(multiplyInt)
+					stem.chain(multiplyInt)
 						.chain(assertEquals =<< 20)
 						.chain(expect2.fulfill)
 			}
@@ -146,10 +146,10 @@ class HoneyBeeTests: XCTestCase {
 		
 		HoneyBee.start { root in
 			root.setErrorHandler(fail)
-				.fork { cntx in
-				let result1 = cntx.chain(constantInt)
+				.fork { stem in
+				let result1 = stem.chain(constantInt)
 				
-				let result2 = cntx.chain(sleep =<< sleepTime)
+				let result2 = stem.chain(sleep =<< sleepTime)
 								  .drop()
 								  .chain(constantString)
 				
@@ -163,10 +163,10 @@ class HoneyBeeTests: XCTestCase {
 		
 		HoneyBee.start { root in
 			root.setErrorHandler(fail)
-				.fork { cntx in
-				let result1 = cntx.chain(constantInt)
+				.fork { stem in
+				let result1 = stem.chain(constantInt)
 				
-				let result2 = cntx.chain(sleep =<< sleepTime)
+				let result2 = stem.chain(sleep =<< sleepTime)
 								  .drop()
 								  .chain(constantString)
 				
@@ -196,11 +196,11 @@ class HoneyBeeTests: XCTestCase {
 		HoneyBee.start { root in
 			root.setErrorHandler(fail)
 				.insert(source)
-				.map { cntx in
-					cntx.chain(multiplyInt)
+				.map { elem in
+					elem.chain(multiplyInt)
 				}
-				.each { cntx in
-					cntx.chain { (int:Int) -> Void in
+				.each { elem in
+					elem.chain { (int:Int) -> Void in
 						let sourceValue = int/2
 						if let exepct = intsToExpectations[sourceValue]  {
 							exepct.fulfill()
@@ -228,8 +228,8 @@ class HoneyBeeTests: XCTestCase {
 		HoneyBee.start(on: DispatchQueue.main) { root in
 			root.setErrorHandler(fail)
 				.insert(source)
-				.map { cntx in
-					cntx.chain{ (int:Int) -> Int in
+				.map { elem in
+					elem.chain{ (int:Int) -> Int in
 						XCTAssert(Thread.current.isMainThread, "Not main thread")
 						return int*2
 					}
@@ -254,8 +254,8 @@ class HoneyBeeTests: XCTestCase {
 		HoneyBee.start { root in
 			root.setErrorHandler(fail)
 				.insert(source)
-				.filter { cntx in
-					cntx.chain(isEven)
+				.filter { elem in
+					elem.chain(isEven)
 				}
 				.chain{ XCTAssert($0 == result, "Filter failed. expected: \(result). Received: \($0).") }
 				.chain(finishExpectation.fulfill)
@@ -289,8 +289,8 @@ class HoneyBeeTests: XCTestCase {
 		HoneyBee.start { root in
 			root.setErrorHandler(fail)
 				.insert(expectations)
-				.each { cntx in
-					cntx.chain(XCTestExpectation.fulfill)
+				.each { elem in
+					elem.chain(XCTestExpectation.fulfill)
 						.chain(incrementFullfilledExpectCount)
 				}
 				.drop()
@@ -331,9 +331,9 @@ class HoneyBeeTests: XCTestCase {
 		HoneyBee.start { root in
 			root.setErrorHandler(fail)
 				.insert(expectations)
-				.each { cntx in
-					cntx.limit(3) { cntx in
-						cntx.chain(XCTestExpectation.fulfill)
+				.each { elem in
+					elem.limit(3) { link in
+						link.chain(XCTestExpectation.fulfill)
 							.chain(incrementFullfilledExpectCount)
 					}
 				}
@@ -392,9 +392,9 @@ class HoneyBeeTests: XCTestCase {
 		HoneyBee.start { root in
 			root.setErrorHandler(fail)
 				.insert(source)
-				.each { cntx in
-					cntx.limit(1) { cntx in
-						cntx.chain(asynchronouslyHoldLock)
+				.each { elem in
+					elem.limit(1) { link in
+						link.chain(asynchronouslyHoldLock)
 					}
 				}
 				.drop()
@@ -415,11 +415,11 @@ class HoneyBeeTests: XCTestCase {
 		
 		HoneyBee.start { root in
 			root.setErrorHandler(fail)
-				.finally { cntx in
-					cntx.chain { XCTAssert(counter == 3, "counter should be 3: was actually \(counter)") }
+				.finally { link in
+					link.chain { XCTAssert(counter == 3, "counter should be 3: was actually \(counter)") }
 						.chain(incrementCounter)
-				}.finally { cntx in
-					cntx.chain { () -> Void in XCTAssert(counter == 4, "counter should be 4: was actually \(counter)") ; finishExpectation.fulfill() }
+				}.finally { link in
+					link.chain { () -> Void in XCTAssert(counter == 4, "counter should be 4: was actually \(counter)") ; finishExpectation.fulfill() }
 				}
 				.chain{ XCTAssert(counter == 0, "counter should be 0") }
 				.chain(incrementCounter)
@@ -446,8 +446,8 @@ class HoneyBeeTests: XCTestCase {
 		
 		HoneyBee.start { root in
 			root.setErrorHandler(fail) // this is just to start off with. We update the error handler below
-				.finally { cntx in
-					cntx.chain { () -> Void in XCTAssert(counter == 2, "counter should be 2") ; finishExpectation.fulfill() }
+				.finally { link in
+					link.chain { () -> Void in XCTAssert(counter == 2, "counter should be 2") ; finishExpectation.fulfill() }
 				}
 				.chain{ XCTAssert(counter == 0, "counter should be 0") }
 				.chain(incrementCounter)
@@ -493,9 +493,9 @@ class HoneyBeeTests: XCTestCase {
 		HoneyBee.start { root in
 			root.setErrorHandler(fail)
 				.insert(source)
-				.each() { cntx in
-					cntx.limit(1) { cntx in
-						cntx.chain(asynchronouslyHoldLock)
+				.each() { elem in
+					elem.limit(1) { link in
+						link.chain(asynchronouslyHoldLock)
 							.chain(asynchronouslyHoldLock)
 							.chain(asynchronouslyHoldLock)
 					}
@@ -529,8 +529,8 @@ class HoneyBeeTests: XCTestCase {
 		
 		HoneyBee.start { root in
 			root.setErrorHandler(fail)
-				.limit(29) { cntx in
-					cntx.insert("Right")
+				.limit(29) { link in
+					link.insert("Right")
 						.chain(stringCat)
 						.drop()
 						.chain(intermediateExpectation.fulfill)
@@ -648,8 +648,8 @@ class HoneyBeeTests: XCTestCase {
 		HoneyBee.start { root in
 			root.setErrorHandler(fail)
 				.insert(4)
-				.tunnel { cntx in
-					cntx.chain(intToString)
+				.tunnel { link in
+					link.chain(intToString)
 						.chain(assertEquals =<< "4")
 						.chain(expectTunnel.fulfill)
 				}

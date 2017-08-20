@@ -86,11 +86,11 @@ final public class ProcessLink<B> : Executable, PathDescribing  {
 	
 	/// Yields self to a new definition block. Within the block the caller may invoke chaining methods on block multiple times, thus achieving parallel chains. Example:
 	///
-	///     link.fork { cntx in
-	///       cntx.chain(func1)
+	///     link.fork { stem in
+	///       stem.chain(func1)
 	///           .chain(func2)
 	///
-	///       cntx.chain(func3)
+	///       stem.chain(func3)
 	///           .chain(func4)
 	///     }
 	///
@@ -112,8 +112,8 @@ final public class ProcessLink<B> : Executable, PathDescribing  {
 	     HoneyBee.start { root in
 	        root.errorHandler(funcE)
 	            .chain(funcA)
-	            .finally { cntx in
-	                cntx.chain(funcZ)
+	            .finally { link in
+	                link.chain(funcZ)
 	            }
                 .chain(funcB)
 	            .chain(funcC)
@@ -243,8 +243,8 @@ extension ProcessLink {
 	/// For example:
 	///
 	///      .insert(8)
-	///      .tunnel { cntx in
-	///         cntx.chain(intToString) //convert int to string
+	///      .tunnel { link in
+	///         link.chain(intToString) //convert int to string
 	///		 }
 	///      .chain(multiplyInt)
 	///
@@ -784,8 +784,8 @@ extension ProcessLink  {
 	/// `limit` defines a subchain with special runtime protections. The links within the `limit` subchain are guaranteed to have at most `maxParallel` parallel executions. `limit` is particularly useful in the context of a fully parallel process when part of the process must access a limited resource pool such as CPU execution contexts or network resources.
 	/// This method returns a `ProcessLink` whose execution result `J` is the result of the final link of the subchain. This permits the chain to proceed naturally after limit. For example:
 	///
-	///      .limit(5) { cntx in
-	///         cntx.chain(resourceLimitedIntGenerator)
+	///      .limit(5) { link in
+	///         link.chain(resourceLimitedIntGenerator)
 	///		}
 	///     .chain(multiplyInt)
 	///
