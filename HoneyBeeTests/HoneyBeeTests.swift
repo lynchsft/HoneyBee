@@ -369,7 +369,6 @@ class HoneyBeeTests: XCTestCase {
 	}
 	
 	func testEachWithLimit() {
-		
 		let source = Array(0..<3)
 		let sleepSeconds = 1
 		
@@ -521,7 +520,6 @@ class HoneyBeeTests: XCTestCase {
 	}
 	
 	func testLimitReturnChain() {
-		
 		let intermediateExpectation = expectation(description: "Should reach the intermediate end")
 		let finishExpectation = expectation(description: "Should reach the end of the chain")
 		
@@ -537,6 +535,28 @@ class HoneyBeeTests: XCTestCase {
 						.chain{ intermediateFullfilled = true }
 				}
 				.chain{ XCTAssert(intermediateFullfilled, "Intermediate expectation not fullfilled") }
+				.chain(finishExpectation.fulfill)
+		}
+		
+		waitForExpectations(timeout: 3) { error in
+			if let error = error {
+				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
+			}
+		}
+	}
+	
+	func testMultipleCallback() {
+		let finishExpectation = expectation(description: "Should finish chain")
+		
+		HoneyBee.start { root in
+			root.setErrorHandler(fail)
+				.chain{ (callback: (FailableResult<Int>) -> Void) in
+					callback(.success(1))
+					callback(.success(2))
+					callback(.failure(NSError(domain: "Purposeful error", code: 3, userInfo: nil)))
+					callback(.failure(NSError(domain: "Purposeful error", code: 4, userInfo: nil)))
+				}
+				.chain(assertEquals =<< 1)
 				.chain(finishExpectation.fulfill)
 		}
 		

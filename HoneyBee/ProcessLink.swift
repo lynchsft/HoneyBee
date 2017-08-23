@@ -140,16 +140,17 @@ final public class ProcessLink<B> : Executable, PathDescribing  {
 			let callbackInvokedLock = NSLock()
 			
 			self.function(argument) { (failableResult: FailableResult<B>) in
+				callbackInvokedLock.lock()
+				defer {
+					callbackInvokedLock.unlock()
+				}
+				guard !callbackInvoked else {
+					return // protect ourselves against clients invoking the callback more than once
+				}
+				callbackInvoked = true
+				
 				switch failableResult {
 				case .success(let result) :
-					callbackInvokedLock.lock()
-					defer {
-						callbackInvokedLock.unlock()
-					}
-					guard !callbackInvoked else {
-						return // protect ourselves against clients invoking the callback more than once
-					}
-					callbackInvoked = true
 					
 					let group = DispatchGroup()
 					
@@ -303,86 +304,84 @@ extension ProcessLink : ErrorHandling {
 	}
 }
 
-extension ProcessLink {
-	// function mutation
-	
-	private func objcErrorCallbackToSwift(_ function: @escaping (@escaping (Error?)->Void ) -> Void) -> (@escaping (FailableResult<Void>) -> Void) -> Void {
-		return {(callback: @escaping ((FailableResult<Void>) -> Void)) in
-			function { error in
-				if let error = error {
-					callback(.failure(error))
+// function mutation
+
+fileprivate func objcErrorCallbackToSwift(_ function: @escaping (@escaping (Error?)->Void ) -> Void) -> (@escaping (FailableResult<Void>) -> Void) -> Void {
+	return {(callback: @escaping ((FailableResult<Void>) -> Void)) in
+		function { error in
+			if let error = error {
+				callback(.failure(error))
+			} else {
+				callback(.success(Void()))
+			}
+		}
+	}
+}
+
+fileprivate func objcErrorCallbackToSwift<C>(_ function: @escaping (@escaping (C?, Error?)->Void ) -> Void) -> (@escaping (FailableResult<C>) -> Void) -> Void {
+	return {(callback: @escaping ((FailableResult<C>) -> Void)) in
+		function { c, error in
+			if let error = error {
+				callback(.failure(error))
+			} else {
+				if let c = c {
+					callback(.success(c))
 				} else {
-					callback(.success(Void()))
+					callback(.failure(NSError(domain: "Unexpectedly missing value", code: -99, userInfo: nil)))
 				}
 			}
 		}
 	}
-	
-	private func objcErrorCallbackToSwift<C>(_ function: @escaping (@escaping (C?, Error?)->Void ) -> Void) -> (@escaping (FailableResult<C>) -> Void) -> Void {
-		return {(callback: @escaping ((FailableResult<C>) -> Void)) in
-			function { c, error in
-				if let error = error {
-					callback(.failure(error))
-				} else {
-					if let c = c {
-						callback(.success(c))
-					} else {
-						callback(.failure(NSError(domain: "Unexpectedly missing value", code: -99, userInfo: nil)))
-					}
-				}
-			}
-		}
+}
+
+fileprivate func populateVoid<T>(failableResult: FailableResult<Void>, with t: T) -> FailableResult<T> {
+	switch failableResult {
+	case let .failure(error):
+		return .failure(error)
+	case .success():
+		return .success(t)
 	}
-	
-	private func populateVoid<T>(failableResult: FailableResult<Void>, with t: T) -> FailableResult<T> {
-		switch failableResult {
-		case let .failure(error):
-			return .failure(error)
-		case .success():
-			return .success(t)
-		}
+}
+
+fileprivate func elevate<T>(_ function: @escaping (T) -> (@escaping (Error?) -> Void) -> Void) -> (T, @escaping (FailableResult<T>) -> Void) -> Void {
+	return { (t: T, callback: @escaping (FailableResult<T>) -> Void) -> Void in
+		objcErrorCallbackToSwift(function(t))({ result in
+			callback(populateVoid(failableResult: result, with: t))
+		})
 	}
-	
-	fileprivate func elevate<T>(_ function: @escaping (T) -> (@escaping (Error?) -> Void) -> Void) -> (T, @escaping (FailableResult<T>) -> Void) -> Void {
-		return { (t: T, callback: @escaping (FailableResult<T>) -> Void) -> Void in
-			self.objcErrorCallbackToSwift(function(t))({ result in
-				callback(self.populateVoid(failableResult: result, with: t))
-			})
-		}
+}
+
+fileprivate func elevate<T>(_ function: @escaping (T, @escaping (Error?) -> Void) -> Void) -> (T, @escaping (FailableResult<T>) -> Void) -> Void {
+	return { (t: T, callback: @escaping (FailableResult<T>) -> Void) -> Void in
+		objcErrorCallbackToSwift(function =<< t)({ result in
+			callback(populateVoid(failableResult: result, with: t))
+		})
 	}
-	
-	fileprivate func elevate<T>(_ function: @escaping (T, @escaping (Error?) -> Void) -> Void) -> (T, @escaping (FailableResult<T>) -> Void) -> Void {
-		return { (t: T, callback: @escaping (FailableResult<T>) -> Void) -> Void in
-			self.objcErrorCallbackToSwift(function =<< t)({ result in
-				callback(self.populateVoid(failableResult: result, with: t))
-			})
-		}
+}
+
+fileprivate func elevate<T>(_ function: @escaping (@escaping (Error?) -> Void) -> Void) -> (T, @escaping (FailableResult<T>) -> Void) -> Void {
+	return { (t: T, callback: @escaping (FailableResult<T>) -> Void) -> Void in
+		objcErrorCallbackToSwift(function)({ result in
+			callback(populateVoid(failableResult: result, with: t))
+		})
 	}
-	
-	fileprivate func elevate<T>(_ function: @escaping (@escaping (Error?) -> Void) -> Void) -> (T, @escaping (FailableResult<T>) -> Void) -> Void {
-		return { (t: T, callback: @escaping (FailableResult<T>) -> Void) -> Void in
-			self.objcErrorCallbackToSwift(function)({ result in
-				callback(self.populateVoid(failableResult: result, with: t))
-			})
-		}
+}
+
+fileprivate func elevate<T, C>(_ function: @escaping (T, @escaping (C?, Error?) -> Void) -> Void) -> (T, @escaping (FailableResult<C>) -> Void) -> Void {
+	return { (t: T, callback: @escaping (FailableResult<C>) -> Void) -> Void in
+		objcErrorCallbackToSwift(bind(function, t))(callback)
 	}
-	
-	fileprivate func elevate<T, C>(_ function: @escaping (T, @escaping (C?, Error?) -> Void) -> Void) -> (T, @escaping (FailableResult<C>) -> Void) -> Void {
-		return { (t: T, callback: @escaping (FailableResult<C>) -> Void) -> Void in
-			self.objcErrorCallbackToSwift(bind(function, t))(callback)
-		}
+}
+
+fileprivate func elevate<C>(_ function: @escaping (@escaping (C?, Error?) -> Void) -> Void) -> (@escaping (FailableResult<C>) -> Void) -> Void {
+	return { (callback: @escaping (FailableResult<C>) -> Void) -> Void in
+		objcErrorCallbackToSwift(function)(callback)
 	}
-	
-	fileprivate func elevate<C>(_ function: @escaping (@escaping (C?, Error?) -> Void) -> Void) -> (@escaping (FailableResult<C>) -> Void) -> Void {
-		return { (callback: @escaping (FailableResult<C>) -> Void) -> Void in
-			self.objcErrorCallbackToSwift(function)(callback)
-		}
-	}
-	
-	fileprivate func elevate<T, C>(_ function: @escaping (T) -> (@escaping (C?, Error?) -> Void) -> Void) -> (T, @escaping (FailableResult<C>) -> Void) -> Void {
-		return { (t: T, callback: @escaping (FailableResult<C>) -> Void) -> Void in
-			self.objcErrorCallbackToSwift(function(t))(callback)
-		}
+}
+
+fileprivate func elevate<T, C>(_ function: @escaping (T) -> (@escaping (C?, Error?) -> Void) -> Void) -> (T, @escaping (FailableResult<C>) -> Void) -> Void {
+	return { (t: T, callback: @escaping (FailableResult<C>) -> Void) -> Void in
+		objcErrorCallbackToSwift(function(t))(callback)
 	}
 }
 
@@ -402,37 +401,37 @@ extension ProcessLink : Chainable {
 	
 	@discardableResult public func chain(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B) -> (((Error?) -> Void)?) -> Void) -> ProcessLink<B> {
 		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b: B, callback: @escaping (FailableResult<B>) -> Void) in
-			self.elevate(function)(b,callback)
+			elevate(function)(b,callback)
 		}
 	}
 	
 	@discardableResult public func chain(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B) -> (@escaping (Error?) -> Void) -> Void) -> ProcessLink<B> {
 		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b:B, callback: @escaping (FailableResult<B>) -> Void) in
-			self.elevate(function)(b,callback)
+			elevate(function)(b,callback)
 		}
 	}
 	
 	@discardableResult public func chain(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B, ((Error?) -> Void)?) -> Void) -> ProcessLink<B> {
 		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b:B, callback: @escaping (FailableResult<B>) -> Void) in
-			self.elevate(function)(b,callback)
+			elevate(function)(b,callback)
 		}
 	}
 	
 	@discardableResult public func chain(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B, @escaping (Error?) -> Void) -> Void) -> ProcessLink<B> {
 		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b:B, callback: @escaping (FailableResult<B>) -> Void) in
-			self.elevate(function)(b,callback)
+			elevate(function)(b,callback)
 		}
 	}
 	
 	@discardableResult public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B, ((C?, Error?) -> Void)?) -> Void) -> ProcessLink<C> {
 		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b:B, callback: @escaping (FailableResult<C>)->Void) in
-			self.elevate(function)(b, callback)
+			elevate(function)(b, callback)
 		}
 	}
 	
 	@discardableResult public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B, @escaping (C?, Error?) -> Void) -> Void) -> ProcessLink<C> {
 		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b:B, callback: @escaping (FailableResult<C>)->Void) in
-			self.elevate(function)(b, callback)
+			elevate(function)(b, callback)
 		}
 	}
 	
@@ -450,13 +449,13 @@ extension ProcessLink : Chainable {
 	
 	@discardableResult public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B) -> (@escaping (C?, Error?) -> Void) -> Void) -> ProcessLink<C> {
 		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b: B, callback: @escaping (FailableResult<C>) -> Void) in
-			self.elevate(function)(b, callback)
+			elevate(function)(b, callback)
 		}
 	}
 
 	@discardableResult public func chain(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (@escaping (Error?) -> Void) -> Void) -> ProcessLink<B> {
 		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b:B, callback: @escaping (FailableResult<B>) -> Void) in
-			self.elevate(function)(b,callback)
+			elevate(function)(b,callback)
 		}
 	}
 	
@@ -468,13 +467,13 @@ extension ProcessLink : Chainable {
 
 	@discardableResult public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (((C?, Error?) -> Void)?) -> Void) -> ProcessLink<C> {
 		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b:B, callback: @escaping (FailableResult<C>)->Void) in
-			self.elevate(function)(callback)
+			elevate(function)(callback)
 		}
 	}
 	
 	@discardableResult public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (@escaping (C?, Error?) -> Void) -> Void) -> ProcessLink<C> {
 		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b:B, callback: @escaping (FailableResult<C>)->Void) in
-			self.elevate(function)(callback)
+			elevate(function)(callback)
 		}
 	}
 	
@@ -486,13 +485,13 @@ extension ProcessLink : Chainable {
 	
 	@discardableResult public func chain(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (((Error?) -> Void)?) -> Void) -> ProcessLink<B> {
 		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b:B, callback: @escaping (FailableResult<B>) -> Void) in
-			self.elevate(function)(b,callback)
+			elevate(function)(b,callback)
 		}
 	}
 	
 	@discardableResult public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B) -> (((C?, Error?) -> Void)?) -> Void) -> ProcessLink<C> {
 		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b:B, callback: @escaping (FailableResult<C>)->Void) in
-			self.elevate(function)(b, callback)
+			elevate(function)(b, callback)
 		}
 	}
 	
