@@ -519,6 +519,44 @@ class HoneyBeeTests: XCTestCase {
 		}
 	}
 	
+	func testLimitErrorReslience() {
+		let source = Array(0..<3)
+		
+		let successExpectation = expectation(description: "Should success mark")
+		successExpectation.expectedFulfillmentCount = UInt(source.count)
+		
+		for i in 0..<3 {
+			let failureExpectation = expectation(description: "Should reach the error handler")
+			if i < 2 {
+				failureExpectation.expectedFulfillmentCount = UInt(source.count)
+			} else {
+				failureExpectation.isInverted = true
+			}
+			
+			HoneyBee.start { root in
+				root.setErrorHandler { _ in failureExpectation.fulfill() }
+					.insert(source)
+					.each() { elem in
+						elem.limit(1) { link -> ProcessLink<Void> in
+							if i < 2 {
+								return link.drop()
+											.chain(explode)
+							} else {
+								return link.drop()
+											.chain(successExpectation.fulfill)
+							}
+						}
+					}
+			}
+		}
+		
+		waitForExpectations(timeout: 3) { error in
+			if let error = error {
+				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
+			}
+		}
+	}
+	
 	func testLimitReturnChain() {
 		let intermediateExpectation = expectation(description: "Should reach the intermediate end")
 		let finishExpectation = expectation(description: "Should reach the end of the chain")
@@ -766,6 +804,10 @@ func returnLonger(first: String, second: String) -> String {
 	} else {
 		return second
 	}
+}
+
+func explode() throws {
+	throw NSError(domain: "intentional", code: -1, userInfo: nil)
 }
 
 func fail(on error: Error) {

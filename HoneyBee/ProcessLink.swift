@@ -811,10 +811,19 @@ extension ProcessLink  {
 			semaphore.wait()
 			return b
 		}
+		var semaphoreReleasedNormally = false
+		let _ = openingLink.finally{ link in
+			link.chain { () -> Void in
+				if !semaphoreReleasedNormally {
+					semaphore.signal()
+				}
+			}
+		}
 		
 		let lastLink = defineBlock(openingLink)
 		
 		let returnLink = lastLink.chain { (j:J) -> J in
+			semaphoreReleasedNormally = true
 			semaphore.signal()
 			return j
 		}
