@@ -10,7 +10,7 @@ import XCTest
 import HoneyBee
 
 class HoneyBeeTests: XCTestCase {
-    
+    let funcContainer = TestingFunctions()
 	
 	override func setUp() {
 		super.setUp()
@@ -23,31 +23,43 @@ class HoneyBeeTests: XCTestCase {
 	}
 	
 	func testSimpleChain() {
-		let expect = expectation(description: "Simple chain should complete")
-		
+		let expect1 = expectation(description: "Simple chain 1 should complete")
+
 		HoneyBee.start { root in
 			root.setErrorHandler(fail)
 				.insert(4)
-				.chain(intToString)
-				.chain(stringToInt)
-				.chain(multiplyInt)
+				.chain(self.funcContainer.intToString)
+				.chain(self.funcContainer.stringToInt)
+				.chain(self.funcContainer.multiplyInt)
 				.chain(assertEquals =<< 8)
-				.chain(expect.fulfill)
+				.chain(expect1.fulfill)
 		}
 		
-		waitForExpectations(timeout: 1) { error in
+		let expect2 = expectation(description: "Simple chain 2 should complete")
+		
+		HoneyBee.start { root in
+			root.setErrorHandler(fail)
+				.insert(self.funcContainer)
+				.chain(TestingFunctions.noop)
+				.chain(TestingFunctions.voidFunc)
+				.chain(assertEquals =<< self.funcContainer)
+				.drop()
+				.chain(expect2.fulfill)
+		}
+
+		waitForExpectations(timeout: 2) { error in
 			if let error = error {
 				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
 			}
 		}
 	}
-	
+
 	func testOptionally() {
 		let expect = expectation(description: "Expect should be reached")
 		let optionalExpect = expectation(description: "Optional expect should be reached")
-		
+
 		var optionallyCompleted = false
-		
+
 		HoneyBee.start { root in
 			root.setErrorHandler(fail)
 				.insert(Optional(7))
@@ -59,19 +71,19 @@ class HoneyBeeTests: XCTestCase {
 				.chain{ XCTAssert(optionallyCompleted, "Optionally chain should have completed by now") }
 				.chain(expect.fulfill)
 		}
-		
+
 		waitForExpectations(timeout: 1) { error in
 			if let error = error {
 				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
 			}
 		}
 	}
-	
+
 	func testOptionallylNegative() {
 		let expect = expectation(description: "Expect should be reached")
 		let optionalExpect = expectation(description: "Optional expect should not be reached")
 		optionalExpect.isInverted = true
-		
+
 		HoneyBee.start { root in
 			root.setErrorHandler(fail)
 				.insert(Optional<Int>(nilLiteral: ()))
@@ -81,7 +93,7 @@ class HoneyBeeTests: XCTestCase {
 				}
 				.chain(expect.fulfill)
 		}
-		
+
 		waitForExpectations(timeout: 1) { error in
 			if let error = error {
 				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
@@ -92,14 +104,15 @@ class HoneyBeeTests: XCTestCase {
 	func testErrorHandling() {
 		let expect = expectation(description: "Chain should fail with error")
 		
-		
 		HoneyBee.start { root in
 			root.setErrorHandler {error in expect.fulfill()}
-				.chain(randomInt)
-				.chain(intToString)
-				.chain(stringCat)
-				.chain(stringToInt)
-				.chain(multiplyInt)
+				.insert(self.funcContainer)
+				.chain(TestingFunctions.randomInt)
+				.chain(self.funcContainer.intToString)
+				.chain(self.funcContainer.stringCat)
+				.drop()
+				.chain(self.funcContainer.explode)
+				.chain(self.funcContainer.multiplyInt)
 				.drop()
 				.chain(failIfReached)
 		}
@@ -119,13 +132,13 @@ class HoneyBeeTests: XCTestCase {
 		HoneyBee.start { root in
 			root.setErrorHandler(fail)
 				.insert(10)
-				.chain(intToString)
-				.chain(stringToInt)
+				.chain(self.funcContainer.intToString)
+				.chain(self.funcContainer.stringToInt)
 				.branch { stem in
 					stem.chain(assertEquals =<< 10)
 						.chain(expect1.fulfill)
 					
-					stem.chain(multiplyInt)
+					stem.chain(self.funcContainer.multiplyInt)
 						.chain(assertEquals =<< 20)
 						.chain(expect2.fulfill)
 			}
@@ -147,15 +160,15 @@ class HoneyBeeTests: XCTestCase {
 		HoneyBee.start { root in
 			root.setErrorHandler(fail)
 				.branch { stem in
-				let result1 = stem.chain(constantInt)
+				let result1 = stem.chain(self.funcContainer.constantInt)
 				
 				let result2 = stem.chain(sleep =<< sleepTime)
 								  .drop()
-								  .chain(constantString)
+								  .chain(self.funcContainer.constantString)
 				
 				(result2 + result1)
-					.chain(multiplyString)
-					.chain(stringCat)
+					.chain(self.funcContainer.multiplyString)
+					.chain(self.funcContainer.stringCat)
 					.chain(assertEquals =<< "lamblamblamblamblamblamblamblambcat")
 					.chain(expectA.fulfill)
 			}
@@ -164,14 +177,14 @@ class HoneyBeeTests: XCTestCase {
 		HoneyBee.start { root in
 			root.setErrorHandler(fail)
 				.branch { stem in
-				let result1 = stem.chain(constantInt)
+				let result1 = stem.chain(self.funcContainer.constantInt)
 				
-				let result2 = stem.chain(sleep =<< sleepTime)
-								  .drop()
-								  .chain(constantString)
+				let result2:ProcessLink<String> = stem.chain(sleep =<< sleepTime)
+								  .insert(self.funcContainer)
+								  .chain(TestingFunctions.constantString)
 				
 				(result1 + result2)
-					.chain(stringLengthEquals)
+					.chain(self.funcContainer.stringLengthEquals)
 					.chain(assertEquals =<< false)
 					.chain(expectB.fulfill)
 			}
@@ -197,7 +210,7 @@ class HoneyBeeTests: XCTestCase {
 			root.setErrorHandler(fail)
 				.insert(source)
 				.map { elem in
-					elem.chain(multiplyInt)
+					elem.chain(self.funcContainer.multiplyInt)
 				}
 				.each { elem in
 					elem.chain { (int:Int) -> Void in
@@ -255,7 +268,7 @@ class HoneyBeeTests: XCTestCase {
 			root.setErrorHandler(fail)
 				.insert(source)
 				.filter { elem in
-					elem.chain(isEven)
+					elem.chain(self.funcContainer.isEven)
 				}
 				.chain{ XCTAssert($0 == result, "Filter failed. expected: \(result). Received: \($0).") }
 				.chain(finishExpectation.fulfill)
@@ -339,25 +352,6 @@ class HoneyBeeTests: XCTestCase {
 				}
 				.drop()
 				.chain(assertAllExpectationsFullfilled)
-				.chain(finishExpectation.fulfill)
-		}
-		
-		waitForExpectations(timeout: 3) { error in
-			if let error = error {
-				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
-			}
-		}
-	}
-	
-	func testMultiParams() {
-		let finishExpectation = expectation(description: "Should reach the end of the chain")
-		
-		HoneyBee.start { root in
-			root.setErrorHandler(fail)
-				.insert("leg,foot")
-				.chain(decompose)
-				.chain(returnLonger)
-				.chain(assertEquals =<< "foot")
 				.chain(finishExpectation.fulfill)
 		}
 		
@@ -484,9 +478,9 @@ class HoneyBeeTests: XCTestCase {
 		
 		let finishExpectation = expectation(description: "Should reach the end of the chain")
 		let startParalleCodeExpectation = expectation(description: "Should start parallel code")
-		startParalleCodeExpectation.expectedFulfillmentCount = UInt(source.count)
+		startParalleCodeExpectation.expectedFulfillmentCount = source.count
 		let finishParalleCodeExpectation = expectation(description: "Should finish parallel code")
-		finishParalleCodeExpectation.expectedFulfillmentCount = UInt(source.count)
+		finishParalleCodeExpectation.expectedFulfillmentCount = source.count
 		var parallelCodeFinished = false
 		
 		HoneyBee.start { root in
@@ -523,12 +517,12 @@ class HoneyBeeTests: XCTestCase {
 		let source = Array(0..<3)
 		
 		let successExpectation = expectation(description: "Should success mark")
-		successExpectation.expectedFulfillmentCount = UInt(source.count)
+		successExpectation.expectedFulfillmentCount = source.count
 		
 		for i in 0..<3 {
 			let failureExpectation = expectation(description: "Should reach the error handler")
 			if i < 2 {
-				failureExpectation.expectedFulfillmentCount = UInt(source.count)
+				failureExpectation.expectedFulfillmentCount = source.count
 			} else {
 				failureExpectation.isInverted = true
 			}
@@ -539,8 +533,9 @@ class HoneyBeeTests: XCTestCase {
 					.each() { elem in
 						elem.limit(1) { link -> ProcessLink<Void> in
 							if i < 2 {
-								return link.drop()
-											.chain(explode)
+								return link.insert(self.funcContainer)
+											.chain(TestingFunctions.explode) // chain errors here
+											.chain(assertEquals =<< Int.max)
 							} else {
 								return link.drop()
 											.chain(successExpectation.fulfill)
@@ -567,7 +562,7 @@ class HoneyBeeTests: XCTestCase {
 			root.setErrorHandler(fail)
 				.limit(29) { link in
 					link.insert("Right")
-						.chain(stringCat)
+						.chain(self.funcContainer.stringCat)
 						.drop()
 						.chain(intermediateExpectation.fulfill)
 						.chain{ intermediateFullfilled = true }
@@ -615,7 +610,7 @@ class HoneyBeeTests: XCTestCase {
 		HoneyBee.start(on: DispatchQueue.main) { root in
 			root.setErrorHandler(fail)
 				.insert(4)
-				.chain(intToString)
+				.chain(self.funcContainer.intToString)
 				.drop()
 				.chain(assertThreadIsMain =<< true)
 				.setBlockPerformer(DispatchQueue.global())
@@ -656,10 +651,10 @@ class HoneyBeeTests: XCTestCase {
 		HoneyBee.start { root in
 			root.setErrorHandler(errorHanlderWithContext)
 				.insert(7)
-				.chain(intToString)
-				.chain(stringCat)
-				.chain{(string:String) -> String in expectedFile = #file; expectedLine = #line; return string}.chain(stringToInt)
-				.chain(multiplyInt)
+				.chain(self.funcContainer.intToString)
+				.chain(self.funcContainer.stringCat)
+				.chain{(string:String) -> String in expectedFile = #file; expectedLine = #line; return string}.chain(self.funcContainer.stringToInt)
+				.chain(self.funcContainer.multiplyInt)
 				.drop()
 				.chain(failIfReached)
 		}
@@ -707,11 +702,11 @@ class HoneyBeeTests: XCTestCase {
 			root.setErrorHandler(fail)
 				.insert(4)
 				.tunnel { link in
-					link.chain(intToString)
+					link.chain(self.funcContainer.intToString)
 						.chain(assertEquals =<< "4")
 						.chain(expectTunnel.fulfill)
 				}
-				.chain(multiplyInt)
+				.chain(self.funcContainer.multiplyInt)
 				.chain(assertEquals =<< 8)
 				.chain(expectFinal.fulfill)
 		}
@@ -734,80 +729,84 @@ func assertEquals<T: Equatable>(t1: T, t2: T) -> Void {
 	XCTAssert(t1 == t2, "Expected \(t1) to equal \(t2)")
 }
 
-// mock functions
-
-func multiplyInt(int: Int) -> Int {
-	return int * 2
-}
-
-func stringCat(string: String) -> String {
-	return "\(string)cat"
-}
-
-func stringToInt(string: String, callback: ((FailableResult<Int>) -> Void)?) {
-	if let int = Int(string) {
-		callback?(.success(int))
-	} else {
-		let error = NSError(domain: "couldn't convert string to int", code: -2, userInfo: ["string:": string])
-		callback?(.failure(error))
+class TestingFunctions : Equatable {
+	static func == (lhs: TestingFunctions, rhs: TestingFunctions) -> Bool {
+		return true // just a type check since we have no state
 	}
-}
-
-func intToString(int: Int, callback: (String) -> Void) {
-	return callback("\(int)")
-}
-
-func constantInt(callback:(FailableResult<Int>)->Void) {
-	callback(.success(8))
-}
-
-func constantString() -> String {
-	return "lamb"
-}
-
-func randomInt() -> Int {
-	return Int(arc4random())
-}
-
-func isEven(int: Int, callback:(Bool)->Void) -> Void {
-	callback(int%2 == 0)
-}
-
-func randomInts(count: Int) -> [Int] {
-	return Array(0..<count).map { _ in randomInt() }
-}
-
-func printAll(values: [Any]) {
-	print(values)
-}
-
-func multiplyString(string: String, count: Int) -> String {
-	var acc = ""
-	for _ in 0..<count {
-		acc.append(string)
+	
+	func multiplyInt(int: Int) -> Int {
+		return int * 2
 	}
-	return acc
-}
 
-func stringLengthEquals(length: Int, string: String) -> Bool {
-	return string.characters.count == length
-}
-
-func decompose(string: String, callback:(String,String)->Void) {
-	let comps = string.components(separatedBy: ",")
-	callback(comps[0],comps[1])
-}
-
-func returnLonger(first: String, second: String) -> String {
-	if first.characters.count > second.characters.count {
-		return first
-	} else {
-		return second
+	func stringCat(string: String, callback: (String?, Error?) -> Void) -> Void {
+		callback("\(string)cat",nil)
 	}
-}
 
-func explode() throws {
-	throw NSError(domain: "intentional", code: -1, userInfo: nil)
+	func stringToInt(string: String, callback: ((FailableResult<Int>) -> Void)?) {
+		if let int = Int(string) {
+			callback?(.success(int))
+		} else {
+			let error = NSError(domain: "couldn't convert string to int", code: -2, userInfo: ["string:": string])
+			callback?(.failure(error))
+		}
+	}
+
+	func intToString(int: Int, callback: (String) -> Void) {
+		return callback("\(int)")
+	}
+
+	func constantInt(callback:(FailableResult<Int>)->Void) {
+		callback(.success(8))
+	}
+
+	func constantString(callback: ((String?, Error?) -> Void)? ) -> Void {
+		callback?("lamb", nil)
+	}
+
+	func randomInt(callback: ((FailableResult<Int>) -> Void)) -> Void {
+		callback(.success(Int(arc4random())))
+	}
+
+	func isEven(int: Int, callback:(Bool)->Void) -> Void {
+		callback(int%2 == 0)
+	}
+
+	func noop(callback: @escaping () -> Void) {
+		callback()
+	}
+	
+	func voidFunc(callback: @escaping (Error?) -> Void) -> Void {
+		callback(nil)
+	}
+	
+	func multiplyString(string: String, count: Int) -> String {
+		var acc = ""
+		for _ in 0..<count {
+			acc.append(string)
+		}
+		return acc
+	}
+
+	func stringLengthEquals(length: Int, string: String) -> Bool {
+		return string.characters.count == length
+	}
+
+	func decompose(string: String, callback:(String,String)->Void) {
+		let comps = string.components(separatedBy: ",")
+		callback(comps[0],comps[1])
+	}
+
+	func returnLonger(first: String, second: String) -> String {
+		if first.characters.count > second.characters.count {
+			return first
+		} else {
+			return second
+		}
+	}
+
+	func explode(callback: ((Int) -> Void)?) throws -> Void {
+		throw NSError(domain: "intentional", code: -1, userInfo: nil)
+	}
 }
 
 func fail(on error: Error) {
@@ -823,11 +822,11 @@ class FibonaciGenerator {
 		completion(.success(true))
 	}
 	
-	func next(completion: ((FailableResult<Int>) -> Void)? ) {
+	func next(completion: ((Int?, Error?) -> Void)? ) {
 		let next = a + b
 		a = b
 		b = next
-		completion?(.success(next))
+		completion?(next, nil)
 	}
 }
 

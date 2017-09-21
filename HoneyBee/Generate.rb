@@ -9,16 +9,21 @@ end
 
 chain_function_signatures_text = %[
 (B) -> C
+(B) -> Void
 
 (B) -> () -> C
+(B) -> () -> Void
+(B) -> (() -> Void) -> Void
 (B) -> ((C) -> Void) -> Void
 (B) -> ((Error?) -> Void) -> Void
 (B) -> ((C?, Error?) -> Void) -> Void
 
+(B, () -> Void) -> Void
 (B, (C) -> Void) -> Void
 (B, (Error?) -> Void) -> Void
 (B, (C?, Error?) -> Void) -> Void
 
+(() -> Void) -> Void
 ((C) -> Void) -> Void
 ((Error?) -> Void) -> Void
 ((C?, Error?) -> Void) -> Void
