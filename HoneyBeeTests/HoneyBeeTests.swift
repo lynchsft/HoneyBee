@@ -717,6 +717,24 @@ class HoneyBeeTests: XCTestCase {
 			}
 		}
 	}
+	
+	func testKeyPath() {
+		let expect1 = expectation(description: "KeyPath chain should complete")
+		
+		HoneyBee.start { root in
+			root.setErrorHandler(fail)
+				.insert("catdog")
+				.chain(\String.utf16.count)
+				.chain(assertEquals =<< 6)
+				.chain(expect1.fulfill)
+		}
+		
+		waitForExpectations(timeout: 1) { error in
+			if let error = error {
+				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
+			}
+		}
+	}
 }
 
 // test helper functions

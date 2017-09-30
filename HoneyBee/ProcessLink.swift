@@ -636,6 +636,16 @@ extension ProcessLink : ChainableFailable {
 }
 
 extension ProcessLink {
+	// keypath form
+	@discardableResult public
+	func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ keyPath: KeyPath<B,C>) -> ProcessLink<C> {
+		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(keyPath)) { (b: B) -> C in
+			return b[keyPath: keyPath]
+		}
+	}
+}
+
+extension ProcessLink {
 	// queue management
 	
 	
