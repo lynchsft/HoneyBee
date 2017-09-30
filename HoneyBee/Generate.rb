@@ -133,19 +133,22 @@ def generate_bind()
 		replaced_arguments = replaced_arguments.split('').collect {|letter| letter.downcase}.join(", ")
 		replaced_arguments.gsub!("x","arg")
 		
-		generated_bind_declarations << "/// bind argument to function. Type: #{consumed_index + 1} onto #{arguments.length}"
-		generated_bind_declarations << "public func bind<#{generic_argument_declaration},R>(_ function: @escaping (#{argument_declaration})->R, _ arg: #{consumed_arg}) -> (#{consumed_argument_declaration})-> R {"
-		generated_bind_declarations << "	return { (#{consumed_argument_params}) in"
-		generated_bind_declarations << "		return function(#{replaced_arguments})"
-		generated_bind_declarations << "	}"
-		generated_bind_declarations << "}"
-		generated_bind_declarations << ""
+		["throws ", ""].each {|throw_or_no|		
+			generated_bind_declarations << "/// bind argument to function. Type: #{consumed_index + 1} onto #{arguments.length}"
+			generated_bind_declarations << "public func bind<#{generic_argument_declaration},R>(_ function: @escaping (#{argument_declaration}) #{throw_or_no}-> R, _ arg: #{consumed_arg}) -> (#{consumed_argument_declaration}) #{throw_or_no}-> R {"
+			generated_bind_declarations << "	return { (#{consumed_argument_params}) in"
+			generated_bind_declarations << "		return #{throw_or_no.size > 0 ? "try" : ""} function(#{replaced_arguments})"
+			generated_bind_declarations << "	}"
+			generated_bind_declarations << "}"
+			generated_bind_declarations << ""
 		
-		generated_operator_declarations << "/// bind argument to function. Type: #{consumed_index + 1} onto #{arguments.length}"
-		generated_operator_declarations << "public func =<< <#{generic_argument_declaration},R>(_ function: @escaping (#{argument_declaration})->R, _ arg: #{consumed_arg}) -> (#{consumed_argument_declaration})-> R {"
-		generated_operator_declarations << "	return bind(function,arg)"
-		generated_operator_declarations << "}"
-		generated_operator_declarations << ""
+		
+			generated_operator_declarations << "/// bind argument to function. Type: #{consumed_index + 1} onto #{arguments.length}"
+			generated_operator_declarations << "public func =<< <#{generic_argument_declaration},R>(_ function: @escaping (#{argument_declaration}) #{throw_or_no}-> R, _ arg: #{consumed_arg}) -> (#{consumed_argument_declaration}) #{throw_or_no}-> R {"
+			generated_operator_declarations << "	return bind(function,arg)"
+			generated_operator_declarations << "}"
+			generated_operator_declarations << ""
+		}
 	}
 	
 
