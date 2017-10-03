@@ -385,10 +385,8 @@ class HoneyBeeTests: XCTestCase {
 		HoneyBee.start { root in
 			root.setErrorHandler(fail)
 				.insert(source)
-				.each { elem in
-					elem.limit(1) { link in
-						link.chain(asynchronouslyHoldLock)
-					}
+				.each(withLimit: 1) { elem in
+					elem.chain(asynchronouslyHoldLock)
 				}
 				.drop()
 				.chain(finishExpectation.fulfill)

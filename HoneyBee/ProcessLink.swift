@@ -33,6 +33,7 @@ final public class ProcessLink<B> : Executable, PathDescribing  {
 	
 	fileprivate var createdLinks: [Executable] = []
 	private let createdLinksLock = NSLock()
+	fileprivate var createdLinksAsyncSemaphore: DispatchSemaphore?
 	fileprivate var finalLink: ProcessLink<Void>?
 	
 	private var function: (Any, @escaping (FailableResult<B>) -> Void) -> Void
@@ -156,16 +157,21 @@ final public class ProcessLink<B> : Executable, PathDescribing  {
 					
 					var continueExecuting = true
 					for createdLink in self.createdLinks {
+						self.createdLinksAsyncSemaphore?.wait()
+						let workItemCleanup = {
+							self.createdLinksAsyncSemaphore?.signal()
+							group.leave()
+						}
 						let workItem = {
 							if continueExecuting {
 								createdLink.execute(argument: result) { cont in
 									if continueExecuting {
 										continueExecuting = cont
 									}
-									group.leave()
+									workItemCleanup()
 								}
 							} else {
-								group.leave()
+								workItemCleanup()
 							}
 						}
 						group.enter()
@@ -783,7 +789,7 @@ extension ProcessLink where B : Sequence {
 	///
 	/// - Parameter defineBlock: a block which creates a subchain for each element of the sequence
 	/// - Returns: a ProcessLink which will pass the `Sequence` `B` to its child links
-	@discardableResult public func each(_ defineBlock: @escaping (ProcessLink<B.Iterator.Element>) -> Void) -> ProcessLink<B> {
+	@discardableResult public func each(withLimit limit: Int? = nil, _ defineBlock: @escaping (ProcessLink<B.Iterator.Element>) -> Void) -> ProcessLink<B> {
 		var rootLink: ProcessLink<B>!
 		
 		var storedB: B! = nil
@@ -794,6 +800,9 @@ extension ProcessLink where B : Sequence {
 				let elemLink = rootLink.insert(element)
 				defineBlock(elemLink)
 			}
+		}
+		if let limit = limit {
+			rootLink.createdLinksAsyncSemaphore = DispatchSemaphore(value: limit)
 		}
 		
 		let finallyLink = ProcessLink<Void>(function: { (_, callback) in callback(.success(Void())) },
