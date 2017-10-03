@@ -157,6 +157,7 @@ final public class ProcessLink<B> : Executable, PathDescribing  {
 					
 					var continueExecuting = true
 					for createdLink in self.createdLinks {
+						group.enter()
 						self.createdLinksAsyncSemaphore?.wait()
 						let workItemCleanup = {
 							self.createdLinksAsyncSemaphore?.signal()
@@ -174,7 +175,6 @@ final public class ProcessLink<B> : Executable, PathDescribing  {
 								workItemCleanup()
 							}
 						}
-						group.enter()
 						self.myBlockPerformer.asyncPerform(workItem)
 					}
 					
