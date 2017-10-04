@@ -135,7 +135,7 @@ final public class ProcessLink<B> : Executable, PathDescribing  {
 		return link
 	}
 	
-	override func execute(argument: Any, completion fullChainCompletion: @escaping (Continue) -> Void) {
+	override func execute(argument: Any, completion fullChainCompletion: @escaping () -> Void) {
 		self.myBlockPerformer.asyncPerform {
 			var callbackInvoked = false
 			let callbackInvokedLock = NSLock()
@@ -151,28 +151,16 @@ final public class ProcessLink<B> : Executable, PathDescribing  {
 				callbackInvoked = true
 				
 				switch failableResult {
-				case .success(let result) :
-					
+				case .success(let result) :			
 					let group = DispatchGroup()
-					
-					var continueExecuting = true
+		
 					for createdLink in self.createdLinks {
 						group.enter()
 						self.createdLinksAsyncSemaphore?.wait()
-						let workItemCleanup = {
-							self.createdLinksAsyncSemaphore?.signal()
-							group.leave()
-						}
 						let workItem = {
-							if continueExecuting {
-								createdLink.execute(argument: result) { cont in
-									if continueExecuting {
-										continueExecuting = cont
-									}
-									workItemCleanup()
-								}
-							} else {
-								workItemCleanup()
+							createdLink.execute(argument: result) {
+								self.createdLinksAsyncSemaphore?.signal()
+								group.leave()
 							}
 						}
 						self.myBlockPerformer.asyncPerform(workItem)
@@ -181,15 +169,9 @@ final public class ProcessLink<B> : Executable, PathDescribing  {
 					group.notify(queue: .global(), execute: {
 						self.myBlockPerformer.asyncPerform {
 							if let finalLink = self.finalLink {
-								if continueExecuting {
-									finalLink.execute(argument: Void(), completion: fullChainCompletion)
-								} else {
-									finalLink.execute(argument: Void()) { _ in // doesn't matter how the finally chain ended
-										fullChainCompletion(false) // don't continue
-									}
-								}
+								finalLink.execute(argument: Void(), completion: fullChainCompletion)
 							} else {
-								fullChainCompletion(continueExecuting)
+								fullChainCompletion()
 							}
 						}
 					})
@@ -198,11 +180,9 @@ final public class ProcessLink<B> : Executable, PathDescribing  {
 					let errorContext = ErrorContext(subject: argument, file: self.functionFile, line: self.functionLine, internalPath: self.path)
 					self.errorHandler(error, errorContext)
 					if let finalLink = self.finalLink {
-						finalLink.execute(argument: Void()) { _ in // doesn't matter how the finally chain ended
-							fullChainCompletion(false) // don't continue
-						}
+						finalLink.execute(argument: Void(), completion: fullChainCompletion)
 					} else {
-						fullChainCompletion(false) // don't continue
+						fullChainCompletion()
 					}
 				}
 			}

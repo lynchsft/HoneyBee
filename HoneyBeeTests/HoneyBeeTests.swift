@@ -381,18 +381,56 @@ class HoneyBeeTests: XCTestCase {
 		}
 		
 		let finishExpectation = expectation(description: "Should reach the end of the chain")
+		let elementExpectation = expectation(description: "Element should finish \(source.count) times")
+		elementExpectation.expectedFulfillmentCount = source.count
 		
 		HoneyBee.start { root in
 			root.setErrorHandler(fail)
 				.insert(source)
 				.each(withLimit: 1) { elem in
 					elem.chain(asynchronouslyHoldLock)
+						.chain{(_:Int)->Void in elementExpectation.fulfill()}
 				}
 				.drop()
 				.chain(finishExpectation.fulfill)
 		}
 		
 		waitForExpectations(timeout: TimeInterval(source.count * sleepSeconds + 1)) { error in
+			if let error = error {
+				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
+			}
+		}
+	}
+	
+	func testEachWithLimitErroring() {
+		let source = Array(0..<20)
+		let sleepSeconds = 0.2
+		
+		let lock = NSLock()
+		
+		func asynchronouslyHoldLock(iteration: Int, completion: @escaping (Int)->Void) {
+			DispatchQueue.global(qos: .background).async {
+				sleep(UInt32(sleepSeconds))
+				completion(iteration)
+			}
+		}
+		
+		let finishExpectation = expectation(description: "Should reach the end of the chain")
+		let errorExpectation = expectation(description: "Should error \(source.count) times")
+		errorExpectation.expectedFulfillmentCount = source.count
+		
+		HoneyBee.start { root in
+			root.setErrorHandler { _ in errorExpectation.fulfill()}
+				.insert(source)
+				.each(withLimit: 5) { elem in
+					elem.chain(asynchronouslyHoldLock)
+						.chain(self.funcContainer.explode)
+				}
+				.drop()
+				.chain(finishExpectation.fulfill)
+		}
+		
+		waitForExpectations(timeout: TimeInterval(Double(source.count) * sleepSeconds + 1.0)) { error in
 			if let error = error {
 				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
 			}
@@ -715,7 +753,8 @@ class HoneyBeeTests: XCTestCase {
 			}
 		}
 	}
-	
+
+	@available(iOS 11.0, *)
 	func testKeyPath() {
 		let expect1 = expectation(description: "KeyPath chain should complete")
 		

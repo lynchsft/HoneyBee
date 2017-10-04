@@ -10,12 +10,11 @@ import Foundation
 
 /// Super type of executable types.
 public class Executable {
-	typealias Continue = Bool
-	func execute(argument: Any, completion: @escaping (Continue) -> Void) -> Void {}
+	func execute(argument: Any, completion: @escaping () -> Void) -> Void {}
 }
 
 final class JoinPoint<A> : Executable, PathDescribing {
-	typealias ExecutionResult = (Any, (Continue) -> Void)
+	typealias ExecutionResult = (Any, () -> Void)
 	
 	private let resultLock = NSLock()
 	private var executionResult: ExecutionResult?
@@ -43,7 +42,7 @@ final class JoinPoint<A> : Executable, PathDescribing {
 		}
 	}
 	
-	override func execute(argument: Any, completion: @escaping (Continue) -> Void) {
+	override func execute(argument: Any, completion: @escaping () -> Void) {
 		self.resultLock.lock()
 		defer {
 			self.resultLock.unlock()
@@ -75,9 +74,9 @@ final class JoinPoint<A> : Executable, PathDescribing {
 					preconditionFailure("b is not of type B")
 				}
 				tuple = (aa, bb)
-				link.execute(argument: Void(), completion: { (cont) in
-					myCompletion(cont)
-					otherCompletion(cont)
+				link.execute(argument: Void(), completion: {
+					myCompletion()
+					otherCompletion()
 				})
 			}
 		}

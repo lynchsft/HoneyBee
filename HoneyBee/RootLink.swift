@@ -31,7 +31,7 @@ final public class RootLink<T> : Executable, ErrorHandling {
 		return firstLink!
 	}
 		
-	override func execute(argument: Any, completion: @escaping (Continue) -> Void) -> Void {
+	override func execute(argument: Any, completion: @escaping () -> Void) -> Void {
 		guard let firstLink = self.firstLink else {
 			preconditionFailure("Must supply an error handler before executing")
 		}

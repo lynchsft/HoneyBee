@@ -31,7 +31,7 @@ public struct HoneyBee {
 		let root = RootLink<Void>(blockPerformer: blockPerformer, path: ["start: \(file):\(line)"])
 		blockPerformer.asyncPerform {
 			defineBlock(root)
-			root.execute(argument: Void(), completion: {success in })
+			root.execute(argument: Void(), completion: { })
 		}
 	}
 }
