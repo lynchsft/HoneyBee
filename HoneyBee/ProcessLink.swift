@@ -641,6 +641,7 @@ extension ProcessLink : ChainableFailable {
 	}
 }
 
+#if swift(>=4.0)
 extension ProcessLink {
 	// keypath form
 	@discardableResult public
@@ -650,6 +651,7 @@ extension ProcessLink {
 		}
 	}
 }
+#endif
 
 extension ProcessLink {
 	// queue management
