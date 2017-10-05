@@ -108,7 +108,7 @@ final public class ProcessLink<B> : Executable, PathDescribing  {
 	 - Parameter defineBlock: context within which to define the finally chain.
 	 - Returns: a `ProcessLink` with the same execution context as self, but with a finally chain registered.
 	*/
-	public func finally(_ defineBlock: @escaping (ProcessLink<Void>) -> Void ) -> ProcessLink<B> {
+	public func finally(_ defineBlock: (ProcessLink<Void>) -> Void ) -> ProcessLink<B> {
 		if let oldFinalLink = self.finalLink {
 			let _ = oldFinalLink.finally(defineBlock)
 		} else {
@@ -223,7 +223,7 @@ extension ProcessLink {
 	/// - Parameters:
 	///   - defineBlock: a block which creates a subchain to be limited.
 	/// - Returns: a `ProcessLink` whose execution result `R` is discarded.
-	public func tunnel<R>(file: StaticString = #file, line: UInt = #line, _ defineBlock: @escaping (ProcessLink<B>) -> ProcessLink<R>) -> ProcessLink<B> {
+	public func tunnel<R>(file: StaticString = #file, line: UInt = #line, _ defineBlock: (ProcessLink<B>) -> ProcessLink<R>) -> ProcessLink<B> {
 		var storedB: B? = nil
 		
 		let openingLink = self.chain { (b:B) -> B in
@@ -885,7 +885,7 @@ extension ProcessLink  {
 	///   - maxParallel: the maximum number of parallel executions permitted for the subchains defined by `defineBlock`
 	///   - defineBlock: a block which creates a subchain to be limited.
 	/// - Returns: a `ProcessLink` whose execution result `J` is the result of the final link of the subchain.
-	@discardableResult public func limit<J>(_ maxParallel: Int, _ defineBlock: @escaping (ProcessLink<B>) -> ProcessLink<J>) -> ProcessLink<J> {
+	@discardableResult public func limit<J>(_ maxParallel: Int, _ defineBlock: (ProcessLink<B>) -> ProcessLink<J>) -> ProcessLink<J> {
 		
 		let pathString = self.path.joined()
 		
