@@ -663,7 +663,7 @@ extension ProcessLink where B : Collection, B.IndexDistance == Int {
 	///
 	/// - Parameter transform: the transformation subchain defining block which converts `B.Iterator.Element` to `C`
 	/// - Returns: a `ProcessLink` which will yield an array of `C`s to it's child links.
-	public func map<C>(_ transform: @escaping (ProcessLink<B.Iterator.Element>) -> ProcessLink<C>) -> ProcessLink<[C]> {
+	public func map<C>(withLimit limit: Int? = nil, _ transform: @escaping (ProcessLink<B.Iterator.Element>) -> ProcessLink<C>) -> ProcessLink<[C]> {
 		var rootLink: ProcessLink<B>! = nil
 		
 		let returnSemaphore = DispatchSemaphore(value: 1)
@@ -691,6 +691,10 @@ extension ProcessLink where B : Collection, B.IndexDistance == Int {
 			})
 		}
 		
+		if let limit = limit {
+			rootLink.createdLinksAsyncSemaphore = ProcessLink.semaphore(for: self, withValue: limit)
+		}
+		
 		let finallyLink = ProcessLink<Void>(function: { (_, callback) in callback(.success(Void())) },
 		                                    errorHandler: self.errorHandler,
 		                                    blockPerformer: self.blockPerformer,
@@ -714,7 +718,7 @@ extension ProcessLink where B : Collection, B.IndexDistance == Int {
 	///
 	/// - Parameter filter: the filter subchain which produces a Bool
 	/// - Returns: a `ProcessLink` which will yield to it's child links an array containing those `B.Iterator.Element`s which `filter` approved.
-	public func filter(_ filter: @escaping (ProcessLink<B.Iterator.Element>) -> ProcessLink<Bool>) -> ProcessLink<[B.Iterator.Element]> {
+	public func filter(withLimit limit: Int? = nil, _ filter: @escaping (ProcessLink<B.Iterator.Element>) -> ProcessLink<Bool>) -> ProcessLink<[B.Iterator.Element]> {
 		var rootLink: ProcessLink<B>! = nil
 		
 		let returnSemaphore = DispatchSemaphore(value: 1)
@@ -740,6 +744,10 @@ extension ProcessLink where B : Collection, B.IndexDistance == Int {
 				returnValue = b
 				returnSemaphore.signal()
 			})
+		}
+		
+		if let limit = limit {
+			rootLink.createdLinksAsyncSemaphore = ProcessLink.semaphore(for: self, withValue: limit)
 		}
 		
 		let finallyLink = ProcessLink<Void>(function: { (_, callback) in callback(.success(Void())) },
@@ -784,7 +792,7 @@ extension ProcessLink where B : Sequence {
 			}
 		}
 		if let limit = limit {
-			rootLink.createdLinksAsyncSemaphore = DispatchSemaphore(value: limit)
+			rootLink.createdLinksAsyncSemaphore = ProcessLink.semaphore(for: self, withValue: limit)
 		}
 		
 		let finallyLink = ProcessLink<Void>(function: { (_, callback) in callback(.success(Void())) },
@@ -871,6 +879,16 @@ fileprivate let limitPathsToSemaphoresLock = NSLock()
 fileprivate var limitPathsToSemaphores: [String:DispatchSemaphore] = [:]
 
 extension ProcessLink  {
+	fileprivate static func semaphore<X>(for link: ProcessLink<X>, withValue value: Int) -> DispatchSemaphore {
+		let pathString = link.path.joined()
+		
+		limitPathsToSemaphoresLock.lock()
+		let semaphore = limitPathsToSemaphores[pathString] ?? DispatchSemaphore(value: value)
+		limitPathsToSemaphores[pathString] = semaphore
+		limitPathsToSemaphoresLock.unlock()
+		return semaphore
+	}
+	
 	/// `limit` defines a subchain with special runtime protections. The links within the `limit` subchain are guaranteed to have at most `maxParallel` parallel executions. `limit` is particularly useful in the context of a fully parallel process when part of the process must access a limited resource pool such as CPU execution contexts or network resources.
 	/// This method returns a `ProcessLink` whose execution result `J` is the result of the final link of the subchain. This permits the chain to proceed naturally after limit. For example:
 	///
@@ -887,12 +905,7 @@ extension ProcessLink  {
 	/// - Returns: a `ProcessLink` whose execution result `J` is the result of the final link of the subchain.
 	@discardableResult public func limit<J>(_ maxParallel: Int, _ defineBlock: (ProcessLink<B>) -> ProcessLink<J>) -> ProcessLink<J> {
 		
-		let pathString = self.path.joined()
-		
-		limitPathsToSemaphoresLock.lock()
-		let semaphore = limitPathsToSemaphores[pathString] ?? DispatchSemaphore(value: maxParallel)
-		limitPathsToSemaphores[pathString] = semaphore
-		limitPathsToSemaphoresLock.unlock()
+		let semaphore = ProcessLink.semaphore(for: self, withValue: maxParallel)
 		
 		let openingLink = self.chain { (b:B) -> B in
 			semaphore.wait()

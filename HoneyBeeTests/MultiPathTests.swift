@@ -131,6 +131,67 @@ class MultiPathTests: XCTestCase {
 		}
 	}
 	
+	func testMapWithLimit() {
+		var intsToExpectations:[Int:XCTestExpectation] = [:]
+		
+		let source = Array(0..<10)
+		for int in source {
+			intsToExpectations[int] = expectation(description: "Expected to map value for \(int)")
+		}
+		
+		let sleepSeconds = 0.1
+		
+		let lock = NSLock()
+		
+		func asynchronouslyHoldLock(iteration: Int, completion: @escaping (Int)->Void) {
+			if !lock.try() {
+				XCTFail("Lock should never be held at this point. Implies parallel execution. Iteration: \(iteration)")
+			}
+			
+			DispatchQueue.global(qos: .background).async {
+				sleep(UInt32(sleepSeconds))
+				lock.unlock()
+				completion(iteration)
+			}
+		}
+		
+		
+		let finishExpectation = expectation(description: "Should reach the end of the chain")
+		let elementExpectation = expectation(description: "Element should finish \(source.count) times")
+		elementExpectation.expectedFulfillmentCount = source.count
+		
+		HoneyBee.start { root in
+			root.setErrorHandler(fail)
+				.insert(source)
+				.map(withLimit: 1) { elem in
+					elem.tunnel { link in
+						link.chain(asynchronouslyHoldLock)
+							.drop()
+							.chain(elementExpectation.fulfill)
+					}
+					.chain(self.funcContainer.multiplyInt)
+				}
+				.each { elem in
+					elem.chain { (int:Int) -> Void in
+						let sourceValue = int/2
+						if let exepct = intsToExpectations[sourceValue]  {
+							exepct.fulfill()
+						} else {
+							XCTFail("Map source value not found \(sourceValue)")
+						}
+					}
+				}
+				.drop()
+				.chain(finishExpectation.fulfill)
+		}
+		
+		waitForExpectations(timeout: TimeInterval(Double(source.count) * sleepSeconds + 1.0)) { error in
+			if let error = error {
+				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
+			}
+		}
+	}
+	
 	func testMapQueue() {
 		let source = Array(0...10)
 		
@@ -173,6 +234,53 @@ class MultiPathTests: XCTestCase {
 		}
 		
 		waitForExpectations(timeout: 3) { error in
+			if let error = error {
+				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
+			}
+		}
+	}
+	
+	func testFilterWithLimit() {
+		let source = Array(0...10)
+		let result = [0,2,4,6,8,10]
+		
+		let sleepSeconds = 0.1
+		
+		let lock = NSLock()
+		
+		func asynchronouslyHoldLock(iteration: Int, completion: @escaping (Int)->Void) {
+			if !lock.try() {
+				XCTFail("Lock should never be held at this point. Implies parallel execution. Iteration: \(iteration)")
+			}
+			
+			DispatchQueue.global(qos: .background).async {
+				sleep(UInt32(sleepSeconds))
+				lock.unlock()
+				completion(iteration)
+			}
+		}
+
+		
+		let finishExpectation = expectation(description: "Should reach the end of the chain")
+		let elementExpectation = expectation(description: "Element should finish \(source.count) times")
+		elementExpectation.expectedFulfillmentCount = source.count
+		
+		HoneyBee.start { root in
+			root.setErrorHandler(fail)
+				.insert(source)
+				.filter(withLimit: 1) { elem in
+					elem.tunnel { link in
+						link.chain(asynchronouslyHoldLock)
+							.drop()
+							.chain(elementExpectation.fulfill)
+						}
+						.chain(self.funcContainer.isEven)
+				}
+				.chain{ XCTAssert($0 == result, "Filter failed. expected: \(result). Received: \($0).") }
+				.chain(finishExpectation.fulfill)
+		}
+		
+		waitForExpectations(timeout: TimeInterval(Double(source.count) * sleepSeconds + 1.0)) { error in
 			if let error = error {
 				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
 			}
@@ -262,7 +370,7 @@ class MultiPathTests: XCTestCase {
 	
 	func testEachWithLimit() {
 		let source = Array(0..<3)
-		let sleepSeconds = 1
+		let sleepSeconds = 0.1
 		
 		let lock = NSLock()
 		
@@ -287,13 +395,14 @@ class MultiPathTests: XCTestCase {
 				.insert(source)
 				.each(withLimit: 1) { elem in
 					elem.chain(asynchronouslyHoldLock)
-						.chain{(_:Int)->Void in elementExpectation.fulfill()}
+						.drop()
+						.chain(elementExpectation.fulfill)
 				}
 				.drop()
 				.chain(finishExpectation.fulfill)
 		}
 		
-		waitForExpectations(timeout: TimeInterval(source.count * sleepSeconds + 1)) { error in
+		waitForExpectations(timeout: TimeInterval(Double(source.count) * sleepSeconds + 1.0)) { error in
 			if let error = error {
 				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
 			}
@@ -302,7 +411,7 @@ class MultiPathTests: XCTestCase {
 	
 	func testEachWithLimitErroring() {
 		let source = Array(0..<20)
-		let sleepSeconds = 0.2
+		let sleepSeconds = 0.1
 		
 		let lock = NSLock()
 		
