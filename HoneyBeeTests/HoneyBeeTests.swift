@@ -754,7 +754,7 @@ class HoneyBeeTests: XCTestCase {
 		}
 	}
 
-	@available(iOS 11.0, *)
+#if swift(>=4.0)
 	func testKeyPath() {
 		let expect1 = expectation(description: "KeyPath chain should complete")
 		
@@ -772,6 +772,7 @@ class HoneyBeeTests: XCTestCase {
 			}
 		}
 	}
+#endif
 }
 
 // test helper functions
