@@ -261,6 +261,28 @@ extension ProcessLink {
 		defineBlock(self)
 	}
 	
+	/// Yields self to a new definition block. Within the block the caller may invoke chaining methods on block multiple times, thus achieving parallel chains. Example:
+	///
+	///     link.branch { stem in
+	///       let a = stem.chain(func1)
+	///                   .chain(func2)
+	///
+	///       let b = stem.chain(func3)
+	///                   .chain(func4)
+	///
+	///		  return (a + b) // operator for .conjoin
+	///				   .chain(combine)
+	///     }
+	///
+	/// In the preceding example, when `link` is executed it will start the links containing `func1` and `func3` in parallel.
+	/// `func2` will execute when `func1` is finished. Likewise `func4` will execute when `func3` is finished.
+	///
+	/// - Parameter defineBlock: the block to which this `ProcessLink` yields itself.
+	/// - Returns: The link which is returned from defineBlock
+	public func branch<C>(_ defineBlock: (ProcessLink<B>) -> ProcessLink<C>) -> ProcessLink<C> {
+		return defineBlock(self)
+	}
+	
 	/// `conjoin` is a compliment to `branch`.
 	/// Within the context of a `branch` it is natural and expected to create parallel execution chains.
 	/// If the process definition wishes at some point to combine the results of these execution chains, then `conjoin` should be used.
@@ -719,93 +741,30 @@ extension ProcessLink where B : Collection, B.IndexDistance == Int {
 	/// - Parameter filter: the filter subchain which produces a Bool
 	/// - Returns: a `ProcessLink` which will yield to it's child links an array containing those `B.Iterator.Element`s which `filter` approved.
 	public func filter(withLimit limit: Int? = nil, _ filter: @escaping (ProcessLink<B.Iterator.Element>) -> ProcessLink<Bool>) -> ProcessLink<[B.Iterator.Element]> {
-		var rootLink: ProcessLink<B>! = nil
-		
-		let returnSemaphore = DispatchSemaphore(value: 1)
-		var returnValue: [B.Iterator.Element]?
-		
-		returnSemaphore.wait()
-		
-		rootLink = self.chain { (collection: B, callback: @escaping () -> Void) -> Void in
-			let group = DispatchGroup()
-			for _ in collection {
-				group.enter()
+		return self.map(withLimit: limit, { elem -> ProcessLink<B.Element?> in
+			elem.branch { stem in
+				return (stem + filter(stem))
+						.chain { (elem: B.Element, include: Bool) -> B.Element? in
+							include ? elem : nil
+						}
 			}
-			group.notify(queue: .global()) {
-				assert(rootLink.createdLinks.count == collection.count)
-				callback()
-			}
-			
-			collection.asyncFilter(on: self.blockPerformer, transform: { (element:B.Iterator.Element, completion:@escaping (Bool) -> Void) in
-				filter(rootLink.insert(element))
-					.chain(completion)
-				group.leave()
-			}, completion: {(b:[B.Iterator.Element]) in
-				returnValue = b
-				returnSemaphore.signal()
-			})
-		}
-		
-		if let limit = limit {
-			rootLink.createdLinksAsyncSemaphore = ProcessLink.semaphore(for: self, withValue: limit)
-		}
-		
-		let finallyLink = ProcessLink<Void>(function: { (_, callback) in callback(.success(Void())) },
-		                                    errorHandler: self.errorHandler,
-		                                    blockPerformer: self.blockPerformer,
-		                                    path: self.path+["filter"],
-		                                    functionFile: #file,
-		                                    functionLine: #line)
-		
-		rootLink.finalLink = finallyLink
-		
-		return finallyLink.chain { (_:Void, callback: ([B.Iterator.Element]) -> Void) -> Void in
-			returnSemaphore.wait()
-			guard let returnValue = returnValue else {
-				preconditionFailure("returnValue should not be nil")
-			}
-			returnSemaphore.signal()
-			callback(returnValue)
+		}).chain { optionalList -> [B.Iterator.Element] in
+			optionalList.flatMap {$0}
 		}
 	}
-}
-
-extension ProcessLink where B : Sequence {
 	
-	
-	/// When the inbound type is a `Sequence` you may call `each`
+	///  When the inbound type is a `Collection` with `Int` indexes (most are), then you may call `each`
 	/// Each accepts a define block which creates a subchain which will be invoked once per element of the sequence.
-	/// The `ProcessLink` which is given as argument to the define block will pass to it's child links the element of the sequence which is currently being processed.
+	/// The `ProcessLink` which is given as argument to the define block will pass to its child links the element of the sequence which is currently being processed.
 	///
 	/// - Parameter defineBlock: a block which creates a subchain for each element of the sequence
-	/// - Returns: a ProcessLink which will pass the `Sequence` `B` to its child links
-	@discardableResult public func each(withLimit limit: Int? = nil, _ defineBlock: @escaping (ProcessLink<B.Iterator.Element>) -> Void) -> ProcessLink<B> {
-		var rootLink: ProcessLink<B>!
-		
-		var storedB: B! = nil
-		
-		rootLink = self.chain { (sequence: B) -> Void in
-			storedB = sequence
-			for element in sequence {
-				let elemLink = rootLink.insert(element)
-				defineBlock(elemLink)
+	/// - Returns: a ProcessLink which will pass the nonfailing elements of `B` to its child links
+	@discardableResult public func each(withLimit limit: Int? = nil, _ defineBlock: @escaping (ProcessLink<B.Iterator.Element>) -> Void) -> ProcessLink<[B.Element]> {
+		return self.map(withLimit: limit) { elem in
+			elem.tunnel { link -> ProcessLink<B.Iterator.Element> in
+				defineBlock(link)
+				return link // this shouldn't be necessary
 			}
-		}
-		if let limit = limit {
-			rootLink.createdLinksAsyncSemaphore = ProcessLink.semaphore(for: self, withValue: limit)
-		}
-		
-		let finallyLink = ProcessLink<Void>(function: { (_, callback) in callback(.success(Void())) },
-		                                    errorHandler: self.errorHandler,
-		                                    blockPerformer: self.blockPerformer,
-		                                    path: self.path+["each"],
-		                                    functionFile: #file,
-		                                    functionLine: #line)
-		
-		rootLink.finalLink = finallyLink
-		
-		return finallyLink.chain { (_) -> B in
-			return storedB!
 		}
 	}
 }
