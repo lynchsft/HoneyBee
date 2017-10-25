@@ -8,13 +8,8 @@
 
 import Foundation
 
-/// Super type of executable types.
-public class Executable {
-	func execute(argument: Any, completion: @escaping () -> Void) -> Void {}
-}
-
 final class JoinPoint<A> : Executable, PathDescribing {
-	typealias ExecutionResult = (Any, () -> Void)
+	typealias ExecutionResult = (Any?, () -> Void)
 	
 	private let resultLock = NSLock()
 	private var executionResult: ExecutionResult?
@@ -54,8 +49,19 @@ final class JoinPoint<A> : Executable, PathDescribing {
 		}
 	}
 	
+	override func ancestorFailed() {
+		self.resultLock.lock()
+		defer {
+			self.resultLock.unlock()
+		}
+		guard let resultCallback = resultCallback else {
+			preconditionFailure("resultCallback missing")
+		}
+		resultCallback((nil, {/*empty completion*/ }))
+	}
+	
 	func conjoin<B>(_ other: JoinPoint<B>) -> ProcessLink<(A,B)> {
-		var tuple: (A,B)! = nil
+		var tuple: (A,B)? = nil
 		
 		let link = ProcessLink<(A,B)>(function: { _, callback in
 			callback(.success(tuple!))
@@ -67,16 +73,19 @@ final class JoinPoint<A> : Executable, PathDescribing {
 		
 		self.yieldResult { a, myCompletion in
 			other.yieldResult { b, otherCompletion in
-				guard let aa = a as? A else {
-					preconditionFailure("a is not of type A")
+				func callback() {
+					myCompletion()
+					otherCompletion()
 				}
-				guard let bb = b as? B else {
-					preconditionFailure("b is not of type B")
+				guard let aa = a as? A,
+					let bb = b as? B else {
+					// ancestorFailure
+					callback()
+					return
 				}
 				tuple = (aa, bb)
 				link.execute(argument: Void(), completion: {
-					myCompletion()
-					otherCompletion()
+					callback()
 				})
 			}
 		}

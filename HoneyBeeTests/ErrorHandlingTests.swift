@@ -187,5 +187,63 @@ class ErrorHandlingTests: XCTestCase {
 			}
 		}
 	}
+	
+	func testJoinError() {
+		let expectNumberOfTests = expectation(description: "two tests should be run")
+		expectNumberOfTests.expectedFulfillmentCount = 2
+		
+		func testJoinError(with customConjoin: @escaping (ProcessLink<String>, ProcessLink<Int>) -> Void) {
+			expectNumberOfTests.fulfill()
+			
+			let expectFinnally = expectation(description: "Join should be reached, path A")
+			expectFinnally.expectedFulfillmentCount = 2
+			let expectError = expectation(description: "Error should occur once")
+			
+			let sleepTime:UInt32 = 1
+			
+			func errorHandler(_ error: Error) {
+				expectError.fulfill()
+			}
+		
+			HoneyBee.start { root in
+				root.setErrorHandler(errorHandler)
+					.finally { link in
+						link.chain(expectFinnally.fulfill)
+					}
+					.branch { stem in
+						let result1 = stem.finally { link in
+										link.chain(expectFinnally.fulfill)
+									}
+									.chain(self.funcContainer.constantInt)
+						
+						let result2 = stem.chain(sleep =<< sleepTime)
+							.drop()
+							.chain(self.funcContainer.explode)
+							.drop()
+							.chain(failIfReached)
+							.chain(self.funcContainer.constantString)
+						
+						
+						customConjoin(result2,result1)
+				}
+			}
+		}
+		
+		testJoinError { (getString, getInt) in
+			(getInt + getString)
+				.chain(self.funcContainer.stringLengthEquals)
+		}
+		
+		testJoinError { (getString, getInt) in
+			(getString + getInt)
+				.chain(self.funcContainer.multiplyString)
+		}
+		
+		waitForExpectations(timeout: 3) { error in
+			if let error = error {
+				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
+			}
+		}
+	}
 }
 

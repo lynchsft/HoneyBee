@@ -12,6 +12,7 @@
 		FA25B0151F9D0885006F8DEE /* TestingFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA25B0141F9D0885006F8DEE /* TestingFunctions.swift */; };
 		FA25B0171F9D0931006F8DEE /* MultiPathTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA25B0161F9D0931006F8DEE /* MultiPathTests.swift */; };
 		FA2D12571FA01D8A004C491E /* ErrorHandlingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA2D12561FA01D8A004C491E /* ErrorHandlingTests.swift */; };
+		FA2D12591FA02175004C491E /* Executable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA2D12581FA02175004C491E /* Executable.swift */; };
 		FA3837CF1F10F7450021412C /* RootLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA3837CE1F10F7450021412C /* RootLink.swift */; };
 		FA3E405A1F25073D00E295B0 /* ErrorContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA3E40591F25073D00E295B0 /* ErrorContext.swift */; };
 		FA41097B1E9CFBC4002A6BA6 /* SinglePathTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA41097A1E9CFBC4002A6BA6 /* SinglePathTests.swift */; };
@@ -44,6 +45,7 @@
 		FA25B0141F9D0885006F8DEE /* TestingFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestingFunctions.swift; sourceTree = "<group>"; };
 		FA25B0161F9D0931006F8DEE /* MultiPathTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiPathTests.swift; sourceTree = "<group>"; };
 		FA2D12561FA01D8A004C491E /* ErrorHandlingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorHandlingTests.swift; sourceTree = "<group>"; };
+		FA2D12581FA02175004C491E /* Executable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Executable.swift; sourceTree = "<group>"; };
 		FA3837CE1F10F7450021412C /* RootLink.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RootLink.swift; sourceTree = "<group>"; };
 		FA3E40591F25073D00E295B0 /* ErrorContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorContext.swift; sourceTree = "<group>"; };
 		FA4109781E9CFBC4002A6BA6 /* HoneyBeeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HoneyBeeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -127,6 +129,7 @@
 				FA5108F31F2D385900DFEC01 /* ChainableFailable.swift */,
 				FA3E40591F25073D00E295B0 /* ErrorContext.swift */,
 				FADDE62A1F0DD02D00C19F5E /* ErrorHandling.swift */,
+				FA2D12581FA02175004C491E /* Executable.swift */,
 				FAC9DC7D1E352D6F00E21A01 /* FailableResult.swift */,
 				FAC0CA1B1E4BDB6900ECC0DC /* HoneyBee.swift */,
 				FA256FB51E5DB490008FB7C0 /* JoinPoint.swift */,
@@ -311,6 +314,7 @@
 				FAC9DC7F1E352D6F00E21A01 /* AsyncSupport.swift in Sources */,
 				FA256FB61E5DB490008FB7C0 /* JoinPoint.swift in Sources */,
 				FABB35D41F212D9800A2F247 /* AsyncBlockPerformer.swift in Sources */,
+				FA2D12591FA02175004C491E /* Executable.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

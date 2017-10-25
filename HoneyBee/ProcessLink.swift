@@ -184,8 +184,19 @@ final public class ProcessLink<B> : Executable, PathDescribing  {
 					} else {
 						fullChainCompletion()
 					}
+					self.propagateFailureToDecendants()
 				}
 			}
+		}
+	}
+	
+	override func ancestorFailed() {
+		self.propagateFailureToDecendants()
+	}
+	
+	private func propagateFailureToDecendants() {
+		for child in self.createdLinks {
+			child.ancestorFailed()
 		}
 	}
 }
