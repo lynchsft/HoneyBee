@@ -11,6 +11,7 @@
 		FA256FB61E5DB490008FB7C0 /* JoinPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA256FB51E5DB490008FB7C0 /* JoinPoint.swift */; };
 		FA25B0151F9D0885006F8DEE /* TestingFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA25B0141F9D0885006F8DEE /* TestingFunctions.swift */; };
 		FA25B0171F9D0931006F8DEE /* MultiPathTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA25B0161F9D0931006F8DEE /* MultiPathTests.swift */; };
+		FA2D12571FA01D8A004C491E /* ErrorHandlingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA2D12561FA01D8A004C491E /* ErrorHandlingTests.swift */; };
 		FA3837CF1F10F7450021412C /* RootLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA3837CE1F10F7450021412C /* RootLink.swift */; };
 		FA3E405A1F25073D00E295B0 /* ErrorContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA3E40591F25073D00E295B0 /* ErrorContext.swift */; };
 		FA41097B1E9CFBC4002A6BA6 /* SinglePathTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA41097A1E9CFBC4002A6BA6 /* SinglePathTests.swift */; };
@@ -42,6 +43,7 @@
 		FA256FB51E5DB490008FB7C0 /* JoinPoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JoinPoint.swift; sourceTree = "<group>"; };
 		FA25B0141F9D0885006F8DEE /* TestingFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestingFunctions.swift; sourceTree = "<group>"; };
 		FA25B0161F9D0931006F8DEE /* MultiPathTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiPathTests.swift; sourceTree = "<group>"; };
+		FA2D12561FA01D8A004C491E /* ErrorHandlingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorHandlingTests.swift; sourceTree = "<group>"; };
 		FA3837CE1F10F7450021412C /* RootLink.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RootLink.swift; sourceTree = "<group>"; };
 		FA3E40591F25073D00E295B0 /* ErrorContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorContext.swift; sourceTree = "<group>"; };
 		FA4109781E9CFBC4002A6BA6 /* HoneyBeeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HoneyBeeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -85,6 +87,7 @@
 		FA4109791E9CFBC4002A6BA6 /* HoneyBeeTests */ = {
 			isa = PBXGroup;
 			children = (
+				FA2D12561FA01D8A004C491E /* ErrorHandlingTests.swift */,
 				FA41097C1E9CFBC4002A6BA6 /* Info.plist */,
 				FA25B0161F9D0931006F8DEE /* MultiPathTests.swift */,
 				FA41097A1E9CFBC4002A6BA6 /* SinglePathTests.swift */,
@@ -284,6 +287,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				FA25B0151F9D0885006F8DEE /* TestingFunctions.swift in Sources */,
+				FA2D12571FA01D8A004C491E /* ErrorHandlingTests.swift in Sources */,
 				FA41097B1E9CFBC4002A6BA6 /* SinglePathTests.swift in Sources */,
 				FA25B0171F9D0931006F8DEE /* MultiPathTests.swift in Sources */,
 			);
