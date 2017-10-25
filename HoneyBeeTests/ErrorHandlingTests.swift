@@ -192,11 +192,11 @@ class ErrorHandlingTests: XCTestCase {
 		let expectNumberOfTests = expectation(description: "two tests should be run")
 		expectNumberOfTests.expectedFulfillmentCount = 2
 		
-		func testJoinError(with customConjoin: @escaping (ProcessLink<String>, ProcessLink<Int>) -> Void) {
+		func testJoinError<X>(with customConjoin: @escaping (ProcessLink<String>, ProcessLink<Int>) -> ProcessLink<X>) {
 			expectNumberOfTests.fulfill()
 			
-			let expectFinnally = expectation(description: "Join should be reached, path A")
-			expectFinnally.expectedFulfillmentCount = 2
+			let expectFinnally = expectation(description: "finnally should be reached")
+			expectFinnally.expectedFulfillmentCount = 3
 			let expectError = expectation(description: "Error should occur once")
 			
 			let sleepTime:UInt32 = 1
@@ -224,19 +224,26 @@ class ErrorHandlingTests: XCTestCase {
 							.chain(self.funcContainer.constantString)
 						
 						
-						customConjoin(result2,result1)
+						let downstreamLink = stem.finally { link in
+							link.chain(expectFinnally.fulfill)
+						}
+						let joinedLink = customConjoin(result2,result1)
+						
+						let _ = joinedLink
+								.drop()
+								.conjoin(downstreamLink)
 				}
 			}
 		}
 		
 		testJoinError { (getString, getInt) in
-			(getInt + getString)
-				.chain(self.funcContainer.stringLengthEquals)
+			return (getInt + getString)
+						.chain(self.funcContainer.stringLengthEquals)
 		}
 		
 		testJoinError { (getString, getInt) in
-			(getString + getInt)
-				.chain(self.funcContainer.multiplyString)
+			return (getString + getInt)
+					.chain(self.funcContainer.multiplyString)
 		}
 		
 		waitForExpectations(timeout: 3) { error in

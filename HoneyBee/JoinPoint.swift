@@ -81,6 +81,7 @@ final class JoinPoint<A> : Executable, PathDescribing {
 					let bb = b as? B else {
 					// ancestorFailure
 					callback()
+					link.ancestorFailed()
 					return
 				}
 				tuple = (aa, bb)
