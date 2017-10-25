@@ -287,7 +287,6 @@ class MultiPathTests: XCTestCase {
 		}
 	}
 	
-	
 	func testEach() {
 		var expectations:[XCTestExpectation] = []
 		let countLock = NSLock()
@@ -409,42 +408,6 @@ class MultiPathTests: XCTestCase {
 		}
 	}
 	
-	func testEachWithLimitErroring() {
-		let source = Array(0..<20)
-		let sleepSeconds = 0.1
-		
-		let lock = NSLock()
-		
-		func asynchronouslyHoldLock(iteration: Int, completion: @escaping (Int)->Void) {
-			DispatchQueue.global(qos: .background).async {
-				sleep(UInt32(sleepSeconds))
-				completion(iteration)
-			}
-		}
-		
-		let finishExpectation = expectation(description: "Should reach the end of the chain")
-		let errorExpectation = expectation(description: "Should error \(source.count) times")
-		errorExpectation.expectedFulfillmentCount = source.count
-		
-		HoneyBee.start { root in
-			root.setErrorHandler { _ in errorExpectation.fulfill()}
-				.insert(source)
-				.each(withLimit: 5) { elem in
-					elem.chain(asynchronouslyHoldLock)
-						.chain(self.funcContainer.explode)
-				}
-				.drop()
-				.chain(finishExpectation.fulfill)
-		}
-		
-		waitForExpectations(timeout: TimeInterval(Double(source.count) * sleepSeconds + 1.0)) { error in
-			if let error = error {
-				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
-			}
-		}
-	}
-	
-	
 	func testLimit() {
 		let source = Array(0..<3)
 		let sleepNanoSeconds:UInt32 = 100
@@ -494,45 +457,6 @@ class MultiPathTests: XCTestCase {
 		
 		let sleepSeconds = (Double(sleepNanoSeconds)/1000.0)
 		waitForExpectations(timeout: TimeInterval(Double(source.count) * sleepSeconds * 4.0 + 2.0)) { error in
-			if let error = error {
-				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
-			}
-		}
-	}
-	
-	func testLimitErrorReslience() {
-		let source = Array(0..<3)
-		
-		let successExpectation = expectation(description: "Should success mark")
-		successExpectation.expectedFulfillmentCount = source.count
-		
-		for i in 0..<3 {
-			let failureExpectation = expectation(description: "Should reach the error handler")
-			if i < 2 {
-				failureExpectation.expectedFulfillmentCount = source.count
-			} else {
-				failureExpectation.isInverted = true
-			}
-			
-			HoneyBee.start { root in
-				root.setErrorHandler { _ in failureExpectation.fulfill() }
-					.insert(source)
-					.each() { elem in
-						elem.limit(1) { link -> ProcessLink<Void> in
-							if i < 2 {
-								return link.insert(self.funcContainer)
-									.chain(TestingFunctions.explode) // chain errors here
-									.chain(assertEquals =<< Int.max)
-							} else {
-								return link.drop()
-									.chain(successExpectation.fulfill)
-							}
-						}
-				}
-			}
-		}
-		
-		waitForExpectations(timeout: 3) { error in
 			if let error = error {
 				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
 			}
