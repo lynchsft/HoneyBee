@@ -12,11 +12,20 @@ enum FailureRateError : Error {
 	case failureRateExceeded(FailureRate)
 }
 
+/**
+* Enum representing the amount of failure which is acceptable in a SIMD parallel behavior (such as map and filter).
+*/
 public enum FailureRate {
+	/// Expreses acceptable failure rate as a ratio. Must be => 0 and <= 1.
+	/// For example `.ratio(0.1)` permits up to, but not more than, ten percent of the parallel operations to fail.
 	case ratio(Double)
+	/// Expresses acceptable failure rate as a count. Must be => 0
+	/// For example `.count(2)` permis up to, but not more than 2 of the parallel operations to fail.
 	case count(Int)
 	
+	/// Convenience property expresssing that no failures are acceptable.
 	public static let none = FailureRate.count(0)
+	/// Convenience property expresssing that total failure is acceptable.
 	public static let full = FailureRate.ratio(1.0)
 	
 	func checkExceeded(byFailures failures: Int, `in` total: Int) throws -> Void {
