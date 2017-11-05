@@ -696,32 +696,35 @@ extension ProcessLink where B : Collection, B.IndexDistance == Int {
 	///
 	/// - Parameter transform: the transformation subchain defining block which converts `B.Iterator.Element` to `C`
 	/// - Returns: a `ProcessLink` which will yield an array of `C`s to it's child links.
-	public func map<C>(withLimit limit: Int? = nil, _ transform: @escaping (ProcessLink<B.Iterator.Element>) -> ProcessLink<C>) -> ProcessLink<[C]> {
+	public func map<C>(withLimit limit: Int? = nil, acceptableFailure: FailureRate = .none, _ transform: @escaping (ProcessLink<B.Iterator.Element>) -> ProcessLink<C>) -> ProcessLink<[C]> {
 		var rootLink: ProcessLink<B>! = nil
+		var results:[C?]!
+	
+		var failureCount = 0
+		rootLink = self.chain { (collection: B) -> Void in
+			let integrationSerialQueue = DispatchQueue(label: "HBMapSerialQueue")
+			results = Array(repeating: .none, count: collection.count)
 		
-		let returnSemaphore = DispatchSemaphore(value: 1)
-		var returnValue: [C]?
-		
-		returnSemaphore.wait()
-		
-		rootLink = self.chain { (collection: B, callback: @escaping () -> Void) -> Void in
-			let group = DispatchGroup()
-			for _ in collection {
-				group.enter()
-			}
-			group.notify(queue: .global()) {
-				assert(rootLink.createdLinks.count == collection.count)
-				callback()
+			for (index, element) in collection.enumerated() {
+				var succeeded = false
+				let elem = rootLink.insert(element)
+									.finally { link in
+										link.setBlockPerformer(integrationSerialQueue)
+											.chain { () -> Void in
+											if !succeeded {
+												failureCount += 1
+											}
+										}
+									}
+							transform(elem)
+								.setBlockPerformer(integrationSerialQueue)
+								.chain { (result:C) -> Void in
+									results[index] = result
+									succeeded = true
+								}
 			}
 			
-			collection.asyncMap(on: self.blockPerformer, transform: { (element:B.Iterator.Element, completion:@escaping (C) -> Void) in
-				transform(rootLink.insert(element))
-					.chain(completion)
-				group.leave()
-			}, completion: {(c:[C]) in
-				returnValue = c
-				returnSemaphore.signal()
-			})
+			assert(rootLink.createdLinks.count == collection.count)
 		}
 		
 		if let limit = limit {
@@ -737,13 +740,12 @@ extension ProcessLink where B : Collection, B.IndexDistance == Int {
 		
 		rootLink.finalLink = finallyLink
 		
-		return finallyLink.chain { (_:Void, callback: ([C]) -> Void) -> Void in
-			returnSemaphore.wait()
-			guard let returnValue = returnValue else {
+		return finallyLink.chain { (_:Void, callback: ([C]) -> Void) throws -> Void in
+			guard let results = results else {
 				preconditionFailure("returnValue should not be nil")
 			}
-			returnSemaphore.signal()
-			callback(returnValue)
+			try acceptableFailure.checkExceeded(byFailures: failureCount, in: results.count)
+			callback(results.flatMap { $0 })
 		}
 	}
 	
@@ -751,8 +753,8 @@ extension ProcessLink where B : Collection, B.IndexDistance == Int {
 	///
 	/// - Parameter filter: the filter subchain which produces a Bool
 	/// - Returns: a `ProcessLink` which will yield to it's child links an array containing those `B.Iterator.Element`s which `filter` approved.
-	public func filter(withLimit limit: Int? = nil, _ filter: @escaping (ProcessLink<B.Iterator.Element>) -> ProcessLink<Bool>) -> ProcessLink<[B.Iterator.Element]> {
-		return self.map(withLimit: limit, { elem -> ProcessLink<B.Element?> in
+	public func filter(withLimit limit: Int? = nil, acceptableFailure: FailureRate = .none, _ filter: @escaping (ProcessLink<B.Iterator.Element>) -> ProcessLink<Bool>) -> ProcessLink<[B.Iterator.Element]> {
+		return self.map(withLimit: limit, acceptableFailure: acceptableFailure, { elem -> ProcessLink<B.Element?> in
 			elem.branch { stem in
 				return (stem + filter(stem))
 						.chain { (elem: B.Element, include: Bool) -> B.Element? in

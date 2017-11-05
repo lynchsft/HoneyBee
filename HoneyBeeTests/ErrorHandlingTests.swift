@@ -252,5 +252,115 @@ class ErrorHandlingTests: XCTestCase {
 			}
 		}
 	}
+	
+	func testMapWithErrors() {
+		
+		func doTest(withAcceptableFailureCount failures: Int) {
+		
+			var intsToExpectations:[Int:XCTestExpectation] = [:]
+			
+			let source = Array(0..<12)
+			let numberOfElementErrors = source.filter({ $0 >= 10}).count
+			
+			for int in source {
+				if int < 10 {
+					intsToExpectations[int] = expectation(description: "Expected to map value for \(int)")
+				} else {
+					intsToExpectations[int] = expectation(description: "Should not map value for \(int)")
+					intsToExpectations[int]!.isInverted = true
+				}
+			}
+			
+			let finishExpectation:XCTestExpectation
+			if failures < numberOfElementErrors {
+				finishExpectation = expectation(description: "Should not reach the end of the chain")
+				finishExpectation.isInverted = true
+			} else {
+				finishExpectation = expectation(description: "Should reach the end of the chain")
+			}
+			
+			func failableIntConverter(_ int: Int) throws -> String {
+				if int / 10 == 0 {
+					return String(int)
+				} else {
+					throw SimpleError.error
+				}
+			}
+			
+			let errorExpectation = expectation(description: "Chain should error")
+			
+			errorExpectation.expectedFulfillmentCount = numberOfElementErrors + (failures < numberOfElementErrors ? 1 : 0)
+			
+			func errorHandlder(_ error: Error) {
+				errorExpectation.fulfill()
+			}
+			
+			HoneyBee.start { root in
+				root.setErrorHandler(errorHandlder)
+					.insert(source)
+					.map(acceptableFailure: .count(failures)) { elem in
+						elem.chain(failableIntConverter)
+							.tunnel { link in
+								link.chain { (string: String) -> Void in
+									intsToExpectations[Int(string)!]!.fulfill()
+								}
+							}
+					}
+					.chain { (strings: [String]) -> Void in
+						let expected = ["0","1","2","3","4","5","6","7","8","9"]
+						XCTAssert(strings == expected, "Expected \(strings) to equal \(expected)")
+					}
+					.drop()
+					.chain(finishExpectation.fulfill)
+			}
+			
+			waitForExpectations(timeout: 3) { error in
+				if let error = error {
+					XCTFail("waitForExpectationsWithTimeout errored: \(error)")
+				}
+			}
+		}
+		
+		doTest(withAcceptableFailureCount: 0)
+		doTest(withAcceptableFailureCount: 1)
+		doTest(withAcceptableFailureCount: 2)
+	}
+	
+	func testFilterWithError() {
+		let source = Array(0...10)
+		let result = [0,2,4,6,8] // we're going to lose one to an error
+		
+		let finishExpectation = expectation(description: "Should reach the end of the chain")
+		
+		let errorExpectation = expectation(description: "Chain should error")
+		errorExpectation.expectedFulfillmentCount = 1
+		
+		func errorHandlder(_ error: Error) {
+			errorExpectation.fulfill()
+		}
+		
+		HoneyBee.start { root in
+			root.setErrorHandler(errorHandlder)
+				.insert(source)
+				.filter(acceptableFailure: .ratio(0.1)) { elem in
+					elem.tunnel { link in
+						link.chain { (int:Int) throws -> Void in
+							if int > 9 {
+								throw SimpleError.error
+							}
+						}
+					}
+					.chain(self.funcContainer.isEven)
+				}
+				.chain{ XCTAssert($0 == result, "Filter failed. expected: \(result). Received: \($0).") }
+				.chain(finishExpectation.fulfill)
+		}
+		
+		waitForExpectations(timeout: 3) { error in
+			if let error = error {
+				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
+			}
+		}
+	}
 }
 

@@ -18,6 +18,10 @@ func assertEquals<T: Equatable>(t1: T, t2: T) -> Void {
 	XCTAssert(t1 == t2, "Expected \(t1) to equal \(t2)")
 }
 
+enum SimpleError : Error {
+	case error
+}
+
 class TestingFunctions : Equatable {
 	static func == (lhs: TestingFunctions, rhs: TestingFunctions) -> Bool {
 		return true // just a type check since we have no state
@@ -77,7 +81,7 @@ class TestingFunctions : Equatable {
 	}
 	
 	func stringLengthEquals(length: Int, string: String) -> Bool {
-		return string.characters.count == length
+		return string.count == length
 	}
 	
 	func decompose(string: String, callback:(String,String)->Void) {
@@ -86,7 +90,7 @@ class TestingFunctions : Equatable {
 	}
 	
 	func returnLonger(first: String, second: String) -> String {
-		if first.characters.count > second.characters.count {
+		if first.count > second.count {
 			return first
 		} else {
 			return second
