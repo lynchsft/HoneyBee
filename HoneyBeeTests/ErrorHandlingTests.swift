@@ -204,15 +204,24 @@ class ErrorHandlingTests: XCTestCase {
 			func errorHandler(_ error: Error) {
 				expectError.fulfill()
 			}
+			
+			func excerciseFinally(_ link: ProcessLink<Void>) {
+				let a = link.insert("a")
+				let b = link.insert("b")
+				(a + b)
+					.chain(<)
+					.chain(assertEquals =<< true)
+					.chain(expectFinnally.fulfill)
+			}
 		
 			HoneyBee.start { root in
 				root.setErrorHandler(errorHandler)
 					.finally { link in
-						link.chain(expectFinnally.fulfill)
+						excerciseFinally(link)
 					}
 					.branch { stem in
 						let result1 = stem.finally { link in
-										link.chain(expectFinnally.fulfill)
+										excerciseFinally(link)
 									}
 									.chain(self.funcContainer.constantInt)
 						
@@ -225,7 +234,7 @@ class ErrorHandlingTests: XCTestCase {
 						
 						
 						let downstreamLink = stem.finally { link in
-							link.chain(expectFinnally.fulfill)
+							excerciseFinally(link)
 						}
 						let joinedLink = customConjoin(result2,result1)
 						
@@ -244,6 +253,56 @@ class ErrorHandlingTests: XCTestCase {
 		testJoinError { (getString, getInt) in
 			return (getString + getInt)
 					.chain(self.funcContainer.multiplyString)
+		}
+		
+		waitForExpectations(timeout: 3) { error in
+			if let error = error {
+				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
+			}
+		}
+	}
+	
+	func testJoinWithMapError() {
+		
+		let expectFinnally = expectation(description: "finnally should be reached")
+		expectFinnally.expectedFulfillmentCount = 2
+		let expectError = expectation(description: "Error should occur once")
+		
+		let sleepTime:UInt32 = 1
+		
+		func errorHandler(_ error: Error) {
+			expectError.fulfill()
+		}
+		
+		HoneyBee.start { root in
+			root.setErrorHandler(errorHandler)
+				.finally { link in
+					link.chain(expectFinnally.fulfill)
+				}
+				.branch { stem in
+					let result1 = stem.finally { link in
+						link.chain(expectFinnally.fulfill)
+						}
+						.chain(self.funcContainer.constantInt)
+					
+					let result2 = stem.chain(sleep =<< sleepTime)
+						.drop()
+						.chain(self.funcContainer.explode)
+						.drop()
+						.insert(["contents don't matter"])
+						.map { link in
+							link.chain(self.funcContainer.stringToInt)
+						}
+						.drop()
+						.chain(failIfReached)
+						.chain(self.funcContainer.constantString)
+					
+					
+					
+					(result1 + result2)
+						.chain(self.funcContainer.stringLengthEquals)
+					
+			}
 		}
 		
 		waitForExpectations(timeout: 3) { error in

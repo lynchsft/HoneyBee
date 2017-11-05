@@ -198,6 +198,7 @@ final public class ProcessLink<B> : Executable, PathDescribing  {
 		for child in self.createdLinks {
 			child.ancestorFailed()
 		}
+		self.finalLink?.ancestorFailed()
 	}
 }
 
