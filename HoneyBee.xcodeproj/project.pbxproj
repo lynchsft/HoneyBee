@@ -121,6 +121,23 @@
 		FA473BBA1E352CB1007E4D61 /* HoneyBee */ = {
 			isa = PBXGroup;
 			children = (
+				FAA9670F1FB76A43004E3E42 /* Core */,
+				FAA967101FB76A55004E3E42 /* Lib */,
+			);
+			path = HoneyBee;
+			sourceTree = "<group>";
+		};
+		FA5FA32B1E70DE4B00625996 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				FA5FA32C1E70DE4B00625996 /* CommonCrypto.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		FAA9670F1FB76A43004E3E42 /* Core */ = {
+			isa = PBXGroup;
+			children = (
 				FABB35D31F212D9800A2F247 /* AsyncBlockPerformer.swift */,
 				FA48E16C1E947B1300729F09 /* Bind.swift */,
 				FA205F1D1EB2DADB005B01FB /* BindOperator.swift */,
@@ -137,15 +154,14 @@
 				FAC9DC7E1E352D6F00E21A01 /* ProcessLink.swift */,
 				FA3837CE1F10F7450021412C /* RootLink.swift */,
 			);
-			path = HoneyBee;
+			path = Core;
 			sourceTree = "<group>";
 		};
-		FA5FA32B1E70DE4B00625996 /* Frameworks */ = {
+		FAA967101FB76A55004E3E42 /* Lib */ = {
 			isa = PBXGroup;
 			children = (
-				FA5FA32C1E70DE4B00625996 /* CommonCrypto.framework */,
 			);
-			name = Frameworks;
+			path = Lib;
 			sourceTree = "<group>";
 		};
 		FADE8BE81EE4F36400A1D2BA /* Supporting Files */ = {
