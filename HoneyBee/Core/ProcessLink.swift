@@ -31,12 +31,12 @@ A single link's execution process is as follows:
 */
 final public class ProcessLink<B> : Executable, PathDescribing  {
 	
-	fileprivate var createdLinks: [Executable] = []
-	private let createdLinksLock = NSLock()
+	fileprivate var createdLinks = ConcurrentQueue<Executable>()
 	fileprivate var createdLinksAsyncSemaphore: DispatchSemaphore?
 	fileprivate var finalLink: ProcessLink<Void>?
+	let activeLinkCounter: AtomicInt = 0
 	
-	private var function: (Any, @escaping (FailableResult<B>) -> Void) -> Void
+	fileprivate var function: (Any, @escaping (FailableResult<B>) -> Void) -> Void
 	fileprivate var errorHandler: ((Error, ErrorContext) -> Void)
 	/// This is the queue which is passed on to sub chains
 	fileprivate var blockPerformer: AsyncBlockPerformer
@@ -59,7 +59,6 @@ final public class ProcessLink<B> : Executable, PathDescribing  {
 		self.functionLine = functionLine
 	}
 	
-	
 	/// Primary chain form. All other forms translate into this form.
 	///
 	/// - Parameter function: will be executed as a child link of this `ProcessLink`. Receives `B` (the result of this `ProcessLink` and generates `C`.
@@ -79,9 +78,7 @@ final public class ProcessLink<B> : Executable, PathDescribing  {
 		                             path: self.path + ["chain: \(file):\(line) \(functionDescription ?? tname(function))"],
 		                             functionFile: file,
 		                             functionLine: line)
-		self.createdLinksLock.lock()
-		self.createdLinks.append(link)
-		self.createdLinksLock.unlock()
+		self.createdLinks.push(link)
 		return link
 	}
 	
@@ -129,73 +126,95 @@ final public class ProcessLink<B> : Executable, PathDescribing  {
 	
 	fileprivate func joinPoint() -> JoinPoint<B> {
 		let link = JoinPoint<B>(blockPerformer: self.blockPerformer, path: self.path+["joinpoint"], errorHandler: self.errorHandler)
-		self.createdLinksLock.lock()
-		self.createdLinks.append(link)
-		self.createdLinksLock.unlock()
+		self.createdLinks.push(link)
 		return link
 	}
 	
-	override func execute(argument: Any, completion fullChainCompletion: @escaping () -> Void) {
-		self.myBlockPerformer.asyncPerform {
-			var callbackInvoked = false
-			let callbackInvokedLock = NSLock()
-			
-			self.function(argument) { (failableResult: FailableResult<B>) in
-				callbackInvokedLock.lock()
-				defer {
-					callbackInvokedLock.unlock()
-				}
-				guard !callbackInvoked else {
-					return // protect ourselves against clients invoking the callback more than once
-				}
-				callbackInvoked = true
-				
-				switch failableResult {
-				case .success(let result) :			
-					let group = DispatchGroup()
-		
-					for createdLink in self.createdLinks {
-						group.enter()
-						self.createdLinksAsyncSemaphore?.wait()
-						let workItem = {
-							createdLink.execute(argument: result) {
-								self.createdLinksAsyncSemaphore?.signal()
-								group.leave()
-							}
-						}
-						self.myBlockPerformer.asyncPerform(workItem)
-					}
-					
-					group.notify(queue: .global(), execute: {
-						self.myBlockPerformer.asyncPerform {
-							if let finalLink = self.finalLink {
-								finalLink.execute(argument: Void(), completion: fullChainCompletion)
-							} else {
-								fullChainCompletion()
-							}
-						}
-					})
-					
-				case .failure(let error):
-					let errorContext = ErrorContext(subject: argument, file: self.functionFile, line: self.functionLine, internalPath: self.path)
-					self.errorHandler(error, errorContext)
-					if let finalLink = self.finalLink {
-						finalLink.execute(argument: Void(), completion: fullChainCompletion)
-					} else {
-						fullChainCompletion()
-					}
-					self.propagateFailureToDecendants()
-				}
-			}
-		}
+	override func execute(argument: Any, completion: @escaping () -> Void) {
+		self.performExecute(argument: argument, completion: completion)
 	}
 	
 	override func ancestorFailed() {
 		self.propagateFailureToDecendants()
 	}
+}
+
+extension ProcessLink {
 	
-	private func propagateFailureToDecendants() {
-		for child in self.createdLinks {
+	private func executeFinallyIfNeeded(completion: @escaping () -> Void) {
+		ProcessLink.exectute(finally: self.finalLink, completion: completion)
+	}
+	
+	static func exectute(finally: ProcessLink<Void>?, completion: @escaping () -> Void) {
+		if let finalLink = finally {
+			finalLink.execute(argument: Void(), completion: completion)
+		} else {
+			completion()
+		}
+	}
+	
+	private func processError(_ error: Error, with argument: Any, completion: @escaping () -> Void) {
+		let errorContext = ErrorContext(subject: argument, file: self.functionFile, line: self.functionLine, internalPath: self.path)
+		self.errorHandler(error, errorContext)
+		self.executeFinallyIfNeeded(completion: completion)
+		self.propagateFailureToDecendants()
+	}
+	
+	private func processSuccess(result: B, with argument: Any, completion fullChainCompletion: @escaping () -> Void) {
+		self.activeLinkCounter.notify(execute: ProcessLink.exectute(finally: completion:) =<< self.finalLink =<< fullChainCompletion)
+	
+		self.activeLinkCounter.assertValueAtDeinit(0)
+	
+		self.createdLinks.drain { [weak self] createdLink in
+			if let this = self {
+				this.activeLinkCounter.increment()
+				this.createdLinksAsyncSemaphore?.wait()
+				this.myBlockPerformer.asyncPerform {
+					let createdLinkCalledBack: AtomicBool = false
+					createdLinkCalledBack.assertTrueAtDeinit()
+					createdLink.execute(argument: result) {
+						precondition(createdLinkCalledBack.setTrue() == false, "Callback already invoked")
+						this.createdLinksAsyncSemaphore?.signal()
+						this.activeLinkCounter.decrement()
+					}
+				}
+			} else {
+				preconditionFailure("Lost self reference")
+			}
+		}
+	}
+	
+	private func processResult(_ failableResult: FailableResult<B>, with argument: Any, completion: @escaping () -> Void) {
+		switch failableResult {
+		case .success(let result) :
+			self.processSuccess(result: result, with: argument, completion: completion)
+		case .failure(let error):
+			self.processError(error, with: argument, completion: completion)
+		}
+	}
+	
+	private func executeFunction(with argument: Any, completion: @escaping () -> Void) {
+		let callbackInvoked:AtomicBool = false
+		
+		self.function(argument) { (failableResult: FailableResult<B>) in
+			guard callbackInvoked.get() == false else {
+				return // protect ourselves against clients invoking the callback more than once
+			}
+			callbackInvoked.setTrue()
+			
+			self.processResult(failableResult, with: argument, completion: completion)
+		}
+	}
+	
+	func performExecute(argument: Any, completion: @escaping () -> Void) {
+		self.myBlockPerformer.asyncPerform {
+			self.executeFunction(with: argument, completion: completion)
+		}
+	}
+	
+	fileprivate func propagateFailureToDecendants() {
+		self.createdLinks.close()
+		self.createdLinks.drain { child in
 			child.ancestorFailed()
 		}
 		self.finalLink?.ancestorFailed()
@@ -811,40 +830,17 @@ extension ProcessLink where B : OptionalProtocol {
 	///
 	/// - Parameter defineBlock: a block which creates a subchain to run if B is non-nil
 	/// - Returns: a `ProcessLink` with a void value type.
-	@discardableResult public func optionally<X>(_ defineBlock: @escaping (ProcessLink<B.WrappedType>) -> ProcessLink<X>) -> ProcessLink<Void> {
-		
-		let returnLink = ProcessLink<Void>(function: {_, block in block(.success(Void()))},
-		                                         errorHandler: self.errorHandler,
-		                                         blockPerformer: self.blockPerformer,
-		                                         path: self.path + ["optionally"],
-		                                         functionFile: #file,
-		                                         functionLine: #line)
-		
-		var immediateChain: ProcessLink<B>! = nil
-		
-		immediateChain = self.chain { (b: B, callback: @escaping ()->Void) in
+	@discardableResult public func optionally<X>(_ defineBlock: @escaping (ProcessLink<B.WrappedType>) -> ProcessLink<X>) -> ProcessLink<B> {
+		return self.chain { (b: B, completion: @escaping () -> Void)->Void in
 			if let unwrapped = b.getWrapped() {
-				
-				let immediateChainFinalLink = ProcessLink<Void>(function: {_, block in block(.success(Void()))},
-				                                                  errorHandler: self.errorHandler,
-				                                                  blockPerformer: self.blockPerformer,
-				                                                  path: self.path + ["optionally"],
-				                                                  functionFile: #file,
-				                                                  functionLine: #line)
-				
-				let unwrappedContext = immediateChainFinalLink.insert(unwrapped)
-				let lastLinkOfPostivePath = defineBlock(unwrappedContext)
-				lastLinkOfPostivePath.finalLink = returnLink
-				
-				immediateChain.finalLink = immediateChainFinalLink
-				callback()
+				let unwrappedLink = self.insert(unwrapped)
+				defineBlock(unwrappedLink)
+					.drop()
+					.chain(completion)
 			} else {
-				immediateChain.finalLink = returnLink
-				callback()
+				completion()
 			}
 		}
-		
-		return returnLink
 	}
 }
 

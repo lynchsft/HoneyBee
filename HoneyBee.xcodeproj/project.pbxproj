@@ -25,6 +25,8 @@
 		FAC0CA1C1E4BDB6900ECC0DC /* HoneyBee.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC0CA1B1E4BDB6900ECC0DC /* HoneyBee.swift */; };
 		FAC9DC801E352D6F00E21A01 /* FailableResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC9DC7D1E352D6F00E21A01 /* FailableResult.swift */; };
 		FAC9DC811E352D6F00E21A01 /* ProcessLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC9DC7E1E352D6F00E21A01 /* ProcessLink.swift */; };
+		FAD0760E1FB928C200C331FE /* AtomicValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD0760D1FB928C200C331FE /* AtomicValue.swift */; };
+		FAD076101FB928E300C331FE /* ConcurentQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD0760F1FB928E300C331FE /* ConcurentQueue.swift */; };
 		FAD1DCA01EB757D600A6D912 /* PathDescribing.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD1DC9F1EB757D600A6D912 /* PathDescribing.swift */; };
 		FADDE62B1F0DD02D00C19F5E /* ErrorHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = FADDE62A1F0DD02D00C19F5E /* ErrorHandling.swift */; };
 /* End PBXBuildFile section */
@@ -63,6 +65,8 @@
 		FAC0CA1B1E4BDB6900ECC0DC /* HoneyBee.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HoneyBee.swift; sourceTree = "<group>"; };
 		FAC9DC7D1E352D6F00E21A01 /* FailableResult.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FailableResult.swift; sourceTree = "<group>"; };
 		FAC9DC7E1E352D6F00E21A01 /* ProcessLink.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProcessLink.swift; sourceTree = "<group>"; };
+		FAD0760D1FB928C200C331FE /* AtomicValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AtomicValue.swift; sourceTree = "<group>"; };
+		FAD0760F1FB928E300C331FE /* ConcurentQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConcurentQueue.swift; sourceTree = "<group>"; };
 		FAD1DC9F1EB757D600A6D912 /* PathDescribing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PathDescribing.swift; sourceTree = "<group>"; };
 		FADDE62A1F0DD02D00C19F5E /* ErrorHandling.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ErrorHandling.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -160,6 +164,8 @@
 		FAA967101FB76A55004E3E42 /* Lib */ = {
 			isa = PBXGroup;
 			children = (
+				FAD0760F1FB928E300C331FE /* ConcurentQueue.swift */,
+				FAD0760D1FB928C200C331FE /* AtomicValue.swift */,
 			);
 			path = Lib;
 			sourceTree = "<group>";
@@ -324,6 +330,8 @@
 				FA205F1E1EB2DADB005B01FB /* BindOperator.swift in Sources */,
 				FA3837CF1F10F7450021412C /* RootLink.swift in Sources */,
 				FA3E405A1F25073D00E295B0 /* ErrorContext.swift in Sources */,
+				FAD0760E1FB928C200C331FE /* AtomicValue.swift in Sources */,
+				FAD076101FB928E300C331FE /* ConcurentQueue.swift in Sources */,
 				FAC9DC811E352D6F00E21A01 /* ProcessLink.swift in Sources */,
 				FA5108F41F2D385900DFEC01 /* ChainableFailable.swift in Sources */,
 				FADDE62B1F0DD02D00C19F5E /* ErrorHandling.swift in Sources */,

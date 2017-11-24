@@ -60,7 +60,7 @@ class SinglePathTests: XCTestCase {
 
 		var optionallyCompleted = false
 
-		HoneyBee.start { root in
+		HoneyBee.start(on: DispatchQueue.main) { root in
 			root.setErrorHandler(fail)
 				.insert(Optional(7))
 				.optionally { link in
@@ -68,6 +68,7 @@ class SinglePathTests: XCTestCase {
 						.chain(optionalExpect.fulfill)
 						.chain{ optionallyCompleted = true }
 				}
+				.drop()
 				.chain{ XCTAssert(optionallyCompleted, "Optionally chain should have completed by now") }
 				.chain(expect.fulfill)
 		}
@@ -84,13 +85,14 @@ class SinglePathTests: XCTestCase {
 		let optionalExpect = expectation(description: "Optional expect should not be reached")
 		optionalExpect.isInverted = true
 
-		HoneyBee.start { root in
+		HoneyBee.start(on: DispatchQueue.main) { root in
 			root.setErrorHandler(fail)
 				.insert(Optional<Int>(nilLiteral: ()))
 				.optionally { link in
 					link.drop()
 						.chain(optionalExpect.fulfill)
 				}
+				.drop()
 				.chain(expect.fulfill)
 		}
 

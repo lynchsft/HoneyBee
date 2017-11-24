@@ -181,7 +181,7 @@ class ErrorHandlingTests: XCTestCase {
 			}
 		}
 		
-		waitForExpectations(timeout: 3) { error in
+		waitForExpectations(timeout: 1) { error in
 			if let error = error {
 				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
 			}
@@ -373,7 +373,7 @@ class ErrorHandlingTests: XCTestCase {
 					.chain(finishExpectation.fulfill)
 			}
 			
-			waitForExpectations(timeout: 3) { error in
+			waitForExpectations(timeout: 0.33333) { error in
 				if let error = error {
 					XCTFail("waitForExpectationsWithTimeout errored: \(error)")
 				}
