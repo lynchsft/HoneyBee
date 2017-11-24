@@ -720,31 +720,20 @@ extension ProcessLink where B : Collection, B.IndexDistance == Int {
 		var rootLink: ProcessLink<B>! = nil
 		var results:[C?]!
 	
-		var failureCount = 0
 		rootLink = self.chain { (collection: B) -> Void in
-			let integrationSerialQueue = DispatchQueue(label: "HBMapSerialQueue")
+			let integrationSerialQueue = DispatchQueue(label: "HoneyBee-Map-IntegrationQueue")
 			results = Array(repeating: .none, count: collection.count)
 		
 			for (index, element) in collection.enumerated() {
-				var succeeded = false
 				let elem = rootLink.insert(element)
-									.finally { link in
-										link.setBlockPerformer(integrationSerialQueue)
-											.chain { () -> Void in
-											if !succeeded {
-												failureCount += 1
-											}
-										}
-									}
 							transform(elem)
 								.setBlockPerformer(integrationSerialQueue)
 								.chain { (result:C) -> Void in
 									results[index] = result
-									succeeded = true
 								}
-			}
 			
-			assert(rootLink.createdLinks.count == collection.count)
+			}
+			rootLink = nil
 		}
 		
 		if let limit = limit {
@@ -764,8 +753,10 @@ extension ProcessLink where B : Collection, B.IndexDistance == Int {
 			guard let results = results else {
 				preconditionFailure("returnValue should not be nil")
 			}
-			try acceptableFailure.checkExceeded(byFailures: failureCount, in: results.count)
-			callback(results.flatMap { $0 })
+			let finalResults = results.flatMap { $0 }
+			let failures = results.count - finalResults.count
+			try acceptableFailure.checkExceeded(byFailures: failures, in: results.count)
+			callback(finalResults)
 		}
 	}
 	
