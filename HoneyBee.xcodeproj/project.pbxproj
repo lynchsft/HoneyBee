@@ -7,28 +7,28 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		FA1772571F852F8700A591E4 /* FailureRate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA1772561F852F8700A591E4 /* FailureRate.swift */; };
-		FA205F1E1EB2DADB005B01FB /* BindOperator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA205F1D1EB2DADB005B01FB /* BindOperator.swift */; };
-		FA256FB61E5DB490008FB7C0 /* JoinPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA256FB51E5DB490008FB7C0 /* JoinPoint.swift */; };
 		FA25B0151F9D0885006F8DEE /* TestingFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA25B0141F9D0885006F8DEE /* TestingFunctions.swift */; };
 		FA25B0171F9D0931006F8DEE /* MultiPathTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA25B0161F9D0931006F8DEE /* MultiPathTests.swift */; };
 		FA2D12571FA01D8A004C491E /* ErrorHandlingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA2D12561FA01D8A004C491E /* ErrorHandlingTests.swift */; };
-		FA2D12591FA02175004C491E /* Executable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA2D12581FA02175004C491E /* Executable.swift */; };
-		FA3837CF1F10F7450021412C /* RootLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA3837CE1F10F7450021412C /* RootLink.swift */; };
-		FA3E405A1F25073D00E295B0 /* ErrorContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA3E40591F25073D00E295B0 /* ErrorContext.swift */; };
 		FA41097B1E9CFBC4002A6BA6 /* SinglePathTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA41097A1E9CFBC4002A6BA6 /* SinglePathTests.swift */; };
 		FA41097D1E9CFBC4002A6BA6 /* HoneyBee.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA473BB81E352CB1007E4D61 /* HoneyBee.framework */; };
-		FA48E16D1E947B1300729F09 /* Bind.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA48E16C1E947B1300729F09 /* Bind.swift */; };
-		FA4E8D3C1E8752E400D751B3 /* Chainable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA4E8D3B1E8752E400D751B3 /* Chainable.swift */; };
-		FA5108F41F2D385900DFEC01 /* ChainableFailable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA5108F31F2D385900DFEC01 /* ChainableFailable.swift */; };
-		FABB35D41F212D9800A2F247 /* AsyncBlockPerformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = FABB35D31F212D9800A2F247 /* AsyncBlockPerformer.swift */; };
-		FAC0CA1C1E4BDB6900ECC0DC /* HoneyBee.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC0CA1B1E4BDB6900ECC0DC /* HoneyBee.swift */; };
-		FAC9DC801E352D6F00E21A01 /* FailableResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC9DC7D1E352D6F00E21A01 /* FailableResult.swift */; };
-		FAC9DC811E352D6F00E21A01 /* ProcessLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC9DC7E1E352D6F00E21A01 /* ProcessLink.swift */; };
-		FAD0760E1FB928C200C331FE /* AtomicValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD0760D1FB928C200C331FE /* AtomicValue.swift */; };
-		FAD076101FB928E300C331FE /* ConcurentQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD0760F1FB928E300C331FE /* ConcurentQueue.swift */; };
-		FAD1DCA01EB757D600A6D912 /* PathDescribing.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD1DC9F1EB757D600A6D912 /* PathDescribing.swift */; };
-		FADDE62B1F0DD02D00C19F5E /* ErrorHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = FADDE62A1F0DD02D00C19F5E /* ErrorHandling.swift */; };
+		FA62A2A71FC9FBC100385D22 /* FailureRate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A2981FC9FBC000385D22 /* FailureRate.swift */; };
+		FA62A2A81FC9FBC100385D22 /* Executable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A2991FC9FBC000385D22 /* Executable.swift */; };
+		FA62A2A91FC9FBC100385D22 /* ErrorContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A29A1FC9FBC100385D22 /* ErrorContext.swift */; };
+		FA62A2AA1FC9FBC100385D22 /* BindOperator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A29B1FC9FBC100385D22 /* BindOperator.swift */; };
+		FA62A2AB1FC9FBC100385D22 /* FailableResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A29C1FC9FBC100385D22 /* FailableResult.swift */; };
+		FA62A2AC1FC9FBC100385D22 /* JoinPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A29D1FC9FBC100385D22 /* JoinPoint.swift */; };
+		FA62A2AD1FC9FBC100385D22 /* ProcessLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A29E1FC9FBC100385D22 /* ProcessLink.swift */; };
+		FA62A2AE1FC9FBC100385D22 /* Bind.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A29F1FC9FBC100385D22 /* Bind.swift */; };
+		FA62A2AF1FC9FBC100385D22 /* HoneyBee.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A2A01FC9FBC100385D22 /* HoneyBee.swift */; };
+		FA62A2B01FC9FBC100385D22 /* Chainable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A2A11FC9FBC100385D22 /* Chainable.swift */; };
+		FA62A2B11FC9FBC100385D22 /* PathDescribing.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A2A21FC9FBC100385D22 /* PathDescribing.swift */; };
+		FA62A2B21FC9FBC100385D22 /* RootLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A2A31FC9FBC100385D22 /* RootLink.swift */; };
+		FA62A2B31FC9FBC100385D22 /* ErrorHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A2A41FC9FBC100385D22 /* ErrorHandling.swift */; };
+		FA62A2B41FC9FBC100385D22 /* AsyncBlockPerformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A2A51FC9FBC100385D22 /* AsyncBlockPerformer.swift */; };
+		FA62A2B51FC9FBC100385D22 /* ChainableFailable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A2A61FC9FBC100385D22 /* ChainableFailable.swift */; };
+		FA62A2B81FC9FBCA00385D22 /* ConcurentQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A2B61FC9FBCA00385D22 /* ConcurentQueue.swift */; };
+		FA62A2B91FC9FBCA00385D22 /* AtomicValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A2B71FC9FBCA00385D22 /* AtomicValue.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -42,33 +42,33 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		FA1772561F852F8700A591E4 /* FailureRate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FailureRate.swift; sourceTree = "<group>"; };
-		FA205F1D1EB2DADB005B01FB /* BindOperator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BindOperator.swift; sourceTree = "<group>"; };
-		FA256FB51E5DB490008FB7C0 /* JoinPoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JoinPoint.swift; sourceTree = "<group>"; };
 		FA25B0141F9D0885006F8DEE /* TestingFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestingFunctions.swift; sourceTree = "<group>"; };
 		FA25B0161F9D0931006F8DEE /* MultiPathTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiPathTests.swift; sourceTree = "<group>"; };
 		FA2D12561FA01D8A004C491E /* ErrorHandlingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorHandlingTests.swift; sourceTree = "<group>"; };
-		FA2D12581FA02175004C491E /* Executable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Executable.swift; sourceTree = "<group>"; };
-		FA3837CE1F10F7450021412C /* RootLink.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RootLink.swift; sourceTree = "<group>"; };
-		FA3E40591F25073D00E295B0 /* ErrorContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorContext.swift; sourceTree = "<group>"; };
 		FA4109781E9CFBC4002A6BA6 /* HoneyBeeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HoneyBeeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA41097A1E9CFBC4002A6BA6 /* SinglePathTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SinglePathTests.swift; sourceTree = "<group>"; };
 		FA41097C1E9CFBC4002A6BA6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FA473BB81E352CB1007E4D61 /* HoneyBee.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = HoneyBee.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA473BBC1E352CB1007E4D61 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = HoneyBee/Info.plist; sourceTree = "<group>"; };
-		FA48E16C1E947B1300729F09 /* Bind.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bind.swift; sourceTree = "<group>"; };
 		FA4E8D3A1E874EB600D751B3 /* Generate.rb */ = {isa = PBXFileReference; lastKnownFileType = text.script.ruby; name = Generate.rb; path = HoneyBee/Generate.rb; sourceTree = "<group>"; };
-		FA4E8D3B1E8752E400D751B3 /* Chainable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Chainable.swift; sourceTree = "<group>"; };
-		FA5108F31F2D385900DFEC01 /* ChainableFailable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChainableFailable.swift; sourceTree = "<group>"; };
 		FA5FA32C1E70DE4B00625996 /* CommonCrypto.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = CommonCrypto.framework; sourceTree = "<group>"; };
-		FABB35D31F212D9800A2F247 /* AsyncBlockPerformer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AsyncBlockPerformer.swift; sourceTree = "<group>"; };
-		FAC0CA1B1E4BDB6900ECC0DC /* HoneyBee.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HoneyBee.swift; sourceTree = "<group>"; };
-		FAC9DC7D1E352D6F00E21A01 /* FailableResult.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FailableResult.swift; sourceTree = "<group>"; };
-		FAC9DC7E1E352D6F00E21A01 /* ProcessLink.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProcessLink.swift; sourceTree = "<group>"; };
-		FAD0760D1FB928C200C331FE /* AtomicValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AtomicValue.swift; sourceTree = "<group>"; };
-		FAD0760F1FB928E300C331FE /* ConcurentQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConcurentQueue.swift; sourceTree = "<group>"; };
-		FAD1DC9F1EB757D600A6D912 /* PathDescribing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PathDescribing.swift; sourceTree = "<group>"; };
-		FADDE62A1F0DD02D00C19F5E /* ErrorHandling.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ErrorHandling.swift; sourceTree = "<group>"; };
+		FA62A2981FC9FBC000385D22 /* FailureRate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FailureRate.swift; sourceTree = "<group>"; };
+		FA62A2991FC9FBC000385D22 /* Executable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Executable.swift; sourceTree = "<group>"; };
+		FA62A29A1FC9FBC100385D22 /* ErrorContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ErrorContext.swift; sourceTree = "<group>"; };
+		FA62A29B1FC9FBC100385D22 /* BindOperator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BindOperator.swift; sourceTree = "<group>"; };
+		FA62A29C1FC9FBC100385D22 /* FailableResult.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FailableResult.swift; sourceTree = "<group>"; };
+		FA62A29D1FC9FBC100385D22 /* JoinPoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JoinPoint.swift; sourceTree = "<group>"; };
+		FA62A29E1FC9FBC100385D22 /* ProcessLink.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProcessLink.swift; sourceTree = "<group>"; };
+		FA62A29F1FC9FBC100385D22 /* Bind.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bind.swift; sourceTree = "<group>"; };
+		FA62A2A01FC9FBC100385D22 /* HoneyBee.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HoneyBee.swift; sourceTree = "<group>"; };
+		FA62A2A11FC9FBC100385D22 /* Chainable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Chainable.swift; sourceTree = "<group>"; };
+		FA62A2A21FC9FBC100385D22 /* PathDescribing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PathDescribing.swift; sourceTree = "<group>"; };
+		FA62A2A31FC9FBC100385D22 /* RootLink.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RootLink.swift; sourceTree = "<group>"; };
+		FA62A2A41FC9FBC100385D22 /* ErrorHandling.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ErrorHandling.swift; sourceTree = "<group>"; };
+		FA62A2A51FC9FBC100385D22 /* AsyncBlockPerformer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AsyncBlockPerformer.swift; sourceTree = "<group>"; };
+		FA62A2A61FC9FBC100385D22 /* ChainableFailable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChainableFailable.swift; sourceTree = "<group>"; };
+		FA62A2B61FC9FBCA00385D22 /* ConcurentQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConcurentQueue.swift; sourceTree = "<group>"; };
+		FA62A2B71FC9FBCA00385D22 /* AtomicValue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AtomicValue.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -125,8 +125,8 @@
 		FA473BBA1E352CB1007E4D61 /* HoneyBee */ = {
 			isa = PBXGroup;
 			children = (
-				FAA9670F1FB76A43004E3E42 /* Core */,
-				FAA967101FB76A55004E3E42 /* Lib */,
+				FA62A2961FC9FB9900385D22 /* Core */,
+				FA62A2971FC9FB9F00385D22 /* Lib */,
 			);
 			path = HoneyBee;
 			sourceTree = "<group>";
@@ -139,35 +139,35 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		FAA9670F1FB76A43004E3E42 /* Core */ = {
+		FA62A2961FC9FB9900385D22 /* Core */ = {
 			isa = PBXGroup;
 			children = (
-				FABB35D31F212D9800A2F247 /* AsyncBlockPerformer.swift */,
-				FA48E16C1E947B1300729F09 /* Bind.swift */,
-				FA205F1D1EB2DADB005B01FB /* BindOperator.swift */,
-				FA4E8D3B1E8752E400D751B3 /* Chainable.swift */,
-				FA5108F31F2D385900DFEC01 /* ChainableFailable.swift */,
-				FA3E40591F25073D00E295B0 /* ErrorContext.swift */,
-				FADDE62A1F0DD02D00C19F5E /* ErrorHandling.swift */,
-				FA2D12581FA02175004C491E /* Executable.swift */,
-				FAC9DC7D1E352D6F00E21A01 /* FailableResult.swift */,
-				FA1772561F852F8700A591E4 /* FailureRate.swift */,
-				FAC0CA1B1E4BDB6900ECC0DC /* HoneyBee.swift */,
-				FA256FB51E5DB490008FB7C0 /* JoinPoint.swift */,
-				FAD1DC9F1EB757D600A6D912 /* PathDescribing.swift */,
-				FAC9DC7E1E352D6F00E21A01 /* ProcessLink.swift */,
-				FA3837CE1F10F7450021412C /* RootLink.swift */,
+				FA62A2A51FC9FBC100385D22 /* AsyncBlockPerformer.swift */,
+				FA62A29F1FC9FBC100385D22 /* Bind.swift */,
+				FA62A29B1FC9FBC100385D22 /* BindOperator.swift */,
+				FA62A2A11FC9FBC100385D22 /* Chainable.swift */,
+				FA62A2A61FC9FBC100385D22 /* ChainableFailable.swift */,
+				FA62A29A1FC9FBC100385D22 /* ErrorContext.swift */,
+				FA62A2A41FC9FBC100385D22 /* ErrorHandling.swift */,
+				FA62A2991FC9FBC000385D22 /* Executable.swift */,
+				FA62A29C1FC9FBC100385D22 /* FailableResult.swift */,
+				FA62A2981FC9FBC000385D22 /* FailureRate.swift */,
+				FA62A2A01FC9FBC100385D22 /* HoneyBee.swift */,
+				FA62A29D1FC9FBC100385D22 /* JoinPoint.swift */,
+				FA62A2A21FC9FBC100385D22 /* PathDescribing.swift */,
+				FA62A29E1FC9FBC100385D22 /* ProcessLink.swift */,
+				FA62A2A31FC9FBC100385D22 /* RootLink.swift */,
 			);
-			path = Core;
+			name = Core;
 			sourceTree = "<group>";
 		};
-		FAA967101FB76A55004E3E42 /* Lib */ = {
+		FA62A2971FC9FB9F00385D22 /* Lib */ = {
 			isa = PBXGroup;
 			children = (
-				FAD0760F1FB928E300C331FE /* ConcurentQueue.swift */,
-				FAD0760D1FB928C200C331FE /* AtomicValue.swift */,
+				FA62A2B71FC9FBCA00385D22 /* AtomicValue.swift */,
+				FA62A2B61FC9FBCA00385D22 /* ConcurentQueue.swift */,
 			);
-			path = Lib;
+			name = Lib;
 			sourceTree = "<group>";
 		};
 		FADE8BE81EE4F36400A1D2BA /* Supporting Files */ = {
@@ -322,23 +322,23 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FAC9DC801E352D6F00E21A01 /* FailableResult.swift in Sources */,
-				FA4E8D3C1E8752E400D751B3 /* Chainable.swift in Sources */,
-				FAD1DCA01EB757D600A6D912 /* PathDescribing.swift in Sources */,
-				FAC0CA1C1E4BDB6900ECC0DC /* HoneyBee.swift in Sources */,
-				FA48E16D1E947B1300729F09 /* Bind.swift in Sources */,
-				FA205F1E1EB2DADB005B01FB /* BindOperator.swift in Sources */,
-				FA3837CF1F10F7450021412C /* RootLink.swift in Sources */,
-				FA3E405A1F25073D00E295B0 /* ErrorContext.swift in Sources */,
-				FAD0760E1FB928C200C331FE /* AtomicValue.swift in Sources */,
-				FAD076101FB928E300C331FE /* ConcurentQueue.swift in Sources */,
-				FAC9DC811E352D6F00E21A01 /* ProcessLink.swift in Sources */,
-				FA5108F41F2D385900DFEC01 /* ChainableFailable.swift in Sources */,
-				FADDE62B1F0DD02D00C19F5E /* ErrorHandling.swift in Sources */,
-				FA1772571F852F8700A591E4 /* FailureRate.swift in Sources */,
-				FA256FB61E5DB490008FB7C0 /* JoinPoint.swift in Sources */,
-				FABB35D41F212D9800A2F247 /* AsyncBlockPerformer.swift in Sources */,
-				FA2D12591FA02175004C491E /* Executable.swift in Sources */,
+				FA62A2AD1FC9FBC100385D22 /* ProcessLink.swift in Sources */,
+				FA62A2B01FC9FBC100385D22 /* Chainable.swift in Sources */,
+				FA62A2B91FC9FBCA00385D22 /* AtomicValue.swift in Sources */,
+				FA62A2A71FC9FBC100385D22 /* FailureRate.swift in Sources */,
+				FA62A2AA1FC9FBC100385D22 /* BindOperator.swift in Sources */,
+				FA62A2AE1FC9FBC100385D22 /* Bind.swift in Sources */,
+				FA62A2B81FC9FBCA00385D22 /* ConcurentQueue.swift in Sources */,
+				FA62A2B21FC9FBC100385D22 /* RootLink.swift in Sources */,
+				FA62A2A81FC9FBC100385D22 /* Executable.swift in Sources */,
+				FA62A2AB1FC9FBC100385D22 /* FailableResult.swift in Sources */,
+				FA62A2B41FC9FBC100385D22 /* AsyncBlockPerformer.swift in Sources */,
+				FA62A2AC1FC9FBC100385D22 /* JoinPoint.swift in Sources */,
+				FA62A2B11FC9FBC100385D22 /* PathDescribing.swift in Sources */,
+				FA62A2B51FC9FBC100385D22 /* ChainableFailable.swift in Sources */,
+				FA62A2A91FC9FBC100385D22 /* ErrorContext.swift in Sources */,
+				FA62A2B31FC9FBC100385D22 /* ErrorHandling.swift in Sources */,
+				FA62A2AF1FC9FBC100385D22 /* HoneyBee.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
