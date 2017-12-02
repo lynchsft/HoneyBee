@@ -37,27 +37,21 @@ final class JoinPoint<A> : Executable, PathDescribing {
 		}
 	}
 	
-	override func execute(argument: Any, completion: @escaping () -> Void) {
+	override func execute(argument: Any?, completion: @escaping () -> Void) {
 		self.resultLock.lock()
 		defer {
 			self.resultLock.unlock()
 		}
-		executionResult = (argument, completion)
+
+		executionResult = (argument, guarantee(faultResponse: .fail, completion))
 		
 		if let resultCallback = self.resultCallback {
-			resultCallback((argument, completion))
+			resultCallback(executionResult!)
 		}
 	}
 	
 	override func ancestorFailed() {
-		self.resultLock.lock()
-		defer {
-			self.resultLock.unlock()
-		}
-		guard let resultCallback = resultCallback else {
-			preconditionFailure("resultCallback missing")
-		}
-		resultCallback((nil, {/*empty completion*/ }))
+		self.execute(argument: nil, completion:  {/* empty completion */})
 	}
 	
 	func conjoin<B>(_ other: JoinPoint<B>) -> ProcessLink<(A,B)> {

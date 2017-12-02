@@ -33,7 +33,7 @@ final public class ProcessLink<B> : Executable, PathDescribing  {
 	
 	fileprivate var createdLinks = ConcurrentQueue<Executable>()
 	fileprivate var createdLinksAsyncSemaphore: DispatchSemaphore?
-	fileprivate var finalLink: ProcessLink<Void>?
+	fileprivate let finalLinkBox = LinkBox<Void>()
 	let activeLinkCounter: AtomicInt = 0
 	
 	fileprivate var function: (Any, @escaping (FailableResult<B>) -> Void) -> Void
@@ -105,11 +105,11 @@ final public class ProcessLink<B> : Executable, PathDescribing  {
 	 - Parameter defineBlock: context within which to define the finally chain.
 	 - Returns: a `ProcessLink` with the same execution context as self, but with a finally chain registered.
 	*/
-	public func finally(_ defineBlock: (ProcessLink<Void>) -> Void ) -> ProcessLink<B> {
-		if let oldFinalLink = self.finalLink {
+	public func finally(file: StaticString = #file, line: UInt = #line, _ defineBlock: (ProcessLink<Void>) -> Void ) -> ProcessLink<B> {
+		if let oldFinalLink = self.finalLinkBox.link {
 			let _ = oldFinalLink.finally(defineBlock)
 		} else {
-			let newFinalLink = ProcessLink<Void>(function: { (a, completion) in
+			let newFinalLink = ProcessLink<Void>(function: guarantee { (a, completion) in
 				completion(.success(Void()))
 			}, errorHandler: self.errorHandler,
 			   blockPerformer: self.blockPerformer,
@@ -117,7 +117,7 @@ final public class ProcessLink<B> : Executable, PathDescribing  {
 			   functionFile: #file,
 			   functionLine: #line
 			   )
-			self.finalLink = newFinalLink
+			self.finalLinkBox.link = newFinalLink
 			
 			defineBlock(newFinalLink)
 		}
@@ -131,7 +131,9 @@ final public class ProcessLink<B> : Executable, PathDescribing  {
 	}
 	
 	override func execute(argument: Any, completion: @escaping () -> Void) {
-		self.performExecute(argument: argument, completion: completion)
+		self.myBlockPerformer.asyncPerform {
+			self.executeFunction(with: argument, completion: completion)
+		}
 	}
 	
 	override func ancestorFailed() {
@@ -141,8 +143,8 @@ final public class ProcessLink<B> : Executable, PathDescribing  {
 
 extension ProcessLink {
 	
-	private func executeFinallyIfNeeded(completion: @escaping () -> Void) {
-		ProcessLink.exectute(finally: self.finalLink, completion: completion)
+	fileprivate func executeFinallyIfNeeded(completion: @escaping () -> Void) {
+		ProcessLink.exectute(finally: self.finalLinkBox.link, completion: completion)
 	}
 	
 	static func exectute(finally: ProcessLink<Void>?, completion: @escaping () -> Void) {
@@ -160,23 +162,23 @@ extension ProcessLink {
 		self.propagateFailureToDecendants()
 	}
 	
-	private func processSuccess(result: B, with argument: Any, completion fullChainCompletion: @escaping () -> Void) {
-		self.activeLinkCounter.notify(execute: ProcessLink.exectute(finally: completion:) =<< self.finalLink =<< fullChainCompletion)
+	private func processSuccess(result: B, with argument: Any, completion: @escaping () -> Void) {
+		let linkBox = self.finalLinkBox
+		self.activeLinkCounter.notify {
+			ProcessLink.exectute(finally: linkBox.link, completion: completion)
+		}
 	
-		self.activeLinkCounter.assertValueAtDeinit(0)
+		self.activeLinkCounter.guaranteeValueAtDeinit(0)
 	
 		self.createdLinks.drain { [weak self] createdLink in
 			if let this = self {
 				this.activeLinkCounter.increment()
 				this.createdLinksAsyncSemaphore?.wait()
 				this.myBlockPerformer.asyncPerform {
-					let createdLinkCalledBack: AtomicBool = false
-					createdLinkCalledBack.assertTrueAtDeinit()
-					createdLink.execute(argument: result) {
-						precondition(createdLinkCalledBack.setTrue() == false, "Callback already invoked")
+					createdLink.execute(argument: result, completion: guarantee {
 						this.createdLinksAsyncSemaphore?.signal()
 						this.activeLinkCounter.decrement()
-					}
+					})
 				}
 			} else {
 				preconditionFailure("Lost self reference")
@@ -195,29 +197,25 @@ extension ProcessLink {
 	
 	private func executeFunction(with argument: Any, completion: @escaping () -> Void) {
 		let callbackInvoked:AtomicBool = false
+		let file = self.functionFile
+		let line = self.functionLine
+		callbackInvoked.guaranteeTrueAtDeinit(faultResponse: .fail, file: file, line: line, message: "This function didn't callback: ")
 		
 		self.function(argument) { (failableResult: FailableResult<B>) in
-			guard callbackInvoked.get() == false else {
+			guard callbackInvoked.setTrue() == false else {
+				print("HoneyBee Warning: This function called back more than once: \(file):\(line)")
 				return // protect ourselves against clients invoking the callback more than once
 			}
-			callbackInvoked.setTrue()
 			
 			self.processResult(failableResult, with: argument, completion: completion)
 		}
 	}
 	
-	func performExecute(argument: Any, completion: @escaping () -> Void) {
-		self.myBlockPerformer.asyncPerform {
-			self.executeFunction(with: argument, completion: completion)
-		}
-	}
-	
 	fileprivate func propagateFailureToDecendants() {
-		self.createdLinks.close()
 		self.createdLinks.drain { child in
 			child.ancestorFailed()
 		}
-		self.finalLink?.ancestorFailed()
+		self.finalLinkBox.link?.ancestorFailed()
 	}
 }
 
@@ -717,46 +715,39 @@ extension ProcessLink where B : Collection, B.IndexDistance == Int {
 	/// - Parameter transform: the transformation subchain defining block which converts `B.Iterator.Element` to `C`
 	/// - Returns: a `ProcessLink` which will yield an array of `C`s to it's child links.
 	public func map<C>(withLimit limit: Int? = nil, acceptableFailure: FailureRate = .none, _ transform: @escaping (ProcessLink<B.Iterator.Element>) -> ProcessLink<C>) -> ProcessLink<[C]> {
-		var rootLink: ProcessLink<B>! = nil
-		var results:[C?]!
 	
-		rootLink = self.chain { (collection: B) -> Void in
+		return self.chain { (collection: B, callback: @escaping (FailableResult<[C]>) -> Void) -> Void in
+			var results:[C?] = Array(repeating: .none, count: collection.count)
+			
+			let rootLink = self.drop()
+				.finally { link in
+					link.chain{ () -> Void in
+						let finalResults = results.flatMap { $0 }
+						let failures = results.count - finalResults.count
+						do {
+							try acceptableFailure.checkExceeded(byFailures: failures, in: results.count)
+							callback(.success(finalResults))
+						} catch {
+							callback(.failure(error))
+						}
+					}
+				}
+			
+			if let limit = limit {
+				rootLink.createdLinksAsyncSemaphore = ProcessLink.semaphore(for: rootLink, withValue: limit)
+			}
+			
 			let integrationSerialQueue = DispatchQueue(label: "HoneyBee-Map-IntegrationQueue")
-			results = Array(repeating: .none, count: collection.count)
-		
+			
 			for (index, element) in collection.enumerated() {
-				let elem = rootLink.insert(element)
-							transform(elem)
+				let elemLink = rootLink.insert(element)
+							transform(elemLink)
 								.setBlockPerformer(integrationSerialQueue)
 								.chain { (result:C) -> Void in
 									results[index] = result
 								}
 			
 			}
-			rootLink = nil
-		}
-		
-		if let limit = limit {
-			rootLink.createdLinksAsyncSemaphore = ProcessLink.semaphore(for: self, withValue: limit)
-		}
-		
-		let finallyLink = ProcessLink<Void>(function: { (_, callback) in callback(.success(Void())) },
-		                                    errorHandler: self.errorHandler,
-		                                    blockPerformer: self.blockPerformer,
-		                                    path: self.path+["map"],
-		                                    functionFile: #file,
-		                                    functionLine: #line)
-		
-		rootLink.finalLink = finallyLink
-		
-		return finallyLink.chain { (_:Void, callback: ([C]) -> Void) throws -> Void in
-			guard let results = results else {
-				preconditionFailure("returnValue should not be nil")
-			}
-			let finalResults = results.flatMap { $0 }
-			let failures = results.count - finalResults.count
-			try acceptableFailure.checkExceeded(byFailures: failures, in: results.count)
-			callback(finalResults)
 		}
 	}
 	

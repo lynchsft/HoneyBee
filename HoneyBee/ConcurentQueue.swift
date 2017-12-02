@@ -11,7 +11,6 @@ import Foundation
 struct ConcurrentQueue<T> {
 	struct State<T> {
 		fileprivate var array = Array<T>()
-		fileprivate var isClosed = false
 		fileprivate var drain: ((T) -> Void)?
 	}
 	
@@ -25,18 +24,11 @@ struct ConcurrentQueue<T> {
 	
 	func push(_ value: T) {
 		lockedState.access { state in
-			precondition(!state.isClosed, "Cannot push onto closed queue")
 			if let drain = state.drain {
 				drain(value)
 			} else {
 				state.array.append(value)
 			}
-		}
-	}
-	
-	func close() {
-		lockedState.access { state in
-			state.isClosed = true
 		}
 	}
 	

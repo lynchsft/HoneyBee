@@ -170,7 +170,7 @@ class ErrorHandlingTests: XCTestCase {
 						elem.limit(1) { link -> ProcessLink<Void> in
 							if i < 2 {
 								return link.insert(self.funcContainer)
-									.chain(TestingFunctions.explode) // chain errors here
+									.chain(TestingFunctions.explode) // error here
 									.chain(assertEquals =<< Int.max)
 							} else {
 								return link.drop()

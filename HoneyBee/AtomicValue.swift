@@ -28,16 +28,28 @@ class AtomicValue<T> {
 
 class AtomicBool : AtomicValue<Bool>, ExpressibleByBooleanLiteral {
 	
-	private var deinitValue: Bool?
+	private struct DeinitGuarantee {
+		let faultResponse: FaultResponse
+		let value: Bool
+		let file: StaticString
+		let line: UInt
+		let message: String?
+	}
+	
+	private var deinitGuarantee: DeinitGuarantee?
+	
 	
 	required init(booleanLiteral: Bool) {
 		super.init(value: booleanLiteral)
 	}
 	
 	deinit {
-		if let expectedValue = self.deinitValue {
+		if let deinitGuarantee = self.deinitGuarantee {
 			let actualValue = self.get()
-			precondition(actualValue == expectedValue, "<\(type(of: self)) \(Unmanaged.passUnretained(self).toOpaque()): was \(actualValue) at deinit>")
+			let locationString = "\(deinitGuarantee.file):\(deinitGuarantee.line)"
+			let fullMessage = (deinitGuarantee.message ?? "<\(type(of: self)) \(Unmanaged.passUnretained(self).toOpaque())>: was \(actualValue) at deinit. Requested \(deinitGuarantee.value) at ")+locationString
+			deinitGuarantee.faultResponse.evaluate(actualValue == deinitGuarantee.value, fullMessage)
+			
 		}
 	}
 	
@@ -65,8 +77,8 @@ class AtomicBool : AtomicValue<Bool>, ExpressibleByBooleanLiteral {
 		return self.access { $0 }
 	}
 	
-	func assertTrueAtDeinit() {
-		self.deinitValue = true
+	func guaranteeTrueAtDeinit(faultResponse: FaultResponse = .assert, file: StaticString = #file, line: UInt = #line, message: String? = nil) {
+		self.deinitGuarantee = .init(faultResponse: faultResponse, value: true, file: file, line: line, message: message)
 	}
 }
 
@@ -106,15 +118,21 @@ class AtomicInt : AtomicValue<Int>, ExpressibleByIntegerLiteral {
 	}
 	
 	func notify(execute block: @escaping () -> Void) {
-		precondition(self.notifyBlock == nil, "Can only call notify(at:) once")
-		self.notifyBlock = block
+		if let existingNotifyBlock = self.notifyBlock {
+			self.notifyBlock = {
+				existingNotifyBlock()
+				block()
+			}
+		} else {
+			self.notifyBlock = block
+		}
 	}
 	
 	func get() -> Int {
 		return self.access { $0 }
 	}
 	
-	func assertValueAtDeinit(_ int: Int) {
+	func guaranteeValueAtDeinit(_ int: Int) {
 		self.valueAtDeinit = int
 	}
 }
