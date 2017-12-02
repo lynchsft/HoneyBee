@@ -102,52 +102,7 @@ class SinglePathTests: XCTestCase {
 			}
 		}
 	}
-	
-	func testFinally() {
-		var counter = 0 // do not make this Atomic. HoneyBee should perform the entire chane below serailly (though not liearlly of course). 
-		let incrementCounter = { counter += 1 }
-		let finishExpectation = expectation(description: "Should reach the end of the chain")
 		
-		HoneyBee.start { root in
-			root.setErrorHandler(fail)
-				.finally { link in
-					link.chain { XCTAssert(counter == 6, "counter should be 6: was actually \(counter)") }
-						.chain(incrementCounter)
-				}.finally { link in
-					link.chain { XCTAssert(counter == 7, "counter should be 7: was actually \(counter)") }
-						.chain(incrementCounter)
-				}.finally { link in
-					link.chain { () -> Void in XCTAssert(counter == 8, "counter should be 8: was actually \(counter)") ; finishExpectation.fulfill() }
-				}
-				.chain{ XCTAssert(counter == 0, "counter should be 0") }
-				.finally { link in
-					link.chain { XCTAssert(counter == 5, "counter should be 5: was actually \(counter)") }
-						.chain(incrementCounter)
-				}
-				.chain(incrementCounter)
-				.chain{ XCTAssert(counter == 1, "counter should be 1") }
-				.finally { link in
-					link.chain { XCTAssert(counter == 4, "counter should be 4: was actually \(counter)") }
-						.chain(incrementCounter)
-				}
-				.chain(incrementCounter)
-				.chain{ XCTAssert(counter == 2, "counter should be 2") }
-				.finally { link in
-					link.chain { XCTAssert(counter == 3, "counter should be 3: was actually \(counter)") }
-						.chain(incrementCounter)
-				}
-				.chain(incrementCounter)
-		}
-		
-		waitForExpectations(timeout: 3) { error in
-			if let error = error {
-				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
-			}
-		}
-	}
-	
-
-	
 	func testMultipleCallback() {
 		let finishExpectation = expectation(description: "Should finish chain")
 		

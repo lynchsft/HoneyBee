@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FA1A841B1FD2E0470093D11A /* FinallyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA1A841A1FD2E0470093D11A /* FinallyTests.swift */; };
 		FA2081DB1FD1C0A4003145FB /* FaultResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA2081DA1FD1C0A4003145FB /* FaultResponse.swift */; };
 		FA25B0151F9D0885006F8DEE /* TestingFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA25B0141F9D0885006F8DEE /* TestingFunctions.swift */; };
 		FA25B0171F9D0931006F8DEE /* MultiPathTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA25B0161F9D0931006F8DEE /* MultiPathTests.swift */; };
@@ -45,6 +46,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		FA1A841A1FD2E0470093D11A /* FinallyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinallyTests.swift; sourceTree = "<group>"; };
 		FA2081DA1FD1C0A4003145FB /* FaultResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaultResponse.swift; sourceTree = "<group>"; };
 		FA25B0141F9D0885006F8DEE /* TestingFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestingFunctions.swift; sourceTree = "<group>"; };
 		FA25B0161F9D0931006F8DEE /* MultiPathTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiPathTests.swift; sourceTree = "<group>"; };
@@ -99,6 +101,7 @@
 		FA4109791E9CFBC4002A6BA6 /* HoneyBeeTests */ = {
 			isa = PBXGroup;
 			children = (
+				FA1A841A1FD2E0470093D11A /* FinallyTests.swift */,
 				FA2D12561FA01D8A004C491E /* ErrorHandlingTests.swift */,
 				FA41097C1E9CFBC4002A6BA6 /* Info.plist */,
 				FA25B0161F9D0931006F8DEE /* MultiPathTests.swift */,
@@ -321,6 +324,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				FA25B0151F9D0885006F8DEE /* TestingFunctions.swift in Sources */,
+				FA1A841B1FD2E0470093D11A /* FinallyTests.swift in Sources */,
 				FA2D12571FA01D8A004C491E /* ErrorHandlingTests.swift in Sources */,
 				FA41097B1E9CFBC4002A6BA6 /* SinglePathTests.swift in Sources */,
 				FA25B0171F9D0931006F8DEE /* MultiPathTests.swift in Sources */,

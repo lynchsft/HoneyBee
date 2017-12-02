@@ -47,34 +47,6 @@ class ErrorHandlingTests: XCTestCase {
 		}
 	}
 	
-	func testFinallyError() {
-		var counter = 0
-		let incrementCounter = { counter += 1 }
-		let finishExpectation = expectation(description: "Should reach the end of the chain")
-		
-		func handleError(_ error: Error, arg: Any) {} // we cause an error on purpose
-		
-		HoneyBee.start { root in
-			root.setErrorHandler(fail) // this is just to start off with. We update the error handler below
-				.finally { link in
-					link.chain { () -> Void in XCTAssert(counter == 2, "counter should be 2") ; finishExpectation.fulfill() }
-				}
-				.chain{ XCTAssert(counter == 0, "counter should be 0") }
-				.chain(incrementCounter)
-				.chain{ XCTAssert(counter == 1, "counter should be 1") }
-				.chain(incrementCounter)
-				.setErrorHandler(handleError)
-				.chain({ throw NSError(domain: "An expected error", code: -1, userInfo: nil) })
-				.chain(incrementCounter)
-		}
-		
-		waitForExpectations(timeout: 3) { error in
-			if let error = error {
-				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
-			}
-		}
-	}
-	
 	func testErrorContext() {
 		let expect = expectation(description: "Chain should fail with error")
 		var expectedFile: StaticString! = nil

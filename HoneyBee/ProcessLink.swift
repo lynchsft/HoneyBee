@@ -33,7 +33,7 @@ final public class ProcessLink<B> : Executable, PathDescribing  {
 	
 	fileprivate var createdLinks = ConcurrentQueue<Executable>()
 	fileprivate var createdLinksAsyncSemaphore: DispatchSemaphore?
-	fileprivate let finalLinkBox = LinkBox<Void>()
+	fileprivate let finalLinkBox = LinkBox<B>()
 	let activeLinkCounter: AtomicInt = 0
 	
 	fileprivate var function: (Any, @escaping (FailableResult<B>) -> Void) -> Void
@@ -105,18 +105,24 @@ final public class ProcessLink<B> : Executable, PathDescribing  {
 	 - Parameter defineBlock: context within which to define the finally chain.
 	 - Returns: a `ProcessLink` with the same execution context as self, but with a finally chain registered.
 	*/
-	public func finally(file: StaticString = #file, line: UInt = #line, _ defineBlock: (ProcessLink<Void>) -> Void ) -> ProcessLink<B> {
+	public func finally(file: StaticString = #file, line: UInt = #line, _ defineBlock: (ProcessLink<B>) -> Void ) -> ProcessLink<B> {
 		if let oldFinalLink = self.finalLinkBox.link {
 			let _ = oldFinalLink.finally(defineBlock)
 		} else {
-			let newFinalLink = ProcessLink<Void>(function: guarantee { (a, completion) in
-				completion(.success(Void()))
+			var bb:B! = nil
+			
+			let newFinalLink = ProcessLink<B>(function: { (_: Any, completion: (FailableResult<B>)->Void) in
+				completion(.success(bb))
 			}, errorHandler: self.errorHandler,
 			   blockPerformer: self.blockPerformer,
 			   path: self.path+["finally"],
 			   functionFile: #file,
 			   functionLine: #line
 			   )
+			
+			self.chain{ (b:B) -> Void in
+				bb = b
+			}
 			self.finalLinkBox.link = newFinalLink
 			
 			defineBlock(newFinalLink)
@@ -143,26 +149,23 @@ final public class ProcessLink<B> : Executable, PathDescribing  {
 
 extension ProcessLink {
 	
-	fileprivate func executeFinallyIfNeeded(completion: @escaping () -> Void) {
-		ProcessLink.exectute(finally: self.finalLinkBox.link, completion: completion)
-	}
-	
-	static func exectute(finally: ProcessLink<Void>?, completion: @escaping () -> Void) {
+	static func exectute(finally: ProcessLink<B>?, completion: @escaping () -> Void) {
 		if let finalLink = finally {
-			finalLink.execute(argument: Void(), completion: completion)
+			finalLink.execute(argument: (), completion: completion)
 		} else {
 			completion()
 		}
 	}
 	
-	private func processError(_ error: Error, with argument: Any, completion: @escaping () -> Void) {
+	private func processError(_ error: Error, with argument: Any) {
 		let errorContext = ErrorContext(subject: argument, file: self.functionFile, line: self.functionLine, internalPath: self.path)
 		self.errorHandler(error, errorContext)
-		self.executeFinallyIfNeeded(completion: completion)
+		// why not execute finally link here? Finally links are registered on `self`.
+		// If self errors, there is no downward chain to finally back from.
 		self.propagateFailureToDecendants()
 	}
 	
-	private func processSuccess(result: B, with argument: Any, completion: @escaping () -> Void) {
+	private func processSuccess(result: B, completion: @escaping () -> Void) {
 		let linkBox = self.finalLinkBox
 		self.activeLinkCounter.notify {
 			ProcessLink.exectute(finally: linkBox.link, completion: completion)
@@ -189,9 +192,10 @@ extension ProcessLink {
 	private func processResult(_ failableResult: FailableResult<B>, with argument: Any, completion: @escaping () -> Void) {
 		switch failableResult {
 		case .success(let result) :
-			self.processSuccess(result: result, with: argument, completion: completion)
+			self.processSuccess(result: result, completion: completion)
 		case .failure(let error):
-			self.processError(error, with: argument, completion: completion)
+			self.processError(error, with: argument)
+			completion()
 		}
 	}
 	
@@ -864,7 +868,7 @@ extension ProcessLink  {
 		}
 		var semaphoreReleasedNormally = false
 		let _ = openingLink.finally{ link in
-			link.chain { () -> Void in
+			link.chain { (_:B) -> Void in
 				if !semaphoreReleasedNormally {
 					semaphore.signal()
 				}
