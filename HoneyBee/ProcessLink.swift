@@ -195,7 +195,7 @@ extension ProcessLink {
 		}
 	}
 	
-	private func executeFunction(with argument: Any, completion: @escaping () -> Void) {
+	fileprivate func executeFunction(with argument: Any, completion: @escaping () -> Void) {
 		let callbackInvoked:AtomicBool = false
 		let file = self.functionFile
 		let line = self.functionLine
