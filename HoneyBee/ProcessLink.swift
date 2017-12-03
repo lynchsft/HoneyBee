@@ -887,3 +887,62 @@ extension ProcessLink  {
 		return returnLink
 	}
 }
+
+extension ProcessLink {
+	// retry
+	
+	@discardableResult
+	public func retry<R>(_ maxTimes: Int, _ defineBlock: @escaping (ProcessLink<B>) -> ProcessLink<R>) -> ProcessLink<R> {
+		precondition(maxTimes > 0, "retry requiers maxTimes > 0")
+		
+		let existingErrorHanlder = self.errorHandler
+		let retryTimes:AtomicInt = 0
+		
+		let resultLink = ProcessLink<R>(function: { (r: Any, completion: (FailableResult<R>)->Void) in
+			guard let rr = r as? R else {
+				preconditionFailure("r is not an R")
+			}
+			completion(.success(rr))
+		}, errorHandler: self.errorHandler,
+		   blockPerformer: self.blockPerformer,
+		   path: self.path+["retry"],
+		   functionFile: #file,
+		   functionLine: #line
+		)
+		
+		var recorededError: (error:Error, context: ErrorContext)? = nil
+		let _ = self.setErrorHandler { (error, context) in
+			recorededError = (error, context)
+		}
+		
+		var chainSuccess = false
+		func invokeDefineBlock() {
+			let passThroughLink = self.chain { return $0 }
+			let _ = passThroughLink.finally { link in
+				link.chain { (_:B) -> Void in
+					retryTimes.access { times in
+						if chainSuccess == false {
+							if times < maxTimes {
+								invokeDefineBlock()
+								times += 1
+							} else {
+								if let recorededError = recorededError {
+									existingErrorHanlder(recorededError.error, recorededError.context)
+								} // otherwise the recipie set a custom error handler inside the retry... which is fine.
+								resultLink.ancestorFailed()
+							}
+						}
+					}
+				}
+			}
+			defineBlock(passThroughLink).chain { (r: R, completion: @escaping ()->Void) -> Void in
+				chainSuccess = true
+				resultLink.execute(argument: r, completion: completion)
+			}
+		}
+		
+		invokeDefineBlock()
+		
+		return resultLink
+	}
+}

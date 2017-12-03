@@ -47,6 +47,102 @@ class ErrorHandlingTests: XCTestCase {
 		}
 	}
 	
+	func testRetryNoReturn() {
+		let finalErrorExpectation = expectation(description: "Chain should fail with error")
+		
+		let retryCount = 3
+		let retryExpectation = expectation(description: "Chain should retry \(retryCount) time")
+		retryExpectation.expectedFulfillmentCount = retryCount + 1
+		
+		HoneyBee.start { root in
+			root.setErrorHandler {_ in finalErrorExpectation.fulfill()}
+				.insert(self.funcContainer)
+				.chain(TestingFunctions.randomInt)
+				.chain(self.funcContainer.intToString)
+				.chain(self.funcContainer.stringCat)
+				.retry(retryCount) { link in
+					link.drop()
+						.chain(retryExpectation.fulfill)
+						.chain(self.funcContainer.explode)
+						.chain(self.funcContainer.multiplyInt)
+				}
+		}
+		
+		waitForExpectations(timeout: 1) { error in
+			if let error = error {
+				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
+			}
+		}
+	}
+	
+	func testRetryReturnSuccess() {
+		let finishExpectation = expectation(description: "Chain should finish")
+		
+		let retryCount = 3
+		let retryExpectation = expectation(description: "Chain should retry \(retryCount) time")
+		retryExpectation.expectedFulfillmentCount = 2
+		
+		var failed = false
+		
+		HoneyBee.start { root in
+			root.setErrorHandler(fail)
+				.insert(self.funcContainer)
+				.chain(self.funcContainer.constantInt)
+				.retry(retryCount) { link in
+					link.tunnel { link in
+							link.drop()
+								.chain(retryExpectation.fulfill)
+								.chain{
+									if !failed {
+										failed = true
+										throw SimpleError.error
+									}
+								}
+						}
+						.chain(self.funcContainer.multiplyInt)
+				}
+				.chain(self.funcContainer.multiplyInt)
+				.chain(assertEquals =<< 32)
+				.drop()
+				.chain(finishExpectation.fulfill)
+		}
+		
+		waitForExpectations(timeout: 1) { error in
+			if let error = error {
+				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
+			}
+		}
+	}
+	
+	func testRetryReturn() {
+		let finalErrorExpectation = expectation(description: "Chain should fail with error")
+		
+		let retryCount = 3
+		let retryExpectation = expectation(description: "Chain should retry \(retryCount) time")
+		retryExpectation.expectedFulfillmentCount = retryCount + 1
+		
+		HoneyBee.start { root in
+			root.setErrorHandler {_ in finalErrorExpectation.fulfill()}
+				.insert(self.funcContainer)
+				.chain(TestingFunctions.randomInt)
+				.chain(self.funcContainer.intToString)
+				.chain(self.funcContainer.stringCat)
+				.retry(retryCount) { link in
+					link.drop()
+						.chain(retryExpectation.fulfill)
+						.chain(self.funcContainer.explode)
+						.chain(self.funcContainer.multiplyInt)
+				}
+				.chain(self.funcContainer.multiplyInt)
+		}
+		
+		waitForExpectations(timeout: 1) { error in
+			if let error = error {
+				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
+			}
+		}
+	}
+	
 	func testErrorContext() {
 		let expect = expectation(description: "Chain should fail with error")
 		var expectedFile: StaticString! = nil
