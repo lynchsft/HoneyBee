@@ -889,8 +889,22 @@ extension ProcessLink  {
 }
 
 extension ProcessLink {
-	// retry
-	
+	/// `retry` defines a subchain with special runtime properties. The defined subchain will execute a maximum of `maxTimes + 1` times in an attempt to reach a non-error result.
+	/// If each of the `maxTimes + 1` attempts result in error, the error from the last-attempted pass will be send to the registered error handler.
+	/// If any of the attempts succeeds, the result `R` will be forwarded to the link which is returned from this function. For example:
+	///
+	///      .retry(2) { link in
+	///         link.chain(transientlyFailingIntGenerator)
+	///		}
+	///     .chain(multiplyInt)
+	///
+	/// In the example above `transientlyFailingIntGenerator` is a function which can fail in non-fatal ways.
+	/// When it succeeds, the result is an `Int` and that int is passed to `multiplyInt` after the `retry`.
+	///
+	/// - Parameters:
+	///   - maxTimes: the maximum number of times to reattempt the subchain. Thus the subchain is executed at most `maxTimes + 1`
+	///   - defineBlock: a block which creates a subchain to be retried.
+	/// - Returns: a `ProcessLink` whose execution result `R` is the result of the final link of the subchain.
 	@discardableResult
 	public func retry<R>(_ maxTimes: Int, _ defineBlock: @escaping (ProcessLink<B>) -> ProcessLink<R>) -> ProcessLink<R> {
 		precondition(maxTimes > 0, "retry requiers maxTimes > 0")
