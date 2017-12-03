@@ -7,7 +7,7 @@
 //
 
 import XCTest
-import HoneyBee
+@testable import HoneyBee
 
 class MultiPathTests: XCTestCase {
 	let funcContainer = TestingFunctions()
@@ -141,16 +141,17 @@ class MultiPathTests: XCTestCase {
 		
 		let sleepSeconds = 0.1
 		
-		let lock = NSLock()
+		let accessCounter: AtomicInt = 0
+		accessCounter.guaranteeValueAtDeinit(0)
 		
 		func asynchronouslyHoldLock(iteration: Int, completion: @escaping (Int)->Void) {
-			if !lock.try() {
-				XCTFail("Lock should never be held at this point. Implies parallel execution. Iteration: \(iteration)")
+			if accessCounter.increment() != 1 {
+				XCTFail("Countered should never != 1 at this point. Implies parallel execution. Iteration: \(iteration)")
 			}
 			
 			DispatchQueue.global(qos: .background).async {
 				sleep(UInt32(sleepSeconds))
-				lock.unlock()
+				accessCounter.decrement()
 				completion(iteration)
 			}
 		}
@@ -246,16 +247,17 @@ class MultiPathTests: XCTestCase {
 		
 		let sleepSeconds = 0.1
 		
-		let lock = NSLock()
+		let accessCounter: AtomicInt = 0
+		accessCounter.guaranteeValueAtDeinit(0)
 		
 		func asynchronouslyHoldLock(iteration: Int, completion: @escaping (Int)->Void) {
-			if !lock.try() {
-				XCTFail("Lock should never be held at this point. Implies parallel execution. Iteration: \(iteration)")
+			if accessCounter.increment() != 1 {
+				XCTFail("Counter should never != 1 at this point. Implies parallel execution. Iteration: \(iteration)")
 			}
 			
 			DispatchQueue.global(qos: .background).async {
 				sleep(UInt32(sleepSeconds))
-				lock.unlock()
+				accessCounter.decrement()
 				completion(iteration)
 			}
 		}
@@ -289,17 +291,14 @@ class MultiPathTests: XCTestCase {
 	
 	func testEach() {
 		var expectations:[XCTestExpectation] = []
-		let countLock = NSLock()
-		var filledExpectationCount = 0
+		var filledExpectationCount:AtomicInt = 0
 		
 		for int in 0..<10 {
 			expectations.append(expectation(description: "Expected to evaluate \(int)"))
 		}
 		
 		func incrementFullfilledExpectCount() {
-			countLock.lock()
-			filledExpectationCount += 1
-			countLock.unlock()
+			filledExpectationCount.increment()
 		}
 		
 		let finishExpectation = expectation(description: "Should reach the end of the chain")
@@ -313,7 +312,7 @@ class MultiPathTests: XCTestCase {
 				}
 				.drop()
 				.chain {
-					XCTAssert(filledExpectationCount == expectations.count, "All expectations should be filled by now, but was actually \(filledExpectationCount) != \(expectations.count)")
+					XCTAssert(filledExpectationCount.get() == expectations.count, "All expectations should be filled by now, but was actually \(filledExpectationCount.get()) != \(expectations.count)")
 				}
 				.chain(finishExpectation.fulfill)
 		}
@@ -327,8 +326,7 @@ class MultiPathTests: XCTestCase {
 	
 	func testEachWithRateLimiter() {
 		var expectations:[XCTestExpectation] = []
-		let countLock = NSLock()
-		var filledExpectationCount = 0
+		var filledExpectationCount: AtomicInt = 0
 		
 		for int in 0..<10 {
 			expectations.append(expectation(description: "Expected to evaluate \(int)"))
@@ -337,13 +335,11 @@ class MultiPathTests: XCTestCase {
 		let finishExpectation = expectation(description: "Should reach the end of the chain")
 		
 		func incrementFullfilledExpectCount() {
-			countLock.lock()
-			filledExpectationCount += 1
-			countLock.unlock()
+			filledExpectationCount.increment()
 		}
 		
 		func assertAllExpectationsFullfilled() {
-			XCTAssert(filledExpectationCount == expectations.count, "All expectations should be filled by now, but was actually \(filledExpectationCount) != \(expectations.count)")
+			XCTAssert(filledExpectationCount.get() == expectations.count, "All expectations should be filled by now, but was actually \(filledExpectationCount) != \(expectations.count)")
 		}
 		
 		HoneyBee.start { root in
@@ -371,16 +367,17 @@ class MultiPathTests: XCTestCase {
 		let source = Array(0..<3)
 		let sleepSeconds = 0.1
 		
-		let lock = NSLock()
+		let accessCounter: AtomicInt = 0
+		accessCounter.guaranteeValueAtDeinit(0)
 		
 		func asynchronouslyHoldLock(iteration: Int, completion: @escaping (Int)->Void) {
-			if !lock.try() {
-				XCTFail("Lock should never be held at this point. Implies parallel execution. Iteration: \(iteration)")
+			if accessCounter.increment() != 1 {
+				XCTFail("Counter should never be != 1 at this point. Implies parallel execution. Iteration: \(iteration)")
 			}
 			
 			DispatchQueue.global(qos: .background).async {
 				sleep(UInt32(sleepSeconds))
-				lock.unlock()
+				accessCounter.decrement()
 				completion(iteration)
 			}
 		}
@@ -412,16 +409,16 @@ class MultiPathTests: XCTestCase {
 		let source = Array(0..<3)
 		let sleepNanoSeconds:UInt32 = 100
 		
-		let lock = NSLock()
+		let accessCounter: AtomicInt = 0
 		
 		func asynchronouslyHoldLock(iteration: Int, completion: @escaping (Int)->Void) {
-			if !lock.try() {
-				XCTFail("Lock should never be held at this point. Implies parallel execution. Iteration: \(iteration)")
+			if accessCounter.increment() != 1 {
+				XCTFail("Counter should never be != 1 at this point. Implies parallel execution. Iteration: \(iteration)")
 			}
 			
 			DispatchQueue.global(qos: .background).async {
 				usleep(sleepNanoSeconds)
-				lock.unlock()
+				accessCounter.decrement()
 				completion(iteration)
 			}
 		}

@@ -163,10 +163,10 @@
 				FA62A2981FC9FBC000385D22 /* FailureRate.swift */,
 				FA62A2A01FC9FBC100385D22 /* HoneyBee.swift */,
 				FA62A29D1FC9FBC100385D22 /* JoinPoint.swift */,
+				FA9919221FD2B90A00C780A1 /* LinkBox.swift */,
 				FA62A2A21FC9FBC100385D22 /* PathDescribing.swift */,
 				FA62A29E1FC9FBC100385D22 /* ProcessLink.swift */,
 				FA62A2A31FC9FBC100385D22 /* RootLink.swift */,
-				FA9919221FD2B90A00C780A1 /* LinkBox.swift */,
 			);
 			name = Core;
 			sourceTree = "<group>";
