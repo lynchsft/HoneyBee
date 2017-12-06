@@ -113,4 +113,31 @@ class FinallyTests: XCTestCase {
 			}
 		}
 	}
+	
+	func testFinallyWithRetry() {
+		
+		let finishExpectation = expectation(description: "Should reach the end of the chain")
+		let finallyExpectation = expectation(description: "Should reach the finally")
+		
+		
+		HoneyBee.start(on: DispatchQueue.main) { root in
+			root.setErrorHandler(fail)
+				.finally { link in
+					link.chain(finallyExpectation.fulfill)
+				}
+				.retry(1) { link in
+					link.chain(self.funcContainer.constantInt)
+				}
+				.chain(self.funcContainer.multiplyInt)
+				.drop()
+				.chain(finishExpectation.fulfill)
+		}
+		
+		
+		waitForExpectations(timeout: 141) { error in
+			if let error = error {
+				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
+			}
+		}
+	}
 }

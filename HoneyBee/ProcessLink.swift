@@ -49,6 +49,8 @@ final public class ProcessLink<B> : Executable, PathDescribing  {
 	fileprivate let functionFile: StaticString
 	fileprivate let functionLine: UInt
 	
+	public var debugInstance = false
+	
 	init(function:  @escaping (Any, @escaping (FailableResult<B>) -> Void) -> Void, errorHandler: @escaping ((Error, ErrorContext) -> Void), blockPerformer: AsyncBlockPerformer, path: [String], functionFile: StaticString, functionLine: UInt) {
 		self.function = function
 		self.errorHandler = errorHandler
@@ -57,6 +59,18 @@ final public class ProcessLink<B> : Executable, PathDescribing  {
 		self.path = path
 		self.functionFile = functionFile
 		self.functionLine = functionLine
+	}
+	
+	fileprivate func debug(_ message: String) {
+		print(self.debugString(for: message))
+	}
+	
+	fileprivate func debugString(for message: String) -> String {
+		if self.debugInstance {
+			return "\(type(of: self)) \(Unmanaged.passUnretained(self).toOpaque()) \(self.functionFile):\(self.functionLine):: \(message)"
+		} else {
+			return ""
+		}
 	}
 	
 	/// Primary chain form. All other forms translate into this form.
@@ -86,7 +100,7 @@ final public class ProcessLink<B> : Executable, PathDescribing  {
 	 `finally` creates a subchain which will be executed whether or not the proceeding chain errors.
 	 In the case that no error occurs in the proceeding chain, finally is executed after the final link of the chain, as though it had been directly appended there.
 	 In the case that an error, the subchain defined by `finally` will be executed after the error handler has finished.
-	 If there is no error, the subchain defined by `finally` will be executed after all subsequent changes have finished.
+
 	 Example:
 	
 	     HoneyBee.start { root in
@@ -107,17 +121,17 @@ final public class ProcessLink<B> : Executable, PathDescribing  {
 	*/
 	public func finally(file: StaticString = #file, line: UInt = #line, _ defineBlock: (ProcessLink<B>) -> Void ) -> ProcessLink<B> {
 		if let oldFinalLink = self.finalLinkBox.link {
-			let _ = oldFinalLink.finally(defineBlock)
+			let _ = oldFinalLink.finally(file: file, line: line, defineBlock)
 		} else {
-			var bb:B! = nil
+			var bb:B? = nil
 			
 			let newFinalLink = ProcessLink<B>(function: { (_: Any, completion: (FailableResult<B>)->Void) in
-				completion(.success(bb))
+				completion(.success(bb!))
 			}, errorHandler: self.errorHandler,
 			   blockPerformer: self.blockPerformer,
 			   path: self.path+["finally"],
-			   functionFile: #file,
-			   functionLine: #line
+			   functionFile: file,
+			   functionLine: line
 			   )
 			
 			self.chain{ (b:B) -> Void in
@@ -889,6 +903,9 @@ extension ProcessLink  {
 }
 
 extension ProcessLink {
+	private enum RetryError : Error {
+		case generalError
+	}
 	/// `retry` defines a subchain with special runtime properties. The defined subchain will execute a maximum of `maxTimes + 1` times in an attempt to reach a non-error result.
 	/// If each of the `maxTimes + 1` attempts result in error, the error from the last-attempted pass will be send to the registered error handler.
 	/// If any of the attempts succeeds, the result `R` will be forwarded to the link which is returned from this function. For example:
@@ -909,54 +926,52 @@ extension ProcessLink {
 	public func retry<R>(_ maxTimes: Int, _ defineBlock: @escaping (ProcessLink<B>) -> ProcessLink<R>) -> ProcessLink<R> {
 		precondition(maxTimes > 0, "retry requiers maxTimes > 0")
 		
-		let existingErrorHanlder = self.errorHandler
 		let retryTimes:AtomicInt = 0
 		
-		let resultLink = ProcessLink<R>(function: { (r: Any, completion: (FailableResult<R>)->Void) in
-			guard let rr = r as? R else {
-				preconditionFailure("r is not an R")
-			}
-			completion(.success(rr))
-		}, errorHandler: self.errorHandler,
-		   blockPerformer: self.blockPerformer,
-		   path: self.path+["retry"],
-		   functionFile: #file,
-		   functionLine: #line
-		)
+		var result: R? = nil
 		
-		var recorededError: (error:Error, context: ErrorContext)? = nil
-		let _ = self.setErrorHandler { (error, context) in
-			recorededError = (error, context)
-		}
+		return self.chain { [weak self] (_: B, completion: @escaping (FailableResult<R>)->Void) -> Void in
 		
-		var chainSuccess = false
-		func invokeDefineBlock() {
-			let passThroughLink = self.chain { return $0 }
-			let _ = passThroughLink.finally { link in
-				link.chain { (_:B) -> Void in
-					retryTimes.access { times in
-						if chainSuccess == false {
-							if times < maxTimes {
-								invokeDefineBlock()
-								times += 1
-							} else {
-								if let recorededError = recorededError {
-									existingErrorHanlder(recorededError.error, recorededError.context)
-								} // otherwise the recipie set a custom error handler inside the retry... which is fine.
-								resultLink.ancestorFailed()
-							}
+			func invokeDefineBlock() {
+				if let this = self {
+						let passThroughLink = this.chain { return $0 }
+					
+						var recorededError: Error? = nil
+						let _ = passThroughLink.setErrorHandler { (error) in
+							recorededError = error
 						}
-					}
+					
+						let _ = passThroughLink.finally { link in
+							link.chain(guarantee { (_:B) -> Void in
+								retryTimes.access { times in
+									if let result = result {
+										completion(.success(result))
+									} else {
+										if times < maxTimes {
+											invokeDefineBlock()
+											times += 1
+										} else {
+											if let recorededError = recorededError {
+												completion(.failure(recorededError))
+											} else {
+												// otherwise the recipie set a custom error handler inside the retry... which is fine.
+												completion(.failure(RetryError.generalError))
+											}
+										}
+									}
+								}
+							})
+						}
+					
+						defineBlock(passThroughLink).chain { (r: R) -> Void in
+							result = r
+						}
+				} else {
+					preconditionFailure("Lost self reference in retry")
 				}
 			}
-			defineBlock(passThroughLink).chain { (r: R, completion: @escaping ()->Void) -> Void in
-				chainSuccess = true
-				resultLink.execute(argument: r, completion: completion)
-			}
+			
+			invokeDefineBlock()
 		}
-		
-		invokeDefineBlock()
-		
-		return resultLink
 	}
 }
