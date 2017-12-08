@@ -94,6 +94,50 @@ class MultiPathTests: XCTestCase {
 		}
 	}
 	
+	func testJoinLeftAndJoinRight() {
+		let expectA = expectation(description: "Join should be reached, path A")
+		let expectB = expectation(description: "Join should be reached, path B")
+		
+		let sleepTime:UInt32 = 1
+		
+		HoneyBee.start { root in
+			root.setErrorHandler(fail)
+				.branch { stem in
+					let result1 = stem.chain(self.funcContainer.constantInt)
+					
+					let result2 = stem.chain(sleep =<< sleepTime)
+						.drop()
+						.chain(self.funcContainer.constantString)
+					
+					return (result2 <+ result1)
+				}
+				.chain(self.funcContainer.stringCat)
+				.chain(assertEquals =<< "lambcat")
+				.chain(expectA.fulfill)
+		}
+		
+		HoneyBee.start { root in
+			root.setErrorHandler(fail)
+				.branch { stem in
+					let result1 = stem.chain(self.funcContainer.constantInt)
+					
+					let result2:ProcessLink<String> = stem.chain(sleep =<< sleepTime)
+						.insert(self.funcContainer)
+						.chain(TestingFunctions.constantString)
+					
+					return (result1 +> result2)
+					
+				}
+				.chain(assertEquals =<< "lamb")
+				.chain(expectB.fulfill)
+		}
+		waitForExpectations(timeout: 3) { error in
+			if let error = error {
+				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
+			}
+		}
+	}
+	
 	func testMap() {
 		var intsToExpectations:[Int:XCTestExpectation] = [:]
 		

@@ -12,6 +12,9 @@ fileprivate func tname(_ t: Any) -> String {
 	return String(describing: type(of: t))
 }
 
+infix operator <+ : AdditionPrecedence
+infix operator +> : AdditionPrecedence
+
 /**
 `ProcessLink` is the primary interface for HoneyBee processes.
 A link represents a single asynchronous function, as well as its execution context.
@@ -344,6 +347,16 @@ extension ProcessLink {
 	/// operator syntax for `conjoin` function
 	public static func +<C>(lhs: ProcessLink<B>, rhs: ProcessLink<C>) -> ProcessLink<(B,C)> {
 		return lhs.conjoin(rhs)
+	}
+	
+	public static func <+<C>(lhs: ProcessLink<B>, rhs: ProcessLink<C>) -> ProcessLink<B> {
+		return lhs.conjoin(rhs)
+			.chain { $0.0 }
+	}
+	
+	public static func +><C>(lhs: ProcessLink<B>, rhs: ProcessLink<C>) -> ProcessLink<C> {
+		return lhs.conjoin(rhs)
+			.chain { $0.1 }
 	}
 }
 
