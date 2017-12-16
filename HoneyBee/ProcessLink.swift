@@ -329,6 +329,7 @@ extension ProcessLink {
 	///
 	/// - Parameter defineBlock: the block to which this `ProcessLink` yields itself.
 	/// - Returns: The link which is returned from defineBlock
+	@discardableResult
 	public func branch<C>(_ defineBlock: (ProcessLink<B>) -> ProcessLink<C>) -> ProcessLink<C> {
 		return defineBlock(self)
 	}
@@ -805,7 +806,8 @@ extension ProcessLink where B : Collection, B.IndexDistance == Int {
 	///
 	/// - Parameter defineBlock: a block which creates a subchain for each element of the sequence
 	/// - Returns: a ProcessLink which will pass the nonfailing elements of `B` to its child links
-	@discardableResult public func each(withLimit limit: Int? = nil, acceptableFailure: FailureRate = .none, _ defineBlock: @escaping (ProcessLink<B.Iterator.Element>) -> Void) -> ProcessLink<[B.Element]> {
+	@discardableResult
+	public func each(withLimit limit: Int? = nil, acceptableFailure: FailureRate = .none, _ defineBlock: @escaping (ProcessLink<B.Iterator.Element>) -> Void) -> ProcessLink<[B.Element]> {
 		return self.map(withLimit: limit, acceptableFailure: acceptableFailure) { elem in
 			elem.tunnel { link -> ProcessLink<B.Iterator.Element> in
 				defineBlock(link)

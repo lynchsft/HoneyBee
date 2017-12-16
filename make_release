@@ -26,10 +26,10 @@ spec = %[
 Pod::Spec.new do |s|
   s.name         = "HoneyBee"
   s.version      = "#{version_string}"
-  s.summary      = "A swift library to increase the expressiveness of asynchronous and multi-parallel code."
+  s.summary      = "A swift library to increase the expressiveness of asynchronous and concurent code."
 
   s.description  = <<-DESC
-	HoneyBee reduces the clutter and complexity of asynchronous and multi-parallel code. 
+	HoneyBee reduces the clutter and complexity of asynchronous and concurent code. 
 	By handing the noise of data routing and error handling, HoneyBee provides a higher-level, more expressive perspective on asynchronous programming.
                    DESC
 
@@ -39,10 +39,10 @@ Pod::Spec.new do |s|
 
   s.author       = { "Alex Lynch" => "alex@iamapps.com" }
 
-  s.ios.deployment_target = "9.0"
-  #s.osx.deployment_target = "10.7"
-  #s.watchos.deployment_target = "2.0"
-  #s.tvos.deployment_target = "9.0"
+  s.ios.deployment_target = "10.0"
+  s.osx.deployment_target = "10.10"
+  s.watchos.deployment_target = "4.0"
+  s.tvos.deployment_target = "10.0"
 
   s.source       = { :http => "http://iamapps.net/HoneyBee/#{version_string}/HoneyBee-#{version_string}.zip"}
 
@@ -54,4 +54,4 @@ end
 File.open("HoneyBee.podspec",'w') {|f| f.puts spec}
 
 puts "Publishing"
-puts `pod trunk push HoneyBee.podspec`
+puts `pod trunk push --swift-version=4.0 HoneyBee.podspec`
