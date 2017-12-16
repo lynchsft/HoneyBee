@@ -52,7 +52,7 @@ final public class ProcessLink<B> : Executable, PathDescribing  {
 	fileprivate let functionFile: StaticString
 	fileprivate let functionLine: UInt
 	
-	public var debugInstance = false
+	var debugInstance = false
 	
 	init(function:  @escaping (Any, @escaping (FailableResult<B>) -> Void) -> Void, errorHandler: @escaping ((Error, ErrorContext) -> Void), blockPerformer: AsyncBlockPerformer, path: [String], functionFile: StaticString, functionLine: UInt) {
 		self.function = function

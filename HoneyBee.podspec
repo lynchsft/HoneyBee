@@ -1,15 +1,15 @@
 
 Pod::Spec.new do |s|
   s.name         = "HoneyBee"
-  s.version      = "1.9.3"
-  s.summary      = "A swift library to increase the expressiveness of asynchronous and concurent code."
+  s.version      = "1.9.4"
+  s.summary      = "A swift library to increase the expressiveness of asynchronous and concurrent programming."
 
   s.description  = <<-DESC
-	HoneyBee reduces the clutter and complexity of asynchronous and concurent code. 
+	HoneyBee reduces the clutter and complexity of asynchronous and concurrent code. 
 	By handing the noise of data routing and error handling, HoneyBee provides a higher-level, more expressive perspective on asynchronous programming.
                    DESC
 
-  s.homepage     = "http://iamapps.net/HoneyBee/1.9.3/docs/index.html"
+  s.homepage     = "http://iamapps.net/HoneyBee/1.9.4/docs/index.html"
 
   s.license      = { :type=>"MIT", :file => 'LICENSE' }
 
@@ -20,7 +20,7 @@ Pod::Spec.new do |s|
   s.watchos.deployment_target = "4.0"
   s.tvos.deployment_target = "10.0"
 
-  s.source       = { :http => "http://iamapps.net/HoneyBee/1.9.3/HoneyBee-1.9.3.zip"}
+  s.source       = { :http => "http://iamapps.net/HoneyBee/1.9.4/HoneyBee-1.9.4.zip"}
 
   s.source_files = "HoneyBee/*.swift"
 

@@ -3,21 +3,19 @@
 puts "Cleaning"
 puts `rm -rf products/*`
 
-puts "Building"
-puts `xcodebuild archive -project HoneyBee.xcodeproj -scheme HoneyBee`
-
 puts "Documenting"
 puts `jazzy --xcodebuild-arguments -scheme,HoneyBee  --output products/docs/`
 
 puts "Copying"
 puts `rsync HoneyBee/*.swift products/HoneyBee/`
 puts `rsync LICENSE products/`
+puts `rsync README.md products/`
 
 version_string = `/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' HoneyBee/Info.plist`.strip
 
 puts "Zipping"
 zip_file = "HoneyBee-#{version_string}.zip"
-puts `cd products; /usr/bin/zip -r #{zip_file} LICENSE HoneyBee`
+puts `cd products; /usr/bin/zip -r #{zip_file} LICENSE README.md HoneyBee`
 
 puts "Pushing"
 puts `cd products; rsync -r #{zip_file} docs iamwebservices@iamwebservices.com:iamwebservices/current/public/HoneyBee/#{version_string}/`
@@ -26,10 +24,10 @@ spec = %[
 Pod::Spec.new do |s|
   s.name         = "HoneyBee"
   s.version      = "#{version_string}"
-  s.summary      = "A swift library to increase the expressiveness of asynchronous and concurent code."
+  s.summary      = "A swift library to increase the expressiveness of asynchronous and concurrent programming."
 
   s.description  = <<-DESC
-	HoneyBee reduces the clutter and complexity of asynchronous and concurent code. 
+	HoneyBee reduces the clutter and complexity of asynchronous and concurrent code. 
 	By handing the noise of data routing and error handling, HoneyBee provides a higher-level, more expressive perspective on asynchronous programming.
                    DESC
 
