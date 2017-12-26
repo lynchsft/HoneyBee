@@ -52,8 +52,6 @@ final public class ProcessLink<B> : Executable, PathDescribing  {
 	fileprivate let functionFile: StaticString
 	fileprivate let functionLine: UInt
 	
-	var debugInstance = false
-	
 	init(function:  @escaping (Any, @escaping (FailableResult<B>) -> Void) -> Void, errorHandler: @escaping ((Error, ErrorContext) -> Void), blockPerformer: AsyncBlockPerformer, path: [String], functionFile: StaticString, functionLine: UInt) {
 		self.function = function
 		self.errorHandler = errorHandler
@@ -65,14 +63,16 @@ final public class ProcessLink<B> : Executable, PathDescribing  {
 	}
 	
 	fileprivate func debug(_ message: String) {
-		print(self.debugString(for: message))
+		if let debugString = self.debugString(for: message) {
+			print(debugString)
+		}
 	}
 	
-	fileprivate func debugString(for message: String) -> String {
+	fileprivate func debugString(for message: String) -> String? {
 		if self.debugInstance {
 			return "\(type(of: self)) \(Unmanaged.passUnretained(self).toOpaque()) \(self.functionFile):\(self.functionLine):: \(message)"
 		} else {
-			return ""
+			return nil
 		}
 	}
 	
@@ -752,7 +752,11 @@ extension ProcessLink where B : Collection, B.IndexDistance == Int {
 			var results:[C?] = Array(repeating: .none, count: collection.count)
 			
 			let rootLink = self.drop()
-				.finally { link in
+			if let limit = limit {
+				rootLink.createdLinksAsyncSemaphore = ProcessLink.semaphore(for: rootLink, withValue: limit)
+			}
+			
+			let _ = rootLink.finally { link in
 					link.chain{ () -> Void in
 						let finalResults = results.flatMap { $0 }
 						let failures = results.count - finalResults.count
@@ -764,10 +768,6 @@ extension ProcessLink where B : Collection, B.IndexDistance == Int {
 						}
 					}
 				}
-			
-			if let limit = limit {
-				rootLink.createdLinksAsyncSemaphore = ProcessLink.semaphore(for: rootLink, withValue: limit)
-			}
 			
 			let integrationSerialQueue = DispatchQueue(label: "HoneyBee-Map-IntegrationQueue")
 			
@@ -813,6 +813,20 @@ extension ProcessLink where B : Collection, B.IndexDistance == Int {
 				defineBlock(link)
 				return link // this shouldn't be necessary
 			}
+		}
+	}
+	
+	public func reduce<T>(with t: T, acceptableFailure: FailureRate = .none, _ defineBlock: @escaping (ProcessLink<(T,B.Element)>) -> ProcessLink<T>) -> ProcessLink<T> {
+		var mutableT = t
+		
+		return self.each(withLimit: 1, acceptableFailure: acceptableFailure) { elem in
+			defineBlock(elem.insert(mutableT) + elem)
+				.chain { (newT: T) throws -> Void in
+					mutableT = newT
+				}
+		}
+		.chain { (_) -> T in
+			return mutableT
 		}
 	}
 }
@@ -887,7 +901,8 @@ extension ProcessLink  {
 	///   - maxParallel: the maximum number of parallel executions permitted for the subchains defined by `defineBlock`
 	///   - defineBlock: a block which creates a subchain to be limited.
 	/// - Returns: a `ProcessLink` whose execution result `J` is the result of the final link of the subchain.
-	@discardableResult public func limit<J>(_ maxParallel: Int, _ defineBlock: (ProcessLink<B>) -> ProcessLink<J>) -> ProcessLink<J> {
+	@discardableResult
+	public func limit<J>(_ maxParallel: Int, _ defineBlock: (ProcessLink<B>) -> ProcessLink<J>) -> ProcessLink<J> {
 		
 		let semaphore = ProcessLink.semaphore(for: self, withValue: maxParallel)
 		

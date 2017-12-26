@@ -489,5 +489,51 @@ class ErrorHandlingTests: XCTestCase {
 			}
 		}
 	}
+	
+	func testReduceWithError() {
+		
+		func doTest() {
+			let source = Array(0...10)
+			let result = 45 // we're going to lose 10 to an error.
+			
+			let finishExpectation = expectation(description: "Should reach the end of the chain")
+			
+			let errorExpectation = expectation(description: "Chain should error")
+			errorExpectation.expectedFulfillmentCount = 1
+			
+			func errorHandlder(_ error: Error) {
+				errorExpectation.fulfill()
+			}
+			
+			HoneyBee.start { root in
+				root.setErrorHandler(errorHandlder)
+					.insert(source)
+					.reduce(with: 0, acceptableFailure: .ratio(0.1)) { elem in
+						elem.tunnel { link in
+							link.chain { (_: Int, int:Int) throws -> Void in
+								if int > 9 {
+									throw SimpleError.error
+								}
+							}
+						}
+						.chain(+)
+					}
+					.chain{ XCTAssert($0 == result, "Reduce failed. Expected: \(result). Received: \($0).") }
+					.chain(finishExpectation.fulfill)
+			}
+			
+			waitForExpectations(timeout: 3) { error in
+				if let error = error {
+					XCTFail("waitForExpectationsWithTimeout errored: \(error)")
+				}
+			}
+			
+		}
+		
+		for _ in 0..<50 {
+			doTest()
+		}
+		
+	}
 }
 

@@ -9,7 +9,7 @@ puts `jazzy --xcodebuild-arguments -scheme,HoneyBee  --output products/docs/`
 puts "Copying"
 puts `rsync HoneyBee/*.swift products/HoneyBee/`
 puts `rsync LICENSE products/`
-puts `rsync README.md products/`
+puts `rsync README.md products/HoneyBee/`
 
 version_string = `/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' HoneyBee/Info.plist`.strip
 
@@ -44,7 +44,7 @@ Pod::Spec.new do |s|
 
   s.source       = { :http => "http://iamapps.net/HoneyBee/#{version_string}/HoneyBee-#{version_string}.zip"}
 
-  s.source_files = "HoneyBee/*.swift"
+  s.source_files = "HoneyBee/*"
 
 end	
 ]

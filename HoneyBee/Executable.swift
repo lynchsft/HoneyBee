@@ -12,4 +12,6 @@ import Foundation
 public class Executable {
 	func execute(argument: Any, completion: @escaping () -> Void) -> Void {}
 	func ancestorFailed() {}
+	
+	var debugInstance = false
 }

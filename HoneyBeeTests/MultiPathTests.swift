@@ -473,6 +473,7 @@ class MultiPathTests: XCTestCase {
 		let finishParalleCodeExpectation = expectation(description: "Should finish parallel code")
 		finishParalleCodeExpectation.expectedFulfillmentCount = source.count
 		var parallelCodeFinished = false
+		let parallelCodeFinishedLock = NSLock()
 		
 		HoneyBee.start { root in
 			root.setErrorHandler(fail)
@@ -489,7 +490,11 @@ class MultiPathTests: XCTestCase {
 						.chain{ _ in usleep(sleepNanoSeconds * 3) }
 						.drop()
 						.chain(finishParalleCodeExpectation.fulfill)
-						.chain({parallelCodeFinished = true})
+						.chain({ () -> Void in
+							parallelCodeFinishedLock.lock()
+							parallelCodeFinished = true
+							parallelCodeFinishedLock.unlock()
+						})
 				}
 				.drop()
 				.chain{ XCTAssert(parallelCodeFinished, "the parallel code should have finished before this") }
