@@ -350,11 +350,23 @@ extension ProcessLink {
 		return lhs.conjoin(rhs)
 	}
 	
+	/// operator syntax for `join left` behavior
+	///
+	/// - Parameters:
+	///   - lhs: ProcessLink whose value to propagate
+	///   - rhs: ProcessLink whose value to drop
+	/// - Returns: a ProcessLink which contains the value of the left-hand ProcessLink
 	public static func <+<C>(lhs: ProcessLink<B>, rhs: ProcessLink<C>) -> ProcessLink<B> {
 		return lhs.conjoin(rhs)
 			.chain { $0.0 }
 	}
 	
+	/// operator syntax for `join right` behavior
+	///
+	/// - Parameters:
+	///   - lhs: ProcessLink whose value to drop
+	///   - rhs: ProcessLink whose value to propagate
+	/// - Returns: a ProcessLink which contains the value of the left-hand ProcessLink
 	public static func +><C>(lhs: ProcessLink<B>, rhs: ProcessLink<C>) -> ProcessLink<C> {
 		return lhs.conjoin(rhs)
 			.chain { $0.1 }
@@ -800,7 +812,7 @@ extension ProcessLink where B : Collection, B.IndexDistance == Int {
 		}
 	}
 	
-	///  When the inbound type is a `Collection` with `Int` indexes (most are), then you may call `each`
+	/// When the inbound type is a `Collection` with `Int` indexes (most are), then you may call `each`
 	/// Each accepts a define block which creates a subchain which will be invoked once per element of the sequence.
 	/// The `ProcessLink` which is given as argument to the define block will pass to its child links the element of the sequence which is currently being processed.
 	///
@@ -816,6 +828,17 @@ extension ProcessLink where B : Collection, B.IndexDistance == Int {
 		}
 	}
 	
+	///  When the inbound type is a `Collection` with `Int` indexes (most are), then you may call `reduce`
+	///  Reduce accepts a define block which creates a subchain which will be executed *sequentially*,
+	///  once per element of the sequence. The result of each successive execution of the subchain will
+	//// be forwarded to the next pass of the subchain. The result of the final execution of the subchain
+	///  will be forwarded to the returned link.
+	///
+	/// - Parameters:
+	///   - t: the value to reduce onto. In many cases this value can be called an "accumulator"
+	///   - acceptableFailure: the acceptable failure rate
+	///   - defineBlock: a block which creates a subchain for each element of the sequence
+	/// - Returns: a ProcessLink which will pass the result of the reduce to its child links.
 	public func reduce<T>(with t: T, acceptableFailure: FailureRate = .none, _ defineBlock: @escaping (ProcessLink<(T,B.Element)>) -> ProcessLink<T>) -> ProcessLink<T> {
 		var mutableT = t
 		
