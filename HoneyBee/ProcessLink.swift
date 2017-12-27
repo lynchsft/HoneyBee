@@ -816,12 +816,12 @@ extension ProcessLink where B : Collection, B.IndexDistance == Int {
 	/// Each accepts a define block which creates a subchain which will be invoked once per element of the sequence.
 	/// The `ProcessLink` which is given as argument to the define block will pass to its child links the element of the sequence which is currently being processed.
 	///
-	/// - Parameter defineBlock: a block which creates a subchain for each element of the sequence
+	/// - Parameter defineBlock: a block which creates a subchain for each element of the Collection
 	/// - Returns: a ProcessLink which will pass the nonfailing elements of `B` to its child links
 	@discardableResult
-	public func each(withLimit limit: Int? = nil, acceptableFailure: FailureRate = .none, _ defineBlock: @escaping (ProcessLink<B.Iterator.Element>) -> Void) -> ProcessLink<[B.Element]> {
+	public func each(withLimit limit: Int? = nil, acceptableFailure: FailureRate = .none, _ defineBlock: @escaping (ProcessLink<B.Element>) -> Void) -> ProcessLink<[B.Element]> {
 		return self.map(withLimit: limit, acceptableFailure: acceptableFailure) { elem in
-			elem.tunnel { link -> ProcessLink<B.Iterator.Element> in
+			elem.tunnel { link -> ProcessLink<B.Element> in
 				defineBlock(link)
 				return link // this shouldn't be necessary
 			}
@@ -831,13 +831,13 @@ extension ProcessLink where B : Collection, B.IndexDistance == Int {
 	///  When the inbound type is a `Collection` with `Int` indexes (most are), then you may call `reduce`
 	///  Reduce accepts a define block which creates a subchain which will be executed *sequentially*,
 	///  once per element of the sequence. The result of each successive execution of the subchain will
-	//// be forwarded to the next pass of the subchain. The result of the final execution of the subchain
+	///  be forwarded to the next pass of the subchain. The result of the final execution of the subchain
 	///  will be forwarded to the returned link.
 	///
 	/// - Parameters:
 	///   - t: the value to reduce onto. In many cases this value can be called an "accumulator"
 	///   - acceptableFailure: the acceptable failure rate
-	///   - defineBlock: a block which creates a subchain for each element of the sequence
+	///   - defineBlock: a block which creates a subchain for each element of the Collection
 	/// - Returns: a ProcessLink which will pass the result of the reduce to its child links.
 	public func reduce<T>(with t: T, acceptableFailure: FailureRate = .none, _ defineBlock: @escaping (ProcessLink<(T,B.Element)>) -> ProcessLink<T>) -> ProcessLink<T> {
 		var mutableT = t
@@ -850,6 +850,64 @@ extension ProcessLink where B : Collection, B.IndexDistance == Int {
 		}
 		.chain { (_) -> T in
 			return mutableT
+		}
+	}
+	
+	/// When the inbound type is a `Collection` with `Int` indexes (most are), then you may call `reduce`
+	/// Reduce accepts a define block which creates a subchain which will be executed *in parallel*,
+	/// with up to N/2 other subchains. Each subchain combines two `B.Element`s into one `B.Element`.
+	/// The result of each combination is again combined until a single value remains. This value
+	/// is forwarded to the returned link.
+	///
+	/// - Parameter defineBlock: a block which creates a subchain to combined two elements of the Collection
+	/// - Returns: a ProcessLink which will pass the final combined result of the reduce to its child links.
+	public func reduce(_ defineBlock: @escaping (ProcessLink<(B.Element,B.Element)>) -> ProcessLink<B.Element>) -> ProcessLink<B.Element> {
+		
+		var elemLinks = Array<ProcessLink<B.Element>>()
+		
+		return self.chain { (b:B) -> Void in
+			for elem in b {
+				elemLinks.append(self.insert(elem))
+			}
+		}
+		.chain { (_:B, completion: @escaping (FailableResult<B.Element>) -> Void) in
+			let reportedFailure: AtomicBool = false
+			let reportedSuccess: AtomicBool = false
+			func applyFinally(to link: ProcessLink<B.Element>) {
+				if link.finalLinkBox.link == nil {
+					let _ = link.finally { link in
+						link.chain { (_:B.Element) -> Void in
+							if !reportedSuccess.get() {
+								reportedFailure.access { reported in
+									if reported == false {
+										do {
+											try FailureRate.none.checkExceeded(byFailures: 1, in: 1)
+										} catch {
+											completion(.failure(error))
+										}
+										reported = true
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			while elemLinks.count >= 2 {
+				let e1 = elemLinks.removeFirst()
+				let e2 = elemLinks.removeFirst()
+				applyFinally(to: e1)
+				applyFinally(to: e2)
+				
+				let e12 = defineBlock(e1+e2)
+				elemLinks.append(e12)
+			}
+			
+			let lastLink = elemLinks.removeFirst()
+			lastLink.chain { (b: B.Element) -> Void in
+				reportedSuccess.setTrue()
+				completion(.success(b))
+			}
 		}
 	}
 }

@@ -534,4 +534,28 @@ class MultiPathTests: XCTestCase {
 			}
 		}
 	}
+	
+	func testParallelReduce() {
+	
+		let source = Array(0...10)
+		let result = 55
+		
+		let finishExpectation = expectation(description: "Should reach the end of the chain")
+		
+		HoneyBee.start { root in
+			root.setErrorHandler(fail)
+				.insert(source)
+				.reduce { pair in
+					pair.chain(+)
+				}
+				.chain{ XCTAssert($0 == result, "Reduce failed. Expected: \(result). Received: \($0).") }
+				.chain(finishExpectation.fulfill)
+		}
+		
+		waitForExpectations(timeout: 3) { error in
+			if let error = error {
+				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
+			}
+		}
+	}
 }
