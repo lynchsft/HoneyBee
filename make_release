@@ -8,6 +8,7 @@ puts `jazzy --xcodebuild-arguments -scheme,HoneyBee  --output products/docs/`
 
 puts "Copying"
 puts `rsync HoneyBee/*.swift products/HoneyBee/`
+puts `rsync HoneyBeeTests/*.swift products/HoneyBee/Tests`
 puts `rsync LICENSE products/`
 puts `rsync README.md products`
 
@@ -38,14 +39,18 @@ Pod::Spec.new do |s|
 
   s.author       = { "Alex Lynch" => "alex@iamapps.com" }
 
-  s.ios.deployment_target = "10.0"
-  s.osx.deployment_target = "10.10"
-  s.watchos.deployment_target = "4.0"
-  s.tvos.deployment_target = "10.0"
+  s.ios.deployment_target = "11.0"
+  s.osx.deployment_target = "10.11"
+  s.tvos.deployment_target = "11.0"
+  s.pod_target_xcconfig = { "SWIFT_VERSION" => "4.0" }
 
   s.source       = { :http => "http://iamapps.net/HoneyBee/#{version_string}/HoneyBee-#{version_string}.zip"}
 
-  s.source_files = "HoneyBee/*"
+  s.source_files = "HoneyBee/*.swift"
+	
+  s.test_spec 'Tests' do |test_spec|
+     test_spec.source_files = 'HoneyBee/Tests/*.swift'
+  end  
 
 end	
 ]

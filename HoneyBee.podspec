@@ -1,7 +1,7 @@
 
 Pod::Spec.new do |s|
   s.name         = "HoneyBee"
-  s.version      = "1.11.0"
+  s.version      = "1.11.1"
   s.summary      = "A swift library to increase the expressiveness of asynchronous and concurrent programming."
 
   s.description  = <<-DESC
@@ -9,20 +9,24 @@ Pod::Spec.new do |s|
 	By handing the noise of data routing and error handling, HoneyBee provides a higher-level, more expressive perspective on asynchronous programming.
                    DESC
 
-  s.homepage     = "http://iamapps.net/HoneyBee/1.11.0/docs/index.html"
+  s.homepage     = "http://iamapps.net/HoneyBee/1.11.1/docs/index.html"
 	s.documentation_url = s.homepage
 
   s.license      = { :type=>"MIT", :file => 'LICENSE' }
 
   s.author       = { "Alex Lynch" => "alex@iamapps.com" }
 
-  s.ios.deployment_target = "10.0"
-  s.osx.deployment_target = "10.10"
-  s.watchos.deployment_target = "4.0"
-  s.tvos.deployment_target = "10.0"
+  s.ios.deployment_target = "11.0"
+  s.osx.deployment_target = "10.11"
+  s.tvos.deployment_target = "11.0"
+  s.pod_target_xcconfig = { "SWIFT_VERSION" => "4.0" }
 
-  s.source       = { :http => "http://iamapps.net/HoneyBee/1.11.0/HoneyBee-1.11.0.zip"}
+  s.source       = { :http => "http://iamapps.net/HoneyBee/1.11.1/HoneyBee-1.11.1.zip"}
 
-  s.source_files = "HoneyBee/*"
+  s.source_files = "HoneyBee/*.swift"
+	
+  s.test_spec 'Tests' do |test_spec|
+     test_spec.source_files = 'HoneyBee/Tests/*.swift'
+  end  
 
 end	
