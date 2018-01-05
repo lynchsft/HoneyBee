@@ -248,7 +248,7 @@ extension ProcessLink {
 	/// - Parameter c: Any value
 	/// - Returns: a `ProcessLink` whose child links will receive `c` as their function argument.
 	public func insert<C>(file: StaticString = #file, line: UInt = #line, _ c: C) -> ProcessLink<C> {
-		return self.chain(file: file, line:line, functionDescription: "value") { (b:B, callback: (C) -> Void) in callback(c) }
+		return self.chain(file: file, line:line, functionDescription: "insert") { (b:B, callback: (C) -> Void) in callback(c) }
 	}
 	
 	/// `drop` ignores "drops" the inbound value and returns a `ProcessLink` whose value is `Void`
@@ -404,12 +404,10 @@ fileprivate func objcErrorCallbackToSwift<C>(_ function: @escaping (@escaping (C
 		function { c, error in
 			if let error = error {
 				callback(.failure(error))
+			} else if let c = c {
+				callback(.success(c))
 			} else {
-				if let c = c {
-					callback(.success(c))
-				} else {
-					callback(.failure(NSError(domain: "Unexpectedly missing value", code: -99, userInfo: nil)))
-				}
+				callback(.failure(NSError(domain: "Completion called with two nil values.", code: -99, userInfo: nil)))
 			}
 		}
 	}
