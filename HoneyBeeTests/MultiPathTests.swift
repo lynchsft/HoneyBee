@@ -208,7 +208,7 @@ class MultiPathTests: XCTestCase {
 		HoneyBee.start { root in
 			root.setErrorHandler(fail)
 				.insert(source)
-				.map(withLimit: 1) { elem in
+				.map(limit: 1) { elem in
 					elem.tunnel { link in
 						link.chain(asynchronouslyHoldLock)
 							.drop()
@@ -314,7 +314,7 @@ class MultiPathTests: XCTestCase {
 		HoneyBee.start { root in
 			root.setErrorHandler(fail)
 				.insert(source)
-				.filter(withLimit: 1) { elem in
+				.filter(limit: 1) { elem in
 					elem.tunnel { link in
 						link.chain(asynchronouslyHoldLock)
 							.drop()
@@ -433,7 +433,7 @@ class MultiPathTests: XCTestCase {
 		HoneyBee.start { root in
 			root.setErrorHandler(fail)
 				.insert(source)
-				.each(withLimit: 1) { elem in
+				.each(limit: 1) { elem in
 					elem.chain(asynchronouslyHoldLock)
 						.drop()
 						.chain(elementExpectation.fulfill)

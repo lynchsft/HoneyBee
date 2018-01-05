@@ -202,7 +202,7 @@ class ErrorHandlingTests: XCTestCase {
 		HoneyBee.start { root in
 			root.setErrorHandler { _ in errorExpectation.fulfill()}
 				.insert(source)
-				.each(withLimit: 5) { elem in
+				.each(limit: 5) { elem in
 					elem.chain(asynchronouslyHoldLock)
 						.chain(self.funcContainer.explode)
 				}

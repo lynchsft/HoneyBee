@@ -756,7 +756,7 @@ extension Link where B : Collection, B.IndexDistance == Int {
 	///
 	/// - Parameter transform: the transformation subchain defining block which converts `B.Iterator.Element` to `C`
 	/// - Returns: a `Link` which will yield an array of `C`s to it's child links.
-	public func map<C>(withLimit limit: Int? = nil, acceptableFailure: FailureRate = .none, _ transform: @escaping (Link<B.Iterator.Element>) -> Link<C>) -> Link<[C]> {
+	public func map<C>(limit: Int? = nil, acceptableFailure: FailureRate = .none, _ transform: @escaping (Link<B.Iterator.Element>) -> Link<C>) -> Link<[C]> {
 	
 		return self.chain { (collection: B, callback: @escaping (FailableResult<[C]>) -> Void) -> Void in
 			var results:[C?] = Array(repeating: .none, count: collection.count)
@@ -797,8 +797,8 @@ extension Link where B : Collection, B.IndexDistance == Int {
 	///
 	/// - Parameter filter: the filter subchain which produces a Bool
 	/// - Returns: a `Link` which will yield to it's child links an array containing those `B.Iterator.Element`s which `filter` approved.
-	public func filter(withLimit limit: Int? = nil, acceptableFailure: FailureRate = .none, _ filter: @escaping (Link<B.Iterator.Element>) -> Link<Bool>) -> Link<[B.Iterator.Element]> {
-		return self.map(withLimit: limit, acceptableFailure: acceptableFailure, { elem -> Link<B.Element?> in
+	public func filter(limit: Int? = nil, acceptableFailure: FailureRate = .none, _ filter: @escaping (Link<B.Iterator.Element>) -> Link<Bool>) -> Link<[B.Iterator.Element]> {
+		return self.map(limit: limit, acceptableFailure: acceptableFailure, { elem -> Link<B.Element?> in
 			elem.branch { stem in
 				return (stem + filter(stem))
 						.chain { (elem: B.Element, include: Bool) -> B.Element? in
@@ -817,8 +817,8 @@ extension Link where B : Collection, B.IndexDistance == Int {
 	/// - Parameter defineBlock: a block which creates a subchain for each element of the Collection
 	/// - Returns: a Link which will pass the nonfailing elements of `B` to its child links
 	@discardableResult
-	public func each(withLimit limit: Int? = nil, acceptableFailure: FailureRate = .none, _ defineBlock: @escaping (Link<B.Element>) -> Void) -> Link<[B.Element]> {
-		return self.map(withLimit: limit, acceptableFailure: acceptableFailure) { elem in
+	public func each(limit: Int? = nil, acceptableFailure: FailureRate = .none, _ defineBlock: @escaping (Link<B.Element>) -> Void) -> Link<[B.Element]> {
+		return self.map(limit: limit, acceptableFailure: acceptableFailure) { elem in
 			elem.tunnel { link -> Link<B.Element> in
 				defineBlock(link)
 				return link // this shouldn't be necessary
@@ -840,7 +840,7 @@ extension Link where B : Collection, B.IndexDistance == Int {
 	public func reduce<T>(with t: T, acceptableFailure: FailureRate = .none, _ defineBlock: @escaping (Link<(T,B.Element)>) -> Link<T>) -> Link<T> {
 		var mutableT = t
 		
-		return self.each(withLimit: 1, acceptableFailure: acceptableFailure) { elem in
+		return self.each(limit: 1, acceptableFailure: acceptableFailure) { elem in
 			defineBlock(elem.insert(mutableT) + elem)
 				.chain { (newT: T) throws -> Void in
 					mutableT = newT
