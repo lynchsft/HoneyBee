@@ -13,21 +13,21 @@ final public class RootLink<T> : Executable, ErrorHandling {
 	
 	let path: [String]
 	let blockPerformer: AsyncBlockPerformer
-	var firstLink: ProcessLink<T>?
+	var firstLink: Link<T>?
 	
 	init(blockPerformer: AsyncBlockPerformer, path: [String]) {
 		self.blockPerformer = blockPerformer
 		self.path = path
 	}
 	
-	public func setErrorHandler(_ errorHandler: @escaping (Error, ErrorContext) -> Void ) -> ProcessLink<T> {
+	public func setErrorHandler(_ errorHandler: @escaping (Error, ErrorContext) -> Void ) -> Link<T> {
 		let function = {(a: Any, block: @escaping (FailableResult<T>) -> Void) -> Void in
 			guard let t = a as? T else {
 				preconditionFailure("a is not of type T")
 			}
 			block(.success(t))
 		}
-		self.firstLink = ProcessLink<T>(function: function, errorHandler: errorHandler, blockPerformer: self.blockPerformer, path: self.path, functionFile: #file, functionLine: #line)
+		self.firstLink = Link<T>(function: function, errorHandler: errorHandler, blockPerformer: self.blockPerformer, path: self.path, functionFile: #file, functionLine: #line)
 		return firstLink!
 	}
 		

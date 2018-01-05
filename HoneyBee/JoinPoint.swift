@@ -54,10 +54,10 @@ final class JoinPoint<A> : Executable, PathDescribing {
 		self.execute(argument: nil, completion:  {/* empty completion */})
 	}
 	
-	func conjoin<B>(_ other: JoinPoint<B>) -> ProcessLink<(A,B)> {
+	func conjoin<B>(_ other: JoinPoint<B>) -> Link<(A,B)> {
 		var tuple: (A,B)? = nil
 		
-		let link = ProcessLink<(A,B)>(function: { _, callback in
+		let link = Link<(A,B)>(function: { _, callback in
 			callback(.success(tuple!))
 		}, errorHandler: self.errorHandler,
 		   blockPerformer: self.blockPerformer,

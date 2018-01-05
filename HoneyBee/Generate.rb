@@ -67,11 +67,11 @@ def generate_chainable()
 		transform_result_type = function_signature =~ /C/ ? "C" : "B"
 		extra_generic_parameter = transform_result_type != "B" ? "<C>" : ""
 		documentation = transform_result_type != "B" ? 
-			"///Creates a new ProcessLink which transforms argument of type B to type C and appends the link to the execution list of this ProcessLink" :
-			"///Creates a new ProcessLink which passes through argument of type B and appends the link to the execution list of this ProcessLink"
+			"///Creates a new Link which transforms argument of type B to type C and appends the link to the execution list of this Link" :
+			"///Creates a new Link which passes through argument of type B and appends the link to the execution list of this Link"
 		
 		generated_chain_declarations << documentation
-		generated_chain_declarations << "@discardableResult func chain#{extra_generic_parameter}(file: StaticString, line: UInt, functionDescription: String?, _ function: @escaping #{function_signature} ) -> ProcessLink<#{transform_result_type}>"
+		generated_chain_declarations << "@discardableResult func chain#{extra_generic_parameter}(file: StaticString, line: UInt, functionDescription: String?, _ function: @escaping #{function_signature} ) -> Link<#{transform_result_type}>"
 		generated_chain_declarations << ""
 	}
 

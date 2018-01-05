@@ -9,5 +9,5 @@
 import Foundation
 
 class LinkBox<T> {
-	var link: ProcessLink<T>?
+	var link: Link<T>?
 }

@@ -20,7 +20,7 @@ public struct HoneyBee {
 	///     }
 	///
 	/// The above example declares a HoneyBee process with error handling provided by `funcE` and a serial execution of `funcA` then `funcB`.
-	/// For more possible HoneyBee declaration patterns see `ProcessLink`
+	/// For more possible HoneyBee declaration patterns see `Link`
 	///
 	/// - Parameters:
 	///   - queue: The execution queue to begin the process in.

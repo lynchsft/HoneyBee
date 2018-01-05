@@ -15,16 +15,16 @@ public protocol ErrorHandling {
 	/// Set the error handling function for the receiver.
 	///
 	/// - Parameter errorHandler: a function which takes an Error and an `ErrorContext`. The context contains all available debug information on the erroring function.
-	/// - Returns: A `ProcessLink` which has `errorHandler` installed
-	func setErrorHandler(_ errorHandler: @escaping (Error, ErrorContext) -> Void ) -> ProcessLink<B>
+	/// - Returns: A `Link` which has `errorHandler` installed
+	func setErrorHandler(_ errorHandler: @escaping (Error, ErrorContext) -> Void ) -> Link<B>
 }
 
 extension ErrorHandling {
 	/// Set the error handling function for the receiver.
 	///
 	/// - Parameter errorHandler: - Parameter errorHandler: a function which takes an Error argument.
-	/// - Returns: A `ProcessLink` which has `errorHandler` installed
-	public func setErrorHandler(_ errorHandler: @escaping (Error) -> Void ) -> ProcessLink<B> {
+	/// - Returns: A `Link` which has `errorHandler` installed
+	public func setErrorHandler(_ errorHandler: @escaping (Error) -> Void ) -> Link<B> {
 		return self.setErrorHandler { (error, context) in
 			errorHandler(error)
 		}

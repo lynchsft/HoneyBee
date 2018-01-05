@@ -235,7 +235,7 @@ class ErrorHandlingTests: XCTestCase {
 				root.setErrorHandler { _ in failureExpectation.fulfill() }
 					.insert(source)
 					.each() { elem in
-						elem.limit(1) { link -> ProcessLink<Void> in
+						elem.limit(1) { link -> Link<Void> in
 							if i < 2 {
 								return link.insert(self.funcContainer)
 									.chain(TestingFunctions.explode) // error here
@@ -260,7 +260,7 @@ class ErrorHandlingTests: XCTestCase {
 		let expectNumberOfTests = expectation(description: "two tests should be run")
 		expectNumberOfTests.expectedFulfillmentCount = 2
 		
-		func testJoinError<X>(with customConjoin: @escaping (ProcessLink<String>, ProcessLink<Int>) -> ProcessLink<X>) {
+		func testJoinError<X>(with customConjoin: @escaping (Link<String>, Link<Int>) -> Link<X>) {
 			expectNumberOfTests.fulfill()
 			
 			let expectFinnally = expectation(description: "finnally should be reached")
@@ -273,7 +273,7 @@ class ErrorHandlingTests: XCTestCase {
 				expectError.fulfill()
 			}
 			
-			func excerciseFinally(_ link: ProcessLink<Void>) {
+			func excerciseFinally(_ link: Link<Void>) {
 				let a = link.insert("a")
 				let b = link.insert("b")
 				(a + b)

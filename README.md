@@ -11,7 +11,7 @@ HoneyBee is a Swift library to increase the expressiveness of asynchronous and c
 
 ## Quick Examples
 
-#### Example: Show Me.
+### Example: Show Me.
 ```swift
 HoneyBee.start { root in
     root.setErrorHandler(errorHandlingFunc)
@@ -29,7 +29,7 @@ HoneyBee.start { root in
 
 In the above example, `func1` will be called first. Then the result of `func1` will be passed to `func3` _and_ `func5` in parallel. `func4` will be called after `func3` has finished and will be passed the result of `func3`. Likewise, `func6` will be called after `func5` has finished and will be passed the result of `func5`. When _both_ `func4` and `func6` have finished, their results will be combined into a tuple and passed to `func7`. If _any_ of the functions `throws` or asynchronously responds with an `Error`, then `errorHandlingFunc` will be invoked with the error as an argument.
 
-#### Example: BYOC (Bring Your Own Code)
+### Example: BYOC (Bring Your Own Code)
 ```swift
 func func1(completion: ([String]?, Error?) -> Void) {...}
 func func2(string: String) throws -> Int {...}
@@ -54,7 +54,8 @@ In the above example we see six of HoneyBee's supported function signatures. `fu
 
 HoneyBee supports **34** distinct function signatures.
 
-#### Example: Safe By Default
+### Example: Safe By Default
+
 
 One of the many problems with the "pyramid of doom" is that is both error-prone to get the error handling right.
 
@@ -128,7 +129,8 @@ So much cleaner right? And _Bonus Points_, the HoneyBee implementation allows us
 
 (If you're wondering about the `=<<` operator it's pronounced `bind`. It performs a partial function application, "binding" the argument to the function. See the API docs for more details.)
 
-#### Error Diagnostics
+### Error Diagnostics
+
 
 Diagnosing problems in misbehaving concurrent code is really hard right? Not with HoneyBee. Consider the following: 
 
@@ -158,20 +160,21 @@ prints
 
 ```
 subject = "7dog"
-file = "/Users/alex/code/xcode/HoneyBee/HoneyBeeTests/ErrorHandlingTests.swift"
+file = "/Users/alex/HoneyBee/HoneyBeeTests/ErrorHandlingTests.swift"
 line = 172
 internalPath = 5 values {
-  [0] = "start: /Users/alex/code/xcode/HoneyBee/HoneyBeeTests/ErrorHandlingTests.swift:167"
-  [1] = "chain: /Users/alex/code/xcode/HoneyBee/HoneyBeeTests/ErrorHandlingTests.swift:169 insert"
-  [2] = "chain: /Users/alex/code/xcode/HoneyBee/HoneyBeeTests/ErrorHandlingTests.swift:170 (Int) -> String"
-  [3] = "chain: /Users/alex/code/xcode/HoneyBee/HoneyBeeTests/ErrorHandlingTests.swift:171 (String) -> String"
-  [4] = "chain: /Users/alex/code/xcode/HoneyBee/HoneyBeeTests/ErrorHandlingTests.swift:172 (String, (FailableResult<Int>) -> ()) -> ()"
+  [0] = "start: /Users/alex/HoneyBee/HoneyBeeTests/ErrorHandlingTests.swift:167"
+  [1] = "chain: /Users/alex/HoneyBee/HoneyBeeTests/ErrorHandlingTests.swift:169 insert"
+  [2] = "chain: /Users/alex/HoneyBee/HoneyBeeTests/ErrorHandlingTests.swift:170 (Int) -> String"
+  [3] = "chain: /Users/alex/HoneyBee/HoneyBeeTests/ErrorHandlingTests.swift:171 (String) -> String"
+  [4] = "chain: /Users/alex/HoneyBee/HoneyBeeTests/ErrorHandlingTests.swift:172 (String, (FailableResult<Int>) -> ()) -> ()"
 }
 ```
 
 HoneyBee pinpoints the file and line where the recipe errored, along with the path which was taken to arrive at that function, and the inbound "subject" value. In most cases this reduces your diagnostic search process to a single function. 
 
 ### Wrap Up
+
 
 So that's HoneyBee. Expressive, easy, and safe. Concurrency the way it should be.
 If you have any questions, [contact me](mailto:alex@iamapps.net).

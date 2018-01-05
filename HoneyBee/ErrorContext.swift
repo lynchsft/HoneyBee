@@ -8,19 +8,19 @@
 
 import Foundation
 
-/// `ErrorContext` encapsulates all of the available debugging information about an		function in a `ProcessLink`.
+/// `ErrorContext` encapsulates all of the available debugging information about an		function in a `Link`.
 public struct ErrorContext {
 	
-	/// The subject of an error captured by a `ProcessLink`. The subject is the `A` value of the failing link, which is usually either the receiver or the first argument of the `ProcessLink` function.
+	/// The subject of an error captured by a `Link`. The subject is the `A` value of the failing link, which is usually either the receiver or the first argument of the `Link` function.
 	public let subject: Any
 	
-	/// The file where the erroring `ProcessLink` was created.
+	/// The file where the erroring `Link` was created.
 	public let file: StaticString
 	
-	/// The line where the erroring `ProcessLink` was created.
+	/// The line where the erroring `Link` was created.
 	public let line: UInt
 	
-	/// An Array of String representing the internal path of `ProcessLinks` which result in the erroring `ProcessLink`.
+	/// An Array of String representing the internal path of `Links` which result in the erroring `Link`.
 	/// The internal path may not seem similar to the declaring chain which generated it. The differences are due to internal function manipulations to support the various chain parameter types. For example, the internal chain may have more links than the declaring chain.
 	public let internalPath: [String]
 }

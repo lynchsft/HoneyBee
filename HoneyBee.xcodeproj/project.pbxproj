@@ -20,7 +20,7 @@
 		FA62A2AA1FC9FBC100385D22 /* BindOperator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A29B1FC9FBC100385D22 /* BindOperator.swift */; };
 		FA62A2AB1FC9FBC100385D22 /* FailableResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A29C1FC9FBC100385D22 /* FailableResult.swift */; };
 		FA62A2AC1FC9FBC100385D22 /* JoinPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A29D1FC9FBC100385D22 /* JoinPoint.swift */; };
-		FA62A2AD1FC9FBC100385D22 /* ProcessLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A29E1FC9FBC100385D22 /* ProcessLink.swift */; };
+		FA62A2AD1FC9FBC100385D22 /* Link.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A29E1FC9FBC100385D22 /* Link.swift */; };
 		FA62A2AE1FC9FBC100385D22 /* Bind.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A29F1FC9FBC100385D22 /* Bind.swift */; };
 		FA62A2AF1FC9FBC100385D22 /* HoneyBee.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A2A01FC9FBC100385D22 /* HoneyBee.swift */; };
 		FA62A2B01FC9FBC100385D22 /* Chainable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A2A11FC9FBC100385D22 /* Chainable.swift */; };
@@ -64,7 +64,7 @@
 		FA62A29B1FC9FBC100385D22 /* BindOperator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BindOperator.swift; sourceTree = "<group>"; };
 		FA62A29C1FC9FBC100385D22 /* FailableResult.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FailableResult.swift; sourceTree = "<group>"; };
 		FA62A29D1FC9FBC100385D22 /* JoinPoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JoinPoint.swift; sourceTree = "<group>"; };
-		FA62A29E1FC9FBC100385D22 /* ProcessLink.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProcessLink.swift; sourceTree = "<group>"; };
+		FA62A29E1FC9FBC100385D22 /* Link.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Link.swift; sourceTree = "<group>"; };
 		FA62A29F1FC9FBC100385D22 /* Bind.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bind.swift; sourceTree = "<group>"; };
 		FA62A2A01FC9FBC100385D22 /* HoneyBee.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HoneyBee.swift; sourceTree = "<group>"; };
 		FA62A2A11FC9FBC100385D22 /* Chainable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Chainable.swift; sourceTree = "<group>"; };
@@ -163,9 +163,9 @@
 				FA62A2981FC9FBC000385D22 /* FailureRate.swift */,
 				FA62A2A01FC9FBC100385D22 /* HoneyBee.swift */,
 				FA62A29D1FC9FBC100385D22 /* JoinPoint.swift */,
+				FA62A29E1FC9FBC100385D22 /* Link.swift */,
 				FA9919221FD2B90A00C780A1 /* LinkBox.swift */,
 				FA62A2A21FC9FBC100385D22 /* PathDescribing.swift */,
-				FA62A29E1FC9FBC100385D22 /* ProcessLink.swift */,
 				FA62A2A31FC9FBC100385D22 /* RootLink.swift */,
 			);
 			name = Core;
@@ -335,7 +335,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FA62A2AD1FC9FBC100385D22 /* ProcessLink.swift in Sources */,
+				FA62A2AD1FC9FBC100385D22 /* Link.swift in Sources */,
 				FA62A2B01FC9FBC100385D22 /* Chainable.swift in Sources */,
 				FA62A2B91FC9FBCA00385D22 /* AtomicValue.swift in Sources */,
 				FA9919231FD2B90A00C780A1 /* LinkBox.swift in Sources */,

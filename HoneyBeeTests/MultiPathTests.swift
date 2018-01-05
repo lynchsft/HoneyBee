@@ -77,7 +77,7 @@ class MultiPathTests: XCTestCase {
 				.branch { stem in
 					let result1 = stem.chain(self.funcContainer.constantInt)
 					
-					let result2:ProcessLink<String> = stem.chain(sleep =<< sleepTime)
+					let result2:Link<String> = stem.chain(sleep =<< sleepTime)
 						.insert(self.funcContainer)
 						.chain(TestingFunctions.constantString)
 					
@@ -121,7 +121,7 @@ class MultiPathTests: XCTestCase {
 				.branch { stem in
 					let result1 = stem.chain(self.funcContainer.constantInt)
 					
-					let result2:ProcessLink<String> = stem.chain(sleep =<< sleepTime)
+					let result2:Link<String> = stem.chain(sleep =<< sleepTime)
 						.insert(self.funcContainer)
 						.chain(TestingFunctions.constantString)
 					
