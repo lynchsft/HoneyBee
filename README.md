@@ -27,7 +27,7 @@ HoneyBee.start { root in
 }
 ```
 
-In the above example, `func1` will be called first. Then the result of `func1` will be passed to `func3` _and_ `func5` in parallel. `func4` will be called after `func3` has finished and will be passed the result of `func3`. Likewise, `func6` will be called after `func5` has finished and will be passed the result of `func5`. When _both_ `func4` and `func6` have finished, their results will be combined into a tuple and passed to `func7`. If _any_ of the functions `throws` or asynchronously responds with an `Error`, then `errorHandlingFunc` will be invoked with the error as an argument.
+In the above recipe, `func1` will be called first. Then the result of `func1` will be passed to `func3` _and_ `func5` in parallel. `func4` will be called after `func3` has finished and will be passed the result of `func3`. Likewise, `func6` will be called after `func5` has finished and will be passed the result of `func5`. When _both_ `func4` and `func6` have finished, their results will be combined into a tuple and passed to `func7`. If _any_ of the functions `throws` or asynchronously responds with an `Error`, then `errorHandlingFunc` will be invoked with the error as an argument.
 
 ### Example: BYOC (Bring Your Own Code)
 ```swift
@@ -50,7 +50,7 @@ HoneyBee.start { root in
 }
 ```
 
-In the above example we see six of HoneyBee's supported function signatures. `func1` is an Objective-C style errorring async callback. `func2` is a synchronous Swift throwing function. `func3` completes with an optional error but does not generate a new value. HoneyBee forwards the inbound value automatically. `func4` is a Swift style, generic enum-based result which may contain a value or may contain an error. `func5` is asynchronous but cannot error (UI animations fit this category). And `successFunc` is a simply, synchronous non-errorring function. 
+In the above recipe we see six of HoneyBee's supported function signatures. `func1` is an Objective-C style errorring async callback. `func2` is a synchronous Swift throwing function. `func3` completes with an optional error but does not generate a new value. HoneyBee forwards the inbound value automatically. `func4` is a Swift style, generic enum-based result which may contain a value or may contain an error. `func5` is asynchronous but cannot error (UI animations fit this category). And `successFunc` is a simply, synchronous non-errorring function. 
 
 HoneyBee supports **34** distinct function signatures.
 
@@ -160,18 +160,46 @@ prints
 
 ```
 subject = "7dog"
-file = "/Users/alex/HoneyBee/HoneyBeeTests/ErrorHandlingTests.swift"
+file = "/Users/HoneyBee/Tests/ErrorHandlingTests.swift"
 line = 172
 internalPath = 5 values {
-  [0] = "start: /Users/alex/HoneyBee/HoneyBeeTests/ErrorHandlingTests.swift:167"
-  [1] = "chain: /Users/alex/HoneyBee/HoneyBeeTests/ErrorHandlingTests.swift:169 insert"
-  [2] = "chain: /Users/alex/HoneyBee/HoneyBeeTests/ErrorHandlingTests.swift:170 (Int) -> String"
-  [3] = "chain: /Users/alex/HoneyBee/HoneyBeeTests/ErrorHandlingTests.swift:171 (String) -> String"
-  [4] = "chain: /Users/alex/HoneyBee/HoneyBeeTests/ErrorHandlingTests.swift:172 (String, (FailableResult<Int>) -> ()) -> ()"
+  [0] = "start: /Users/HoneyBee/Tests/ErrorHandlingTests.swift:167"
+  [1] = "chain: /Users/HoneyBee/Tests/ErrorHandlingTests.swift:169 insert"
+  [2] = "chain: /Users/HoneyBee/Tests/ErrorHandlingTests.swift:170 (Int) -> String"
+  [3] = "chain: /Users/HoneyBee/Tests/ErrorHandlingTests.swift:171 (String) -> String"
+  [4] = "chain: /Users/HoneyBee/Tests/ErrorHandlingTests.swift:172 (String, (FailableResult<Int>) -> ()) -> ()"
 }
 ```
 
 HoneyBee pinpoints the file and line where the recipe errored, along with the path which was taken to arrive at that function, and the inbound "subject" value. In most cases this reduces your diagnostic search process to a single function. 
+
+### Multiple Queues
+
+By default HoneyBee performs all functions on the global background queue. What if you need to work on the main queu?
+
+```swift
+HoneyBee.start(on: DispatchQueue.main) { root in
+    root.setErrorHanlder(handleError)
+        .chain(func1)  // performed on main queue
+        .chain(func2)  // same
+}
+```
+
+Easy right? Need to change queues? What about `NSManagedObjectContext`s?
+
+```swift
+HoneyBee.start(on: DispatchQueue.main) { root in
+    root.setErrorHanlder(handleError)
+        .chain(func1)  // performed on main queue
+        .setBlockPerformer(DispatchQueue.global())
+        .chain(func2)  // performed on global background queue 
+        .chain(func3)  // performed on global background queue 
+        .setBlockPerformer(myMOC)
+        .chain(func4)  // performed on myMOC's internal queue. 
+}
+```
+
+HoneyBee puts you in complete control of what queue will invoke your functions. _This remains true even if the functions themselves call back on different queues than they were invoked from._
 
 ### Wrap Up
 

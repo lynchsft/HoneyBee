@@ -1,5 +1,8 @@
 #! /usr/bin/env ruby
 
+require "rubygems"
+require "net/ssh"
+
 puts "Cleaning"
 puts `rm -rf products/*`
 
@@ -32,7 +35,7 @@ Pod::Spec.new do |s|
 	By handing the noise of data routing and error handling, HoneyBee provides a higher-level, more expressive perspective on asynchronous programming.
                    DESC
 
-  s.homepage     = "http://iamapps.net/HoneyBee/#{version_string}/docs/index.html"
+  s.homepage     = "http://HoneyBee.link/#{version_string}/docs/index.html"
 	s.documentation_url = s.homepage
 
   s.license      = { :type=>"MIT", :file => 'LICENSE' }
@@ -44,7 +47,7 @@ Pod::Spec.new do |s|
   s.tvos.deployment_target = "11.0"
   s.pod_target_xcconfig = { "SWIFT_VERSION" => "4.0" }
 
-  s.source       = { :http => "http://iamapps.net/HoneyBee/#{version_string}/HoneyBee-#{version_string}.zip"}
+  s.source       = { :http => "http://HoneyBee.link/#{version_string}/HoneyBee-#{version_string}.zip"}
 
   s.source_files = "HoneyBee/*.swift"
 	
@@ -59,3 +62,10 @@ File.open("HoneyBee.podspec",'w') {|f| f.puts spec}
 
 puts "Publishing"
 puts `pod trunk push --swift-version=4.0 HoneyBee.podspec`
+
+puts "Linking Current"
+
+Net::SSH.start("iamwebservices.com", "iamwebservices") do |ssh|
+  result = ssh.exec!("cd iamwebservices/current/public/HoneyBee; ln -sf #{version_string} current; ls -l current")
+  puts result
+end
