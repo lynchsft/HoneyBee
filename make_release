@@ -66,6 +66,6 @@ puts `pod trunk push --swift-version=4.0 HoneyBee.podspec`
 puts "Linking Current"
 
 Net::SSH.start("iamwebservices.com", "iamwebservices") do |ssh|
-  result = ssh.exec!("cd iamwebservices/current/public/HoneyBee; ln -sf #{version_string} current; ls -l current")
+  result = ssh.exec!("cd iamwebservices/current/public/HoneyBee; rm current; ln -sf #{version_string} current; ls -l current")
   puts result
 end
