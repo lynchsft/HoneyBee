@@ -30,11 +30,6 @@ Pod::Spec.new do |s|
   s.version      = "#{version_string}"
   s.summary      = "A swift library to increase the expressiveness of asynchronous and concurrent programming."
 
-  s.description  = <<-DESC
-	HoneyBee reduces the clutter and complexity of asynchronous and concurrent code. 
-	By handing the noise of data routing and error handling, HoneyBee provides a higher-level, more expressive perspective on asynchronous programming.
-                   DESC
-
   s.homepage     = "http://HoneyBee.link/#{version_string}/docs/index.html"
 	s.documentation_url = s.homepage
 
@@ -50,11 +45,6 @@ Pod::Spec.new do |s|
   s.source       = { :http => "http://HoneyBee.link/#{version_string}/HoneyBee-#{version_string}.zip"}
 
   s.source_files = "HoneyBee/*.swift"
-	
-  s.test_spec 'Tests' do |test_spec|
-     test_spec.source_files = 'HoneyBee/Tests/*.swift'
-  end  
-
 end	
 ]
 

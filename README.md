@@ -112,7 +112,7 @@ Let's take a look at the Honeybee form:
 ```swift
 func processImageData3(completionBlock: (result: Image?, error: Error?) -> Void) {
     HoneyBee.start { root in
-        root.setErrorHanlder { completionBlock(nil, $0)}
+        root.setErrorHandler { completionBlock(nil, $0)}
             .branch { stem in
                 stem.chain(loadWebResource =<< "dataprofile.txt")
                 +
@@ -147,7 +147,7 @@ func stringToInt(string: String, callback: (FailableResult<Int>) -> Void) {
     }
 }
 HoneyBee.start { root in
-    root.setErrorHanlder(handleError)
+    root.setErrorHandler(handleError)
         .insert(7)
         .chain(String.init)              // produces "7"
         .chain(String.append =<< "dog")  // produces "7dog"
@@ -179,7 +179,7 @@ By default HoneyBee performs all functions on the global background queue. What 
 
 ```swift
 HoneyBee.start(on: DispatchQueue.main) { root in
-    root.setErrorHanlder(handleError)
+    root.setErrorHandler(handleError)
         .chain(func1)  // performed on main queue
         .chain(func2)  // same
 }
@@ -189,7 +189,7 @@ Easy right? Need to change queues? What about `NSManagedObjectContext`s?
 
 ```swift
 HoneyBee.start(on: DispatchQueue.main) { root in
-    root.setErrorHanlder(handleError)
+    root.setErrorHandler(handleError)
         .chain(func1)  // performed on main queue
         .setBlockPerformer(DispatchQueue.global())
         .chain(func2)  // performed on global background queue 
