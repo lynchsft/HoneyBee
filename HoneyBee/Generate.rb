@@ -71,7 +71,7 @@ def generate_chainable()
 			"///Creates a new Link which passes through argument of type B and appends the link to the execution list of this Link"
 		
 		generated_chain_declarations << documentation
-		generated_chain_declarations << "@discardableResult func chain#{extra_generic_parameter}(file: StaticString, line: UInt, functionDescription: String?, _ function: @escaping #{function_signature} ) -> Link<#{transform_result_type}>"
+		generated_chain_declarations << "@discardableResult\nfunc chain#{extra_generic_parameter}(file: StaticString, line: UInt, functionDescription: String?, _ function: @escaping #{function_signature} ) -> Link<#{transform_result_type}>"
 		generated_chain_declarations << ""
 	}
 

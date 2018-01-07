@@ -102,11 +102,13 @@ class AtomicInt : AtomicValue<Int>, ExpressibleByIntegerLiteral {
 		}
 	}
 	
-	@discardableResult func increment(by value: Int = 1) -> Int {
+	@discardableResult
+	func increment(by value: Int = 1) -> Int {
 		return self.update(with: +, by: value)
 	}
 	
-	@discardableResult func decrement(by value: Int = 1) -> Int {
+	@discardableResult
+	func decrement(by value: Int = 1) -> Int {
 		return self.update(with: -, by: value)
 	}
 	
