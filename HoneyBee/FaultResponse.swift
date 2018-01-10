@@ -8,11 +8,24 @@
 
 import Foundation
 
-enum FaultResponse {
+/// Enum describing possible reponses to a failed invariant.
+///
+/// - suppress: No action is taken.
+/// - warn: Print a warning message to the console
+/// - assert: Invoke `assertionFailure` with failure message
+/// - fail: Invoke `preconditonFailure` with failure message
+/// - custom: Invoke a custom handler with the falure message
+public enum FaultResponse {
+	/// No action is taken.
 	case suppress
+	/// Print a warning message to the console
 	case warn
+	/// Invoke `assertionFailure` with failure message
 	case assert
+	/// Invoke `preconditonFailure` with failure message
 	case fail
+	/// Invoke a custom handler with the falure message
+	case custom(handler: (String)->Void)
 	
 	func evaluate(_ flag: Bool, _ message: String) {
 		if flag == false {
@@ -25,6 +38,8 @@ enum FaultResponse {
 				assertionFailure(message)
 			case .fail:
 				preconditionFailure(message)
+			case .custom(let handler):
+				handler(message)
 			}
 		}
 	}

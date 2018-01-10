@@ -196,7 +196,7 @@ extension Link {
 				this.activeLinkCounter.increment()
 				this.createdLinksAsyncSemaphore?.wait()
 				this.myBlockPerformer.asyncPerform {
-					createdLink.execute(argument: result, completion: guarantee {
+					createdLink.execute(argument: result, completion: guarantee(faultResponse: .fail) {
 						this.createdLinksAsyncSemaphore?.signal()
 						this.activeLinkCounter.decrement()
 					})
@@ -221,11 +221,11 @@ extension Link {
 		let callbackInvoked:AtomicBool = false
 		let file = self.functionFile
 		let line = self.functionLine
-		callbackInvoked.guaranteeTrueAtDeinit(faultResponse: .fail, file: file, line: line, message: "This function didn't callback: ")
+		callbackInvoked.guaranteeTrueAtDeinit(faultResponse: HoneyBee.functionUndercallResponse, file: file, line: line, message: "This function didn't callback: ")
 		
 		self.function(argument) { (failableResult: FailableResult<B>) in
 			guard callbackInvoked.setTrue() == false else {
-				print("HoneyBee Warning: This function called back more than once: \(file):\(line)")
+				HoneyBee.functionOvercallResponse.evaluate(false, "HoneyBee Warning: This function called back more than once: \(file):\(line)")
 				return // protect ourselves against clients invoking the callback more than once
 			}
 			
@@ -717,7 +717,7 @@ extension Link : ChainableFailable {
 
 #if swift(>=4.0)
 extension Link {
-	// keypath form
+	///Creates a new Link which accesses a keypath starting at B and ending at type C and appends the link to the execution list of this Link
 	@discardableResult
 	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ keyPath: KeyPath<B,C>) -> Link<C> {
 		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(keyPath)) { (b: B) -> C in
@@ -1053,7 +1053,7 @@ extension Link {
 						}
 					
 						let _ = passThroughLink.finally { link in
-							link.chain(guarantee { (_:B) -> Void in
+							link.chain { (_:B) -> Void in
 								retryTimes.access { times in
 									if let result = result {
 										completion(.success(result))
@@ -1071,7 +1071,7 @@ extension Link {
 										}
 									}
 								}
-							})
+							}
 						}
 					
 						defineBlock(passThroughLink).chain { (r: R) -> Void in

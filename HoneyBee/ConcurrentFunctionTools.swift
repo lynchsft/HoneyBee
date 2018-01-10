@@ -8,7 +8,7 @@
 
 import Foundation
 
-func guarantee<R>(faultResponse: FaultResponse = .assert, file: StaticString = #file, line: UInt = #line, _ function: @escaping () -> R) -> () -> R {
+func guarantee<R>(faultResponse: FaultResponse, file: StaticString = #file, line: UInt = #line, _ function: @escaping () -> R) -> () -> R {
 	return { () -> R in
 		guarantee(faultResponse: faultResponse, file: file, line: line) { (_: Void) -> R in
 			return function()
@@ -16,7 +16,7 @@ func guarantee<R>(faultResponse: FaultResponse = .assert, file: StaticString = #
 	}
 }
 
-func guarantee<A,R>(faultResponse: FaultResponse = .assert, file: StaticString = #file, line: UInt = #line, _ function: @escaping (A) -> R) -> (A) -> R {
+func guarantee<A,R>(faultResponse: FaultResponse, file: StaticString = #file, line: UInt = #line, _ function: @escaping (A) -> R) -> (A) -> R {
 	return { (a:A) -> R in
 		guarantee(faultResponse: faultResponse, file: file, line: line) { (a: A, _: Void) -> R in
 			return function(a)
@@ -24,7 +24,7 @@ func guarantee<A,R>(faultResponse: FaultResponse = .assert, file: StaticString =
 	}
 }
 
-func guarantee<A,B,R>(faultResponse: FaultResponse = .assert, file: StaticString = #file, line: UInt = #line, _ function: @escaping (A, B) -> R) -> (A, B) -> R {
+func guarantee<A,B,R>(faultResponse: FaultResponse, file: StaticString = #file, line: UInt = #line, _ function: @escaping (A, B) -> R) -> (A, B) -> R {
 	let functionCalled: AtomicBool = false
 	functionCalled.guaranteeTrueAtDeinit(faultResponse: faultResponse, file: file, line: line)
 	return { (a:A, b:B) -> R in

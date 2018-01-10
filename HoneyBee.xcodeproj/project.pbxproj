@@ -164,6 +164,7 @@
 				FA62A2991FC9FBC000385D22 /* Executable.swift */,
 				FA62A29C1FC9FBC100385D22 /* FailableResult.swift */,
 				FA62A2981FC9FBC000385D22 /* FailureRate.swift */,
+				FA2081DA1FD1C0A4003145FB /* FaultResponse.swift */,
 				FA62A2A01FC9FBC100385D22 /* HoneyBee.swift */,
 				FA62A29D1FC9FBC100385D22 /* JoinPoint.swift */,
 				FA62A29E1FC9FBC100385D22 /* Link.swift */,
@@ -180,7 +181,6 @@
 				FA62A2B71FC9FBCA00385D22 /* AtomicValue.swift */,
 				FA62A2B61FC9FBCA00385D22 /* ConcurentQueue.swift */,
 				FAF0C3051FD1AD6B00D1F177 /* ConcurrentFunctionTools.swift */,
-				FA2081DA1FD1C0A4003145FB /* FaultResponse.swift */,
 			);
 			name = Lib;
 			sourceTree = "<group>";

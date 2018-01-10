@@ -34,4 +34,12 @@ public struct HoneyBee {
 			root.execute(argument: Void(), completion: { })
 		}
 	}
+	
+	
+	/// A `FaultResponse` which will be invoked if a chained function does not invoke its callback. See `Link`.
+	/// Defaults to .fail
+	public static var functionUndercallResponse = FaultResponse.fail
+	/// A `FaultResponse` which will be invoked if a chained function invokes its callback more than once. See `Link`.
+	/// Defaults to .warn
+	public static var functionOvercallResponse = FaultResponse.warn
 }

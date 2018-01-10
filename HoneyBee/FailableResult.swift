@@ -10,6 +10,7 @@ import Foundation
 
 /// Protocol describing a value which might error.
 public protocol FailableResultProtocol {
+	/// The type of the wrapped value
 	associatedtype Wrapped
 	
 	/// Either returns the value or throws an error.
