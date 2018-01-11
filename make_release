@@ -37,9 +37,9 @@ Pod::Spec.new do |s|
 
   s.author       = { "Alex Lynch" => "alex@iamapps.com" }
 
-  s.ios.deployment_target = "11.0"
+  s.ios.deployment_target = "10.0"
   s.osx.deployment_target = "10.11"
-  s.tvos.deployment_target = "11.0"
+  s.tvos.deployment_target = "10.0"
   s.pod_target_xcconfig = { "SWIFT_VERSION" => "4.0" }
 
   s.source       = { :http => "http://HoneyBee.link/#{version_string}/HoneyBee-#{version_string}.zip"}
