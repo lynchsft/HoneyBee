@@ -574,5 +574,33 @@ class ErrorHandlingTests: XCTestCase {
 			}
 		}
 	}
+	
+	func testErrorHandlerWithOptionalError() {
+		let expect1 = expectation(description: "Chain should error")
+		
+		func errorHandler(_ error: Error?) {
+			if error != nil{
+				expect1.fulfill()
+			} else {
+				XCTFail("Success state should not be reached.")
+			}
+		}
+		
+		HoneyBee.start { root in
+			root.setCompletionHandler(errorHandler)
+				.insert(4)
+				.chain(self.funcContainer.intToString)
+				.chain(self.funcContainer.stringToInt)
+				.chain(self.funcContainer.multiplyInt)
+				.chain(self.funcContainer.explode)
+				.chain(assertEquals =<< 8)
+		}
+		
+		waitForExpectations(timeout: 3) { error in
+			if let error = error {
+				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
+			}
+		}
+	}
 }
 

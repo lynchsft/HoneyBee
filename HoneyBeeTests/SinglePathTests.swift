@@ -25,14 +25,21 @@ class SinglePathTests: XCTestCase {
 	func testSimpleChain() {
 		let expect1 = expectation(description: "Simple chain 1 should complete")
 
+		func errorHandler(_ error: Error?) {
+			if let error = error {
+				fail(on: error)
+			} else {
+				expect1.fulfill()
+			}
+		}
+		
 		HoneyBee.start { root in
-			root.setErrorHandler(fail)
+			root.setCompletionHandler(errorHandler)
 				.insert(4)
 				.chain(self.funcContainer.intToString)
 				.chain(self.funcContainer.stringToInt)
 				.chain(self.funcContainer.multiplyInt)
 				.chain(assertEquals =<< 8)
-				.chain(expect1.fulfill)
 		}
 		
 		let expect2 = expectation(description: "Simple chain 2 should complete")

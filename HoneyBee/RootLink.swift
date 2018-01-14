@@ -30,6 +30,28 @@ final public class RootLink<T> : Executable, ErrorHandling {
 		self.firstLink = Link<T>(function: function, errorHandler: errorHandler, blockPerformer: self.blockPerformer, path: self.path, functionFile: #file, functionLine: #line)
 		return firstLink!
 	}
+	
+	public func setCompletionHandler(_ errorHandler: @escaping (Error?) -> Void ) -> Link<T> {
+		return self.setCompletionHandler { (context: ErrorContext?) in
+			errorHandler(context?.error)
+		}
+	}
+	
+	public func setCompletionHandler(_ errorHandler: @escaping (ErrorContext?) -> Void ) -> Link<T> {
+		let finallyCalled: AtomicBool = false
+		return self.setErrorHandler({ (context: ErrorContext) in
+			finallyCalled.access { called in
+				errorHandler(context)
+				called = true
+			}
+		}).finally { link in
+			link.chain { (_:T) -> Void in
+				if finallyCalled.get() == false {
+					errorHandler(nil)
+				}
+			}
+		}
+	}
 		
 	override func execute(argument: Any, completion: @escaping () -> Void) -> Void {
 		guard let firstLink = self.firstLink else {
