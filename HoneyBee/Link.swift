@@ -718,7 +718,6 @@ extension Link : ChainableFailable {
 #if swift(>=4.0)
 extension Link {
 	///Creates a new Link which accesses a keypath starting at B and ending at type C and appends the link to the execution list of this Link
-	@discardableResult
 	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ keyPath: KeyPath<B,C>) -> Link<C> {
 		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(keyPath)) { (b: B) -> C in
 			return b[keyPath: keyPath]
