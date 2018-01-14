@@ -14,9 +14,9 @@ public protocol ErrorHandling {
 	
 	/// Set the error handling function for the receiver.
 	///
-	/// - Parameter errorHandler: a function which takes an Error and an `ErrorContext`. The context contains all available debug information on the erroring function.
+	/// - Parameter errorHandler: a function which takes an `ErrorContext`. The context contains all available debug information on the erroring function, including the error itself.
 	/// - Returns: A `Link` which has `errorHandler` installed
-	func setErrorHandler(_ errorHandler: @escaping (Error, ErrorContext) -> Void ) -> Link<B>
+	func setErrorHandler(_ errorHandler: @escaping (ErrorContext) -> Void ) -> Link<B>
 }
 
 extension ErrorHandling {
@@ -25,8 +25,8 @@ extension ErrorHandling {
 	/// - Parameter errorHandler: - Parameter errorHandler: a function which takes an Error argument.
 	/// - Returns: A `Link` which has `errorHandler` installed
 	public func setErrorHandler(_ errorHandler: @escaping (Error) -> Void ) -> Link<B> {
-		return self.setErrorHandler { (error, context) in
-			errorHandler(error)
+		return self.setErrorHandler { (context: ErrorContext) in
+			errorHandler(context.error)
 		}
 	}
 }

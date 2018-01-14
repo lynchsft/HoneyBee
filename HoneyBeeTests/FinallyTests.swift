@@ -91,7 +91,7 @@ class FinallyTests: XCTestCase {
 		let incrementCounter = { counter += 1 }
 		let finishExpectation = expectation(description: "Should reach the end of the chain")
 		
-		func handleError(_ error: Error, arg: Any) {} // we cause an error on purpose
+		func handleError(_ error: Error) {} // we cause an error on purpose
 		
 		HoneyBee.start { root in
 			root.setErrorHandler(fail) // this is just to start off with. We update the error handler below

@@ -40,7 +40,7 @@ final public class Link<B> : Executable, PathDescribing  {
 	let activeLinkCounter: AtomicInt = 0
 	
 	fileprivate var function: (Any, @escaping (FailableResult<B>) -> Void) -> Void
-	fileprivate var errorHandler: ((Error, ErrorContext) -> Void)
+	fileprivate var errorHandler: ((ErrorContext) -> Void)
 	/// This is the queue which is passed on to sub chains
 	fileprivate var blockPerformer: AsyncBlockPerformer
 	/// This is the queue which is used to execute this chain. This and `blockPerformer` are the same until `setBlockPerformer(_:)` is called
@@ -52,7 +52,7 @@ final public class Link<B> : Executable, PathDescribing  {
 	fileprivate let functionFile: StaticString
 	fileprivate let functionLine: UInt
 	
-	init(function:  @escaping (Any, @escaping (FailableResult<B>) -> Void) -> Void, errorHandler: @escaping ((Error, ErrorContext) -> Void), blockPerformer: AsyncBlockPerformer, path: [String], functionFile: StaticString, functionLine: UInt) {
+	init(function:  @escaping (Any, @escaping (FailableResult<B>) -> Void) -> Void, errorHandler: @escaping ((ErrorContext) -> Void), blockPerformer: AsyncBlockPerformer, path: [String], functionFile: StaticString, functionLine: UInt) {
 		self.function = function
 		self.errorHandler = errorHandler
 		self.blockPerformer = blockPerformer
@@ -176,8 +176,8 @@ extension Link {
 	}
 	
 	private func processError(_ error: Error, with argument: Any) {
-		let errorContext = ErrorContext(subject: argument, file: self.functionFile, line: self.functionLine, internalPath: self.path)
-		self.errorHandler(error, errorContext)
+		let errorContext = ErrorContext(subject: argument, error: error, file: self.functionFile, line: self.functionLine, internalPath: self.path)
+		self.errorHandler(errorContext)
 		// why not execute finally link here? Finally links are registered on `self`.
 		// If self errors, there is no downward chain to finally back from.
 		self.propagateFailureToDecendants()
@@ -378,9 +378,9 @@ extension Link : ErrorHandling {
 	
 	/// Establishes a new error handler for this link and all descendant links.
 	///
-	/// - Parameter errorHandler: a function which takes an Error and an `Any` context object. The context object is usual the object which was being acted upon when the error occurred.
+	/// - Parameter errorHandler: a function which takes an `ErrorContext` object. The context contains all available debug information on the erroring function, including the error itself.
 	/// - Returns: A `Link` which has `errorHandler` installed
-	public func setErrorHandler(_ errorHandler: @escaping (Error, ErrorContext) -> Void ) -> Link<B> {
+	public func setErrorHandler(_ errorHandler: @escaping (ErrorContext) -> Void ) -> Link<B> {
 		self.errorHandler = errorHandler
 		return self
 	}

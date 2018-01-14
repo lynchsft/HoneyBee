@@ -20,7 +20,7 @@ final public class RootLink<T> : Executable, ErrorHandling {
 		self.path = path
 	}
 	
-	public func setErrorHandler(_ errorHandler: @escaping (Error, ErrorContext) -> Void ) -> Link<T> {
+	public func setErrorHandler(_ errorHandler: @escaping (ErrorContext) -> Void ) -> Link<T> {
 		let function = {(a: Any, block: @escaping (FailableResult<T>) -> Void) -> Void in
 			guard let t = a as? T else {
 				preconditionFailure("a is not of type T")

@@ -148,7 +148,7 @@ class ErrorHandlingTests: XCTestCase {
 		var expectedFile: StaticString! = nil
 		var expectedLine: UInt! = nil
 		
-		func errorHanlderWithContext(_ error: Error, context: ErrorContext) {
+		func errorHanlderWithContext(context: ErrorContext) {
 			if let subjectString = context.subject as? String  {
 				XCTAssert(subjectString == "7cat")
 				if let expectedFile = expectedFile, let expectedLine = expectedLine {
@@ -232,7 +232,7 @@ class ErrorHandlingTests: XCTestCase {
 			}
 			
 			HoneyBee.start { root in
-				root.setErrorHandler { _ in failureExpectation.fulfill() }
+				root.setErrorHandler { (_:Error) in failureExpectation.fulfill() }
 					.insert(source)
 					.each() { elem in
 						elem.limit(1) { link -> Link<Void> in

@@ -14,6 +14,9 @@ public struct ErrorContext {
 	/// The subject of an error captured by a `Link`. The subject is the `A` value of the failing link, which is usually either the receiver or the first argument of the `Link` function.
 	public let subject: Any
 	
+	/// The error which this context encapsulates.
+	public let error: Error
+	
 	/// The file where the erroring `Link` was created.
 	public let file: StaticString
 	
