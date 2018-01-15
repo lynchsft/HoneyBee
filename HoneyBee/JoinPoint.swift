@@ -14,12 +14,14 @@ final class JoinPoint<A> : Executable, PathDescribing {
 	private let resultLock = NSLock()
 	private var executionResult: ExecutionResult?
 	private var resultCallback: ((ExecutionResult) -> Void)?
-	private var blockPerformer: AsyncBlockPerformer
+	private let blockPerformer: AsyncBlockPerformer
+	private let errorBlockPerformer: AsyncBlockPerformer
 	private let errorHandler: ((ErrorContext) -> Void)
 	let path: [String]
 	
-	init(blockPerformer: AsyncBlockPerformer, path: [String], errorHandler: @escaping ((ErrorContext) -> Void)) {
+	init(blockPerformer: AsyncBlockPerformer, errorBlockPerformer: AsyncBlockPerformer, path: [String], errorHandler: @escaping ((ErrorContext) -> Void)) {
 		self.blockPerformer = blockPerformer
+		self.errorBlockPerformer = errorBlockPerformer
 		self.path = path
 		self.errorHandler = errorHandler
 	}
@@ -61,6 +63,7 @@ final class JoinPoint<A> : Executable, PathDescribing {
 			callback(.success(tuple!))
 		}, errorHandler: self.errorHandler,
 		   blockPerformer: self.blockPerformer,
+		   errorBlockPerformer: self.errorBlockPerformer,
 		   path: self.path+["conjoin"],
 		   functionFile: #file,
 		   functionLine: #line)

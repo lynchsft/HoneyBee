@@ -24,6 +24,10 @@ class AtomicValue<T> {
 		}
 		return try block(&self.internalValue)
 	}
+	
+	public func get() -> T {
+		return self.access { $0 }
+	}
 }
 
 class AtomicBool : AtomicValue<Bool>, ExpressibleByBooleanLiteral {
@@ -71,10 +75,6 @@ class AtomicBool : AtomicValue<Bool>, ExpressibleByBooleanLiteral {
 			b = false
 			return oldB
 		}
-	}
-	
-	func get() -> Bool {
-		return self.access { $0 }
 	}
 	
 	func guaranteeTrueAtDeinit(faultResponse: FaultResponse = .assert, file: StaticString = #file, line: UInt = #line, message: String? = nil) {
@@ -128,10 +128,6 @@ class AtomicInt : AtomicValue<Int>, ExpressibleByIntegerLiteral {
 		} else {
 			self.notifyBlock = block
 		}
-	}
-	
-	func get() -> Int {
-		return self.access { $0 }
 	}
 	
 	func guaranteeValueAtDeinit(_ int: Int) {

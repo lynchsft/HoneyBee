@@ -27,7 +27,13 @@ final public class RootLink<T> : Executable, ErrorHandling {
 			}
 			block(.success(t))
 		}
-		self.firstLink = Link<T>(function: function, errorHandler: errorHandler, blockPerformer: self.blockPerformer, path: self.path, functionFile: #file, functionLine: #line)
+		self.firstLink = Link<T>(function: function,
+								 errorHandler: errorHandler,
+								 blockPerformer: self.blockPerformer,
+								 errorBlockPerformer: self.blockPerformer,
+								 path: self.path,
+								 functionFile: #file,
+								 functionLine: #line)
 		return firstLink!
 	}
 	
@@ -39,15 +45,21 @@ final public class RootLink<T> : Executable, ErrorHandling {
 	
 	public func setCompletionHandler(_ errorHandler: @escaping (ErrorContext?) -> Void ) -> Link<T> {
 		let finallyCalled: AtomicBool = false
+		let blockPerformer = self.blockPerformer
 		return self.setErrorHandler({ (context: ErrorContext) in
 			finallyCalled.access { called in
 				errorHandler(context)
 				called = true
 			}
 		}).finally { link in
-			link.chain { (_:T) -> Void in
+			link.chain{ (_:T, completion: @escaping ()->Void) -> Void in
 				if finallyCalled.get() == false {
-					errorHandler(nil)
+					blockPerformer.asyncPerform {
+						errorHandler(nil)
+						completion()
+					}
+				} else {
+					completion()
 				}
 			}
 		}

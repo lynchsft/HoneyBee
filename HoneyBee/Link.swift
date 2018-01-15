@@ -41,10 +41,12 @@ final public class Link<B> : Executable, PathDescribing  {
 	
 	fileprivate var function: (Any, @escaping (FailableResult<B>) -> Void) -> Void
 	fileprivate var errorHandler: ((ErrorContext) -> Void)
-	/// This is the queue which is passed on to sub chains
+	/// The queue which is passed on to sub chains
 	fileprivate var blockPerformer: AsyncBlockPerformer
-	/// This is the queue which is used to execute this chain. This and `blockPerformer` are the same until `setBlockPerformer(_:)` is called
+	/// The queue which is used to execute this Link. This and `blockPerformer` are the same until `setBlockPerformer(_:)` is called
 	fileprivate var myBlockPerformer: AsyncBlockPerformer
+	/// The queue which is used to execute this the error handler. This and `blockPerformer` are the same until `setErrorHandler(_:)` is called
+	fileprivate var errorBlockPerformer: AsyncBlockPerformer
 	
 	// Debug info
 	
@@ -52,11 +54,12 @@ final public class Link<B> : Executable, PathDescribing  {
 	fileprivate let functionFile: StaticString
 	fileprivate let functionLine: UInt
 	
-	init(function:  @escaping (Any, @escaping (FailableResult<B>) -> Void) -> Void, errorHandler: @escaping ((ErrorContext) -> Void), blockPerformer: AsyncBlockPerformer, path: [String], functionFile: StaticString, functionLine: UInt) {
+	init(function:  @escaping (Any, @escaping (FailableResult<B>) -> Void) -> Void, errorHandler: @escaping ((ErrorContext) -> Void), blockPerformer: AsyncBlockPerformer, errorBlockPerformer: AsyncBlockPerformer, path: [String], functionFile: StaticString, functionLine: UInt) {
 		self.function = function
 		self.errorHandler = errorHandler
 		self.blockPerformer = blockPerformer
 		self.myBlockPerformer = blockPerformer
+		self.errorBlockPerformer = errorBlockPerformer
 		self.path = path
 		self.functionFile = functionFile
 		self.functionLine = functionLine
@@ -93,6 +96,7 @@ final public class Link<B> : Executable, PathDescribing  {
 		let link = Link<C>(function: wrapperFunction,
 		                             errorHandler: self.errorHandler,
 		                             blockPerformer: self.blockPerformer,
+									 errorBlockPerformer: self.errorBlockPerformer,
 		                             path: self.path + ["chain: \(file):\(line) \(functionDescription ?? tname(function))"],
 		                             functionFile: file,
 		                             functionLine: line)
@@ -133,6 +137,7 @@ final public class Link<B> : Executable, PathDescribing  {
 				completion(.success(bb!))
 			}, errorHandler: self.errorHandler,
 			   blockPerformer: self.blockPerformer,
+			   errorBlockPerformer: self.errorBlockPerformer,
 			   path: self.path+["finally"],
 			   functionFile: file,
 			   functionLine: line
@@ -149,7 +154,10 @@ final public class Link<B> : Executable, PathDescribing  {
 	}
 	
 	fileprivate func joinPoint() -> JoinPoint<B> {
-		let link = JoinPoint<B>(blockPerformer: self.blockPerformer, path: self.path+["joinpoint"], errorHandler: self.errorHandler)
+		let link = JoinPoint<B>(blockPerformer: self.blockPerformer,
+								errorBlockPerformer: self.errorBlockPerformer,
+								path: self.path+["joinpoint"],
+								errorHandler: self.errorHandler)
 		self.createdLinks.push(link)
 		return link
 	}
@@ -175,12 +183,15 @@ extension Link {
 		}
 	}
 	
-	private func processError(_ error: Error, with argument: Any) {
-		let errorContext = ErrorContext(subject: argument, error: error, file: self.functionFile, line: self.functionLine, internalPath: self.path)
-		self.errorHandler(errorContext)
-		// why not execute finally link here? Finally links are registered on `self`.
-		// If self errors, there is no downward chain to finally back from.
-		self.propagateFailureToDecendants()
+	private func processError(_ error: Error, with argument: Any, completion: @escaping ()->Void) {
+		self.errorBlockPerformer.asyncPerform {
+			let errorContext = ErrorContext(subject: argument, error: error, file: self.functionFile, line: self.functionLine, internalPath: self.path)
+			self.errorHandler(errorContext)
+			// why not execute finally link here? Finally links are registered on `self`.
+			// If self errors, there is no downward chain to finally back from.
+			self.propagateFailureToDecendants()
+			completion()
+		}
 	}
 	
 	private func processSuccess(result: B, completion: @escaping () -> Void) {
@@ -212,8 +223,7 @@ extension Link {
 		case .success(let result) :
 			self.processSuccess(result: result, completion: completion)
 		case .failure(let error):
-			self.processError(error, with: argument)
-			completion()
+			self.processError(error, with: argument, completion: completion)
 		}
 	}
 	
@@ -382,6 +392,7 @@ extension Link : ErrorHandling {
 	/// - Returns: A `Link` which has `errorHandler` installed
 	public func setErrorHandler(_ errorHandler: @escaping (ErrorContext) -> Void ) -> Link<B> {
 		self.errorHandler = errorHandler
+		self.errorBlockPerformer = self.blockPerformer
 		return self
 	}
 }
@@ -1046,9 +1057,9 @@ extension Link {
 				if let this = self {
 						let passThroughLink = this.chain { return $0 }
 					
-						var recorededError: Error? = nil
+					let recorededError = AtomicValue<Error?>(value: nil)
 						let _ = passThroughLink.setErrorHandler { (error) in
-							recorededError = error
+							recorededError.access { $0 = error }
 						}
 					
 						let _ = passThroughLink.finally { link in
@@ -1061,7 +1072,7 @@ extension Link {
 											invokeDefineBlock()
 											times += 1
 										} else {
-											if let recorededError = recorededError {
+											if let recorededError = recorededError.get() {
 												completion(.failure(recorededError))
 											} else {
 												// otherwise the recipie set a custom error handler inside the retry... which is fine.

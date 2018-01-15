@@ -22,19 +22,21 @@ class SinglePathTests: XCTestCase {
 		super.tearDown()
 	}
 	
-	func testSimpleChain() {
-		let expect1 = expectation(description: "Simple chain 1 should complete")
+	func testCompletionHandler() {
+		let expect1 = expectation(description: "Chain 1 should complete")
 
-		func errorHandler(_ error: Error?) {
+		func completionHandler(_ error: Error?) {
 			if let error = error {
 				fail(on: error)
 			} else {
+				XCTAssert(Thread.current.isMainThread)
 				expect1.fulfill()
 			}
 		}
 		
-		HoneyBee.start { root in
-			root.setCompletionHandler(errorHandler)
+		HoneyBee.start(on: DispatchQueue.main) { root in
+			root.setCompletionHandler(completionHandler)
+				.setBlockPerformer(DispatchQueue.global())
 				.insert(4)
 				.chain(self.funcContainer.intToString)
 				.chain(self.funcContainer.stringToInt)
@@ -44,17 +46,24 @@ class SinglePathTests: XCTestCase {
 		
 		let expect2 = expectation(description: "Simple chain 2 should complete")
 		
+		func completionHandler2(_ error: Error?) {
+			if let error = error {
+				fail(on: error)
+			} else {
+				XCTAssert(!Thread.current.isMainThread)
+				expect2.fulfill()
+			}
+		}
 		HoneyBee.start { root in
-			root.setErrorHandler(fail)
+			root.setCompletionHandler(completionHandler2)
 				.insert(self.funcContainer)
+				.setBlockPerformer(DispatchQueue.main)
 				.chain(TestingFunctions.noop)
 				.chain(TestingFunctions.voidFunc)
 				.chain(assertEquals =<< self.funcContainer)
-				.drop()
-				.chain(expect2.fulfill)
 		}
 
-		waitForExpectations(timeout: 2) { error in
+		waitForExpectations(timeout: 3) { error in
 			if let error = error {
 				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
 			}

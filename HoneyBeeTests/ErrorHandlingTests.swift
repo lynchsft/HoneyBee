@@ -575,19 +575,21 @@ class ErrorHandlingTests: XCTestCase {
 		}
 	}
 	
-	func testErrorHandlerWithOptionalError() {
+	func testCompletionHandler() {
 		let expect1 = expectation(description: "Chain should error")
 		
 		func errorHandler(_ error: Error?) {
 			if error != nil{
+				XCTAssert(Thread.current.isMainThread)
 				expect1.fulfill()
 			} else {
 				XCTFail("Success state should not be reached.")
 			}
 		}
 		
-		HoneyBee.start { root in
+		HoneyBee.start(on: DispatchQueue.main) { root in
 			root.setCompletionHandler(errorHandler)
+				.setBlockPerformer(DispatchQueue.global())
 				.insert(4)
 				.chain(self.funcContainer.intToString)
 				.chain(self.funcContainer.stringToInt)
