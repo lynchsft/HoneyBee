@@ -49,3 +49,5 @@ Net::SSH.start("iamwebservices.com", "iamwebservices") do |ssh|
   result = ssh.exec!("cd iamwebservices/current/public/HoneyBee; rm current; ln -sf #{version_string} current; ls -l current")
   puts result
 end
+
+#curl " http://207.254.41.223:4567/redeploy/HoneyBee/latest"
