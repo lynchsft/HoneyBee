@@ -37,25 +37,39 @@ final public class RootLink<T> : Executable, ErrorHandling {
 		return firstLink!
 	}
 	
-	public func setCompletionHandler(_ errorHandler: @escaping (Error?) -> Void ) -> Link<T> {
+	/// Set the completion handling function for the recipe.
+	/// The completion handler will be invoked exactly one time per error in the recipe or
+	/// if the recipe does not error, the completion handler will be invoked with a nil argument
+	/// once after the entire recipe has completed.
+	///
+	/// - Parameter completionHandler: a function which takes an optional error.
+	/// - Returns: A `Link` which has the completion handler installed.
+	public func setCompletionHandler(_ completionHandler: @escaping (Error?) -> Void ) -> Link<T> {
 		return self.setCompletionHandler { (context: ErrorContext?) in
-			errorHandler(context?.error)
+			completionHandler(context?.error)
 		}
 	}
 	
-	public func setCompletionHandler(_ errorHandler: @escaping (ErrorContext?) -> Void ) -> Link<T> {
+	/// Set the completion handling function for the recipe.
+	/// The completion handler will be invoked exactly one time per error in the recipe or
+	/// if the recipe does not error, the completion handler will be invoked with a nil argument
+	/// once after the entire recipe has completed.
+	///
+	/// - Parameter completionHandler: a function which takes an optional `ErrorContext`. The context contains all available debug information on the erroring function, including the error itself.
+	/// - Returns: A `Link` which has the completion handler installed.
+	public func setCompletionHandler(_ completionHandler: @escaping (ErrorContext?) -> Void ) -> Link<T> {
 		let finallyCalled: AtomicBool = false
 		let blockPerformer = self.blockPerformer
 		return self.setErrorHandler({ (context: ErrorContext) in
 			finallyCalled.access { called in
-				errorHandler(context)
+				completionHandler(context)
 				called = true
 			}
 		}).finally { link in
 			link.chain{ (_:T, completion: @escaping ()->Void) -> Void in
 				if finallyCalled.get() == false {
 					blockPerformer.asyncPerform {
-						errorHandler(nil)
+						completionHandler(nil)
 						completion()
 					}
 				} else {

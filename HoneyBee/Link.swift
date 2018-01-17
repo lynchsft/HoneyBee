@@ -994,7 +994,6 @@ extension Link  {
 	/// - Returns: a `Link` whose execution result `J` is the result of the final link of the subchain.
 	@discardableResult
 	public func limit<J>(_ maxParallel: Int, _ defineBlock: (Link<B>) -> Link<J>) -> Link<J> {
-		
 		let semaphore = Link.semaphore(for: self, withValue: maxParallel)
 		
 		let openingLink = self.chain { (b:B) -> B in
@@ -1020,6 +1019,27 @@ extension Link  {
 		
 		
 		return returnLink
+	}
+	
+	/// `limit` defines a subchain with special runtime protections. The links within the `limit` subchain are guaranteed to have at most `maxParallel` parallel executions. `limit` is particularly useful in the context of a fully parallel process when part of the process must access a limited resource pool such as CPU execution contexts or network resources.
+	///
+	/// - Parameters:
+	///   - maxParallel:  the maximum number of parallel executions permitted for the subchains defined by `defineBlock`
+	///   - defineBlock: a block which creates a subchain to be limited.
+	public func limit(_ maxParallel: Int, _ defineBlock: (Link<B>) -> Void) -> Void {
+		let semaphore = Link.semaphore(for: self, withValue: maxParallel)
+		
+		let openingLink = self.chain { (b:B) -> B in
+			semaphore.wait()
+			return b
+		}
+		let _ = openingLink.finally{ link in
+			link.chain { (_:B) -> Void in
+				semaphore.signal()
+			}
+		}
+		
+		defineBlock(openingLink)
 	}
 }
 

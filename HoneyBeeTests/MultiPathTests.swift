@@ -535,6 +535,43 @@ class MultiPathTests: XCTestCase {
 		}
 	}
 	
+	func testLimitNoReturn() {
+		let source = Array(0..<20)
+		let expect = expectation(description: "Should reach the expectation")
+		expect.expectedFulfillmentCount = source.count
+		
+		let methodIsAccesssing: AtomicBool = false
+		
+		func fullfilExpectationAtomically() {
+			if methodIsAccesssing.get() {
+				XCTFail("Overlapping invocation")
+			}
+			methodIsAccesssing.setTrue()
+			expect.fulfill()
+			methodIsAccesssing.setFalse()
+		}
+		
+		HoneyBee.start { root in
+			root.setErrorHandler(fail)
+				.insert(source)
+				.each { elem in
+					elem.limit(1) { link in
+						link.drop()
+							.chain(expect.fulfill)
+						
+						let _ = link.drop() // not semantically relevant.
+						// Just need this to invoke the "no return" limit.
+					}
+				}
+		}
+		
+		waitForExpectations(timeout: 3) { error in
+			if let error = error {
+				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
+			}
+		}
+	}
+	
 	func testParallelReduce() {
 	
 		let source = Array(0...10)
