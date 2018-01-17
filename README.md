@@ -57,7 +57,7 @@ HoneyBee supports **34** distinct function signatures.
 ### Example: Safe By Default
 
 
-One of the many problems with the "pyramid of doom" is that is both error-prone to get the error handling right.
+One of the many problems with the "pyramid of doom" is that error handling is hard to get right.
 
 ```swift
 func processImageData1(completionBlock: (result: Image?, error: Error?) -> Void) {
@@ -135,8 +135,8 @@ So much cleaner right? And _Bonus Points_, the HoneyBee implementation allows us
 Diagnosing problems in misbehaving concurrent code is really hard right? Not with HoneyBee. Consider the following: 
 
 ```swift
-func handleError(_ error: Error, context: ErrorContext) {
-    print(context)
+func handleError(_ errorContext: ErrorContext) {
+    print(errorContext)
 }
 func stringToInt(string: String, callback: (FailableResult<Int>) -> Void) {
     if let int = Int(string) {
