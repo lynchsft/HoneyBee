@@ -9,20 +9,10 @@ puts `rm -rf products/*`
 puts "Documenting"
 puts `jazzy --xcodebuild-arguments -scheme,HoneyBee  --output products/docs/`
 
-puts "Copying"
-puts `rsync HoneyBee/*.swift products/HoneyBee/`
-puts `rsync HoneyBeeTests/*.swift products/HoneyBee/Tests`
-puts `rsync LICENSE products/`
-puts `rsync README.md products`
-
 version_string = `/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' HoneyBee/Info.plist`.strip
 
-puts "Zipping"
-zip_file = "HoneyBee-#{version_string}.zip"
-puts `cd products; /usr/bin/zip -r #{zip_file} LICENSE README.md HoneyBee`
-
 puts "Pushing"
-puts `cd products; rsync -r #{zip_file} docs iamwebservices@iamwebservices.com:iamwebservices/current/public/HoneyBee/#{version_string}/`
+puts `cd products; rsync -r docs iamwebservices@iamwebservices.com:iamwebservices/current/public/HoneyBee/#{version_string}/`
 
 spec = %[
 Pod::Spec.new do |s|
@@ -33,7 +23,7 @@ Pod::Spec.new do |s|
   s.homepage     = "http://HoneyBee.link/#{version_string}/docs/index.html"
 	s.documentation_url = s.homepage
 
-  s.license      = { :type=>"MIT", :file => 'LICENSE' }
+  s.license      = { :type=>"MIT" }
 
   s.author       = { "Alex Lynch" => "alex@iamapps.com" }
 
@@ -42,7 +32,7 @@ Pod::Spec.new do |s|
   s.tvos.deployment_target = "10.0"
   s.pod_target_xcconfig = { "SWIFT_VERSION" => "4.0" }
 
-  s.source       = { :http => "http://HoneyBee.link/#{version_string}/HoneyBee-#{version_string}.zip"}
+  s.source       = { :git => "https://bitbucket.org/iam_apps/honeybee.git", :tag=>"v#{version_string}"}
 
   s.source_files = "HoneyBee/*.swift"
 end	

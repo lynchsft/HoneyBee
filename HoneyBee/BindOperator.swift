@@ -38,6 +38,16 @@ public func =<< <A,B,R>(_ function: @escaping (A,B) -> R, _ arg: B) -> (A) -> R 
 	return bind(function,arg)
 }
 
+/// bind argument to function. Type: instance curried 1 onto 2
+public func =<< <A,B,R>(_ function: @escaping (A)->(B) throws -> R, _ arg: B) -> (A) throws -> R {
+	return bind(function,arg)
+}
+
+/// bind argument to function. Type: instance curried 1 onto 2
+public func =<< <A,B,R>(_ function: @escaping (A)->(B) -> R, _ arg: B) -> (A) -> R {
+	return bind(function,arg)
+}
+
 /// bind argument to function. Type: 1 onto 2
 public func =<< <A,R>(_ function: @escaping (A,A) throws -> R, _ arg: A) -> (A) throws -> R {
 	return bind(function,arg)
@@ -68,6 +78,16 @@ public func =<< <A,B,C,R>(_ function: @escaping (A,B,C) -> R, _ arg: B) -> (A,C)
 	return bind(function,arg)
 }
 
+/// bind argument to function. Type: instance curried 1 onto 3
+public func =<< <A,B,C,R>(_ function: @escaping (A)->(B,C) throws -> R, _ arg: B) -> (A,C) throws -> R {
+	return bind(function,arg)
+}
+
+/// bind argument to function. Type: instance curried 1 onto 3
+public func =<< <A,B,C,R>(_ function: @escaping (A)->(B,C) -> R, _ arg: B) -> (A,C) -> R {
+	return bind(function,arg)
+}
+
 /// bind argument to function. Type: 3 onto 3
 public func =<< <A,B,C,R>(_ function: @escaping (A,B,C) throws -> R, _ arg: C) -> (A,B) throws -> R {
 	return bind(function,arg)
@@ -75,6 +95,16 @@ public func =<< <A,B,C,R>(_ function: @escaping (A,B,C) throws -> R, _ arg: C) -
 
 /// bind argument to function. Type: 3 onto 3
 public func =<< <A,B,C,R>(_ function: @escaping (A,B,C) -> R, _ arg: C) -> (A,B) -> R {
+	return bind(function,arg)
+}
+
+/// bind argument to function. Type: instance curried 2 onto 3
+public func =<< <A,B,C,R>(_ function: @escaping (A)->(B,C) throws -> R, _ arg: C) -> (A,B) throws -> R {
+	return bind(function,arg)
+}
+
+/// bind argument to function. Type: instance curried 2 onto 3
+public func =<< <A,B,C,R>(_ function: @escaping (A)->(B,C) -> R, _ arg: C) -> (A,B) -> R {
 	return bind(function,arg)
 }
 
@@ -98,6 +128,16 @@ public func =<< <A,B,C,D,R>(_ function: @escaping (A,B,C,D) -> R, _ arg: B) -> (
 	return bind(function,arg)
 }
 
+/// bind argument to function. Type: instance curried 1 onto 4
+public func =<< <A,B,C,D,R>(_ function: @escaping (A)->(B,C,D) throws -> R, _ arg: B) -> (A,C,D) throws -> R {
+	return bind(function,arg)
+}
+
+/// bind argument to function. Type: instance curried 1 onto 4
+public func =<< <A,B,C,D,R>(_ function: @escaping (A)->(B,C,D) -> R, _ arg: B) -> (A,C,D) -> R {
+	return bind(function,arg)
+}
+
 /// bind argument to function. Type: 3 onto 4
 public func =<< <A,B,C,D,R>(_ function: @escaping (A,B,C,D) throws -> R, _ arg: C) -> (A,B,D) throws -> R {
 	return bind(function,arg)
@@ -108,6 +148,16 @@ public func =<< <A,B,C,D,R>(_ function: @escaping (A,B,C,D) -> R, _ arg: C) -> (
 	return bind(function,arg)
 }
 
+/// bind argument to function. Type: instance curried 2 onto 4
+public func =<< <A,B,C,D,R>(_ function: @escaping (A)->(B,C,D) throws -> R, _ arg: C) -> (A,B,D) throws -> R {
+	return bind(function,arg)
+}
+
+/// bind argument to function. Type: instance curried 2 onto 4
+public func =<< <A,B,C,D,R>(_ function: @escaping (A)->(B,C,D) -> R, _ arg: C) -> (A,B,D) -> R {
+	return bind(function,arg)
+}
+
 /// bind argument to function. Type: 4 onto 4
 public func =<< <A,B,C,D,R>(_ function: @escaping (A,B,C,D) throws -> R, _ arg: D) -> (A,B,C) throws -> R {
 	return bind(function,arg)
@@ -115,6 +165,16 @@ public func =<< <A,B,C,D,R>(_ function: @escaping (A,B,C,D) throws -> R, _ arg: 
 
 /// bind argument to function. Type: 4 onto 4
 public func =<< <A,B,C,D,R>(_ function: @escaping (A,B,C,D) -> R, _ arg: D) -> (A,B,C) -> R {
+	return bind(function,arg)
+}
+
+/// bind argument to function. Type: instance curried 3 onto 4
+public func =<< <A,B,C,D,R>(_ function: @escaping (A)->(B,C,D) throws -> R, _ arg: D) -> (A,B,C) throws -> R {
+	return bind(function,arg)
+}
+
+/// bind argument to function. Type: instance curried 3 onto 4
+public func =<< <A,B,C,D,R>(_ function: @escaping (A)->(B,C,D) -> R, _ arg: D) -> (A,B,C) -> R {
 	return bind(function,arg)
 }
 

@@ -120,9 +120,10 @@ def generate_bind()
 	
 	generated_operator_declarations = []	
 	
-	@bind_instances.each {|arguments, consumed_arg|		
-		generic_argument_declaration = arguments.split('').uniq.join(",")
-		argument_declaration = arguments.split('').join(",")
+	@bind_instances.each {|arguments, consumed_arg|
+		separated_arguments = arguments.split('')
+		generic_argument_declaration = separated_arguments.uniq.join(",")
+		argument_declaration = separated_arguments.join(",")
 		consumed_index = arguments.index(consumed_arg)
 		consumed_arguments= arguments.dup
 		consumed_arguments[consumed_index,1] = ''
@@ -149,8 +150,41 @@ def generate_bind()
 			generated_operator_declarations << "}"
 			generated_operator_declarations << ""
 		}
+		
+		# now the instance curry forms
+		
+		first_argument = arguments[0]
+		if first_argument != consumed_arg
+			after_first_arguments = arguments[1,separated_arguments.count]
+			consumed_after_first_arguments = after_first_arguments.dup
+			if consumed_index = after_first_arguments.index(consumed_arg) 
+				consumed_after_first_arguments[consumed_index,1] = ''
+			end
+			instance_signature = "(#{separated_arguments.first})->(#{after_first_arguments.split('').join(",")})"
+			consumed_after_first_argument_declaration = "(#{([first_argument]+consumed_after_first_arguments.split('')).join(",")})"
+			replaced_arguments_after_first= after_first_arguments.dup
+			replaced_arguments_after_first[consumed_index,1] = 'X'
+			replaced_arguments_after_first = replaced_arguments_after_first.split('').collect {|letter| letter.downcase}.join(", ")
+			replaced_arguments_after_first.gsub!("x","arg")
+		
+			["throws ", ""].each {|throw_or_no|
+				generated_bind_declarations << "/// bind argument to function. Type: instance curried #{consumed_index + 1} onto #{arguments.length}"
+				generated_bind_declarations << "public func bind<#{generic_argument_declaration},R>(_ function: @escaping #{instance_signature} #{throw_or_no}-> R, _ arg: #{consumed_arg}) -> #{consumed_after_first_argument_declaration} #{throw_or_no}-> R {"
+				generated_bind_declarations << "	return { (#{consumed_argument_params}) in"
+				generated_bind_declarations << "		return #{throw_or_no.size > 0 ? "try" : ""} function(#{first_argument.downcase})(#{replaced_arguments_after_first})"
+				generated_bind_declarations << "	}"
+				generated_bind_declarations << "}"
+				generated_bind_declarations << ""
+		
+		
+				generated_operator_declarations << "/// bind argument to function. Type: instance curried #{consumed_index + 1} onto #{arguments.length}"
+				generated_operator_declarations << "public func =<< <#{generic_argument_declaration},R>(_ function: @escaping #{instance_signature} #{throw_or_no}-> R, _ arg: #{consumed_arg}) -> #{consumed_after_first_argument_declaration} #{throw_or_no}-> R {"
+				generated_operator_declarations << "	return bind(function,arg)"
+				generated_operator_declarations << "}"
+				generated_operator_declarations << ""
+			}
+		end
 	}
-	
 
 	bind_string = %[
 /// Generated bind (partial apply) functions.
