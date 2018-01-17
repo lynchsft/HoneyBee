@@ -1,10 +1,10 @@
 
 Pod::Spec.new do |s|
   s.name         = "HoneyBee"
-  s.version      = "2.1.2"
+  s.version      = "2.2"
   s.summary      = "A swift library to increase the expressiveness of asynchronous and concurrent programming."
 
-  s.homepage     = "http://HoneyBee.link/2.1.2/docs/index.html"
+  s.homepage     = "http://HoneyBee.link/2.2/docs/index.html"
 	s.documentation_url = s.homepage
 
   s.license      = { :type=>"MIT" }
@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   s.tvos.deployment_target = "10.0"
   s.pod_target_xcconfig = { "SWIFT_VERSION" => "4.0" }
 
-  s.source       = { :git => "https://bitbucket.org/iam_apps/honeybee.git", :tag=>"v2.1.2"}
+  s.source       = { :git => "https://bitbucket.org/iam_apps/honeybee.git", :tag=>"v2.2"}
 
   s.source_files = "HoneyBee/*.swift"
 end	
