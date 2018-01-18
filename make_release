@@ -2,12 +2,15 @@
 
 require "rubygems"
 require "net/ssh"
+require "jazzy"
+require "katip"
 
 puts "Cleaning"
 puts `rm -rf products/*`
 
 puts "Documenting"
 puts `jazzy --xcodebuild-arguments -scheme,HoneyBee  --output products/docs/`
+puts `katip ChangeLog.md`
 
 version_string = `/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' HoneyBee/Info.plist`.strip
 
@@ -50,4 +53,5 @@ Net::SSH.start("iamwebservices.com", "iamwebservices") do |ssh|
   puts result
 end
 
-#curl " http://207.254.41.223:4567/redeploy/HoneyBee/latest"
+puts "Updating CocoaPods Homepage"
+puts `curl "http://207.254.41.223:4567/redeploy/HoneyBee/latest"`
