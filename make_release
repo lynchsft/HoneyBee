@@ -5,24 +5,18 @@ require "net/ssh"
 require "jazzy"
 require "katip"
 
+version_string = ARGV.shift
 username = ARGV.shift
 
-if username == nil
-	puts "Expected: make_release <username>"
+if username == nil || username == nil
+	puts "Expected: make_release <version_string> <username>"
 	exit
 end
 
-puts "Cleaning"
-puts `rm -rf products/*`
+puts "Versioning"
+puts `/usr/libexec/PlistBuddy -c 'Set CFBundleShortVersionString #{version_string}' HoneyBee/Info.plist`
 
-puts "Documenting"
-puts `jazzy --xcodebuild-arguments -scheme,HoneyBee  --output products/docs/`
 puts `katip ChangeLog.md`
-
-version_string = `/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' HoneyBee/Info.plist`.strip
-
-puts "Pushing"
-puts `cd products; rsync -r docs #{username}@HoneyBee.link:#{username}/current/public/HoneyBee/#{version_string}/`
 
 spec = %[
 Pod::Spec.new do |s|
@@ -50,11 +44,23 @@ end
 
 File.open("HoneyBee.podspec",'w') {|f| f.puts spec}
 
+puts `git add HoneyBee/Info.plist ChangeLog.md HoneyBee.podspec`
+puts `git commit -m "Mark as v#{version_string}"`
+puts `git tag v#{version_string}`
+puts `git push --tags`
+
+
+puts "Documenting"
+puts `rm -rf products/*`
+puts `jazzy --xcodebuild-arguments -scheme,HoneyBee  --output products/docs/`
+puts `cd products; rsync -r docs #{username}@HoneyBee.link:#{username}/current/public/HoneyBee/#{version_string}/`
+
+
 puts "Publishing"
 puts `pod trunk push --swift-version=4.0 HoneyBee.podspec`
 
-puts "Linking Current"
 
+puts "Linking Current"
 Net::SSH.start("HoneyBee.link", username) do |ssh|
   result = ssh.exec!("cd #{username}/current/public/HoneyBee; rm current; ln -sf #{version_string} current; ls -l current")
   puts result
