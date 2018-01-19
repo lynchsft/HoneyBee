@@ -3,6 +3,9 @@
 ---
 
 
+### v2.2.3
+ * [84a7649](../../commit/84a7649) - __(Alex Lynch)__ Mark as v2.2.3 Improve release automation.
+
 ### v2.2.2
  * [023e11d](../../commit/023e11d) - __(Alex Lynch)__ Mark as v2.2.2
 
