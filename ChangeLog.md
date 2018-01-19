@@ -1,7 +1,9 @@
 
 # Change Log
 ---
-
+ * [6d04799](../../commit/6d04799) - __(Alex Lynch)__ Beta support for SPM.
+ * [ebd28b6](../../commit/ebd28b6) - __(Alex Lynch)__ Improve release automation.
+ * [5d96199](../../commit/5d96199) - __(Alex Lynch)__ Mark as v2.2.4
 
 ### v2.2.3
  * [84a7649](../../commit/84a7649) - __(Alex Lynch)__ Mark as v2.2.3 Improve release automation.
