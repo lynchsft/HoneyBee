@@ -1,7 +1,10 @@
 
 # Change Log
-==========
+---
 
+
+### v2.2.2
+ * [023e11d](../../commit/023e11d) - __(Alex Lynch)__ Mark as v2.2.2
 
 ### v2.2.1
  * [5a255cc](../../commit/5a255cc) - __(Alex Lynch)__ Mark as v2.2.1
