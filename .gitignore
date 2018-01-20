@@ -4,3 +4,4 @@ xcuserdata
 *.xccheckout
 *.generated.swift
 products
+.build
