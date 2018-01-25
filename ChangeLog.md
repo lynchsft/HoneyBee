@@ -1,6 +1,8 @@
 
 # Change Log
 ---
+ * [57778fe](../../commit/57778fe) - __(Alex Lynch)__ Implement "blockless" HoneyBee.start()
+ * [73eeb41](../../commit/73eeb41) - __(Alex Lynch)__ Mark as v2.2.6
  * [0be72dd](../../commit/0be72dd) - __(Alex Lynch)__ Proper SPM support.
  * [8d0d8be](../../commit/8d0d8be) - __(Alex Lynch)__ Mark as v2.2.5
  * [6d04799](../../commit/6d04799) - __(Alex Lynch)__ Beta support for SPM.
