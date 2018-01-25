@@ -36,7 +36,7 @@ final public class Link<B> : Executable, PathDescribing  {
 	
 	fileprivate var createdLinks = ConcurrentQueue<Executable>()
 	fileprivate var createdLinksAsyncSemaphore: DispatchSemaphore?
-	fileprivate let finalLinkBox = LinkBox<B>()
+	fileprivate let finalLinkBox = AtomicValue<Link<B>?>(value: nil)
 	let activeLinkCounter: AtomicInt = 0
 	
 	fileprivate var function: (Any, @escaping (FailableResult<B>) -> Void) -> Void
@@ -128,7 +128,7 @@ final public class Link<B> : Executable, PathDescribing  {
 	 - Returns: a `Link` with the same execution context as self, but with a finally chain registered.
 	*/
 	public func finally(file: StaticString = #file, line: UInt = #line, _ defineBlock: (Link<B>) -> Void ) -> Link<B> {
-		if let oldFinalLink = self.finalLinkBox.link {
+		if let oldFinalLink = self.finalLinkBox.get() {
 			let _ = oldFinalLink.finally(file: file, line: line, defineBlock)
 		} else {
 			var bb:B? = nil
@@ -146,7 +146,7 @@ final public class Link<B> : Executable, PathDescribing  {
 			self.chain{ (b:B) -> Void in
 				bb = b
 			}
-			self.finalLinkBox.link = newFinalLink
+			self.finalLinkBox.set(value: newFinalLink)
 			
 			defineBlock(newFinalLink)
 		}
@@ -197,7 +197,7 @@ extension Link {
 	private func processSuccess(result: B, completion: @escaping () -> Void) {
 		let linkBox = self.finalLinkBox
 		self.activeLinkCounter.notify {
-			Link.exectute(finally: linkBox.link, completion: completion)
+			Link.exectute(finally: linkBox.get(), completion: completion)
 		}
 	
 		self.activeLinkCounter.guaranteeValueAtDeinit(0)
@@ -247,7 +247,7 @@ extension Link {
 		self.createdLinks.drain { child in
 			child.ancestorFailed()
 		}
-		self.finalLinkBox.link?.ancestorFailed()
+		self.finalLinkBox.get()?.ancestorFailed()
 	}
 }
 
@@ -883,7 +883,7 @@ extension Link where B : Collection, B.IndexDistance == Int {
 			let reportedFailure: AtomicBool = false
 			let reportedSuccess: AtomicBool = false
 			func applyFinally(to link: Link<B.Element>) {
-				if link.finalLinkBox.link == nil {
+				if link.finalLinkBox.get() == nil {
 					let _ = link.finally { link in
 						link.chain { (_:B.Element) -> Void in
 							if !reportedSuccess.get() {

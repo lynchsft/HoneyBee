@@ -28,6 +28,10 @@ class AtomicValue<T> {
 	public func get() -> T {
 		return self.access { $0 }
 	}
+	
+	public func set(value: T) {
+		self.access { $0 = value }
+	}
 }
 
 class AtomicBool : AtomicValue<Bool>, ExpressibleByBooleanLiteral {

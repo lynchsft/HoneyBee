@@ -9,31 +9,38 @@
 import Foundation
 
 /// `RootLink` is returned by `HoneyBee.start()`. The only operation supported by `RootLink` is `setErrorHandler`
-final public class RootLink<T> : Executable, ErrorHandling {
+final public class RootLink : Executable, ErrorHandling {
+	public typealias B = Void
+	
 	
 	let path: [String]
 	let blockPerformer: AsyncBlockPerformer
-	var firstLink: Link<T>?
+	var firstLink: Link<B>?
 	
 	init(blockPerformer: AsyncBlockPerformer, path: [String]) {
 		self.blockPerformer = blockPerformer
 		self.path = path
 	}
 	
-	public func setErrorHandler(_ errorHandler: @escaping (ErrorContext) -> Void ) -> Link<T> {
-		let function = {(a: Any, block: @escaping (FailableResult<T>) -> Void) -> Void in
-			guard let t = a as? T else {
-				preconditionFailure("a is not of type T")
+	public func setErrorHandler(_ errorHandler: @escaping (ErrorContext) -> Void ) -> Link<B> {
+		let function = {(a: Any, block: @escaping (FailableResult<B>) -> Void) -> Void in
+			guard let t = a as? B else {
+				preconditionFailure("a is not of type B")
 			}
 			block(.success(t))
 		}
-		self.firstLink = Link<T>(function: function,
+		self.firstLink = Link<B>(function: function,
 								 errorHandler: errorHandler,
 								 blockPerformer: self.blockPerformer,
 								 errorBlockPerformer: self.blockPerformer,
 								 path: self.path,
 								 functionFile: #file,
 								 functionLine: #line)
+		
+		self.blockPerformer.asyncPerform {
+			self.execute(argument: Void(), completion: { })
+		}
+		
 		return firstLink!
 	}
 	
@@ -44,7 +51,7 @@ final public class RootLink<T> : Executable, ErrorHandling {
 	///
 	/// - Parameter completionHandler: a function which takes an optional error.
 	/// - Returns: A `Link` which has the completion handler installed.
-	public func setCompletionHandler(_ completionHandler: @escaping (Error?) -> Void ) -> Link<T> {
+	public func setCompletionHandler(_ completionHandler: @escaping (Error?) -> Void ) -> Link<B> {
 		return self.setCompletionHandler { (context: ErrorContext?) in
 			completionHandler(context?.error)
 		}
@@ -57,7 +64,7 @@ final public class RootLink<T> : Executable, ErrorHandling {
 	///
 	/// - Parameter completionHandler: a function which takes an optional `ErrorContext`. The context contains all available debug information on the erroring function, including the error itself.
 	/// - Returns: A `Link` which has the completion handler installed.
-	public func setCompletionHandler(_ completionHandler: @escaping (ErrorContext?) -> Void ) -> Link<T> {
+	public func setCompletionHandler(_ completionHandler: @escaping (ErrorContext?) -> Void ) -> Link<B> {
 		let finallyCalled: AtomicBool = false
 		let blockPerformer = self.blockPerformer
 		return self.setErrorHandler({ (context: ErrorContext) in
@@ -66,7 +73,7 @@ final public class RootLink<T> : Executable, ErrorHandling {
 				called = true
 			}
 		}).finally { link in
-			link.chain{ (_:T, completion: @escaping ()->Void) -> Void in
+			link.chain{ (_:B, completion: @escaping ()->Void) -> Void in
 				if finallyCalled.get() == false {
 					blockPerformer.asyncPerform {
 						completionHandler(nil)

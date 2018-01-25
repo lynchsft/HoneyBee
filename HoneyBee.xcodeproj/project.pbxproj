@@ -32,7 +32,6 @@
 		FA62A2B51FC9FBC100385D22 /* ChainableFailable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A2A61FC9FBC100385D22 /* ChainableFailable.swift */; };
 		FA62A2B81FC9FBCA00385D22 /* ConcurentQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A2B61FC9FBCA00385D22 /* ConcurentQueue.swift */; };
 		FA62A2B91FC9FBCA00385D22 /* AtomicValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A2B71FC9FBCA00385D22 /* AtomicValue.swift */; };
-		FA9919231FD2B90A00C780A1 /* LinkBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA9919221FD2B90A00C780A1 /* LinkBox.swift */; };
 		FAF0C3061FD1AD6B00D1F177 /* ConcurrentFunctionTools.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAF0C3051FD1AD6B00D1F177 /* ConcurrentFunctionTools.swift */; };
 /* End PBXBuildFile section */
 
@@ -78,7 +77,6 @@
 		FA62A2A61FC9FBC100385D22 /* ChainableFailable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChainableFailable.swift; sourceTree = "<group>"; };
 		FA62A2B61FC9FBCA00385D22 /* ConcurentQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConcurentQueue.swift; sourceTree = "<group>"; };
 		FA62A2B71FC9FBCA00385D22 /* AtomicValue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AtomicValue.swift; sourceTree = "<group>"; };
-		FA9919221FD2B90A00C780A1 /* LinkBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkBox.swift; sourceTree = "<group>"; };
 		FAF0C3051FD1AD6B00D1F177 /* ConcurrentFunctionTools.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConcurrentFunctionTools.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -169,7 +167,6 @@
 				FA62A2A01FC9FBC100385D22 /* HoneyBee.swift */,
 				FA62A29D1FC9FBC100385D22 /* JoinPoint.swift */,
 				FA62A29E1FC9FBC100385D22 /* Link.swift */,
-				FA9919221FD2B90A00C780A1 /* LinkBox.swift */,
 				FA62A2A21FC9FBC100385D22 /* PathDescribing.swift */,
 				FA62A2A31FC9FBC100385D22 /* RootLink.swift */,
 			);
@@ -344,7 +341,6 @@
 				FA62A2AD1FC9FBC100385D22 /* Link.swift in Sources */,
 				FA62A2B01FC9FBC100385D22 /* Chainable.swift in Sources */,
 				FA62A2B91FC9FBCA00385D22 /* AtomicValue.swift in Sources */,
-				FA9919231FD2B90A00C780A1 /* LinkBox.swift in Sources */,
 				FA62A2A71FC9FBC100385D22 /* FailureRate.swift in Sources */,
 				FA62A2AA1FC9FBC100385D22 /* BindOperator.swift in Sources */,
 				FA62A2AE1FC9FBC100385D22 /* Bind.swift in Sources */,

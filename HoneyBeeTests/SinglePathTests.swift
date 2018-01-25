@@ -54,14 +54,14 @@ class SinglePathTests: XCTestCase {
 				expect2.fulfill()
 			}
 		}
-		HoneyBee.start { root in
-			root.setCompletionHandler(completionHandler2)
+		
+		HoneyBee.start()
+				.setCompletionHandler(completionHandler2)
 				.insert(self.funcContainer)
 				.setBlockPerformer(DispatchQueue.main)
 				.chain(TestingFunctions.noop)
 				.chain(TestingFunctions.voidFunc)
 				.chain(assertEquals =<< self.funcContainer)
-		}
 
 		waitForExpectations(timeout: 3) { error in
 			if let error = error {
