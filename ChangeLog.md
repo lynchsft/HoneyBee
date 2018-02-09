@@ -1,6 +1,8 @@
 
 # Change Log
 ---
+ * [82cd5d9](../../commit/82cd5d9) - __(Alex Lynch)__ Publicize the internal failure response.
+ * [4e84c8e](../../commit/4e84c8e) - __(Alex Lynch)__ Mark as v2.3
  * [57778fe](../../commit/57778fe) - __(Alex Lynch)__ Implement "blockless" HoneyBee.start()
  * [73eeb41](../../commit/73eeb41) - __(Alex Lynch)__ Mark as v2.2.6
  * [0be72dd](../../commit/0be72dd) - __(Alex Lynch)__ Proper SPM support.
