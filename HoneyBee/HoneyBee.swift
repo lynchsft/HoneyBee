@@ -60,4 +60,7 @@ public struct HoneyBee {
 	/// A `FaultResponse` which will be invoked if a chained function invokes its callback more than once. See `Link`.
 	/// Defaults to .warn
 	public static var functionOvercallResponse = FaultResponse.warn
+	/// A `FaultResponse` which will be invoked if HoneyBee detects an internal failure.
+	/// Defaults to .fail
+	public static var internalFailureResponse = FaultResponse.fail
 }

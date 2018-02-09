@@ -45,7 +45,7 @@ final class JoinPoint<A> : Executable, PathDescribing {
 			self.resultLock.unlock()
 		}
 
-		executionResult = (argument, guarantee(faultResponse: .fail, completion))
+		executionResult = (argument, guarantee(faultResponse: HoneyBee.internalFailureResponse, completion))
 		
 		if let resultCallback = self.resultCallback {
 			resultCallback(executionResult!)

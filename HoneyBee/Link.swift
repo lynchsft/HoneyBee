@@ -207,7 +207,7 @@ extension Link {
 				this.activeLinkCounter.increment()
 				this.createdLinksAsyncSemaphore?.wait()
 				this.myBlockPerformer.asyncPerform {
-					createdLink.execute(argument: result, completion: guarantee(faultResponse: .fail) {
+					createdLink.execute(argument: result, completion: guarantee(faultResponse: HoneyBee.internalFailureResponse) {
 						this.createdLinksAsyncSemaphore?.signal()
 						this.activeLinkCounter.decrement()
 					})
