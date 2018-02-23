@@ -1,6 +1,8 @@
 
 # Change Log
 ---
+ * [260a590](../../commit/260a590) - __(Alex Lynch)__ Publicize new compound conjoin feature.
+ * [7b89845](../../commit/7b89845) - __(Alex Lynch)__ Mark as v2.4
  * [ccfdd0b](../../commit/ccfdd0b) - __(Alex Lynch)__ Mark as v2.4
  * [ab44a49](../../commit/ab44a49) - __(Alex Lynch)__ Add compound conjoin behavior.
  * [d88b61f](../../commit/d88b61f) - __(Alex Lynch)__ Mark as v2.3.1
