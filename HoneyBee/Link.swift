@@ -363,7 +363,7 @@ extension Link {
 	///
 	/// - Parameter other: the `Link` to join with
 	/// - Returns: A `Link` which combines the receiver and the arguments results.
-	func conjoin<X,Y,C>(other: Link<C>) -> Link<(X,Y,C)> where B == (X,Y) {
+	public func conjoin<X,Y,C>(other: Link<C>) -> Link<(X,Y,C)> where B == (X,Y) {
 		return self.conjoin(other)
 					.chain { compoundTuple -> (X,Y,C) in
 						return (compoundTuple.0.0, compoundTuple.0.1, compoundTuple.1)
@@ -377,7 +377,7 @@ extension Link {
 	///
 	/// - Parameter other: the `Link` to join with
 	/// - Returns: A `Link` which combines the receiver and the arguments results.
-	func conjoin<X,Y,Z,C>(other: Link<C>) -> Link<(X,Y,Z,C)> where B == (X,Y,Z) {
+	public func conjoin<X,Y,Z,C>(other: Link<C>) -> Link<(X,Y,Z,C)> where B == (X,Y,Z) {
 		return self.conjoin(other)
 			.chain { compoundTuple -> (X,Y,Z,C) in
 				return (compoundTuple.0.0, compoundTuple.0.1, compoundTuple.0.2, compoundTuple.1)
@@ -390,12 +390,12 @@ extension Link {
 	}
 	
 	/// operator syntax for `conjoin` function
-	static func +<X,Y,C>(lhs: Link<B>, rhs: Link<C>) -> Link<(X,Y,C)> where B == (X,Y) {
+	public static func +<X,Y,C>(lhs: Link<B>, rhs: Link<C>) -> Link<(X,Y,C)> where B == (X,Y) {
 			return lhs.conjoin(other: rhs)
 	}
 	
 	/// operator syntax for `conjoin` function
-	static func +<X,Y,Z,C>(lhs: Link<B>, rhs: Link<C>) -> Link<(X,Y,Z,C)> where B == (X,Y,Z) {
+	public static func +<X,Y,Z,C>(lhs: Link<B>, rhs: Link<C>) -> Link<(X,Y,Z,C)> where B == (X,Y,Z) {
 		return lhs.conjoin(other: rhs)
 	}
 	
