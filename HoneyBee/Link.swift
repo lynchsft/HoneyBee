@@ -348,7 +348,7 @@ extension Link {
 	/// `conjoin` is a compliment to `branch`.
 	/// Within the context of a `branch` it is natural and expected to create parallel execution chains.
 	/// If the process definition wishes at some point to combine the results of these execution chains, then `conjoin` should be used.
-	/// `conjoin` returns a `Link` which waits for both the receiver and the argument `Link`s have created results. Those results are combined into a tuple `(B,C)` which is passed to the child links of the returned `Link`
+	/// `conjoin` returns a `Link` which waits for both the receiver and the argument `Link`s created results. Those results are combined into a tuple `(B,C)` which is passed to the child links of the returned `Link`
 	///
 	/// - Parameter other: the `Link` to join with
 	/// - Returns: A `Link` which combines the receiver and the arguments results.
@@ -356,9 +356,47 @@ extension Link {
 		return self.joinPoint().conjoin(other.joinPoint())
 	}
 	
+	/// `conjoin` is a compliment to `branch`.
+	/// Within the context of a `branch` it is natural and expected to create parallel execution chains.
+	/// If the process definition wishes at some point to combine the results of these execution chains, then `conjoin` should be used.
+	/// `conjoin` returns a `Link` which waits for both the receiver and the argument `Link`s created results. Those results are combined into a tuple `(X, Y, C)` which is passed to the child links of the returned `Link`
+	///
+	/// - Parameter other: the `Link` to join with
+	/// - Returns: A `Link` which combines the receiver and the arguments results.
+	func conjoin<X,Y,C>(other: Link<C>) -> Link<(X,Y,C)> where B == (X,Y) {
+		return self.conjoin(other)
+					.chain { compoundTuple -> (X,Y,C) in
+						return (compoundTuple.0.0, compoundTuple.0.1, compoundTuple.1)
+					}
+	}
+	
+	/// `conjoin` is a compliment to `branch`.
+	/// Within the context of a `branch` it is natural and expected to create parallel execution chains.
+	/// If the process definition wishes at some point to combine the results of these execution chains, then `conjoin` should be used.
+	/// `conjoin` returns a `Link` which waits for both the receiver and the argument `Link`s created results. Those results are combined into a tuple `(X, Y, Z, C)` which is passed to the child links of the returned `Link`
+	///
+	/// - Parameter other: the `Link` to join with
+	/// - Returns: A `Link` which combines the receiver and the arguments results.
+	func conjoin<X,Y,Z,C>(other: Link<C>) -> Link<(X,Y,Z,C)> where B == (X,Y,Z) {
+		return self.conjoin(other)
+			.chain { compoundTuple -> (X,Y,Z,C) in
+				return (compoundTuple.0.0, compoundTuple.0.1, compoundTuple.0.2, compoundTuple.1)
+		}
+	}
+	
 	/// operator syntax for `conjoin` function
 	public static func +<C>(lhs: Link<B>, rhs: Link<C>) -> Link<(B,C)> {
 		return lhs.conjoin(rhs)
+	}
+	
+	/// operator syntax for `conjoin` function
+	static func +<X,Y,C>(lhs: Link<B>, rhs: Link<C>) -> Link<(X,Y,C)> where B == (X,Y) {
+			return lhs.conjoin(other: rhs)
+	}
+	
+	/// operator syntax for `conjoin` function
+	static func +<X,Y,Z,C>(lhs: Link<B>, rhs: Link<C>) -> Link<(X,Y,Z,C)> where B == (X,Y,Z) {
+		return lhs.conjoin(other: rhs)
 	}
 	
 	/// operator syntax for `join left` behavior

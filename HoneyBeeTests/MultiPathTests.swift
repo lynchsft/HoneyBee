@@ -49,6 +49,31 @@ class MultiPathTests: XCTestCase {
 		}
 	}
 	
+	func testCompoundJoin() {
+		let expectA = expectation(description: "Join should be reached, path A")
+		
+		func compoundMethod(int: Int, string: String, int2: Int) {
+			expectA.fulfill()
+		}
+		
+		HoneyBee.start()
+				.setErrorHandler(fail)
+				.branch { stem in
+					stem.chain(self.funcContainer.constantInt)
+					+
+					stem.chain(self.funcContainer.constantString)
+					+
+					stem.chain(self.funcContainer.constantInt)
+				}
+				.chain(compoundMethod)
+			
+		waitForExpectations(timeout: 1) { error in
+			if let error = error {
+				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
+			}
+		}
+	}
+	
 	func testJoin() {
 		let expectA = expectation(description: "Join should be reached, path A")
 		let expectB = expectation(description: "Join should be reached, path B")

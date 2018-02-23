@@ -20,8 +20,8 @@ struct PrettyExamples {
 		func countComments(_ comments: [String]) -> Int { return comments.count }
 		func updateUI(withAverageReview: Int, commentsCount: Int) {}
 		
-		HoneyBee.start { root in
-			root.setErrorHandler(handleError)
+		HoneyBee.start()
+				.setErrorHandler(handleError)
 				.chain(fetchNewMovieTitle)
 				.branch { stem in
 					stem.chain(fetchReviews)
@@ -32,7 +32,6 @@ struct PrettyExamples {
 				}
 				.setBlockPerformer(DispatchQueue.main)
 				.chain(updateUI)
-		}
 	}
 	
 	func example2() {
@@ -42,8 +41,8 @@ struct PrettyExamples {
 		func isNonTrivial(_ int: Int, completion: (Bool) -> Void) {}
 		func updateUI(withTotalWordsInNonTrivialReviews: Int) {}
 		
-		HoneyBee.start(on: DispatchQueue.main) { root in
-			root.setErrorHandler(handleError)
+		HoneyBee.start(on: DispatchQueue.main)
+				.setErrorHandler(handleError)
 				.chain(fetchNewMovieTitle)
 				.chain(fetchReviews)
 				.map { elem in // parallel map
@@ -56,7 +55,6 @@ struct PrettyExamples {
 					pair.chain(+) // operator acess
 				}
 				.chain(updateUI)
-		}
 	}
 	
 	struct Image {}
@@ -65,8 +63,8 @@ struct PrettyExamples {
 		func decodeImage(dataProfile: Data, image: Data) throws -> Image { return Image() }
 		func dewarpAndCleanupImage(_ image: Image, completion: (Image?, Error?) -> Void) {}
 		
-		HoneyBee.start { root in
-			root.setErrorHandler { completionBlock(nil, $0) }
+		HoneyBee.start()
+				.setErrorHandler { completionBlock(nil, $0) }
 				.branch { stem -> Link<(Data,Data)> in
 					stem.chain(loadWebResource =<< "dataprofile.txt")
 					+
@@ -75,6 +73,5 @@ struct PrettyExamples {
 				.chain(decodeImage)
 				.chain(dewarpAndCleanupImage)
 				.chain{ completionBlock($0, nil) }
-		}
 	}
 }
