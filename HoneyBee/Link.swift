@@ -992,9 +992,11 @@ extension Link where B : OptionalProtocol {
 		return self.chain { (b: B, completion: @escaping () -> Void)->Void in
 			if let unwrapped = b.getWrapped() {
 				let unwrappedLink = self.insert(unwrapped)
-				defineBlock(unwrappedLink)
-					.drop()
-					.chain(completion)
+					.finally{
+						$0.drop()
+						  .chain(completion)
+					}
+				let _ = defineBlock(unwrappedLink)
 			} else {
 				completion()
 			}
