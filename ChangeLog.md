@@ -1,6 +1,7 @@
 
 # Change Log
 ---
+ * [ccfdd0b](../../commit/ccfdd0b) - __(Alex Lynch)__ Mark as v2.4
  * [ab44a49](../../commit/ab44a49) - __(Alex Lynch)__ Add compound conjoin behavior.
  * [d88b61f](../../commit/d88b61f) - __(Alex Lynch)__ Mark as v2.3.1
  * [82cd5d9](../../commit/82cd5d9) - __(Alex Lynch)__ Publicize the internal failure response.
