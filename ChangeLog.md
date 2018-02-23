@@ -1,6 +1,8 @@
 
 # Change Log
 ---
+ * [ab44a49](../../commit/ab44a49) - __(Alex Lynch)__ Add compound conjoin behavior.
+ * [d88b61f](../../commit/d88b61f) - __(Alex Lynch)__ Mark as v2.3.1
  * [82cd5d9](../../commit/82cd5d9) - __(Alex Lynch)__ Publicize the internal failure response.
  * [4e84c8e](../../commit/4e84c8e) - __(Alex Lynch)__ Mark as v2.3
  * [57778fe](../../commit/57778fe) - __(Alex Lynch)__ Implement "blockless" HoneyBee.start()
