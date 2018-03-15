@@ -14,7 +14,11 @@ class SinglePathTests: XCTestCase {
 	
 	override func setUp() {
 		super.setUp()
-		// Put setup code here. This method is called before the invocation of each test method in the class.
+		
+		HoneyBee.functionOvercallResponse = .fail
+		HoneyBee.functionUndercallResponse = .fail
+		HoneyBee.internalFailureResponse = .fail
+		HoneyBee.mismatchedConjoinResponse = .fail
 	}
 	
 	override func tearDown() {
@@ -121,6 +125,10 @@ class SinglePathTests: XCTestCase {
 		
 	func testMultipleCallback() {
 		let finishExpectation = expectation(description: "Should finish chain")
+		
+		HoneyBee.functionOvercallResponse = .custom(handler: { (message) in
+			//ignore
+		})
 		
 		HoneyBee.start { root in
 			root.setErrorHandler(fail)

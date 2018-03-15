@@ -16,7 +16,11 @@ class ErrorHandlingTests: XCTestCase {
 	
 	override func setUp() {
 		super.setUp()
-		// Put setup code here. This method is called before the invocation of each test method in the class.
+		
+		HoneyBee.functionOvercallResponse = .fail
+		HoneyBee.functionUndercallResponse = .fail
+		HoneyBee.internalFailureResponse = .fail
+		HoneyBee.mismatchedConjoinResponse = .fail
 	}
 	
 	override func tearDown() {

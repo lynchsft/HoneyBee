@@ -57,6 +57,8 @@ final class JoinPoint<A> : Executable, PathDescribing {
 	}
 	
 	func conjoin<B>(_ other: JoinPoint<B>) -> Link<(A,B)> {
+		HoneyBee.mismatchedConjoinResponse.evaluate(self.blockPerformer == other.blockPerformer,
+												 "conjoin detected between Links with different AsyncBlockPerformers. This can lead to unexpected results.")
 		var tuple: (A,B)? = nil
 		
 		let link = Link<(A,B)>(function: { _, callback in
@@ -89,5 +91,16 @@ final class JoinPoint<A> : Executable, PathDescribing {
 		}
 		
 		return link
+	}
+}
+
+/// This is a best-effort check. Both of the known conformers of AsyncBlockPerformer are NSObject
+/// (yes, even DispatchQueue, I checked). We pass anything that we can't explictly verify is wrong. 
+fileprivate func ==(lhs: AsyncBlockPerformer, rhs: AsyncBlockPerformer) -> Bool {
+	switch (lhs, rhs) {
+	case (let lqueue as NSObject, let rqueue as NSObject):
+		return lqueue == rqueue
+	default:
+		return true
 	}
 }

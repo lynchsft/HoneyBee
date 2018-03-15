@@ -14,7 +14,11 @@ class MultiPathTests: XCTestCase {
 	
 	override func setUp() {
 		super.setUp()
-		// Put setup code here. This method is called before the invocation of each test method in the class.
+		
+		HoneyBee.functionOvercallResponse = .fail
+		HoneyBee.functionUndercallResponse = .fail
+		HoneyBee.internalFailureResponse = .fail
+		HoneyBee.mismatchedConjoinResponse = .fail
 	}
 	
 	override func tearDown() {
@@ -613,6 +617,32 @@ class MultiPathTests: XCTestCase {
 				.chain{ XCTAssert($0 == result, "Reduce failed. Expected: \(result). Received: \($0).") }
 				.chain(finishExpectation.fulfill)
 		}
+		
+		waitForExpectations(timeout: 3) { error in
+			if let error = error {
+				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
+			}
+		}
+	}
+	
+	func testMismatchedJoin() {
+		let expectA = expectation(description: "Join should be reached, path A")
+		
+		HoneyBee.mismatchedConjoinResponse = .custom(handler: { (message) in
+			expectA.fulfill()
+		})
+		
+		HoneyBee.start()
+				.setErrorHandler(fail)
+				.branch { stem in
+					stem.drop()
+						.setBlockPerformer(DispatchQueue.main)
+						.chain(self.funcContainer.constantInt)
+					+
+					stem.drop()
+					  	.setBlockPerformer(DispatchQueue.global())
+						.chain(self.funcContainer.constantString)
+				}
 		
 		waitForExpectations(timeout: 3) { error in
 			if let error = error {

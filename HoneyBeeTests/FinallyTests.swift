@@ -13,8 +13,12 @@ class FinallyTests: XCTestCase {
     let funcContainer = TestingFunctions()
 	
     override func setUp() {
-        super.setUp()
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+		super.setUp()
+		
+		HoneyBee.functionOvercallResponse = .fail
+		HoneyBee.functionUndercallResponse = .fail
+		HoneyBee.internalFailureResponse = .fail
+		HoneyBee.mismatchedConjoinResponse = .fail
     }
     
     override func tearDown() {

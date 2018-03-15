@@ -63,4 +63,7 @@ public struct HoneyBee {
 	/// A `FaultResponse` which will be invoked if HoneyBee detects an internal failure.
 	/// Defaults to .fail
 	public static var internalFailureResponse = FaultResponse.fail
+	/// A `FaultResponse` which will be invoked if HoneyBee detects a `conjoin` operation between two links with different `AsyncBlockPerformer`s.
+	/// Defaults to .warn
+	public static var mismatchedConjoinResponse = FaultResponse.warn
 }
