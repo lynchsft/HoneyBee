@@ -799,9 +799,9 @@ extension Link {
 	}
 }
 
-extension Link where B : Collection, B.IndexDistance == Int {
+extension Link where B : Collection {
 	
-	/// When the inbound type is a `Collection` with `Int` indexes (most are), then you may call `map` to asynchronously map over the elements of B in parallel, transforming them with `transform` subchain.
+	/// When the inbound type is a `Collection`, you may call `map` to asynchronously map over the elements of B in parallel, transforming them with `transform` subchain.
 	///
 	/// - Parameter transform: the transformation subchain defining block which converts `B.Iterator.Element` to `C`
 	/// - Returns: a `Link` which will yield an array of `C`s to it's child links.
@@ -817,7 +817,7 @@ extension Link where B : Collection, B.IndexDistance == Int {
 			
 			let _ = rootLink.finally { link in
 					link.chain{ () -> Void in
-						let finalResults = results.flatMap { $0 }
+						let finalResults = results.compactMap { $0 }
 						let failures = results.count - finalResults.count
 						do {
 							try acceptableFailure.checkExceeded(byFailures: failures, in: results.count)
@@ -842,7 +842,7 @@ extension Link where B : Collection, B.IndexDistance == Int {
 		}
 	}
 	
-	/// When the inbound type is a `Collection` with `Int` indexes (most are), then you may call `filter` to asynchronously filter the elements of B in parallel, using `filter` subchain
+	/// When the inbound type is a `Collection`, you may call `filter` to asynchronously filter the elements of B in parallel, using `filter` subchain
 	///
 	/// - Parameter filter: the filter subchain which produces a Bool
 	/// - Returns: a `Link` which will yield to it's child links an array containing those `B.Iterator.Element`s which `filter` approved.
@@ -855,11 +855,11 @@ extension Link where B : Collection, B.IndexDistance == Int {
 						}
 			}
 		}).chain { optionalList -> [B.Iterator.Element] in
-			optionalList.flatMap {$0}
+			optionalList.compactMap {$0}
 		}
 	}
 	
-	/// When the inbound type is a `Collection` with `Int` indexes (most are), then you may call `each`
+	/// When the inbound type is a `Collection`, you may call `each`
 	/// Each accepts a define block which creates a subchain which will be invoked once per element of the sequence.
 	/// The `Link` which is given as argument to the define block will pass to its child links the element of the sequence which is currently being processed.
 	///
@@ -875,7 +875,7 @@ extension Link where B : Collection, B.IndexDistance == Int {
 		}
 	}
 	
-	///  When the inbound type is a `Collection` with `Int` indexes (most are), then you may call `reduce`
+	///  When the inbound type is a `Collection`, you may call `reduce`
 	///  Reduce accepts a define block which creates a subchain which will be executed *sequentially*,
 	///  once per element of the sequence. The result of each successive execution of the subchain will
 	///  be forwarded to the next pass of the subchain. The result of the final execution of the subchain
@@ -900,7 +900,7 @@ extension Link where B : Collection, B.IndexDistance == Int {
 		}
 	}
 	
-	/// When the inbound type is a `Collection` with `Int` indexes (most are), then you may call `reduce`
+	/// When the inbound type is a `Collection`, you may call `reduce`
 	/// Reduce accepts a define block which creates a subchain which will be executed *in parallel*,
 	/// with up to N/2 other subchains. Each subchain combines two `B.Element`s into one `B.Element`.
 	/// The result of each combination is again combined until a single value remains. This value
