@@ -1,6 +1,9 @@
 
 # Change Log
 ---
+ * [23363e8](../../commit/23363e8) - __(Alex Lynch)__ Updates for Swift 4.1
+ * [4c4cb63](../../commit/4c4cb63) - __(Alex Lynch)__ Implement sanity check that conjoined link's block performers are equal.
+ * [a173424](../../commit/a173424) - __(Alex Lynch)__ Mark as v2.4.2
  * [ce2e023](../../commit/ce2e023) - __(Alex Lynch)__ Re-write optionally to be contract correct in the face of errors.
  * [82a9818](../../commit/82a9818) - __(Alex Lynch)__ Mark as v2.4.1
  * [260a590](../../commit/260a590) - __(Alex Lynch)__ Publicize new compound conjoin feature.
