@@ -1,6 +1,7 @@
 
 # Change Log
 ---
+ * [1e88930](../../commit/1e88930) - __(Alex Lynch)__ Mark as v2.5
  * [a40fafa](../../commit/a40fafa) - __(Alex Lynch)__ Mark as v2.5
  * [23363e8](../../commit/23363e8) - __(Alex Lynch)__ Updates for Swift 4.1
  * [4c4cb63](../../commit/4c4cb63) - __(Alex Lynch)__ Implement sanity check that conjoined link's block performers are equal.
