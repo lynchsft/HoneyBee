@@ -34,7 +34,7 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = "10.0"
   s.osx.deployment_target = "10.11"
   s.tvos.deployment_target = "10.0"
-  s.pod_target_xcconfig = { "SWIFT_VERSION" => "4.0" }
+  s.pod_target_xcconfig = { "SWIFT_VERSION" => "4.1" }
 
   s.source       = { :git => "https://bitbucket.org/iam_apps/honeybee.git", :tag=>"v#{version_string}"}
 
