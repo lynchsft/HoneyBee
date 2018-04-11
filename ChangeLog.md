@@ -1,6 +1,8 @@
 
 # Change Log
 ---
+ * [20f1209](../../commit/20f1209) - __(Alex Lynch)__ Inform cocoapods of swift 4.1 support.
+ * [c7b3ee4](../../commit/c7b3ee4) - __(Alex Lynch)__ Mark as v2.5
  * [1e88930](../../commit/1e88930) - __(Alex Lynch)__ Mark as v2.5
  * [a40fafa](../../commit/a40fafa) - __(Alex Lynch)__ Mark as v2.5
  * [23363e8](../../commit/23363e8) - __(Alex Lynch)__ Updates for Swift 4.1
