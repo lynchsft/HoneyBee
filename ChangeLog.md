@@ -1,6 +1,9 @@
 
 # Change Log
 ---
+ * [a583c7e](../../commit/a583c7e) - __(Alex Lynch)__ Synchronize access to Honey.*response FaultResponses.
+ * [3beab26](../../commit/3beab26) - __(Alex Lynch)__ Implement get getBlockPerformer utility method and tests.
+ * [e5b3011](../../commit/e5b3011) - __(Alex Lynch)__ Mark as v2.5.1
  * [f2021d1](../../commit/f2021d1) - __(Alex Lynch)__ Mark as v2.5.1
  * [20f1209](../../commit/20f1209) - __(Alex Lynch)__ Inform cocoapods of swift 4.1 support.
  * [c7b3ee4](../../commit/c7b3ee4) - __(Alex Lynch)__ Mark as v2.5
