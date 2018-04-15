@@ -53,19 +53,39 @@ public struct HoneyBee {
 		return RootLink(blockPerformer: blockPerformer, path: ["start: \(file):\(line)"])
 	}
 	
+	private static let functionUnderCallResponseLock = AtomicValue(value: FaultResponse.fail)
+	private static let functionOvercallResponseLock = AtomicValue(value: FaultResponse.warn)
+	private static let internalFailureResponseLock = AtomicValue(value: FaultResponse.fail)
+	private static let mismatchedConjoinResponseLock = AtomicValue(value: FaultResponse.warn)
 	
 	/// A `FaultResponse` which will be invoked if a chained function does not invoke its callback. See `Link`.
 	/// Defaults to .fail
-	public static var functionUndercallResponse = FaultResponse.fail
+	public static var functionUndercallResponse: FaultResponse {
+		get { return self.functionUnderCallResponseLock.get() }
+		set { self.functionUnderCallResponseLock.set(value: newValue) }
+	}
+	
 	/// A `FaultResponse` which will be invoked if a chained function invokes its callback more than once. See `Link`.
 	/// Defaults to .warn
-	public static var functionOvercallResponse = FaultResponse.warn
+	public static var functionOvercallResponse: FaultResponse {
+		get { return self.functionOvercallResponseLock.get() }
+		set { self.functionOvercallResponseLock.set(value: newValue) }
+	}
+	
 	/// A `FaultResponse` which will be invoked if HoneyBee detects an internal failure.
 	/// Defaults to .fail
-	public static var internalFailureResponse = FaultResponse.fail
+	public static var internalFailureResponse: FaultResponse {
+		get { return self.internalFailureResponseLock.get() }
+		set { self.internalFailureResponseLock.set(value: newValue) }
+	}
+	
 	/// A `FaultResponse` which will be invoked if HoneyBee detects a `conjoin` operation between two links with different `AsyncBlockPerformer`s.
 	/// Defaults to .warn
-	public static var mismatchedConjoinResponse = FaultResponse.warn
+	public static var mismatchedConjoinResponse: FaultResponse {
+		get { return self.mismatchedConjoinResponseLock.get() }
+		set { self.mismatchedConjoinResponseLock.set(value: newValue) }
+	}
+	
 	/// Utility function to retreive the block performer of a given link.
 	/// This method is useful to implementors of custom link behaviors.
 	/// - Returns: the `AsyncBlockPerformer` of the given link.
