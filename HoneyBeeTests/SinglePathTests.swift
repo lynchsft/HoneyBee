@@ -228,7 +228,6 @@ class SinglePathTests: XCTestCase {
 		}
 	}
 
-#if swift(>=4.0)
 	func testKeyPath() {
 		let expect1 = expectation(description: "KeyPath chain should complete")
 		
@@ -246,5 +245,31 @@ class SinglePathTests: XCTestCase {
 			}
 		}
 	}
-#endif
+	
+	func testGetBlockPerformer() {
+		let expect1 = expectation(description: "KeyPath chain should complete")
+		
+		let link1 =
+		HoneyBee.start(on: DispatchQueue.main)
+				.setErrorHandler(fail)
+			
+		XCTAssertEqual(HoneyBee.getBlockPerformer(of: link1) as? DispatchQueue, DispatchQueue.main)
+		
+		let link2 = link1.setBlockPerformer(DispatchQueue.global())
+		
+		XCTAssertEqual(HoneyBee.getBlockPerformer(of: link1) as? DispatchQueue, DispatchQueue.global())
+		
+				link2.insert("catdog")
+				.chain(\String.utf16.count)
+				.chain(assertEquals =<< 6)
+				.chain(expect1.fulfill)
+		
+		
+		waitForExpectations(timeout: 1) { error in
+			if let error = error {
+				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
+			}
+		}
+	}
+
 }

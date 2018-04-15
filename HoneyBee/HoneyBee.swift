@@ -66,4 +66,10 @@ public struct HoneyBee {
 	/// A `FaultResponse` which will be invoked if HoneyBee detects a `conjoin` operation between two links with different `AsyncBlockPerformer`s.
 	/// Defaults to .warn
 	public static var mismatchedConjoinResponse = FaultResponse.warn
+	/// Utility function to retreive the block performer of a given link.
+	/// This method is useful to implementors of custom link behaviors.
+	/// - Returns: the `AsyncBlockPerformer` of the given link.
+	public static func getBlockPerformer<X>(of link: Link<X>) -> AsyncBlockPerformer {
+		return link.getBlockPerformer()
+	}
 }

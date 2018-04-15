@@ -1156,3 +1156,9 @@ extension Link {
 		}
 	}
 }
+
+extension Link {
+	internal func getBlockPerformer() -> AsyncBlockPerformer {
+		return self.blockPerformer
+	}
+}
