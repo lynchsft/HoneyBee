@@ -580,7 +580,7 @@ class ErrorHandlingTests: XCTestCase {
 	}
 	
 	func testCompletionHandler() {
-		let expect1 = expectation(description: "Chain should error")
+		let expect1 = expectation(description: "Chain should error only once")
 		
 		func errorHandler(_ error: Error?) {
 			if error != nil{
@@ -598,8 +598,14 @@ class ErrorHandlingTests: XCTestCase {
 				.chain(self.funcContainer.intToString)
 				.chain(self.funcContainer.stringToInt)
 				.chain(self.funcContainer.multiplyInt)
-				.chain(self.funcContainer.explode)
-				.chain(assertEquals =<< 8)
+				.branch {
+					  $0.chain(self.funcContainer.explode)
+						.chain(assertEquals =<< 8)
+					
+					  $0.chain(self.funcContainer.explode)
+						.chain(assertEquals =<< 8)
+				}
+			
 		}
 		
 		waitForExpectations(timeout: 3) { error in

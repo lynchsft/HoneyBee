@@ -45,7 +45,7 @@ final public class RootLink : Executable, ErrorHandling {
 	}
 	
 	/// Set the completion handling function for the recipe.
-	/// The completion handler will be invoked exactly one time per error in the recipe or
+	/// The completion handler will be invoked exactly one time. The argument will either be the first error in the recpie or
 	/// if the recipe does not error, the completion handler will be invoked with a nil argument
 	/// once after the entire recipe has completed.
 	///
@@ -58,7 +58,7 @@ final public class RootLink : Executable, ErrorHandling {
 	}
 	
 	/// Set the completion handling function for the recipe.
-	/// The completion handler will be invoked exactly one time per error in the recipe or
+	/// The completion handler will be invoked exactly one time. The argument will either be the first error in the recpie or
 	/// if the recipe does not error, the completion handler will be invoked with a nil argument
 	/// once after the entire recipe has completed.
 	///
@@ -69,18 +69,23 @@ final public class RootLink : Executable, ErrorHandling {
 		let blockPerformer = self.blockPerformer
 		return self.setErrorHandler({ (context: ErrorContext) in
 			finallyCalled.access { called in
-				completionHandler(context)
-				called = true
+				if !called {
+					completionHandler(context)
+					called = true
+				}
 			}
 		}).finally { link in
 			link.chain{ (_:B, completion: @escaping ()->Void) -> Void in
-				if finallyCalled.get() == false {
-					blockPerformer.asyncPerform {
-						completionHandler(nil)
+				finallyCalled.access { called in
+					if !called {
+						blockPerformer.asyncPerform {
+							completionHandler(nil)
+							completion()
+						}
+						called = true
+					} else {
 						completion()
 					}
-				} else {
-					completion()
 				}
 			}
 		}
