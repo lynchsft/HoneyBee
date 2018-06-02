@@ -2,7 +2,7 @@
 ---
 ## Introduction
 
-HoneyBee is a Swift library to increase the expressiveness of asynchronous and concurrent programming. HoneyBee design follows a few principles:
+HoneyBee is a Swift promises library to increase the expressiveness of asynchronous and concurrent programming. HoneyBee design follows a few principles:
 
 - __Show Me.__ Concurrent code should _look_ like the structure that it implements (see Examples below)
 - __Bring Your Own Code.__ HoneyBee works with your asynchronous and synchronous functions, as they are today, with no modifications. (Usually.)

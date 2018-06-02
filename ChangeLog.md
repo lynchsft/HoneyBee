@@ -1,6 +1,8 @@
 
 # Change Log
 ---
+ * [20e7794](../../commit/20e7794) - __(Alex Lynch)__ Alter behavior of `setCompletionHandler` to permit only one error.
+ * [842aede](../../commit/842aede) - __(Alex Lynch)__ Mark as v2.5.2
  * [a583c7e](../../commit/a583c7e) - __(Alex Lynch)__ Synchronize access to Honey.*response FaultResponses.
  * [3beab26](../../commit/3beab26) - __(Alex Lynch)__ Implement get getBlockPerformer utility method and tests.
  * [e5b3011](../../commit/e5b3011) - __(Alex Lynch)__ Mark as v2.5.1

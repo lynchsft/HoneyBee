@@ -7,6 +7,7 @@ require "katip"
 
 version_string = ARGV.shift
 username = ARGV.shift
+hostname = "HoneyBee.link"
 
 if username == nil || username == nil
 	puts "Expected: make_release <version_string> <username>"
@@ -24,7 +25,7 @@ Pod::Spec.new do |s|
   s.version      = "#{version_string}"
   s.summary      = "A swift library to increase the expressiveness of asynchronous and concurrent programming."
 
-  s.homepage     = "http://HoneyBee.link/#{version_string}/docs/index.html"
+  s.homepage     = "http://#{hostname}/#{version_string}/docs/index.html"
 	s.documentation_url = s.homepage
 
   s.license      = { :type=>"MIT" }
@@ -53,16 +54,16 @@ puts `git push --tags`
 puts "Documenting"
 puts `rm -rf products/*`
 puts `jazzy --xcodebuild-arguments -scheme,HoneyBee  --output products/docs/`
-puts `cd products; rsync -r docs #{username}@HoneyBee.link:#{username}/current/public/HoneyBee/#{version_string}/`
+puts `cd products; rsync -e 'ssh -p 18765' -r docs #{username}@#{hostname}:public_html/HoneyBee/#{version_string}/`
 
 
 puts "Publishing"
-puts `pod trunk push --swift-version=4.0 HoneyBee.podspec`
+puts `pod trunk push --swift-version=4.1 HoneyBee.podspec`
 
 
 puts "Linking Current"
-Net::SSH.start("HoneyBee.link", username) do |ssh|
-  result = ssh.exec!("cd #{username}/current/public/HoneyBee; rm current; ln -sf #{version_string} current; ls -l current")
+Net::SSH.start(hostname, username, :port=>18765) do |ssh|
+  result = ssh.exec!("cd public_html/HoneyBee; rm current; ln -sf #{version_string} current; ls -l current")
   puts result
 end
 
