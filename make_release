@@ -5,9 +5,10 @@ require "net/ssh"
 require "jazzy"
 require "katip"
 
+project_name = "HoneyBee"
 version_string = ARGV.shift
 username = ARGV.shift
-hostname = "HoneyBee.link"
+host_name = "HoneyBee.link"
 
 if username == nil || username == nil
 	puts "Expected: make_release <version_string> <username>"
@@ -15,17 +16,17 @@ if username == nil || username == nil
 end
 
 puts "Versioning"
-puts `/usr/libexec/PlistBuddy -c 'Set CFBundleShortVersionString #{version_string}' HoneyBee/Info.plist`
+puts `/usr/libexec/PlistBuddy -c 'Set CFBundleShortVersionString #{version_string}' #{project_name}/Info.plist`
 
 puts `katip ChangeLog.md`
 
 spec = %[
 Pod::Spec.new do |s|
-  s.name         = "HoneyBee"
+  s.name         = "#{project_name}"
   s.version      = "#{version_string}"
   s.summary      = "A swift library to increase the expressiveness of asynchronous and concurrent programming."
 
-  s.homepage     = "http://#{hostname}/#{version_string}/docs/index.html"
+  s.homepage     = "http://#{host_name}/#{version_string}/docs/index.html"
 	s.documentation_url = s.homepage
 
   s.license      = { :type=>"MIT" }
@@ -39,13 +40,13 @@ Pod::Spec.new do |s|
 
   s.source       = { :git => "https://bitbucket.org/iam_apps/honeybee.git", :tag=>"v#{version_string}"}
 
-  s.source_files = "HoneyBee/*.swift"
+  s.source_files = "#{project_name}/*.swift"
 end	
 ]
 
-File.open("HoneyBee.podspec",'w') {|f| f.puts spec}
+File.open("#{project_name}.podspec",'w') {|f| f.puts spec}
 
-puts `git add HoneyBee/Info.plist ChangeLog.md HoneyBee.podspec`
+puts `git add #{project_name}/Info.plist ChangeLog.md #{project_name}.podspec`
 puts `git commit -m "Mark as v#{version_string}"`
 puts `git tag v#{version_string}`
 puts `git push --tags`
@@ -53,19 +54,19 @@ puts `git push --tags`
 
 puts "Documenting"
 puts `rm -rf products/*`
-puts `jazzy --xcodebuild-arguments -scheme,HoneyBee  --output products/docs/`
-puts `cd products; rsync -e 'ssh -p 18765' -r docs #{username}@#{hostname}:public_html/HoneyBee/#{version_string}/`
+puts `jazzy --xcodebuild-arguments -scheme,#{project_name}  --output products/docs/`
+puts `cd products; rsync -e 'ssh -p 18765' -r docs #{username}@#{host_name}:public_html/#{project_name}/#{version_string}/`
 
 
 puts "Publishing"
-puts `pod trunk push --swift-version=4.1 HoneyBee.podspec`
+puts `pod trunk push --swift-version=4.1 #{project_name}.podspec`
 
 
 puts "Linking Current"
-Net::SSH.start(hostname, username, :port=>18765) do |ssh|
-  result = ssh.exec!("cd public_html/HoneyBee; rm current; ln -sf #{version_string} current; ls -l current")
+Net::SSH.start(host_name, username, :port=>18765) do |ssh|
+  result = ssh.exec!("cd public_html/#{project_name}; rm current; ln -sf #{version_string} current; ls -l current")
   puts result
 end
 
 puts "Updating CocoaPods Homepage"
-puts `curl "http://207.254.41.223:4567/redeploy/HoneyBee/latest"`
+puts `curl "http://207.254.41.223:4567/redeploy/#{project_name}/latest"`
