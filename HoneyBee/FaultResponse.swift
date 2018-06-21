@@ -27,19 +27,23 @@ public enum FaultResponse {
 	/// Invoke a custom handler with the falure message
 	case custom(handler: (String)->Void)
 	
-	func evaluate(_ flag: Bool, _ message: String) {
+	public func evaluate(_ flag: Bool, _ message: @autoclosure ()->String) {
 		if flag == false {
 			switch self {
 			case .suppress :
 				break
 			case .warn:
-				print("HoneyBee Warning: \(message)")
+				let realizedMessage = message()
+				print("HoneyBee Warning: \(realizedMessage)")
 			case .assert:
-				assertionFailure(message)
+				let realizedMessage = message()
+				assertionFailure(realizedMessage)
 			case .fail:
-				preconditionFailure(message)
+				let realizedMessage = message()
+				preconditionFailure(realizedMessage)
 			case .custom(let handler):
-				handler(message)
+				let realizedMessage = message()
+				handler(realizedMessage)
 			}
 		}
 	}
