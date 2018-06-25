@@ -87,7 +87,9 @@ final public class Link<B> : Executable, PathDescribing  {
 	public func chain<C,Failable>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B, @escaping (Failable) -> Void) -> Void) -> Link<C> where Failable: FailableResultProtocol, Failable.Wrapped == C {
 		let wrapperFunction = {(a: Any, callback: @escaping (FailableResult<C>) -> Void) -> Void in
 			guard let b = a as? B else {
-				preconditionFailure("a is not of type B")
+				let message = "a is not of type B"
+				HoneyBee.internalFailureResponse.evaluate(false, message)
+				preconditionFailure(message)
 			}
 			function(b) { failable in
 				callback(FailableResult(failable))
@@ -213,7 +215,7 @@ extension Link {
 					})
 				}
 			} else {
-				preconditionFailure("Lost self reference")
+				HoneyBee.internalFailureResponse.evaluate(false, "Lost self reference")
 			}
 		}
 	}
@@ -296,7 +298,9 @@ extension Link {
 		
 		let returnLink = lastLink.chain { (_:R) -> B in
 			guard let storedB = storedB else {
-				preconditionFailure("should not be nil: storedB")
+				let message = "Lost self reference"
+				HoneyBee.internalFailureResponse.evaluate(false, message)
+				preconditionFailure(message)
 			}
 			return storedB
 		}
@@ -1148,7 +1152,9 @@ extension Link {
 							result = r
 						}
 				} else {
-					preconditionFailure("Lost self reference in retry")
+					let message = "Lost self reference in retry"
+					HoneyBee.internalFailureResponse.evaluate(false, message)
+					preconditionFailure(message)
 				}
 			}
 			

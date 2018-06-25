@@ -34,7 +34,7 @@ struct ConcurrentQueue<T> {
 	
 	func drain(_ receiver: @escaping (T) -> Void) {
 		lockedState.access { state in
-			precondition(state.drain == nil, "Can only call drain once.")
+			HoneyBee.internalFailureResponse.evaluate(state.drain == nil, "Can only call drain once.")
 			state.drain = receiver
 			while state.array.count > 0 {
 				receiver(state.array.removeFirst())

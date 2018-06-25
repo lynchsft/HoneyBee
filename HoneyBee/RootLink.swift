@@ -25,7 +25,9 @@ final public class RootLink : Executable, ErrorHandling {
 	public func setErrorHandler(_ errorHandler: @escaping (ErrorContext) -> Void ) -> Link<B> {
 		let function = {(a: Any, block: @escaping (FailableResult<B>) -> Void) -> Void in
 			guard let t = a as? B else {
-				preconditionFailure("a is not of type B")
+				let message = "a is not of type B"
+				HoneyBee.internalFailureResponse.evaluate(false, message)
+				preconditionFailure(message)
 			}
 			block(.success(t))
 		}
