@@ -259,7 +259,7 @@ class MultiPathTests: XCTestCase {
 				.chain(finishExpectation.fulfill)
 		}
 		
-		waitForExpectations(timeout: TimeInterval(Double(source.count) * sleepSeconds + 1.0)) { error in
+		waitForExpectations(timeout: TimeInterval(Double(source.count) * sleepSeconds + 2.0)) { error in
 			if let error = error {
 				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
 			}
@@ -355,7 +355,7 @@ class MultiPathTests: XCTestCase {
 				.chain(finishExpectation.fulfill)
 		}
 		
-		waitForExpectations(timeout: TimeInterval(Double(source.count) * sleepSeconds + 1.0)) { error in
+		waitForExpectations(timeout: TimeInterval(Double(source.count) * sleepSeconds + 2.0)) { error in
 			if let error = error {
 				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
 			}
@@ -471,7 +471,7 @@ class MultiPathTests: XCTestCase {
 				.chain(finishExpectation.fulfill)
 		}
 		
-		waitForExpectations(timeout: TimeInterval(Double(source.count) * sleepSeconds + 1.0)) { error in
+		waitForExpectations(timeout: TimeInterval(Double(source.count) * sleepSeconds + 2.0)) { error in
 			if let error = error {
 				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
 			}
