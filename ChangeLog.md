@@ -1,6 +1,11 @@
 
 # Change Log
 ---
+ * [c854469](../../commit/c854469) - __(Alex Lynch)__ Widen the context switching overhead margin for some multi-path tests.
+ * [c118436](../../commit/c118436) - __(Alex Lynch)__ Signal all internal errors through the internalFailureResponse handler.
+ * [9e71e0d](../../commit/9e71e0d) - __(Alex Lynch)__ Publicize FaultResponse.evaluate and improve debugger interaction.
+ * [f5fadef](../../commit/f5fadef) - __(Alex Lynch)__ Standardize release file.
+ * [8accc7b](../../commit/8accc7b) - __(Alex Lynch)__ Mark as v2.6.0
  * [20e7794](../../commit/20e7794) - __(Alex Lynch)__ Alter behavior of `setCompletionHandler` to permit only one error.
  * [842aede](../../commit/842aede) - __(Alex Lynch)__ Mark as v2.5.2
  * [a583c7e](../../commit/a583c7e) - __(Alex Lynch)__ Synchronize access to Honey.*response FaultResponses.
