@@ -614,5 +614,32 @@ class ErrorHandlingTests: XCTestCase {
 			}
 		}
 	}
+	
+	func testFailableResultChains() {
+		let expect1 = expectation(description: "Chain 1 should complete")
+		let expect2 = expectation(description: "Chain 2 should complete")
+		
+		let generator = FibonaciGenerator()
+		HoneyBee.start()
+			.setErrorHandler(fail)
+			.insert(generator)
+			.chain(FibonaciGenerator.ready)
+			.chain(assertEquals =<< true)
+			.chain(expect1.fulfill)
+		
+		HoneyBee.start { root in
+			root.setErrorHandler(fail)
+				.insert(generator)
+				.chain(FibonaciGenerator.next)
+				.chain(assertEquals =<< 1)
+				.chain(expect2.fulfill)
+		}
+		
+		waitForExpectations(timeout: 1) { error in
+			if let error = error {
+				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
+			}
+		}
+	}
 }
 

@@ -8,12 +8,6 @@
 
 import Foundation
 
-fileprivate func tname(_ t: Any) -> String {
-	return String(describing: type(of: t))
-}
-
-infix operator <+ : AdditionPrecedence
-infix operator +> : AdditionPrecedence
 
 /**
 `Link` is the primary interface for HoneyBee processes.
@@ -518,7 +512,7 @@ fileprivate func elevate<T, C>(_ function: @escaping (T) -> (@escaping (C?, Erro
 	}
 }
 
-extension Link : Chainable {
+extension Link : ErroringChainable {
 	
 	@discardableResult
 	public func chain(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B) -> () throws -> Void) -> Link<B> {
@@ -961,17 +955,6 @@ extension Link where B : Collection {
 			}
 		}
 	}
-}
-
-/// Protocol for handling Optionals as a protocol. Useful for generic constraints
-public protocol OptionalProtocol {
-	/// The type which this optional wraps
-	associatedtype WrappedType
-	
-	/// Return an optional value of the wrapped type.
-	///
-	/// - Returns: an optional value
-	func getWrapped() -> WrappedType?
 }
 
 /// Optional implements OptionalProtocol for use in generic constraints

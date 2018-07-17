@@ -80,8 +80,7 @@ class SinglePathTests: XCTestCase {
 
 		var optionallyCompleted = false
 
-		HoneyBee.start(on: DispatchQueue.main) { root in
-			root.setErrorHandler(fail)
+		HoneyBee.start(on: DispatchQueue.main)
 				.insert(Optional(7))
 				.optionally { link in
 					link.chain(assertEquals =<< 7)
@@ -91,7 +90,6 @@ class SinglePathTests: XCTestCase {
 				.drop()
 				.chain{ XCTAssert(optionallyCompleted, "Optionally chain should have completed by now") }
 				.chain(expect.fulfill)
-		}
 
 		waitForExpectations(timeout: 1) { error in
 			if let error = error {
@@ -105,8 +103,7 @@ class SinglePathTests: XCTestCase {
 		let optionalExpect = expectation(description: "Optional expect should not be reached")
 		optionalExpect.isInverted = true
 
-		HoneyBee.start(on: DispatchQueue.main) { root in
-			root.setErrorHandler(fail)
+		HoneyBee.start(on: DispatchQueue.main)
 				.insert(Optional<Int>(nilLiteral: ()))
 				.optionally { link in
 					link.drop()
@@ -114,7 +111,6 @@ class SinglePathTests: XCTestCase {
 				}
 				.drop()
 				.chain(expect.fulfill)
-		}
 
 		waitForExpectations(timeout: 1) { error in
 			if let error = error {
@@ -130,8 +126,8 @@ class SinglePathTests: XCTestCase {
 			//ignore
 		})
 		
-		HoneyBee.start { root in
-			root.setErrorHandler(fail)
+		HoneyBee.start()
+				.setErrorHandler(fail)
 				.chain{ (callback: (FailableResult<Int>) -> Void) in
 					callback(.success(1))
 					callback(.success(2))
@@ -140,7 +136,6 @@ class SinglePathTests: XCTestCase {
 				}
 				.chain(assertEquals =<< 1)
 				.chain(finishExpectation.fulfill)
-		}
 		
 		waitForExpectations(timeout: 3) { error in
 			if let error = error {
@@ -156,8 +151,7 @@ class SinglePathTests: XCTestCase {
 			XCTAssert(Thread.isMainThread == isMain, "Thead-mainness expected to be \(isMain) but is \(Thread.isMainThread)")
 		}
 		
-		HoneyBee.start(on: DispatchQueue.main) { root in
-			root.setErrorHandler(fail)
+		HoneyBee.start(on: DispatchQueue.main)
 				.insert(4)
 				.chain(self.funcContainer.intToString)
 				.drop()
@@ -167,35 +161,6 @@ class SinglePathTests: XCTestCase {
 				.setBlockPerformer(DispatchQueue.main)
 				.chain(assertThreadIsMain =<< true)
 				.chain(expect.fulfill)
-		}
-		
-		waitForExpectations(timeout: 1) { error in
-			if let error = error {
-				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
-			}
-		}
-	}
-	
-	func testFailableResultChains() {
-		let expect1 = expectation(description: "Chain 1 should complete")
-		let expect2 = expectation(description: "Chain 2 should complete")
-		
-		let generator = FibonaciGenerator()
-		HoneyBee.start { root in
-			root.setErrorHandler(fail)
-				.insert(generator)
-				.chain(FibonaciGenerator.ready)
-				.chain(assertEquals =<< true)
-				.chain(expect1.fulfill)
-		}
-		
-		HoneyBee.start { root in
-			root.setErrorHandler(fail)
-				.insert(generator)
-				.chain(FibonaciGenerator.next)
-				.chain(assertEquals =<< 1)
-				.chain(expect2.fulfill)
-		}
 		
 		waitForExpectations(timeout: 1) { error in
 			if let error = error {
@@ -208,8 +173,7 @@ class SinglePathTests: XCTestCase {
 		let expectFinal = expectation(description: "Chain should complete")
 		let expectTunnel = expectation(description: "Tunnel chain should complete")
 		
-		HoneyBee.start { root in
-			root.setErrorHandler(fail)
+		HoneyBee.start()
 				.insert(4)
 				.tunnel { link in
 					link.chain(self.funcContainer.intToString)
@@ -219,7 +183,6 @@ class SinglePathTests: XCTestCase {
 				.chain(self.funcContainer.multiplyInt)
 				.chain(assertEquals =<< 8)
 				.chain(expectFinal.fulfill)
-		}
 		
 		waitForExpectations(timeout: 1) { error in
 			if let error = error {
@@ -231,13 +194,11 @@ class SinglePathTests: XCTestCase {
 	func testKeyPath() {
 		let expect1 = expectation(description: "KeyPath chain should complete")
 		
-		HoneyBee.start { root in
-			root.setErrorHandler(fail)
+		HoneyBee.start()
 				.insert("catdog")
 				.chain(\String.utf16.count)
 				.chain(assertEquals =<< 6)
 				.chain(expect1.fulfill)
-		}
 		
 		waitForExpectations(timeout: 1) { error in
 			if let error = error {
@@ -249,9 +210,7 @@ class SinglePathTests: XCTestCase {
 	func testGetBlockPerformer() {
 		let expect1 = expectation(description: "KeyPath chain should complete")
 		
-		let link1 =
-		HoneyBee.start(on: DispatchQueue.main)
-				.setErrorHandler(fail)
+		let link1 = HoneyBee.start(on: DispatchQueue.main)				
 			
 		XCTAssertEqual(HoneyBee.getBlockPerformer(of: link1) as? DispatchQueue, DispatchQueue.main)
 		

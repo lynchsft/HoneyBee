@@ -52,7 +52,7 @@ chain_function_signatures_text = %[
 	ret = signature
 	unless signature_declares_error(signature)
 		insertion_index = signature.rindex(" ->")
-		ret = [signature.insert(insertion_index," throws")]
+		ret = [signature.dup.insert(insertion_index," throws"), signature]
 	end
 	ret
 }.flatten
@@ -60,7 +60,9 @@ chain_function_signatures_text = %[
 @chain_function_signatures.sort! {|a,b| a.size <=> b.size}
 
 def generate_chainable()
-	generated_chain_declarations = []
+	safe_chain_declarations = []
+	erroring_chain_declarations = []
+	
 
 	@chain_function_signatures.each {|function_signature|
 		include_error_handler = signature_declares_error(function_signature)
@@ -70,19 +72,28 @@ def generate_chainable()
 			"///Creates a new Link which transforms argument of type B to type C and appends the link to the execution list of this Link" :
 			"///Creates a new Link which passes through argument of type B and appends the link to the execution list of this Link"
 		
-		generated_chain_declarations << documentation
-		generated_chain_declarations << "@discardableResult\nfunc chain#{extra_generic_parameter}(file: StaticString, line: UInt, functionDescription: String?, _ function: @escaping #{function_signature} ) -> Link<#{transform_result_type}>"
-		generated_chain_declarations << ""
+		declarations = include_error_handler ? erroring_chain_declarations : safe_chain_declarations
+		declarations << documentation
+		declarations << "@discardableResult\nfunc chain#{extra_generic_parameter}(file: StaticString, line: UInt, functionDescription: String?, _ function: @escaping #{function_signature} ) -> #{include_error_handler ? "":"Safe"}Link<#{transform_result_type}>"
+		declarations << ""
 	}
 
 
 	chainable_protocol_string = %[
-/// Generated protocol declaring chain functions.
-protocol Chainable {
+/// Generated protocol declaring safe chain functions.
+protocol SafeChainable {
 	associatedtype B
 
-#{generated_chain_declarations.join("\n")}
+#{safe_chain_declarations.join("\n")}
 }
+
+/// Generated protocol declaring erroring chain functions.
+protocol ErroringChainable  {
+	associatedtype B
+
+#{erroring_chain_declarations.join("\n")}
+}
+
 ]
 	output_to_file_if_different("Chainable.swift",chainable_protocol_string)
 end

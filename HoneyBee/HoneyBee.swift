@@ -27,10 +27,11 @@ public struct HoneyBee {
 	///   - file: used for debugging
 	///   - line: used for debugging
 	///   - defineBlock: the define block is where you declare your process chain. The value passed into `defineBlock` is a `RootLink`.
-	public static func start(on blockPerformer: AsyncBlockPerformer = DispatchQueue.global(), file: StaticString = #file, line: UInt = #line, _ defineBlock: @escaping (RootLink) -> Void) {
-		let root = RootLink(blockPerformer: blockPerformer, path: ["start: \(file):\(line)"])
+	public static func start(on blockPerformer: AsyncBlockPerformer = DispatchQueue.global(), file: StaticString = #file, line: UInt = #line, _ defineBlock: @escaping (SafeLink<Void>) -> Void) {
+		let safeLink = self.start(on: blockPerformer, file: file, line: line)
+		
 		blockPerformer.asyncPerform {
-			defineBlock(root)
+			defineBlock(safeLink)
 		}
 	}
 	
@@ -49,8 +50,22 @@ public struct HoneyBee {
 	///   - file: used for debugging
 	///   - line: used for debugging
 	/// - Returns: a `RootLink` to being declaring your recipe.
-	public static func start(on blockPerformer: AsyncBlockPerformer = DispatchQueue.global(), file: StaticString = #file, line: UInt = #line) -> RootLink {
-		return RootLink(blockPerformer: blockPerformer, path: ["start: \(file):\(line)"])
+	public static func start(on blockPerformer: AsyncBlockPerformer = DispatchQueue.global(), file: StaticString = #file, line: UInt = #line) -> SafeLink<Void> {
+		let link = Link<Void>(function: { (_, callback) in
+			callback(.success(Void()))
+		}, errorHandler: { (errorContext) in
+			HoneyBee.internalFailureResponse.evaluate(false, "Imposible error in SafeLink: \(errorContext)")
+		}, blockPerformer: blockPerformer,
+		   errorBlockPerformer: blockPerformer,
+		   path: ["start: \(file):\(line)"],
+		   functionFile: file,
+		   functionLine: line)
+		
+		blockPerformer.asyncPerform {
+			link.execute(argument: Void(), completion: { })
+		}
+
+		return SafeLink<Void>(link)
 	}
 	
 	private static let functionUnderCallResponseLock = AtomicValue(value: FaultResponse.fail)
@@ -90,6 +105,13 @@ public struct HoneyBee {
 	/// This method is useful to implementors of custom link behaviors.
 	/// - Returns: the `AsyncBlockPerformer` of the given link.
 	public static func getBlockPerformer<X>(of link: Link<X>) -> AsyncBlockPerformer {
+		return link.getBlockPerformer()
+	}
+	
+	/// Utility function to retreive the block performer of a given link.
+	/// This method is useful to implementors of custom link behaviors.
+	/// - Returns: the `AsyncBlockPerformer` of the given link.
+	public static func getBlockPerformer<X>(of link: SafeLink<X>) -> AsyncBlockPerformer {
 		return link.getBlockPerformer()
 	}
 }

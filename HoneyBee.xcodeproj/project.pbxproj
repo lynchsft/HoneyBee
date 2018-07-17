@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		FA1A841B1FD2E0470093D11A /* FinallyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA1A841A1FD2E0470093D11A /* FinallyTests.swift */; };
+		FA202E5120F5C67700B2489D /* SafeLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA202E5020F5C67700B2489D /* SafeLink.swift */; };
 		FA2081DB1FD1C0A4003145FB /* FaultResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA2081DA1FD1C0A4003145FB /* FaultResponse.swift */; };
 		FA25B0151F9D0885006F8DEE /* TestingFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA25B0141F9D0885006F8DEE /* TestingFunctions.swift */; };
 		FA25B0171F9D0931006F8DEE /* MultiPathTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA25B0161F9D0931006F8DEE /* MultiPathTests.swift */; };
@@ -26,13 +27,13 @@
 		FA62A2AF1FC9FBC100385D22 /* HoneyBee.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A2A01FC9FBC100385D22 /* HoneyBee.swift */; };
 		FA62A2B01FC9FBC100385D22 /* Chainable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A2A11FC9FBC100385D22 /* Chainable.swift */; };
 		FA62A2B11FC9FBC100385D22 /* PathDescribing.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A2A21FC9FBC100385D22 /* PathDescribing.swift */; };
-		FA62A2B21FC9FBC100385D22 /* RootLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A2A31FC9FBC100385D22 /* RootLink.swift */; };
 		FA62A2B31FC9FBC100385D22 /* ErrorHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A2A41FC9FBC100385D22 /* ErrorHandling.swift */; };
 		FA62A2B41FC9FBC100385D22 /* AsyncBlockPerformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A2A51FC9FBC100385D22 /* AsyncBlockPerformer.swift */; };
 		FA62A2B51FC9FBC100385D22 /* ChainableFailable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A2A61FC9FBC100385D22 /* ChainableFailable.swift */; };
 		FA62A2B81FC9FBCA00385D22 /* ConcurentQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A2B61FC9FBCA00385D22 /* ConcurentQueue.swift */; };
 		FA62A2B91FC9FBCA00385D22 /* AtomicValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A2B71FC9FBCA00385D22 /* AtomicValue.swift */; };
 		FAF0C3061FD1AD6B00D1F177 /* ConcurrentFunctionTools.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAF0C3051FD1AD6B00D1F177 /* ConcurrentFunctionTools.swift */; };
+		FAF5828120FE0E0B00E135CB /* LinkCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAF5828020FE0E0B00E135CB /* LinkCommon.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,6 +48,7 @@
 
 /* Begin PBXFileReference section */
 		FA1A841A1FD2E0470093D11A /* FinallyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinallyTests.swift; sourceTree = "<group>"; };
+		FA202E5020F5C67700B2489D /* SafeLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafeLink.swift; sourceTree = "<group>"; };
 		FA2081DA1FD1C0A4003145FB /* FaultResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaultResponse.swift; sourceTree = "<group>"; };
 		FA25B0141F9D0885006F8DEE /* TestingFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestingFunctions.swift; sourceTree = "<group>"; };
 		FA25B0161F9D0931006F8DEE /* MultiPathTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiPathTests.swift; sourceTree = "<group>"; };
@@ -71,13 +73,13 @@
 		FA62A2A01FC9FBC100385D22 /* HoneyBee.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HoneyBee.swift; sourceTree = "<group>"; };
 		FA62A2A11FC9FBC100385D22 /* Chainable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Chainable.swift; sourceTree = "<group>"; };
 		FA62A2A21FC9FBC100385D22 /* PathDescribing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PathDescribing.swift; sourceTree = "<group>"; };
-		FA62A2A31FC9FBC100385D22 /* RootLink.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RootLink.swift; sourceTree = "<group>"; };
 		FA62A2A41FC9FBC100385D22 /* ErrorHandling.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ErrorHandling.swift; sourceTree = "<group>"; };
 		FA62A2A51FC9FBC100385D22 /* AsyncBlockPerformer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AsyncBlockPerformer.swift; sourceTree = "<group>"; };
 		FA62A2A61FC9FBC100385D22 /* ChainableFailable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChainableFailable.swift; sourceTree = "<group>"; };
 		FA62A2B61FC9FBCA00385D22 /* ConcurentQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConcurentQueue.swift; sourceTree = "<group>"; };
 		FA62A2B71FC9FBCA00385D22 /* AtomicValue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AtomicValue.swift; sourceTree = "<group>"; };
 		FAF0C3051FD1AD6B00D1F177 /* ConcurrentFunctionTools.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConcurrentFunctionTools.swift; sourceTree = "<group>"; };
+		FAF5828020FE0E0B00E135CB /* LinkCommon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkCommon.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -167,8 +169,9 @@
 				FA62A2A01FC9FBC100385D22 /* HoneyBee.swift */,
 				FA62A29D1FC9FBC100385D22 /* JoinPoint.swift */,
 				FA62A29E1FC9FBC100385D22 /* Link.swift */,
+				FAF5828020FE0E0B00E135CB /* LinkCommon.swift */,
 				FA62A2A21FC9FBC100385D22 /* PathDescribing.swift */,
-				FA62A2A31FC9FBC100385D22 /* RootLink.swift */,
+				FA202E5020F5C67700B2489D /* SafeLink.swift */,
 			);
 			name = Core;
 			sourceTree = "<group>";
@@ -340,6 +343,7 @@
 			files = (
 				FA62A2AD1FC9FBC100385D22 /* Link.swift in Sources */,
 				FA62A2B01FC9FBC100385D22 /* Chainable.swift in Sources */,
+				FAF5828120FE0E0B00E135CB /* LinkCommon.swift in Sources */,
 				FA62A2B91FC9FBCA00385D22 /* AtomicValue.swift in Sources */,
 				FA62A2A71FC9FBC100385D22 /* FailureRate.swift in Sources */,
 				FA62A2AA1FC9FBC100385D22 /* BindOperator.swift in Sources */,
@@ -347,11 +351,11 @@
 				FA2081DB1FD1C0A4003145FB /* FaultResponse.swift in Sources */,
 				FAF0C3061FD1AD6B00D1F177 /* ConcurrentFunctionTools.swift in Sources */,
 				FA62A2B81FC9FBCA00385D22 /* ConcurentQueue.swift in Sources */,
-				FA62A2B21FC9FBC100385D22 /* RootLink.swift in Sources */,
 				FA62A2A81FC9FBC100385D22 /* Executable.swift in Sources */,
 				FA62A2AB1FC9FBC100385D22 /* FailableResult.swift in Sources */,
 				FA62A2B41FC9FBC100385D22 /* AsyncBlockPerformer.swift in Sources */,
 				FA62A2AC1FC9FBC100385D22 /* JoinPoint.swift in Sources */,
+				FA202E5120F5C67700B2489D /* SafeLink.swift in Sources */,
 				FA62A2B11FC9FBC100385D22 /* PathDescribing.swift in Sources */,
 				FA62A2B51FC9FBC100385D22 /* ChainableFailable.swift in Sources */,
 				FA62A2A91FC9FBC100385D22 /* ErrorContext.swift in Sources */,
