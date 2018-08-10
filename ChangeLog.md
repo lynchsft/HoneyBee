@@ -1,6 +1,7 @@
 
 # Change Log
 ---
+ * [ac90178](../../commit/ac90178) - __(Alex Lynch)__ Mark as v2.6.2
  * [71fd985](../../commit/71fd985) - __(Alex Lynch)__ Implement new bind flavors.
  * [653bcdf](../../commit/653bcdf) - __(Alex Lynch)__ Improved error logging for AtomicValue.
  * [52090f7](../../commit/52090f7) - __(Alex Lynch)__ Mark as v2.6.1
