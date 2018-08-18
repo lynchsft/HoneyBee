@@ -98,7 +98,7 @@ class AtomicInt : AtomicValue<Int>, ExpressibleByIntegerLiteral {
 	deinit {
 		if let valueAtDeinit = self.valueAtDeinit {
 			let value = self.get()
-			HoneyBee.internalFailureResponse.evaluate(value == valueAtDeinit, "<\(type(of: self)) \(Unmanaged.passUnretained(self).toOpaque()): was \(valueAtDeinit) at deinit>")
+			HoneyBee.internalFailureResponse.evaluate(value == valueAtDeinit, "<\(type(of: self)) \(Unmanaged.passUnretained(self).toOpaque())> was \(value) at deinit. Expected \(valueAtDeinit).")
 		}
 		
 		if let notify = self.notifyBlock {

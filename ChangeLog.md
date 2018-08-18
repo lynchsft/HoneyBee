@@ -1,6 +1,10 @@
 
 # Change Log
 ---
+ * [ac90178](../../commit/ac90178) - __(Alex Lynch)__ Mark as v2.6.2
+ * [71fd985](../../commit/71fd985) - __(Alex Lynch)__ Implement new bind flavors.
+ * [653bcdf](../../commit/653bcdf) - __(Alex Lynch)__ Improved error logging for AtomicValue.
+ * [52090f7](../../commit/52090f7) - __(Alex Lynch)__ Mark as v2.6.1
  * [25872b4](../../commit/25872b4) - __(Alex Lynch)__ Mark as v2.6.1
  * [c854469](../../commit/c854469) - __(Alex Lynch)__ Widen the context switching overhead margin for some multi-path tests.
  * [c118436](../../commit/c118436) - __(Alex Lynch)__ Signal all internal errors through the internalFailureResponse handler.

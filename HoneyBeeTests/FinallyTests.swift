@@ -31,8 +31,8 @@ class FinallyTests: XCTestCase {
 		let incrementCounter = { counter += 1 }
 		let finishExpectation = expectation(description: "Should reach the end of the chain")
 		
-		HoneyBee.start { root in
-			root.setErrorHandler(fail)
+		HoneyBee.start()
+				.setErrorHandler(fail)
 				.finally { link in
 					link.chain { XCTAssert(counter == 4, "counter should be 4: was actually \(counter)") }
 						.chain(incrementCounter)
@@ -52,7 +52,6 @@ class FinallyTests: XCTestCase {
 						.chain(incrementCounter)
 				}
 				.chain(incrementCounter)
-		}
 		
 		waitForExpectations(timeout: 3) { error in
 			if let error = error {
@@ -97,8 +96,8 @@ class FinallyTests: XCTestCase {
 		
 		func handleError(_ error: Error) {} // we cause an error on purpose
 		
-		HoneyBee.start { root in
-			root.setErrorHandler(fail) // this is just to start off with. We update the error handler below
+		HoneyBee.start()
+				.setErrorHandler(fail) // this is just to start off with. We update the error handler below
 				.finally { link in
 					link.chain { () -> Void in XCTAssert(counter == 2, "counter should be 2") ; finishExpectation.fulfill() }
 				}
@@ -109,7 +108,7 @@ class FinallyTests: XCTestCase {
 				.setErrorHandler(handleError)
 				.chain({ throw NSError(domain: "An expected error", code: -1, userInfo: nil) })
 				.chain(incrementCounter)
-		}
+
 		
 		waitForExpectations(timeout: 3) { error in
 			if let error = error {
@@ -124,8 +123,8 @@ class FinallyTests: XCTestCase {
 		let finallyExpectation = expectation(description: "Should reach the finally")
 		
 		
-		HoneyBee.start(on: DispatchQueue.main) { root in
-			root.setErrorHandler(fail)
+		HoneyBee.start(on: DispatchQueue.main)
+				.setErrorHandler(fail)
 				.finally { link in
 					link.chain(finallyExpectation.fulfill)
 				}
@@ -135,8 +134,6 @@ class FinallyTests: XCTestCase {
 				.chain(self.funcContainer.multiplyInt)
 				.drop()
 				.chain(finishExpectation.fulfill)
-		}
-		
 		
 		waitForExpectations(timeout: 141) { error in
 			if let error = error {
