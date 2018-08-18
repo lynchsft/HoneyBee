@@ -1,9 +1,13 @@
 
 # Change Log
 ---
+ * [62bb74a](../../commit/62bb74a) - __(Alex Lynch)__ Update to swift 4.2.
+ * [31c5942](../../commit/31c5942) - __(Alex Lynch)__ Add map to FailableResult monad.
+ * [d88c5f6](../../commit/d88c5f6) - __(Alex Lynch)__ Mark as v2.6.2
  * [ac90178](../../commit/ac90178) - __(Alex Lynch)__ Mark as v2.6.2
  * [71fd985](../../commit/71fd985) - __(Alex Lynch)__ Implement new bind flavors.
  * [653bcdf](../../commit/653bcdf) - __(Alex Lynch)__ Improved error logging for AtomicValue.
+ * [a6ab1b4](../../commit/a6ab1b4) - __(Alex Lynch)__ Initial implementation of SafeLink strategy.
  * [52090f7](../../commit/52090f7) - __(Alex Lynch)__ Mark as v2.6.1
  * [25872b4](../../commit/25872b4) - __(Alex Lynch)__ Mark as v2.6.1
  * [c854469](../../commit/c854469) - __(Alex Lynch)__ Widen the context switching overhead margin for some multi-path tests.
