@@ -55,6 +55,20 @@ public enum FailableResult<T> : FailableResultProtocol {
 			self = .failure(error)
 		}
 	}
+	
+	/// implement functor API
+	public func map<R>(_ transform: (T) throws -> R) -> FailableResult<R> {
+		switch self {
+		case let .failure(error):
+			return .failure(error) // switch generic types
+		case let .success(t) :
+			do {
+				return .success(try transform(t))
+			} catch {
+				return .failure(error)
+			}
+		}
+	}
 }
 
 
