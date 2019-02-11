@@ -10,6 +10,7 @@ import Foundation
 
 /// Protocol describing common error handling behavior.
 public protocol ErrorHandling {
+/// The outbound type of an implmementing `Link`
 	associatedtype B
 	
 	/// Set the error handling function for the receiver.

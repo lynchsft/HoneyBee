@@ -8,6 +8,12 @@
 
 import Foundation
 
+/**
+* SafeLink is a representation of a `Link` which is guaranteed to non-erroring.
+* The interface of SafeLink is a proper subset of the interface to `Link`. All functions in `Link`
+* which are capable of introducing errors into the process chain are omitted from the interface of `SafeLink`.
+* To transition from a non-erroring chain to an erroring chain use `setErrorHandler:` which returns a full `Link`.
+*/
 public class SafeLink<B> : SafeChainable {
 	private let link: Link<B>
 	
