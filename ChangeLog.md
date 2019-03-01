@@ -1,6 +1,7 @@
 
 # Change Log
 ---
+ * [06e3796](../../commit/06e3796) - __(Alex Lynch)__ Mark as v2.7.0
  * [62bb74a](../../commit/62bb74a) - __(Alex Lynch)__ Update to swift 4.2.
  * [31c5942](../../commit/31c5942) - __(Alex Lynch)__ Add map to FailableResult monad.
  * [d88c5f6](../../commit/d88c5f6) - __(Alex Lynch)__ Mark as v2.6.2
