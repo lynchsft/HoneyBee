@@ -71,14 +71,14 @@ public func bind<A,R>(_ function: @escaping (A,A) -> R, _ arg: A) -> (A) -> R {
 	}
 }
 
-/// bind argument to function. Type: 1 onto 2
+/// bind argument to function. Type: 1 onto 3
 public func bind<A,C,R>(_ function: @escaping (A,A,C) throws -> R, _ arg: A) -> (A,C) throws -> R {
 	return { (a: A, c: C) in
 		return try function(arg, a, c)
 	}
 }
 
-/// bind argument to function. Type: 1 onto 2
+/// bind argument to function. Type: 1 onto 3
 public func bind<A,C,R>(_ function: @escaping (A,A,C) -> R, _ arg: A) -> (A,C) -> R {
 	return { (a: A, c: C) in
 		return  function(arg, a, c)
