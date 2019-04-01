@@ -20,12 +20,26 @@ public protocol FailableResultProtocol {
 	func value() throws -> Wrapped
 }
 
+#if swift(>=5.0)
+extension Result : FailableResultProtocol {
+	public func value() throws -> Success {
+		switch(self) {
+		case let .success(t) :
+			return t
+		case let .failure(error) :
+			throw error
+		}
+	}
+}
+#endif
+
 /// An enum containing the result of an operation which might fail.
 ///
 /// - success: The operation was successful.
 /// - failure: The operation was not successful.
 /// - let.success:: The result T of the operation.
 /// - let.failure:: The error describing the failure.
+@available(swift, deprecated: 5.0, message: "Use Swift.Result instead")
 public enum FailableResult<T> : FailableResultProtocol {
 	/// - success: The operation was successful.
 	/// - let.success:: The result T of the operation.

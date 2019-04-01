@@ -126,6 +126,7 @@ extension SafeLink {
 }
 
 extension SafeLink : ErrorHandling {
+	public typealias B = B
 	public func setErrorHandler(_ errorHandler: @escaping (ErrorContext) -> Void) -> Link<B> {
 		return self.link.setErrorHandler(errorHandler)
 	}

@@ -35,6 +35,16 @@ class TestingFunctions : Equatable {
 		callback("\(string)cat",nil)
 	}
 	
+	#if swift(>=5.0)
+	func stringToInt(string: String, callback: ((Result<Int, Error>) -> Void)?) {
+		if let int = Int(string) {
+			callback?(.success(int))
+		} else {
+			let error = NSError(domain: "couldn't convert string to int", code: -2, userInfo: ["string:": string])
+			callback?(.failure(error))
+		}
+	}
+	#else
 	func stringToInt(string: String, callback: ((FailableResult<Int>) -> Void)?) {
 		if let int = Int(string) {
 			callback?(.success(int))
@@ -43,6 +53,7 @@ class TestingFunctions : Equatable {
 			callback?(.failure(error))
 		}
 	}
+	#endif
 	
 	func intToString(int: Int, callback: (String) -> Void) {
 		return callback("\(int)")
