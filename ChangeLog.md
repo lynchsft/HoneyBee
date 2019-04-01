@@ -1,6 +1,9 @@
 
 # Change Log
 ---
+ * [46b05c5](../../commit/46b05c5) - __(Alex Lynch)__ Implement swift 5.0 support.
+ * [c94b9ef](../../commit/c94b9ef) - __(Alex Lynch)__ Mark as v2.7.1
+ * [430f228](../../commit/430f228) - __(Alex Lynch)__ Mark as v2.7.1
  * [ad8c7af](../../commit/ad8c7af) - __(Alex Lynch)__ Mark as v2.7.1
  * [06e3796](../../commit/06e3796) - __(Alex Lynch)__ Mark as v2.7.0
  * [62bb74a](../../commit/62bb74a) - __(Alex Lynch)__ Update to swift 4.2.
