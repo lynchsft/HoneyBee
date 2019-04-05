@@ -38,7 +38,7 @@ Pod::Spec.new do |s|
   s.tvos.deployment_target = "10.0"
   s.pod_target_xcconfig = { "SWIFT_VERSION" => "4.2" }
 
-  s.source       = { :git => "https://bitbucket.org/iam_apps/honeybee.git", :tag=>"v#{version_string}"}
+  s.source       = { :git => "https://github.com/lynchsft/HoneyBee.git", :tag=>"v#{version_string}"}
 
   s.source_files = "#{project_name}/*.swift"
 end	
@@ -67,6 +67,3 @@ Net::SSH.start(host_name, username, :port=>18765) do |ssh|
   result = ssh.exec!("cd public_html/#{project_name}; rm current; ln -sf #{version_string} current; ls -l current")
   puts result
 end
-
-puts "Updating CocoaPods Homepage"
-puts `curl "http://207.254.41.223:4567/redeploy/#{project_name}/latest"`
