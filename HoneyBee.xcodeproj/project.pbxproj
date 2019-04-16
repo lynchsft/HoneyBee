@@ -120,7 +120,6 @@
 			children = (
 				FA473BBA1E352CB1007E4D61 /* HoneyBee */,
 				FADE8BE81EE4F36400A1D2BA /* Supporting Files */,
-				FA4109791E9CFBC4002A6BA6 /* HoneyBeeTests */,
 				FA473BB91E352CB1007E4D61 /* Products */,
 				FA5FA32B1E70DE4B00625996 /* Frameworks */,
 			);
@@ -179,6 +178,7 @@
 		FA62A2971FC9FB9F00385D22 /* Lib */ = {
 			isa = PBXGroup;
 			children = (
+				FA4109791E9CFBC4002A6BA6 /* HoneyBeeTests */,
 				FA62A2B71FC9FBCA00385D22 /* AtomicValue.swift */,
 				FA62A2B61FC9FBCA00385D22 /* ConcurentQueue.swift */,
 				FAF0C3051FD1AD6B00D1F177 /* ConcurrentFunctionTools.swift */,
@@ -380,7 +380,7 @@
 			buildSettings = {
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				DEVELOPMENT_TEAM = A4Q9SQ9LHR;
-				INFOPLIST_FILE = HoneyBeeTests/Info.plist;
+				INFOPLIST_FILE = HoneyBee/HoneyBeeTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.iamapps.HoneyBeeTests;
@@ -394,7 +394,7 @@
 			buildSettings = {
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				DEVELOPMENT_TEAM = A4Q9SQ9LHR;
-				INFOPLIST_FILE = HoneyBeeTests/Info.plist;
+				INFOPLIST_FILE = HoneyBee/HoneyBeeTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.iamapps.HoneyBeeTests;
