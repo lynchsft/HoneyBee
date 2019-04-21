@@ -40,7 +40,7 @@ class SinglePathTests: XCTestCase {
 		
 		HoneyBee.start(on: DispatchQueue.main) { root in
 			root.setCompletionHandler(completionHandler)
-				.setBlockPerformer(DispatchQueue.global())
+				.setBlockPerformer(DefaultDispatchQueue())
 				.insert(4)
 				.chain(self.funcContainer.intToString)
 				.chain(self.funcContainer.stringToInt)
@@ -80,7 +80,7 @@ class SinglePathTests: XCTestCase {
 
 		var optionallyCompleted = false
 
-		HoneyBee.start(on: DispatchQueue.main)
+		HoneyBee.start(on: MainDispatchQueue())
 				.insert(Optional(7))
 				.optionally { link in
 					link.chain(assertEquals =<< 7)
@@ -104,7 +104,7 @@ class SinglePathTests: XCTestCase {
 		optionalExpect.isInverted = true
 
 		HoneyBee.start(on: DispatchQueue.main)
-				.insert(Optional<Int>(nilLiteral: ()))
+				.insert(Optional<Int>.none)
 				.optionally { link in
 					link.drop()
 						.chain(optionalExpect.fulfill)

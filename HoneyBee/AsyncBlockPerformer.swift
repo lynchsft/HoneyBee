@@ -35,3 +35,45 @@ extension NSManagedObjectContext : AsyncBlockPerformer {
 		self.perform(block)
 	}
 }
+
+public struct MainDispatchQueue: AsyncBlockPerformer {
+	public init(){}
+	public func asyncPerform(_ block: @escaping () -> Void) {
+		DispatchQueue.main.async(execute: block)
+	}
+}
+
+public struct DefaultDispatchQueue: AsyncBlockPerformer {
+	public init(){}
+	public func asyncPerform(_ block: @escaping () -> Void) {
+		DispatchQueue.global().async(execute: block)
+	}
+}
+
+public struct BackgroundDispatchQueue: AsyncBlockPerformer {
+	public init(){}
+	public func asyncPerform(_ block: @escaping () -> Void) {
+		DispatchQueue.global(qos: .background).async(execute: block)
+	}
+}
+
+public struct UtilityDispatchQueue: AsyncBlockPerformer {
+	public init(){}
+	public func asyncPerform(_ block: @escaping () -> Void) {
+		DispatchQueue.global(qos: .utility).async(execute: block)
+	}
+}
+
+public struct UserInitiatedDispatchQueue: AsyncBlockPerformer {
+	public init(){}
+	public func asyncPerform(_ block: @escaping () -> Void) {
+		DispatchQueue.global(qos: .userInitiated).async(execute: block)
+	}
+}
+
+public struct UserInteractiveDispatchQueue: AsyncBlockPerformer {
+	public init(){}
+	public func asyncPerform(_ block: @escaping () -> Void) {
+		DispatchQueue.global(qos: .userInteractive).async(execute: block)
+	}
+}
