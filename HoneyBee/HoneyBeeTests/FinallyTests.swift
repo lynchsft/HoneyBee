@@ -32,7 +32,7 @@ class FinallyTests: XCTestCase {
 		let finishExpectation = expectation(description: "Should reach the end of the chain")
 		
 		HoneyBee.start()
-				.setErrorHandler(fail)
+				.handlingErrors(with: fail)
 				.finally { link in
 					link.chain { XCTAssert(counter == 4, "counter should be 4: was actually \(counter)") }
 						.chain(incrementCounter)
@@ -68,7 +68,7 @@ class FinallyTests: XCTestCase {
 		let errorExpectation = expectation(description: "chain should error")
 		
 		HoneyBee.start { root in
-			let _ = root.setErrorHandler { _ in errorExpectation.fulfill() }
+			let _ = root.handlingErrors { _ in errorExpectation.fulfill() }
 						.chain(self.funcContainer.constantString)
 						.finally { link in
 							link.chain(assertEquals =<< "lamb")
@@ -97,7 +97,7 @@ class FinallyTests: XCTestCase {
 		func handleError(_ error: Error) {} // we cause an error on purpose
 		
 		HoneyBee.start()
-				.setErrorHandler(fail) // this is just to start off with. We update the error handler below
+				.handlingErrors(with: fail) // this is just to start off with. We update the error handler below
 				.finally { link in
 					link.chain { () -> Void in XCTAssert(counter == 2, "counter should be 2") ; finishExpectation.fulfill() }
 				}
@@ -105,7 +105,7 @@ class FinallyTests: XCTestCase {
 				.chain(incrementCounter)
 				.chain{ XCTAssert(counter == 1, "counter should be 1") }
 				.chain(incrementCounter)
-				.setErrorHandler(handleError)
+				.handlingErrors(with: handleError)
 				.chain({ throw NSError(domain: "An expected error", code: -1, userInfo: nil) })
 				.chain(incrementCounter)
 
@@ -124,7 +124,7 @@ class FinallyTests: XCTestCase {
 		
 		
 		HoneyBee.start(on: DispatchQueue.main)
-				.setErrorHandler(fail)
+				.handlingErrors(with: fail)
 				.finally { link in
 					link.chain(finallyExpectation.fulfill)
 				}

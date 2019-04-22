@@ -21,7 +21,7 @@ struct PrettyExamples {
 		func updateUI(withAverageReview: Int, commentsCount: Int) {}
 		
 		HoneyBee.start()
-				.setErrorHandler(handleError)
+				.handlingErrors(with: handleError)
 				.chain(fetchNewMovieTitle)
 				.branch { stem in
 					stem.chain(fetchReviews)
@@ -42,7 +42,7 @@ struct PrettyExamples {
 		func updateUI(withTotalWordsInNonTrivialReviews: Int) {}
 		
 		HoneyBee.start(on: DispatchQueue.main)
-				.setErrorHandler(handleError)
+				.handlingErrors(with:handleError)
 				.chain(fetchNewMovieTitle)
 				.chain(fetchReviews)
 				.map { elem in // parallel map
@@ -64,8 +64,8 @@ struct PrettyExamples {
 		func dewarpAndCleanupImage(_ image: Image, completion: (Image?, Error?) -> Void) {}
 		
 		HoneyBee.start()
-				.setErrorHandler { completionBlock(nil, $0) }
-				.branch { stem -> Link<(Data,Data)> in
+				.handlingErrors { completionBlock(nil, $0) }
+				.branch { stem -> Link<(Data,Data), DefaultDispatchQueue> in
 					stem.chain(loadWebResource =<< "dataprofile.txt")
 					+
 					stem.chain(loadWebResource =<< "imagedata.dat")

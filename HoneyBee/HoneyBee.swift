@@ -14,7 +14,26 @@ public struct HoneyBee {
 	/// `start()` defines and executes a HoneyBee recipe. For example:
 	///
 	///     HoneyBee.start { root in
-	///         root.setErrorHandler(funcE)
+	///         root.handlingErrrors(with: funcE)
+	///             .chain(funcA)
+	///             .chain(funcB)
+	///     }
+	///
+	/// The above example declares a HoneyBee recipe with error handling provided by `funcE` and a serial execution of `funcA` then `funcB`.
+	/// For more possible HoneyBee declaration patterns see `Link`
+	///
+	/// - Parameters:
+	///   - file: used for debugging
+	///   - line: used for debugging
+	///   - defineBlock: the define block is where you declare your process chain. The value passed into `defineBlock` is a `SafeLink`.
+	public static func start(file: StaticString = #file, line: UInt = #line, _ defineBlock: @escaping (SafeLink<Void, DefaultDispatchQueue>) -> Void) {
+		self.start(on: DefaultDispatchQueue(), file: file, line: line, defineBlock)
+	}
+	
+	/// `start()` defines and executes a HoneyBee recipe. For example:
+	///
+	///     HoneyBee.start { root in
+	///         root.handlingErrrors(with: funcE)
 	///             .chain(funcA)
 	///             .chain(funcB)
 	///     }
@@ -26,8 +45,8 @@ public struct HoneyBee {
 	///   - blockPerformer: The block performer to begin the process in.
 	///   - file: used for debugging
 	///   - line: used for debugging
-	///   - defineBlock: the define block is where you declare your process chain. The value passed into `defineBlock` is a `RootLink`.
-	public static func start(on blockPerformer: AsyncBlockPerformer = DispatchQueue.global(), file: StaticString = #file, line: UInt = #line, _ defineBlock: @escaping (SafeLink<Void>) -> Void) {
+	///   - defineBlock: the define block is where you declare your process chain. The value passed into `defineBlock` is a `SafeLink`.
+	public static func start<Performer: AsyncBlockPerformer>(on blockPerformer: Performer, file: StaticString = #file, line: UInt = #line, _ defineBlock: @escaping (SafeLink<Void, Performer>) -> Void) {
 		let safeLink = self.start(on: blockPerformer, file: file, line: line)
 		
 		blockPerformer.asyncPerform {
@@ -38,7 +57,25 @@ public struct HoneyBee {
 	/// `start()` defines and executes a HoneyBee recipe. For example:
 	///
 	///     HoneyBee.start()
-	///             .setErrorHandler(funcE)
+	///             .handlingErrrors(with: funcE)
+	///             .chain(funcA)
+	///             .chain(funcB)
+	///
+	/// The above example declares a HoneyBee recipe with error handling provided by `funcE` and a serial execution of `funcA` then `funcB`.
+	/// For more possible HoneyBee declaration patterns see `Link`
+	///
+	/// - Parameters:
+	///   - file: used for debugging
+	///   - line: used for debugging
+	/// - Returns: a `SafeLink` to being declaring your recipe.
+	public static func start(file: StaticString = #file, line: UInt = #line) -> SafeLink<Void, DefaultDispatchQueue> {
+		return self.start(on: DefaultDispatchQueue(), file: file, line: line)
+	}
+	
+	/// `start()` defines and executes a HoneyBee recipe. For example:
+	///
+	///     HoneyBee.start()
+	///             .handlingErrrors(with: funcE)
 	///             .chain(funcA)
 	///             .chain(funcB)
 	///
@@ -49,14 +86,13 @@ public struct HoneyBee {
 	///   - blockPerformer: The block performer to begin the process in.
 	///   - file: used for debugging
 	///   - line: used for debugging
-	/// - Returns: a `RootLink` to being declaring your recipe.
-	public static func start(on blockPerformer: AsyncBlockPerformer = DispatchQueue.global(), file: StaticString = #file, line: UInt = #line) -> SafeLink<Void> {
-		let link = Link<Void>(function: { (_, callback) in
+	/// - Returns: a `SafeLink` to being declaring your recipe.
+	public static func start<Performer: AsyncBlockPerformer>(on blockPerformer: Performer, file: StaticString = #file, line: UInt = #line) -> SafeLink<Void, Performer> {
+		let link = Link<Void, Performer>(function: { (_, callback) in
 			callback(.success(Void()))
 		}, errorHandler: { (errorContext) in
 			HoneyBee.internalFailureResponse.evaluate(false, "Imposible error in SafeLink: \(errorContext)")
 		}, blockPerformer: blockPerformer,
-		   errorBlockPerformer: blockPerformer,
 		   path: ["start: \(file):\(line)"],
 		   functionFile: file,
 		   functionLine: line)
@@ -65,7 +101,7 @@ public struct HoneyBee {
 			link.execute(argument: Void(), completion: { })
 		}
 
-		return SafeLink<Void>(link)
+		return SafeLink<Void, Performer>(link)
 	}
 	
 	private static let functionUnderCallResponseLock = AtomicValue(value: FaultResponse.fail)
@@ -104,14 +140,14 @@ public struct HoneyBee {
 	/// Utility function to retreive the block performer of a given link.
 	/// This method is useful to implementors of custom link behaviors.
 	/// - Returns: the `AsyncBlockPerformer` of the given link.
-	public static func getBlockPerformer<X>(of link: Link<X>) -> AsyncBlockPerformer {
+	public static func getBlockPerformer<X, Performer: AsyncBlockPerformer>(of link: Link<X, Performer>) -> Performer {
 		return link.getBlockPerformer()
 	}
 	
 	/// Utility function to retreive the block performer of a given link.
 	/// This method is useful to implementors of custom link behaviors.
 	/// - Returns: the `AsyncBlockPerformer` of the given link.
-	public static func getBlockPerformer<X>(of link: SafeLink<X>) -> AsyncBlockPerformer {
+	public static func getBlockPerformer<X, Performer: AsyncBlockPerformer>(of link: SafeLink<X, Performer>) -> Performer {
 		return link.getBlockPerformer()
 	}
 }

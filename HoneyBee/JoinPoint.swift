@@ -8,20 +8,18 @@
 
 import Foundation
 
-final class JoinPoint<A> : Executable, PathDescribing {
+final class JoinPoint<A, Performer: AsyncBlockPerformer> : Executable, PathDescribing {
 	typealias ExecutionResult = (Any?, () -> Void)
 	
 	private let resultLock = NSLock()
 	private var executionResult: ExecutionResult?
 	private var resultCallback: ((ExecutionResult) -> Void)?
-	private let blockPerformer: AsyncBlockPerformer
-	private let errorBlockPerformer: AsyncBlockPerformer
+	private let blockPerformer: Performer
 	private let errorHandler: ((ErrorContext) -> Void)
 	let path: [String]
 	
-	init(blockPerformer: AsyncBlockPerformer, errorBlockPerformer: AsyncBlockPerformer, path: [String], errorHandler: @escaping ((ErrorContext) -> Void)) {
+	init(blockPerformer: Performer, path: [String], errorHandler: @escaping ((ErrorContext) -> Void)) {
 		self.blockPerformer = blockPerformer
-		self.errorBlockPerformer = errorBlockPerformer
 		self.path = path
 		self.errorHandler = errorHandler
 	}
@@ -56,16 +54,15 @@ final class JoinPoint<A> : Executable, PathDescribing {
 		self.execute(argument: nil, completion:  {/* empty completion */})
 	}
 	
-	func conjoin<B>(_ other: JoinPoint<B>) -> Link<(A,B)> {
+	func conjoin<B>(_ other: JoinPoint<B, Performer>) -> Link<(A,B), Performer> {
 		HoneyBee.mismatchedConjoinResponse.evaluate(self.blockPerformer == other.blockPerformer,
 												 "conjoin detected between Links with different AsyncBlockPerformers. This can lead to unexpected results.")
 		var tuple: (A,B)? = nil
 		
-		let link = Link<(A,B)>(function: { _, callback in
+		let link = Link<(A,B), Performer>(function: { _, callback in
 			callback(.success(tuple!))
 		}, errorHandler: self.errorHandler,
 		   blockPerformer: self.blockPerformer,
-		   errorBlockPerformer: self.errorBlockPerformer,
 		   path: self.path+["conjoin"],
 		   functionFile: #file,
 		   functionLine: #line)
@@ -94,8 +91,9 @@ final class JoinPoint<A> : Executable, PathDescribing {
 	}
 }
 
+#warning("Check this")
 /// This is a best-effort check. Both of the known conformers of AsyncBlockPerformer are NSObject
-/// (yes, even DispatchQueue, I checked). We pass anything that we can't explictly verify is wrong. 
+/// (yes, even DispatchQueue, I checked). We pass anything that we can't explictly verify is wrong.
 fileprivate func ==(lhs: AsyncBlockPerformer, rhs: AsyncBlockPerformer) -> Bool {
 	switch (lhs, rhs) {
 	case (let lqueue as NSObject, let rqueue as NSObject):

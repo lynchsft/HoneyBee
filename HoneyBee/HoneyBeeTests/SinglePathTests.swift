@@ -127,7 +127,7 @@ class SinglePathTests: XCTestCase {
 		})
 		
 		HoneyBee.start()
-				.setErrorHandler(fail)
+				.handlingErrors(with: fail)
 				.chain{ (callback: (FailableResult<Int>) -> Void) in
 					callback(.success(1))
 					callback(.success(2))
@@ -152,9 +152,6 @@ class SinglePathTests: XCTestCase {
 		}
 		
 		HoneyBee.start(on: DispatchQueue.main)
-				.insert(4)
-				.chain(self.funcContainer.intToString)
-				.drop()
 				.chain(assertThreadIsMain =<< true)
 				.setBlockPerformer(DispatchQueue.global())
 				.chain(assertThreadIsMain =<< false)
@@ -212,11 +209,12 @@ class SinglePathTests: XCTestCase {
 		
 		let link1 = HoneyBee.start(on: DispatchQueue.main)				
 			
-		XCTAssertEqual(HoneyBee.getBlockPerformer(of: link1) as? DispatchQueue, DispatchQueue.main)
+		XCTAssertEqual(HoneyBee.getBlockPerformer(of: link1), DispatchQueue.main)
 		
 		let link2 = link1.setBlockPerformer(DispatchQueue.global())
 		
-		XCTAssertEqual(HoneyBee.getBlockPerformer(of: link1) as? DispatchQueue, DispatchQueue.global())
+		XCTAssertEqual(HoneyBee.getBlockPerformer(of: link1), DispatchQueue.main)
+		XCTAssertEqual(HoneyBee.getBlockPerformer(of: link2), DispatchQueue.global())
 		
 				link2.insert("catdog")
 				.chain(\String.utf16.count)

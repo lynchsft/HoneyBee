@@ -32,7 +32,7 @@ class MultiPathTests: XCTestCase {
 		
 		
 		HoneyBee.start { root in
-			root.setErrorHandler(fail)
+			root.handlingErrors(with: fail)
 				.insert(10)
 				.chain(self.funcContainer.intToString)
 				.chain(self.funcContainer.stringToInt)
@@ -61,7 +61,7 @@ class MultiPathTests: XCTestCase {
 		}
 		
 		HoneyBee.start()
-				.setErrorHandler(fail)
+				.handlingErrors(with: fail)
 				.branch { stem in
 					stem.chain(self.funcContainer.constantInt)
 					+
@@ -85,7 +85,7 @@ class MultiPathTests: XCTestCase {
 		let sleepTime:UInt32 = 1
 		
 		HoneyBee.start { root in
-			root.setErrorHandler(fail)
+			root.handlingErrors(with: fail)
 				.branch { stem in
 					let result1 = stem.chain(self.funcContainer.constantInt)
 					
@@ -102,11 +102,11 @@ class MultiPathTests: XCTestCase {
 		}
 		
 		HoneyBee.start { root in
-			root.setErrorHandler(fail)
+			root.handlingErrors(with: fail)
 				.branch { stem in
 					let result1 = stem.chain(self.funcContainer.constantInt)
 					
-					let result2:Link<String> = stem.chain(sleep =<< sleepTime)
+					let result2:Link<String, DefaultDispatchQueue> = stem.chain(sleep =<< sleepTime)
 						.insert(self.funcContainer)
 						.chain(TestingFunctions.constantString)
 					
@@ -130,8 +130,8 @@ class MultiPathTests: XCTestCase {
 		let sleepTime:UInt32 = 1
 		
 		HoneyBee.start { root in
-			root.setErrorHandler(fail)
-				.branch { stem in
+			root.handlingErrors(with: fail)
+				.branch { stem -> Link<String, DefaultDispatchQueue> in
 					let result1 = stem.chain(self.funcContainer.constantInt)
 					
 					let result2 = stem.chain(sleep =<< sleepTime)
@@ -146,16 +146,15 @@ class MultiPathTests: XCTestCase {
 		}
 		
 		HoneyBee.start { root in
-			root.setErrorHandler(fail)
+			root.handlingErrors(with: fail)
 				.branch { stem in
 					let result1 = stem.chain(self.funcContainer.constantInt)
 					
-					let result2:Link<String> = stem.chain(sleep =<< sleepTime)
+					let result2:Link<String, DefaultDispatchQueue> = stem.chain(sleep =<< sleepTime)
 						.insert(self.funcContainer)
 						.chain(TestingFunctions.constantString)
 					
 					return (result1 +> result2)
-					
 				}
 				.chain(assertEquals =<< "lamb")
 				.chain(expectB.fulfill)
@@ -178,7 +177,7 @@ class MultiPathTests: XCTestCase {
 		let finishExpectation = expectation(description: "Should reach the end of the chain")
 		
 		HoneyBee.start { root in
-			root.setErrorHandler(fail)
+			root.handlingErrors(with: fail)
 				.insert(source)
 				.map { elem in
 					elem.chain(self.funcContainer.multiplyInt)
@@ -235,7 +234,7 @@ class MultiPathTests: XCTestCase {
 		elementExpectation.expectedFulfillmentCount = source.count
 		
 		HoneyBee.start { root in
-			root.setErrorHandler(fail)
+			root.handlingErrors(with: fail)
 				.insert(source)
 				.map(limit: 1) { elem in
 					elem.tunnel { link in
@@ -272,7 +271,7 @@ class MultiPathTests: XCTestCase {
 		let finishExpectation = expectation(description: "Should reach the end of the chain")
 		
 		HoneyBee.start(on: DispatchQueue.main) { root in
-			root.setErrorHandler(fail)
+			root.handlingErrors(with: fail)
 				.insert(source)
 				.map { elem in
 					elem.chain{ (int:Int) -> Int in
@@ -298,7 +297,7 @@ class MultiPathTests: XCTestCase {
 		let finishExpectation = expectation(description: "Should reach the end of the chain")
 		
 		HoneyBee.start { root in
-			root.setErrorHandler(fail)
+			root.handlingErrors(with: fail)
 				.insert(source)
 				.filter { elem in
 					elem.chain(self.funcContainer.isEven)
@@ -341,7 +340,7 @@ class MultiPathTests: XCTestCase {
 		elementExpectation.expectedFulfillmentCount = source.count
 		
 		HoneyBee.start { root in
-			root.setErrorHandler(fail)
+			root.handlingErrors(with: fail)
 				.insert(source)
 				.filter(limit: 1) { elem in
 					elem.tunnel { link in
@@ -377,7 +376,7 @@ class MultiPathTests: XCTestCase {
 		let finishExpectation = expectation(description: "Should reach the end of the chain")
 		
 		HoneyBee.start { root in
-			root.setErrorHandler(fail)
+			root.handlingErrors(with: fail)
 				.insert(expectations)
 				.each { elem in
 					elem.chain(XCTestExpectation.fulfill)
@@ -416,7 +415,7 @@ class MultiPathTests: XCTestCase {
 		}
 		
 		HoneyBee.start { root in
-			root.setErrorHandler(fail)
+			root.handlingErrors(with: fail)
 				.insert(expectations)
 				.each { elem in
 					elem.limit(3) { link in
@@ -460,7 +459,7 @@ class MultiPathTests: XCTestCase {
 		elementExpectation.expectedFulfillmentCount = source.count
 		
 		HoneyBee.start { root in
-			root.setErrorHandler(fail)
+			root.handlingErrors(with: fail)
 				.insert(source)
 				.each(limit: 1) { elem in
 					elem.chain(asynchronouslyHoldLock)
@@ -505,7 +504,7 @@ class MultiPathTests: XCTestCase {
 		let parallelCodeFinishedLock = NSLock()
 		
 		HoneyBee.start { root in
-			root.setErrorHandler(fail)
+			root.handlingErrors(with: fail)
 				.insert(source)
 				.each() { elem in
 					elem.limit(1) { link in
@@ -545,7 +544,7 @@ class MultiPathTests: XCTestCase {
 		var intermediateFullfilled = false
 		
 		HoneyBee.start { root in
-			root.setErrorHandler(fail)
+			root.handlingErrors(with: fail)
 				.limit(29) { link in
 					link.insert("Right")
 						.chain(self.funcContainer.stringCat)
@@ -581,7 +580,7 @@ class MultiPathTests: XCTestCase {
 		}
 		
 		HoneyBee.start { root in
-			root.setErrorHandler(fail)
+			root.handlingErrors(with: fail)
 				.insert(source)
 				.each { elem in
 					elem.limit(1) { link in
@@ -609,7 +608,7 @@ class MultiPathTests: XCTestCase {
 		let finishExpectation = expectation(description: "Should reach the end of the chain")
 		
 		HoneyBee.start { root in
-			root.setErrorHandler(fail)
+			root.handlingErrors(with: fail)
 				.insert(source)
 				.reduce { pair in
 					pair.chain(+)
@@ -633,7 +632,7 @@ class MultiPathTests: XCTestCase {
 		})
 		
 		HoneyBee.start()
-				.setErrorHandler(fail)
+				.handlingErrors(with: fail)
 				.branch { stem in
 					stem.drop()
 						.setBlockPerformer(DispatchQueue.main)

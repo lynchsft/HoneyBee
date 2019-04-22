@@ -14,102 +14,100 @@ import Foundation
 * which are capable of introducing errors into the process chain are omitted from the interface of `SafeLink`.
 * To transition from a non-erroring chain to an erroring chain use `setErrorHandler:` which returns a full `Link`.
 */
-public class SafeLink<B> : SafeChainable {
-	private let link: Link<B>
+public class SafeLink<B, Performer: AsyncBlockPerformer> : SafeChainable {
+	private let link: Link<B, Performer>
 	
-	init(_ link: Link<B>) {
+	init(_ link: Link<B, Performer>) {
 		self.link = link
 	}
 	
 	@discardableResult
-	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B) -> C) -> SafeLink<C> {
-		return SafeLink<C>(self.link.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function), function))
+	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B) -> C) -> SafeLink<C, Performer> {
+		return SafeLink<C, Performer>(self.link.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function), function))
 	}
 	
 	@discardableResult
-	public func chain(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B) -> Void) -> SafeLink<B> {
+	public func chain(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B) -> Void) -> SafeLink<B, Performer> {
 		return SafeLink(self.link.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function), function))
 	}
 	
 	@discardableResult
-	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B) -> () -> C) -> SafeLink<C> {
-		return SafeLink<C>(self.link.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function), function))
+	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B) -> () -> C) -> SafeLink<C, Performer> {
+		return SafeLink<C, Performer>(self.link.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function), function))
 	}
 	
 	@discardableResult
-	public func chain(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B) -> () -> Void) -> SafeLink<B> {
+	public func chain(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B) -> () -> Void) -> SafeLink<B, Performer> {
 		return SafeLink(self.link.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function), function))
 	}
 	
 	@discardableResult
-	public func chain(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping ((() -> Void)?) -> Void) -> SafeLink<B> {
+	public func chain(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping ((() -> Void)?) -> Void) -> SafeLink<B, Performer> {
 		return SafeLink(self.link.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function), function))
 	}
 	
 	@discardableResult
-	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (((C) -> Void)?) -> Void) -> SafeLink<C> {
-		return SafeLink<C>(self.link.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function), function))
+	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (((C) -> Void)?) -> Void) -> SafeLink<C, Performer> {
+		return SafeLink<C, Performer>(self.link.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function), function))
 	}
 	
 	@discardableResult
-	public func chain(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B, (() -> Void)?) -> Void) -> SafeLink<B> {
+	public func chain(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B, (() -> Void)?) -> Void) -> SafeLink<B, Performer> {
 		return SafeLink(self.link.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function), function))
 	}
 	
 	@discardableResult
-	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B, ((C) -> Void)?) -> Void) -> SafeLink<C> {
-		return SafeLink<C>(self.link.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function), function))
+	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B, ((C) -> Void)?) -> Void) -> SafeLink<C, Performer> {
+		return SafeLink<C, Performer>(self.link.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function), function))
 	}
 	
 	@discardableResult
-	public func chain(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B) -> ((() -> Void)?) -> Void) -> SafeLink<B> {
+	public func chain(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B) -> ((() -> Void)?) -> Void) -> SafeLink<B, Performer> {
 		return SafeLink(self.link.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function), function))
 	}
 	
 	@discardableResult
-	public func chain(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (@escaping () -> Void) -> Void) -> SafeLink<B> {
+	public func chain(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (@escaping () -> Void) -> Void) -> SafeLink<B, Performer> {
 		return SafeLink(self.link.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function), function))
 	}
 	
 	@discardableResult
-	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B) -> (((C) -> Void)?) -> Void) -> SafeLink<C> {
-		return SafeLink<C>(self.link.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function), function))
+	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B) -> (((C) -> Void)?) -> Void) -> SafeLink<C, Performer> {
+		return SafeLink<C, Performer>(self.link.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function), function))
 	}
 	
 	@discardableResult
-	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (@escaping (C) -> Void) -> Void) -> SafeLink<C> {
-		return SafeLink<C>(self.link.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function), function))
+	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (@escaping (C) -> Void) -> Void) -> SafeLink<C, Performer> {
+		return SafeLink<C, Performer>(self.link.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function), function))
 	}
 	
 	@discardableResult
-	public func chain(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B, @escaping () -> Void) -> Void) -> SafeLink<B> {
+	public func chain(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B, @escaping () -> Void) -> Void) -> SafeLink<B, Performer> {
 		return SafeLink(self.link.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function), function))
 	}
 	
 	@discardableResult
-	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B, @escaping (C) -> Void) -> Void) -> SafeLink<C> {
-		return SafeLink<C>(self.link.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function), function))
+	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B, @escaping (C) -> Void) -> Void) -> SafeLink<C, Performer> {
+		return SafeLink<C, Performer>(self.link.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function), function))
 	}
 	
 	@discardableResult
-	public func chain(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B) -> (@escaping () -> Void) -> Void) -> SafeLink<B> {
+	public func chain(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B) -> (@escaping () -> Void) -> Void) -> SafeLink<B, Performer> {
 		return SafeLink(self.link.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function), function))
 	}
 	
 	@discardableResult
-	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B) -> (@escaping (C) -> Void) -> Void) -> SafeLink<C> {
-		return SafeLink<C>(self.link.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function), function))
+	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B) -> (@escaping (C) -> Void) -> Void) -> SafeLink<C, Performer> {
+		return SafeLink<C, Performer>(self.link.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function), function))
 	}
 }
 
-#if swift(>=4.0)
 extension SafeLink {
 	///Creates a new SafeLink which accesses a keypath starting at B and ending at type C and appends the link to the execution list of this Link
-	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ keyPath: KeyPath<B,C>) -> Link<C> {
-		return self.link.chain(file: file, line: line, functionDescription: functionDescription ?? tname(keyPath), keyPath)
+	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ keyPath: KeyPath<B,C>) -> SafeLink<C, Performer> {
+		return SafeLink<C, Performer>(self.link.chain(file: file, line: line, functionDescription: functionDescription ?? tname(keyPath), keyPath))
 	}
 }
-#endif
 
 extension SafeLink {
 	/// Set the execution queue for all descendant links. N.B. *this does not change the execution queue for the receiver's function.*
@@ -126,15 +124,21 @@ extension SafeLink {
 	///
 	/// - Parameter queue: the new `DispatchQueue` for child links
 	/// - Returns: the receiver
-	public func setBlockPerformer(_ blockPerformer: AsyncBlockPerformer) -> SafeLink<B> {
-		return SafeLink(self.link.setBlockPerformer(blockPerformer))
+	public func setBlockPerformer<OtherPerformer: AsyncBlockPerformer>(_ blockPerformer: OtherPerformer) -> SafeLink<B, OtherPerformer> {
+		return SafeLink<B, OtherPerformer>(self.link.setBlockPerformer(blockPerformer))
 	}
 }
 
 extension SafeLink : ErrorHandling {
 	public typealias B = B
-	public func setErrorHandler(_ errorHandler: @escaping (ErrorContext) -> Void) -> Link<B> {
-		return self.link.setErrorHandler(errorHandler)
+	public typealias Performer = Performer
+	
+	@available(swift, obsoleted: 5.0, renamed: "handlingErrors(with:)")
+	public func setErrorHandler(file: StaticString = #file, line: UInt = #line, _ errorHandler: @escaping (ErrorContext) -> Void) -> Link<B, Performer> {
+		return self.link.handlingErrors(file: file, line: line, with: errorHandler)
+	}
+	public func handlingErrors(file: StaticString = #file, line: UInt = #line, with errorHandler: @escaping (ErrorContext) -> Void) -> Link<B, Performer> {
+		return self.link.handlingErrors(file: file, line: line, with: errorHandler)
 	}
 }
 
@@ -145,15 +149,15 @@ extension SafeLink {
 	///
 	/// - Parameter c: Any value
 	/// - Returns: a `SafeLink` whose child links will receive `c` as their function argument.
-	public func insert<C>(file: StaticString = #file, line: UInt = #line, _ c: C) -> SafeLink<C> {
-		return SafeLink<C>(self.link.insert(file: file, line: line, c))
+	public func insert<C>(file: StaticString = #file, line: UInt = #line, _ c: C) -> SafeLink<C, Performer> {
+		return SafeLink<C, Performer>(self.link.insert(file: file, line: line, c))
 	}
 	
 	/// `drop` ignores "drops" the inbound value and returns a `SafeLink` whose value is `Void`
 	///
 	/// - Returns: a `SafeLink` whose child links will receive `Void` as their function argument.
-	public func drop(file: StaticString = #file, line: UInt = #line) -> SafeLink<Void> {
-		return SafeLink<Void>(self.link.drop(file: file, line: line))
+	public func drop(file: StaticString = #file, line: UInt = #line) -> SafeLink<Void, Performer> {
+		return SafeLink<Void, Performer>(self.link.drop(file: file, line: line))
 	}
 	
 	/// `tunnel` defines a subchain with whose value is ultimately discarded. The links within the `tunnel` subchain run sequentially before the link which is the return value of `tunnel`. `tunnel` returns a `SafeLink` whose execution result `B` is the result the receiver link. Thus the value `B` "hides" or "goes under ground" while the subchain processes and "pops back up" when it is completed.
@@ -171,9 +175,9 @@ extension SafeLink {
 	/// - Parameters:
 	///   - defineBlock: a block which creates a subchain to be limited.
 	/// - Returns: a `SafeLink` whose execution result `R` is discarded.
-	public func tunnel<R>(file: StaticString = #file, line: UInt = #line, _ defineBlock: (SafeLink<B>) -> SafeLink<R>) -> SafeLink<B> {
-		return SafeLink(self.link.tunnel(file: file, line: line) { (inLink: Link<B>) -> Link<R> in
-			defineBlock(SafeLink<B>(inLink)).link
+	public func tunnel<R, OtherPerformer: AsyncBlockPerformer>(file: StaticString = #file, line: UInt = #line, _ defineBlock: (SafeLink<B, Performer>) -> SafeLink<R, OtherPerformer>) -> SafeLink<B, Performer> {
+		return SafeLink(self.link.tunnel(file: file, line: line) { (inLink: Link<B, Performer>) -> Link<R, OtherPerformer> in
+			defineBlock(SafeLink<B, Performer>(inLink)).link
 		})
 	}
 	
@@ -191,8 +195,8 @@ extension SafeLink {
 	/// `func2` will execute when `func1` is finished. Likewise `func4` will execute when `func3` is finished.
 	///
 	/// - Parameter defineBlock: the block to which this `SafeLink` yields itself.
-	public func branch(_ defineBlock: (SafeLink<B>) -> Void) {
-		self.link.branch { (inLink: Link<B>) -> Void in
+	public func branch(_ defineBlock: (SafeLink<B, Performer>) -> Void) {
+		self.link.branch { (inLink: Link<B, Performer>) -> Void in
 			defineBlock(SafeLink(inLink))
 		}
 	}
@@ -207,8 +211,8 @@ extension SafeLink {
 	///                   .chain(func4)
 	///
 	///		  return (a + b) // operator for .conjoin
-	///				   .chain(combine)
 	///     }
+	///		.chain(combine)
 	///
 	/// In the preceding example, when `link` is executed it will start the links containing `func1` and `func3` in parallel.
 	/// `func2` will execute when `func1` is finished. Likewise `func4` will execute when `func3` is finished.
@@ -216,10 +220,33 @@ extension SafeLink {
 	/// - Parameter defineBlock: the block to which this `SafeLink` yields itself.
 	/// - Returns: The link which is returned from defineBlock
 	@discardableResult
-	public func branch<C>(_ defineBlock: (SafeLink<B>) -> SafeLink<C>) -> SafeLink<C> {
-		return SafeLink<C>(self.link.branch { (inLink: Link<B>) -> Link<C> in
-			defineBlock(SafeLink<B>(inLink)).link
+	public func branch<C>(_ defineBlock: (SafeLink<B, Performer>) -> SafeLink<C, Performer>) -> SafeLink<C, Performer> {
+		return SafeLink<C, Performer>(self.link.branch { (inLink: Link<B, Performer>) -> Link<C, Performer> in
+			defineBlock(SafeLink<B, Performer>(inLink)).link
 		})
+	}
+	
+	/// Yields self to a new definition block. Within the block the caller may invoke chaining methods on block multiple times, thus achieving parallel chains. Example:
+	///
+	///     link.branch { stem in
+	///       let a = stem.chain(func1)
+	///                   .chain(func2)
+	///
+	///       let b = stem.chain(func3)
+	///                   .chain(func4)
+	///
+	///		  return (a + b) // operator for .conjoin
+	///     }
+	///		.chain(combine)
+	///
+	/// In the preceding example, when `link` is executed it will start the links containing `func1` and `func3` in parallel.
+	/// `func2` will execute when `func1` is finished. Likewise `func4` will execute when `func3` is finished.
+	///
+	/// - Parameter defineBlock: the block to which this `Link` yields itself.
+	/// - Returns: The link which is returned from defineBlock
+	@discardableResult
+	public func branch<C, OtherPerformer: AsyncBlockPerformer>(_ defineBlock: (SafeLink<B, Performer>) -> SafeLink<C, OtherPerformer>) -> SafeLink<C, OtherPerformer> {
+		return defineBlock(self)
 	}
 	
 	/// `conjoin` is a compliment to `branch`.
@@ -229,8 +256,8 @@ extension SafeLink {
 	///
 	/// - Parameter other: the `SafeLink` to join with
 	/// - Returns: A `SafeLink` which combines the receiver and the arguments results.
-	public func conjoin<C>(_ other: SafeLink<C>) -> SafeLink<(B,C)> {
-		return SafeLink<(B,C)>(self.link.conjoin(other.link))
+	public func conjoin<C>(_ other: SafeLink<C, Performer>) -> SafeLink<(B,C), Performer> {
+		return SafeLink<(B,C), Performer>(self.link.conjoin(other.link))
 	}
 	
 	/// `conjoin` is a compliment to `branch`.
@@ -240,7 +267,7 @@ extension SafeLink {
 	///
 	/// - Parameter other: the `SafeLink` to join with
 	/// - Returns: A `SafeLink` which combines the receiver and the arguments results.
-	public func conjoin<X,Y,C>(other: SafeLink<C>) -> SafeLink<(X,Y,C)> where B == (X,Y) {
+	public func conjoin<X,Y,C>(other: SafeLink<C, Performer>) -> SafeLink<(X,Y,C), Performer> where B == (X,Y) {
 		//return SafeLink<(X,Y,C)>(self.link.conjoin(other.link)) // compiler error, Swfit 4.1
 		return self.conjoin(other)
 			.chain { compoundTuple -> (X,Y,C) in
@@ -255,7 +282,7 @@ extension SafeLink {
 	///
 	/// - Parameter other: the `SafeLink` to join with
 	/// - Returns: A `SafeLink` which combines the receiver and the arguments results.
-	public func conjoin<X,Y,Z,C>(other: SafeLink<C>) -> SafeLink<(X,Y,Z,C)> where B == (X,Y,Z) {
+	public func conjoin<X,Y,Z,C>(other: SafeLink<C, Performer>) -> SafeLink<(X,Y,Z,C), Performer> where B == (X,Y,Z) {
 		return self.conjoin(other)
 			.chain { compoundTuple -> (X,Y,Z,C) in
 				return (compoundTuple.0.0, compoundTuple.0.1, compoundTuple.0.2, compoundTuple.1)
@@ -263,17 +290,17 @@ extension SafeLink {
 	}
 	
 	/// operator syntax for `conjoin` function
-	public static func +<C>(lhs: SafeLink<B>, rhs: SafeLink<C>) -> SafeLink<(B,C)> {
+	public static func +<C, CommonPerformer: AsyncBlockPerformer>(lhs: SafeLink<B, CommonPerformer>, rhs: SafeLink<C, CommonPerformer>) -> SafeLink<(B,C), CommonPerformer> {
 		return lhs.conjoin(rhs)
 	}
 	
 	/// operator syntax for `conjoin` function
-	public static func +<X,Y,C>(lhs: SafeLink<B>, rhs: SafeLink<C>) -> SafeLink<(X,Y,C)> where B == (X,Y) {
+	public static func +<X,Y,C, CommonPerformer: AsyncBlockPerformer>(lhs: SafeLink<B, CommonPerformer>, rhs: SafeLink<C, CommonPerformer>) -> SafeLink<(X,Y,C), CommonPerformer> where B == (X,Y) {
 		return lhs.conjoin(other: rhs)
 	}
 	
 	/// operator syntax for `conjoin` function
-	public static func +<X,Y,Z,C>(lhs: SafeLink<B>, rhs: SafeLink<C>) -> SafeLink<(X,Y,Z,C)> where B == (X,Y,Z) {
+	public static func +<X,Y,Z,C, CommonPerformer: AsyncBlockPerformer>(lhs: SafeLink<B, CommonPerformer>, rhs: SafeLink<C, CommonPerformer>) -> SafeLink<(X,Y,Z,C), CommonPerformer> where B == (X,Y,Z) {
 		return lhs.conjoin(other: rhs)
 	}
 	
@@ -283,7 +310,7 @@ extension SafeLink {
 	///   - lhs: SafeLink whose value to propagate
 	///   - rhs: SafeLink whose value to drop
 	/// - Returns: a SafeLink which contains the value of the left-hand SafeLink
-	public static func <+<C>(lhs: SafeLink<B>, rhs: SafeLink<C>) -> SafeLink<B> {
+	public static func <+<C, CommonPerformer: AsyncBlockPerformer>(lhs: SafeLink<B, CommonPerformer>, rhs: SafeLink<C, CommonPerformer>) -> SafeLink<B, CommonPerformer> {
 		return lhs.conjoin(rhs)
 			.chain { $0.0 }
 	}
@@ -294,7 +321,7 @@ extension SafeLink {
 	///   - lhs: SafeLink whose value to drop
 	///   - rhs: SafeLink whose value to propagate
 	/// - Returns: a SafeLink which contains the value of the left-hand SafeLink
-	public static func +><C>(lhs: SafeLink<B>, rhs: SafeLink<C>) -> SafeLink<C> {
+	public static func +><C>(lhs: SafeLink<B, Performer>, rhs: SafeLink<C, Performer>) -> SafeLink<C, Performer> {
 		return lhs.conjoin(rhs)
 			.chain { $0.1 }
 	}
@@ -307,9 +334,9 @@ extension SafeLink where B : OptionalProtocol {
 	/// - Parameter defineBlock: a block which creates a subchain to run if B is non-nil
 	/// - Returns: a `SafeLink` with a void value type.
 	@discardableResult
-	public func optionally<X>(_ defineBlock: @escaping (SafeLink<B.WrappedType>) -> SafeLink<X>) -> SafeLink<B> {
-		return SafeLink<B>(self.link.optionally({ (inLink: Link<B.WrappedType>) -> Link<X> in
-			defineBlock(SafeLink<B.WrappedType>(inLink)).link
+	public func optionally<X, OtherPerformer: AsyncBlockPerformer>(_ defineBlock: @escaping (SafeLink<B.WrappedType, Performer>) -> SafeLink<X, OtherPerformer>) -> SafeLink<B, Performer> {
+		return SafeLink<B, Performer>(self.link.optionally({ (inLink: Link<B.WrappedType, Performer>) -> Link<X, OtherPerformer> in
+			defineBlock(SafeLink<B.WrappedType, Performer>(inLink)).link
 		}))
 	}
 }
@@ -330,9 +357,9 @@ extension SafeLink {
 	///   - defineBlock: a block which creates a subchain to be limited.
 	/// - Returns: a `SafeLink` whose execution result `J` is the result of the final link of the subchain.
 	@discardableResult
-	public func limit<J>(_ maxParallel: Int, _ defineBlock: (SafeLink<B>) -> SafeLink<J>) -> SafeLink<J> {
-		return SafeLink<J>(self.link.limit(maxParallel, { (inLink: Link<B>) -> Link<J> in
-			defineBlock(SafeLink<B>(inLink)).link
+	public func limit<J>(_ maxParallel: Int, _ defineBlock: (SafeLink<B, Performer>) -> SafeLink<J, Performer>) -> SafeLink<J, Performer> {
+		return SafeLink<J, Performer>(self.link.limit(maxParallel, { (inLink: Link<B, Performer>) -> Link<J, Performer> in
+			defineBlock(SafeLink<B, Performer>(inLink)).link
 		}))
 	}
 	
@@ -341,9 +368,9 @@ extension SafeLink {
 	/// - Parameters:
 	///   - maxParallel:  the maximum number of parallel executions permitted for the subchains defined by `defineBlock`
 	///   - defineBlock: a block which creates a subchain to be limited.
-	public func limit(_ maxParallel: Int, _ defineBlock: (SafeLink<B>) -> Void) -> Void {
-		self.link.limit(maxParallel, { (inLink: Link<B>) -> Void in
-			defineBlock(SafeLink<B>(inLink))
+	public func limit(_ maxParallel: Int, _ defineBlock: (SafeLink<B, Performer>) -> Void) -> Void {
+		self.link.limit(maxParallel, { (inLink: Link<B, Performer>) -> Void in
+			defineBlock(SafeLink<B, Performer>(inLink))
 		})
 	}
 }
@@ -354,9 +381,9 @@ extension SafeLink where B : Collection {
 	///
 	/// - Parameter transform: the transformation subchain defining block which converts `B.Iterator.Element` to `C`
 	/// - Returns: a `SafeLink` which will yield an array of `C`s to it's child links.
-	public func map<C>(limit: Int? = nil, acceptableFailure: FailureRate = .none, _ transform: @escaping (SafeLink<B.Iterator.Element>) -> SafeLink<C>) -> SafeLink<[C]> {
-		return SafeLink<[C]>(self.link.map(limit: limit, acceptableFailure: acceptableFailure) { (inLink: Link<B.Iterator.Element>) -> Link<C> in
-			return transform(SafeLink<B.Iterator.Element>(inLink)).link
+	public func map<C>(limit: Int? = nil, acceptableFailure: FailureRate = .none, _ transform: @escaping (SafeLink<B.Iterator.Element, Performer>) -> SafeLink<C, Performer>) -> SafeLink<[C], Performer> {
+		return SafeLink<[C], Performer>(self.link.map(limit: limit, acceptableFailure: acceptableFailure) { (inLink: Link<B.Iterator.Element, Performer>) -> Link<C, Performer> in
+			return transform(SafeLink<B.Iterator.Element, Performer>(inLink)).link
 		})
 	}
 	
@@ -364,9 +391,9 @@ extension SafeLink where B : Collection {
 	///
 	/// - Parameter filter: the filter subchain which produces a Bool
 	/// - Returns: a `SafeLink` which will yield to it's child links an array containing those `B.Iterator.Element`s which `filter` approved.
-	public func filter(limit: Int? = nil, acceptableFailure: FailureRate = .none, _ filter: @escaping (SafeLink<B.Iterator.Element>) -> SafeLink<Bool>) -> SafeLink<[B.Iterator.Element]> {
-		return SafeLink<[B.Iterator.Element]>(self.link.filter(limit: limit, acceptableFailure: acceptableFailure) { (inLink: Link<B.Iterator.Element>) -> Link<Bool> in
-			return filter(SafeLink<B.Iterator.Element>(inLink)).link
+	public func filter(limit: Int? = nil, acceptableFailure: FailureRate = .none, _ filter: @escaping (SafeLink<B.Iterator.Element, Performer>) -> SafeLink<Bool, Performer>) -> SafeLink<[B.Iterator.Element], Performer> {
+		return SafeLink<[B.Iterator.Element], Performer>(self.link.filter(limit: limit, acceptableFailure: acceptableFailure) { (inLink: Link<B.Iterator.Element, Performer>) -> Link<Bool, Performer> in
+			return filter(SafeLink<B.Iterator.Element, Performer>(inLink)).link
 		})
 	}
 	
@@ -377,9 +404,9 @@ extension SafeLink where B : Collection {
 	/// - Parameter defineBlock: a block which creates a subchain for each element of the Collection
 	/// - Returns: a SafeLink which will pass the nonfailing elements of `B` to its child links
 	@discardableResult
-	public func each(limit: Int? = nil, acceptableFailure: FailureRate = .none, _ defineBlock: @escaping (SafeLink<B.Element>) -> Void) -> SafeLink<[B.Element]> {
-		return SafeLink<[B.Element]>(self.link.each(limit: limit, acceptableFailure: acceptableFailure) { (inLink: Link<B.Element>) -> Void in
-			defineBlock(SafeLink<B.Element>(inLink))
+	public func each(limit: Int? = nil, acceptableFailure: FailureRate = .none, _ defineBlock: @escaping (SafeLink<B.Element, Performer>) -> Void) -> SafeLink<[B.Element], Performer> {
+		return SafeLink<[B.Element], Performer>(self.link.each(limit: limit, acceptableFailure: acceptableFailure) { (inLink: Link<B.Element, Performer>) -> Void in
+			defineBlock(SafeLink<B.Element, Performer>(inLink))
 		})
 	}
 	
@@ -394,9 +421,9 @@ extension SafeLink where B : Collection {
 	///   - acceptableFailure: the acceptable failure rate
 	///   - defineBlock: a block which creates a subchain for each element of the Collection
 	/// - Returns: a SafeLink which will pass the result of the reduce to its child links.
-	public func reduce<T>(with t: T, acceptableFailure: FailureRate = .none, _ defineBlock: @escaping (SafeLink<(T,B.Element)>) -> SafeLink<T>) -> SafeLink<T> {
-		return SafeLink<T>(self.link.reduce(with: t, acceptableFailure: acceptableFailure) { (inLink: Link<(T,B.Element)>) -> Link<T> in
-			return defineBlock(SafeLink<(T,B.Element)>(inLink)).link
+	public func reduce<T>(with t: T, acceptableFailure: FailureRate = .none, _ defineBlock: @escaping (SafeLink<(T,B.Element), Performer>) -> SafeLink<T, Performer>) -> SafeLink<T,Performer> {
+		return SafeLink<T, Performer>(self.link.reduce(with: t, acceptableFailure: acceptableFailure) { (inLink: Link<(T,B.Element), Performer>) -> Link<T, Performer> in
+			return defineBlock(SafeLink<(T,B.Element), Performer>(inLink)).link
 		})
 	}
 	
@@ -408,9 +435,9 @@ extension SafeLink where B : Collection {
 	///
 	/// - Parameter defineBlock: a block which creates a subchain to combined two elements of the Collection
 	/// - Returns: a SafeLink which will pass the final combined result of the reduce to its child links.
-	public func reduce(_ defineBlock: @escaping (SafeLink<(B.Element,B.Element)>) -> SafeLink<B.Element>) -> SafeLink<B.Element> {
-		return SafeLink<B.Element>(self.link.reduce() { (inLink: Link<(B.Element,B.Element)>) -> Link<B.Element> in
-			return defineBlock(SafeLink<(B.Element,B.Element)>(inLink)).link
+	public func reduce(_ defineBlock: @escaping (SafeLink<(B.Element,B.Element), Performer>) -> SafeLink<B.Element, Performer>) -> SafeLink<B.Element, Performer> {
+		return SafeLink<B.Element, Performer>(self.link.reduce() { (inLink: Link<(B.Element,B.Element), Performer>) -> Link<B.Element, Performer> in
+			return defineBlock(SafeLink<(B.Element,B.Element), Performer>(inLink)).link
 		})
 	}
 }
@@ -423,7 +450,7 @@ extension SafeLink {
 	///
 	/// - Parameter completionHandler: a function which takes an optional error.
 	/// - Returns: A `Link` which has the completion handler installed.
-	public func setCompletionHandler(_ completionHandler: @escaping (Error?) -> Void ) -> Link<B> {
+	public func setCompletionHandler(_ completionHandler: @escaping (Error?) -> Void ) -> Link<B, Performer> {
 		return self.setCompletionHandler { (context: ErrorContext?) in
 			completionHandler(context?.error)
 		}
@@ -436,14 +463,16 @@ extension SafeLink {
 	///
 	/// - Parameter completionHandler: a function which takes an optional `ErrorContext`. The context contains all available debug information on the erroring function, including the error itself.
 	/// - Returns: A `Link` which has the completion handler installed.
-	public func setCompletionHandler(_ completionHandler: @escaping (ErrorContext?) -> Void ) -> Link<B> {
+	public func setCompletionHandler(_ completionHandler: @escaping (ErrorContext?) -> Void ) -> Link<B, Performer> {
 		let finallyCalled: AtomicBool = false
 		let blockPerformer = HoneyBee.getBlockPerformer(of: self.link)
-		return self.setErrorHandler({ (context: ErrorContext) in
+		return self.handlingErrors(with: { (context: ErrorContext) in
 			finallyCalled.access { called in
 				if !called {
-					completionHandler(context)
 					called = true
+					blockPerformer.asyncPerform {
+						completionHandler(context)
+					}
 				}
 			}
 		}).finally { link in
@@ -465,7 +494,7 @@ extension SafeLink {
 }
 
 extension SafeLink {
-	internal func getBlockPerformer() -> AsyncBlockPerformer {
+	internal func getBlockPerformer() -> Performer {
 		return HoneyBee.getBlockPerformer(of: self.link)
 	}
 }
