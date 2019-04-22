@@ -281,7 +281,7 @@ extension Link {
 		
 		let lastLink = defineBlock(openingLink)
 		
-		let returnLink = lastLink.setBlockPerformer(self.blockPerformer).chain { (_:R) -> B in
+		let returnLink = lastLink.move(to: self.blockPerformer).chain { (_:R) -> B in
 			guard let storedB = storedB else {
 				let message = "Lost self reference"
 				HoneyBee.internalFailureResponse.evaluate(false, message)
@@ -806,8 +806,7 @@ extension Link {
 }
 
 extension Link {
-	// queue management
-	
+	// AsyncBlockperformer management
 	
 	/// Set the execution queue for all descendant links. N.B. *this does not change the execution queue for the receiver's function.*
 	/// Example
@@ -815,7 +814,7 @@ extension Link {
 	///     HoneyBee.start(on: .main) { root in
 	///        root.setErrorHandlder(handleError)
     ///            .chain(funcA)
-	///            .setQueue(.global())
+	///            .setBlockPerformer(DispatchQueue.global())
 	///            .chain(funcB)
 	///     }
 	///
@@ -823,7 +822,26 @@ extension Link {
 	///
 	/// - Parameter queue: the new `DispatchQueue` for child links
 	/// - Returns: the receiver
+	@available(swift, obsoleted: 5.0, renamed: "move(to:)")
 	public func setBlockPerformer<OtherPerformer: AsyncBlockPerformer>(file: StaticString = #file, line: UInt = #line, _ otherPerformer: OtherPerformer) -> Link<B, OtherPerformer> {
+		return self.move(to: otherPerformer, file: file, line: line)
+	}
+	
+	/// Returns a new link with the given AsyncBlockperformer. N.B. *this does not change the execution queue for the receiver's function.*
+	/// Example
+	///
+	///     HoneyBee.start(on: .main) { root in
+	///        root.setErrorHandlder(handleError)
+	///            .chain(funcA)
+	///            .move(to: DispatchQueue.global())
+	///            .chain(funcB)
+	///     }
+	///
+	/// In the preceding example, `funcA` will run on `DispatchQueue.main` and `funcB` will run on `DispatchQueue.global()`
+	///
+	/// - Parameter otherPerformer: the new `AsyncBlockPerformer` for child link
+	/// - Returns: the receiver
+	public func move<OtherPerformer: AsyncBlockPerformer>(to otherPerformer: OtherPerformer, file: StaticString = #file, line: UInt = #line) -> Link<B, OtherPerformer> {
 		let wrapperFunction = {(a: Any, callback: @escaping (FailableResult<B>) -> Void) -> Void in
 			guard let b = a as? B else {
 				let message = "a is not of type B"
@@ -833,11 +851,11 @@ extension Link {
 			callback(.success(b))
 		}
 		let link = Link<B,OtherPerformer>(function: wrapperFunction,
-										 errorHandler: self.errorHandler,
-										 blockPerformer: otherPerformer,
-										 path: self.path + ["setBlockPerformer: \(file):\(line) \(OtherPerformer.self)"],
-										 functionFile: #file,
-										 functionLine: #line)
+										  errorHandler: self.errorHandler,
+										  blockPerformer: otherPerformer,
+										  path: self.path + ["setBlockPerformer: \(file):\(line) \(OtherPerformer.self)"],
+										  functionFile: #file,
+										  functionLine: #line)
 		self.createdLinks.push(link)
 		return link
 	}
@@ -877,7 +895,7 @@ extension Link where B : Collection {
 			for (index, element) in collection.enumerated() {
 				let elemLink = rootLink.insert(element)
 							transform(elemLink)
-								.setBlockPerformer(integrationSerialQueue)
+								.move(to: integrationSerialQueue)
 								.chain { (result:C) -> Void in
 									results[index] = result
 								}

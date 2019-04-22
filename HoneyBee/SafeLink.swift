@@ -116,7 +116,7 @@ extension SafeLink {
 	///     HoneyBee.start(on: .main) { root in
 	///        root.setErrorHandlder(handleError)
 	///            .chain(funcA)
-	///            .setQueue(.global())
+	///            .setBlockPerformer(DispatchQueue.global())
 	///            .chain(funcB)
 	///     }
 	///
@@ -124,8 +124,27 @@ extension SafeLink {
 	///
 	/// - Parameter queue: the new `DispatchQueue` for child links
 	/// - Returns: the receiver
-	public func setBlockPerformer<OtherPerformer: AsyncBlockPerformer>(_ blockPerformer: OtherPerformer) -> SafeLink<B, OtherPerformer> {
-		return SafeLink<B, OtherPerformer>(self.link.setBlockPerformer(blockPerformer))
+	@available(swift, obsoleted: 5.0, renamed: "move(to:)")
+	public func setBlockPerformer<OtherPerformer: AsyncBlockPerformer>(_ otherPerformer: OtherPerformer, file: StaticString = #file, line: UInt = #line) -> SafeLink<B, OtherPerformer> {
+		return self.move(to: otherPerformer, file: file, line: line)
+	}
+	
+	/// Returns a new link with the given AsyncBlockperformer. N.B. *this does not change the execution queue for the receiver's function.*
+	/// Example
+	///
+	///     HoneyBee.start(on: .main) { root in
+	///        root.setErrorHandlder(handleError)
+	///            .chain(funcA)
+	///            .move(to: DispatchQueue.global())
+	///            .chain(funcB)
+	///     }
+	///
+	/// In the preceding example, `funcA` will run on `DispatchQueue.main` and `funcB` will run on `DispatchQueue.global()`
+	///
+	/// - Parameter otherPerformer: the new `AsyncBlockPerformer` for child link
+	/// - Returns: the receiver
+	public func move<OtherPerformer: AsyncBlockPerformer>(to otherPerformer: OtherPerformer, file: StaticString = #file, line: UInt = #line) -> SafeLink<B, OtherPerformer> {
+		return SafeLink<B, OtherPerformer>(self.link.move(to: otherPerformer))
 	}
 }
 

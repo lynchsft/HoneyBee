@@ -635,11 +635,11 @@ class MultiPathTests: XCTestCase {
 				.handlingErrors(with: fail)
 				.branch { stem in
 					stem.drop()
-						.setBlockPerformer(DispatchQueue.main)
+						.move(to: DispatchQueue.main)
 						.chain(self.funcContainer.constantInt)
 					+
 					stem.drop()
-					  	.setBlockPerformer(DispatchQueue.global())
+					  	.move(to: DispatchQueue.global())
 						.chain(self.funcContainer.constantString)
 				}
 		

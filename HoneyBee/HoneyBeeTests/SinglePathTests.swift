@@ -40,7 +40,7 @@ class SinglePathTests: XCTestCase {
 		
 		HoneyBee.start(on: DispatchQueue.main) { root in
 			root.setCompletionHandler(completionHandler)
-				.setBlockPerformer(DefaultDispatchQueue())
+				.move(to: DefaultDispatchQueue())
 				.insert(4)
 				.chain(self.funcContainer.intToString)
 				.chain(self.funcContainer.stringToInt)
@@ -62,7 +62,7 @@ class SinglePathTests: XCTestCase {
 		HoneyBee.start()
 				.setCompletionHandler(completionHandler2)
 				.insert(self.funcContainer)
-				.setBlockPerformer(DispatchQueue.main)
+				.move(to: DispatchQueue.main)
 				.chain(TestingFunctions.noop)
 				.chain(TestingFunctions.voidFunc)
 				.chain(assertEquals =<< self.funcContainer)
@@ -153,9 +153,9 @@ class SinglePathTests: XCTestCase {
 		
 		HoneyBee.start(on: DispatchQueue.main)
 				.chain(assertThreadIsMain =<< true)
-				.setBlockPerformer(DispatchQueue.global())
+				.move(to: DispatchQueue.global())
 				.chain(assertThreadIsMain =<< false)
-				.setBlockPerformer(DispatchQueue.main)
+				.move(to: DispatchQueue.main)
 				.chain(assertThreadIsMain =<< true)
 				.chain(expect.fulfill)
 		
@@ -211,7 +211,7 @@ class SinglePathTests: XCTestCase {
 			
 		XCTAssertEqual(HoneyBee.getBlockPerformer(of: link1), DispatchQueue.main)
 		
-		let link2 = link1.setBlockPerformer(DispatchQueue.global())
+		let link2 = link1.move(to: DispatchQueue.global())
 		
 		XCTAssertEqual(HoneyBee.getBlockPerformer(of: link1), DispatchQueue.main)
 		XCTAssertEqual(HoneyBee.getBlockPerformer(of: link2), DispatchQueue.global())

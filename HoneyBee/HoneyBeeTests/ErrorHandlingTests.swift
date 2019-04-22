@@ -593,7 +593,7 @@ class ErrorHandlingTests: XCTestCase {
 		
 		HoneyBee.start(on: DispatchQueue.main) { root in
 			root.setCompletionHandler(errorHandler)
-				.setBlockPerformer(DispatchQueue.global())
+				.move(to: DispatchQueue.global())
 				.insert(4)
 				.chain(self.funcContainer.intToString)
 				.chain(self.funcContainer.stringToInt)

@@ -30,7 +30,7 @@ struct PrettyExamples {
 					stem.chain(fetchComments)
 						.chain(countComments)
 				}
-				.setBlockPerformer(DispatchQueue.main)
+				.move(to: DispatchQueue.main)
 				.chain(updateUI)
 	}
 	
