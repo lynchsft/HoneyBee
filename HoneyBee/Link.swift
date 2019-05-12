@@ -26,6 +26,7 @@ A single link's execution process is as follows:
 4. This link's child links are individually, in parallel executed in this link's `AsyncBlockPerformer`
 5. When _all_ of the child links have completed their execution, then this link signals that it has completed execution, via callback.
 */
+@dynamicCallable
 final public class Link<B, Performer: AsyncBlockPerformer> : Executable, PathDescribing  {
 	
 	fileprivate var createdLinks = ConcurrentQueue<Executable>()
@@ -157,6 +158,26 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable, PathDes
 	
 	override func ancestorFailed() {
 		self.propagateFailureToDecendants()
+	}
+	
+	@discardableResult
+	public func dynamicallyCall(withArguments args: [(B)->Void]) -> Link<B, Performer> {
+		precondition(args.count == 1, "Exactly 1 argument is expected")
+		return self.chain(args.first!)
+	}
+	
+	@discardableResult
+	public func dynamicallyCall<R>(withArguments args: [(B)->R]) -> Link<R, Performer> {
+		precondition(args.count == 1, "Exactly 1 argument is expected")
+		return self.chain(args.first!)
+	}
+	
+	public subscript(_ block: @escaping (B)->Void) -> Link<B, Performer> {
+		return self.chain(block)
+	}
+	
+	public subscript<R>(_ block: @escaping (B)->R) -> Link<R, Performer> {
+		return self.chain(block)
 	}
 }
 

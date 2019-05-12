@@ -32,6 +32,9 @@
 		FA62A2B51FC9FBC100385D22 /* ChainableFailable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A2A61FC9FBC100385D22 /* ChainableFailable.swift */; };
 		FA62A2B81FC9FBCA00385D22 /* ConcurentQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A2B61FC9FBCA00385D22 /* ConcurentQueue.swift */; };
 		FA62A2B91FC9FBCA00385D22 /* AtomicValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A2B71FC9FBCA00385D22 /* AtomicValue.swift */; };
+		FAA722B7226F2D2100A8CB7B /* AsyncCurry.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAA722B6226F2D2100A8CB7B /* AsyncCurry.swift */; };
+		FAA722B9226F2D5500A8CB7B /* AsyncCurryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAA722B8226F2D5500A8CB7B /* AsyncCurryTests.swift */; };
+		FAA722BB226F4DBD00A8CB7B /* FunctionWrappers.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAA722BA226F4DBD00A8CB7B /* FunctionWrappers.swift */; };
 		FAF0C3061FD1AD6B00D1F177 /* ConcurrentFunctionTools.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAF0C3051FD1AD6B00D1F177 /* ConcurrentFunctionTools.swift */; };
 		FAF5828120FE0E0B00E135CB /* LinkCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAF5828020FE0E0B00E135CB /* LinkCommon.swift */; };
 /* End PBXBuildFile section */
@@ -78,6 +81,9 @@
 		FA62A2A61FC9FBC100385D22 /* ChainableFailable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChainableFailable.swift; sourceTree = "<group>"; };
 		FA62A2B61FC9FBCA00385D22 /* ConcurentQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConcurentQueue.swift; sourceTree = "<group>"; };
 		FA62A2B71FC9FBCA00385D22 /* AtomicValue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AtomicValue.swift; sourceTree = "<group>"; };
+		FAA722B6226F2D2100A8CB7B /* AsyncCurry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncCurry.swift; sourceTree = "<group>"; };
+		FAA722B8226F2D5500A8CB7B /* AsyncCurryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncCurryTests.swift; sourceTree = "<group>"; };
+		FAA722BA226F4DBD00A8CB7B /* FunctionWrappers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionWrappers.swift; sourceTree = "<group>"; };
 		FAF0C3051FD1AD6B00D1F177 /* ConcurrentFunctionTools.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConcurrentFunctionTools.swift; sourceTree = "<group>"; };
 		FAF5828020FE0E0B00E135CB /* LinkCommon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkCommon.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -111,6 +117,7 @@
 				FA41097A1E9CFBC4002A6BA6 /* SinglePathTests.swift */,
 				FA25B0141F9D0885006F8DEE /* TestingFunctions.swift */,
 				FA575F8A20024A630075C89C /* PrettyExamples.swift */,
+				FAA722B8226F2D5500A8CB7B /* AsyncCurryTests.swift */,
 			);
 			path = HoneyBeeTests;
 			sourceTree = "<group>";
@@ -119,6 +126,7 @@
 			isa = PBXGroup;
 			children = (
 				FA473BBA1E352CB1007E4D61 /* HoneyBee */,
+				FA4109791E9CFBC4002A6BA6 /* HoneyBeeTests */,
 				FADE8BE81EE4F36400A1D2BA /* Supporting Files */,
 				FA473BB91E352CB1007E4D61 /* Products */,
 				FA5FA32B1E70DE4B00625996 /* Frameworks */,
@@ -137,6 +145,7 @@
 		FA473BBA1E352CB1007E4D61 /* HoneyBee */ = {
 			isa = PBXGroup;
 			children = (
+				FAA722B5226F2D0F00A8CB7B /* Curry */,
 				FA62A2961FC9FB9900385D22 /* Core */,
 				FA62A2971FC9FB9F00385D22 /* Lib */,
 			);
@@ -178,12 +187,20 @@
 		FA62A2971FC9FB9F00385D22 /* Lib */ = {
 			isa = PBXGroup;
 			children = (
-				FA4109791E9CFBC4002A6BA6 /* HoneyBeeTests */,
 				FA62A2B71FC9FBCA00385D22 /* AtomicValue.swift */,
 				FA62A2B61FC9FBCA00385D22 /* ConcurentQueue.swift */,
 				FAF0C3051FD1AD6B00D1F177 /* ConcurrentFunctionTools.swift */,
 			);
 			name = Lib;
+			sourceTree = "<group>";
+		};
+		FAA722B5226F2D0F00A8CB7B /* Curry */ = {
+			isa = PBXGroup;
+			children = (
+				FAA722B6226F2D2100A8CB7B /* AsyncCurry.swift */,
+				FAA722BA226F4DBD00A8CB7B /* FunctionWrappers.swift */,
+			);
+			name = Curry;
 			sourceTree = "<group>";
 		};
 		FADE8BE81EE4F36400A1D2BA /* Supporting Files */ = {
@@ -330,6 +347,7 @@
 			files = (
 				FA575F8B20024A630075C89C /* PrettyExamples.swift in Sources */,
 				FA25B0151F9D0885006F8DEE /* TestingFunctions.swift in Sources */,
+				FAA722B9226F2D5500A8CB7B /* AsyncCurryTests.swift in Sources */,
 				FA1A841B1FD2E0470093D11A /* FinallyTests.swift in Sources */,
 				FA2D12571FA01D8A004C491E /* ErrorHandlingTests.swift in Sources */,
 				FA41097B1E9CFBC4002A6BA6 /* SinglePathTests.swift in Sources */,
@@ -348,6 +366,7 @@
 				FA62A2A71FC9FBC100385D22 /* FailureRate.swift in Sources */,
 				FA62A2AA1FC9FBC100385D22 /* BindOperator.swift in Sources */,
 				FA62A2AE1FC9FBC100385D22 /* Bind.swift in Sources */,
+				FAA722BB226F4DBD00A8CB7B /* FunctionWrappers.swift in Sources */,
 				FA2081DB1FD1C0A4003145FB /* FaultResponse.swift in Sources */,
 				FAF0C3061FD1AD6B00D1F177 /* ConcurrentFunctionTools.swift in Sources */,
 				FA62A2B81FC9FBCA00385D22 /* ConcurentQueue.swift in Sources */,
@@ -360,6 +379,7 @@
 				FA62A2B51FC9FBC100385D22 /* ChainableFailable.swift in Sources */,
 				FA62A2A91FC9FBC100385D22 /* ErrorContext.swift in Sources */,
 				FA62A2B31FC9FBC100385D22 /* ErrorHandling.swift in Sources */,
+				FAA722B7226F2D2100A8CB7B /* AsyncCurry.swift in Sources */,
 				FA62A2AF1FC9FBC100385D22 /* HoneyBee.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -380,7 +400,7 @@
 			buildSettings = {
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				DEVELOPMENT_TEAM = A4Q9SQ9LHR;
-				INFOPLIST_FILE = HoneyBee/HoneyBeeTests/Info.plist;
+				INFOPLIST_FILE = HoneyBeeTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.iamapps.HoneyBeeTests;
@@ -394,7 +414,7 @@
 			buildSettings = {
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				DEVELOPMENT_TEAM = A4Q9SQ9LHR;
-				INFOPLIST_FILE = HoneyBee/HoneyBeeTests/Info.plist;
+				INFOPLIST_FILE = HoneyBeeTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.iamapps.HoneyBeeTests;
