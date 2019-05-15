@@ -52,31 +52,30 @@ class AsyncCurryTests: XCTestCase {
 			fail(on: context.error)
 		}
 		
-		let ctx = HoneyBee.start().handlingErrors(with: handleError)
+		let a = HoneyBee.start().handlingErrors(with: handleError)
 		
-		ctx.await(User.reset)[.any][5][{
+		a.await(User.reset)[.any][5][{
 			print($0)
 		}]
-//		ctx.await(User.reset)[.any](7) // segfault
+//		c.await(User.reset)[.any](5) // segfault
 		
-		ctx.await(User.login)["Fred"][17]
+		a.await(User.login)["Fred"][17].mute
 
-		ctx.await(User.login)["Fred"][17]
+		a.await(User.login)["Fred"][17]
 			.await(expect1.fulfill)
 
-		ctx.await(addTogether)(one: 1)(two: 3.5)
+		a.await(addTogether)(one: 1)(two: 3.5)
 			.await(addTogether)(1)(3.5)
 			.await(addTogether)(1)(3.5)
 
-		let a = ctx.await(increment)(3)
-		let b = ctx.await(increment)(val: a)
-		let c = ctx.await(increment(val:))(val: b)({
+		let r1 = a.await(increment)(3)
+		let r2 = a.await(increment)(val: r1)
+		let r3 = a.await(increment(val:))(val: r2)({
 			$0/2
 		})
-		ctx.await(increment)(fox: c).chain { (int:Int) -> Void in
-			XCTAssertEqual(int, 4)
-			expect2.fulfill()
-		}
+		a.await(increment)(fox: r3)({
+			XCTAssertEqual($0, 4)
+		}).await(expect2.fulfill)
 		
 		waitForExpectations(timeout: 3) { error in
 			if let error = error {

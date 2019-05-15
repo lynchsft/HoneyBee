@@ -1,5 +1,5 @@
 //
-//  AsyncCurry.swift
+//  AwaitCurry.swift
 //  HoneyBee
 //
 //  Created by Alex Lynch on 4/23/19.
