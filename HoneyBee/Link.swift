@@ -27,7 +27,7 @@ A single link's execution process is as follows:
 5. When _all_ of the child links have completed their execution, then this link signals that it has completed execution, via callback.
 */
 @dynamicCallable
-final public class Link<B, Performer: AsyncBlockPerformer> : Executable, PathDescribing  {
+final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
 	
 	fileprivate var createdLinks = ConcurrentQueue<Executable>()
 	fileprivate var createdLinksAsyncSemaphore: DispatchSemaphore?
@@ -41,15 +41,15 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable, PathDes
 	
 	// Debug info
 	
-	let path: [String]
+	let trace: AsyncTrace
 	fileprivate let functionFile: StaticString
 	fileprivate let functionLine: UInt
 	
-	init(function:  @escaping (Any, @escaping (FailableResult<B>) -> Void) -> Void, errorHandler: @escaping ((ErrorContext) -> Void), blockPerformer: Performer, path: [String], functionFile: StaticString, functionLine: UInt) {
+	init(function:  @escaping (Any, @escaping (FailableResult<B>) -> Void) -> Void, errorHandler: @escaping ((ErrorContext) -> Void), blockPerformer: Performer, trace: AsyncTrace, functionFile: StaticString, functionLine: UInt) {
 		self.function = function
 		self.errorHandler = errorHandler
 		self.blockPerformer = blockPerformer
-		self.path = path
+		self.trace = trace
 		self.functionFile = functionFile
 		self.functionLine = functionLine
 	}
@@ -84,10 +84,18 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable, PathDes
 				callback(FailableResult(failable))
 			}
 		}
+		var trace = self.trace
+		let fileString = String(describing: file)
+		if fileString.contains("HoneyBee/Link.swift") ||
+		   fileString.contains("HoneyBee/FunctionWrappers.swift") {
+			// omit
+		} else {
+			trace.append(.init(action: (functionDescription ?? tname(function)), file: file, line: line))
+		}
 		let link = Link<C, Performer>(function: wrapperFunction,
 		                             errorHandler: self.errorHandler,
 		                             blockPerformer: self.blockPerformer,
-		                             path: self.path + ["chain: \(file):\(line) \(functionDescription ?? tname(function))"],
+		                             trace: trace,
 		                             functionFile: file,
 		                             functionLine: line)
 		self.createdLinks.push(link)
@@ -123,11 +131,13 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable, PathDes
 		} else {
 			var bb:B? = nil
 			
+			var trace = self.trace
+			trace.append(.init(action: "finally", file: file, line: line))
 			let newFinalLink = Link<B, Performer>(function: { (_: Any, completion: (FailableResult<B>)->Void) in
 				completion(.success(bb!))
 			}, errorHandler: self.errorHandler,
 			   blockPerformer: self.blockPerformer,
-			   path: self.path+["finally"],
+			   trace: trace,
 			   functionFile: file,
 			   functionLine: line
 			   )
@@ -144,7 +154,7 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable, PathDes
 	
 	fileprivate func joinPoint() -> JoinPoint<B, Performer> {
 		let link = JoinPoint<B, Performer>(blockPerformer: self.blockPerformer,
-								path: self.path+["joinpoint"],
+								trace: self.trace,
 								errorHandler: self.errorHandler)
 		self.createdLinks.push(link)
 		return link
@@ -193,7 +203,7 @@ extension Link {
 	
 	private func processError(_ error: Error, with argument: Any, completion: @escaping ()->Void) {
 		self.blockPerformer.asyncPerform {
-			let errorContext = ErrorContext(subject: argument, error: error, file: self.functionFile, line: self.functionLine, internalPath: self.path)
+			let errorContext = ErrorContext(subject: argument, error: error, file: self.functionFile, line: self.functionLine, trace: self.trace)
 			self.errorHandler(errorContext)
 			// why not execute finally link here? Finally links are registered on `self`.
 			// If self errors, there is no downward chain to finally back from.
@@ -266,14 +276,14 @@ extension Link {
 	///
 	/// - Parameter c: Any value
 	/// - Returns: a `Link` whose child links will receive `c` as their function argument.
-	public func insert<C>(file: StaticString = #file, line: UInt = #line, _ c: C) -> Link<C, Performer> {
-		return self.chain(file: file, line:line, functionDescription: "insert") { (b:B, callback: (C) -> Void) in callback(c) }
+	public func insert<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ c: C) -> Link<C, Performer> {
+		return self.chain(file: file, line:line, functionDescription: functionDescription ?? "insert") { (b:B, callback: (C) -> Void) in callback(c) }
 	}
 	
 	/// `drop` ignores "drops" the inbound value and returns a `Link` whose value is `Void`
 	///
 	/// - Returns: a `Link` whose child links will receive `Void` as their function argument.
-	public func drop(file: StaticString = #file, line: UInt = #line) -> Link<Void, Performer> {
+	public func drop() -> Link<Void, Performer> {
 		return self.insert(Void())
 	}
 	
@@ -480,7 +490,7 @@ extension Link : ErrorHandling {
 		let link = Link<B,Performer>(function: wrapperFunction,
 										  errorHandler: errorHandler,
 										  blockPerformer: self.blockPerformer,
-										  path: self.path + ["handlingErrors: \(file):\(line)"],
+										  trace: self.trace,
 										  functionFile: #file,
 										  functionLine: #line)
 		self.createdLinks.push(link)
@@ -871,10 +881,12 @@ extension Link {
 			}
 			callback(.success(b))
 		}
+		var trace = self.trace
+		trace.append(.init(action: "switch to \(String(describing: OtherPerformer.self))", file: file, line: line))
 		let link = Link<B,OtherPerformer>(function: wrapperFunction,
 										  errorHandler: self.errorHandler,
 										  blockPerformer: otherPerformer,
-										  path: self.path + ["setBlockPerformer: \(file):\(line) \(OtherPerformer.self)"],
+										  trace: trace,
 										  functionFile: #file,
 										  functionLine: #line)
 		self.createdLinks.push(link)
@@ -888,12 +900,12 @@ extension Link where B : Collection {
 	///
 	/// - Parameter transform: the transformation subchain defining block which converts `B.Iterator.Element` to `C`
 	/// - Returns: a `Link` which will yield an array of `C`s to it's child links.
-	public func map<C>(limit: Int? = nil, acceptableFailure: FailureRate = .none, _ transform: @escaping (Link<B.Iterator.Element, Performer>) -> Link<C, Performer>) -> Link<[C], Performer> {
+	public func map<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, limit: Int? = nil, acceptableFailure: FailureRate = .none, _ transform: @escaping (Link<B.Iterator.Element, Performer>) -> Link<C, Performer>) -> Link<[C], Performer> {
 	
-		return self.chain { (collection: B, callback: @escaping (FailableResult<[C]>) -> Void) -> Void in
+		return self.chain(file: file, line: line, functionDescription: functionDescription ?? "map") { (collection: B, callback: @escaping (FailableResult<[C]>) -> Void) -> Void in
 			var results:[C?] = Array(repeating: .none, count: collection.count)
 			
-			let rootLink = self.drop()
+			let rootLink = self.insert(file: file, line: line, functionDescription: functionDescription ?? "map", Void())
 			if let limit = limit {
 				rootLink.createdLinksAsyncSemaphore = Link.semaphore(for: rootLink, withValue: limit)
 			}
@@ -929,8 +941,8 @@ extension Link where B : Collection {
 	///
 	/// - Parameter filter: the filter subchain which produces a Bool
 	/// - Returns: a `Link` which will yield to it's child links an array containing those `B.Iterator.Element`s which `filter` approved.
-	public func filter(limit: Int? = nil, acceptableFailure: FailureRate = .none, _ filter: @escaping (Link<B.Iterator.Element, Performer>) -> Link<Bool, Performer>) -> Link<[B.Iterator.Element], Performer> {
-		return self.map(limit: limit, acceptableFailure: acceptableFailure, { elem -> Link<B.Element?, Performer> in
+	public func filter(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, limit: Int? = nil, acceptableFailure: FailureRate = .none, _ filter: @escaping (Link<B.Iterator.Element, Performer>) -> Link<Bool, Performer>) -> Link<[B.Iterator.Element], Performer> {
+		return self.map(file: file, line: line, functionDescription: functionDescription ?? "filter", limit: limit, acceptableFailure: acceptableFailure, { elem -> Link<B.Element?, Performer> in
 			elem.branch { stem in
 				return (stem + filter(stem))
 						.chain { (elem: B.Element, include: Bool) -> B.Element? in
@@ -947,13 +959,27 @@ extension Link where B : Collection {
 	/// The `Link` which is given as argument to the define block will pass to its child links the element of the sequence which is currently being processed.
 	///
 	/// - Parameter defineBlock: a block which creates a subchain for each element of the Collection
+	public func each(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, limit: Int? = nil, acceptableFailure: FailureRate = .none, _ defineBlock: @escaping (Link<B.Element, Performer>) -> Void) -> Void {
+		let _ = self.map(file: file, line: line, functionDescription: functionDescription ?? "each", limit: limit, acceptableFailure: acceptableFailure) { elem in
+			elem.tunnel { link -> Link<B.Element, Performer> in
+				defineBlock(elem)
+				return link // hack
+				// this return would introduce a discontinuity in the chain
+			}
+		}
+	}
+	
+	/// When the inbound type is a `Collection`, you may call `each`
+	/// Each accepts a define block which creates a subchain which will be invoked once per element of the sequence.
+	/// The `Link` which is given as argument to the define block will pass to its child links the element of the sequence which is currently being processed.
+	///
+	/// - Parameter defineBlock: a block which creates a subchain for each element of the Collection
 	/// - Returns: a Link which will pass the nonfailing elements of `B` to its child links
 	@discardableResult
-	public func each(limit: Int? = nil, acceptableFailure: FailureRate = .none, _ defineBlock: @escaping (Link<B.Element, Performer>) -> Void) -> Link<[B.Element], Performer> {
-		return self.map(limit: limit, acceptableFailure: acceptableFailure) { elem in
-			elem.tunnel { link -> Link<B.Element, Performer> in
+	public func each<R, OtherPerformer: AsyncBlockPerformer>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, limit: Int? = nil, acceptableFailure: FailureRate = .none, _ defineBlock: @escaping (Link<B.Element, Performer>) -> Link<R, OtherPerformer>) -> Link<[B.Element], Performer> {
+		return self.map(file: file, line: line, functionDescription: functionDescription ?? "each", limit: limit, acceptableFailure: acceptableFailure) { elem in
+			elem.tunnel { link in
 				defineBlock(link)
-				return link // this shouldn't be necessary
 			}
 		}
 	}
@@ -969,10 +995,10 @@ extension Link where B : Collection {
 	///   - acceptableFailure: the acceptable failure rate
 	///   - defineBlock: a block which creates a subchain for each element of the Collection
 	/// - Returns: a Link which will pass the result of the reduce to its child links.
-	public func reduce<T>(with t: T, acceptableFailure: FailureRate = .none, _ defineBlock: @escaping (Link<(T,B.Element), Performer>) -> Link<T, Performer>) -> Link<T, Performer> {
+	public func reduce<T>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, with t: T, acceptableFailure: FailureRate = .none, _ defineBlock: @escaping (Link<(T,B.Element), Performer>) -> Link<T, Performer>) -> Link<T, Performer> {
 		var mutableT = t
 		
-		return self.each(limit: 1, acceptableFailure: acceptableFailure) { (elem: Link<B.Element, Performer>) in
+		return self.each(file: file, line: line, functionDescription: functionDescription ?? "reduce", limit: 1, acceptableFailure: acceptableFailure) { (elem: Link<B.Element, Performer>) in
 			defineBlock(elem.insert(mutableT) + elem)
 				.chain { (newT: T) throws -> Void in
 					mutableT = newT
@@ -991,11 +1017,11 @@ extension Link where B : Collection {
 	///
 	/// - Parameter defineBlock: a block which creates a subchain to combined two elements of the Collection
 	/// - Returns: a Link which will pass the final combined result of the reduce to its child links.
-	public func reduce(_ defineBlock: @escaping (Link<(B.Element,B.Element), Performer>) -> Link<B.Element, Performer>) -> Link<B.Element, Performer> {
+	public func reduce(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ defineBlock: @escaping (Link<(B.Element,B.Element), Performer>) -> Link<B.Element, Performer>) -> Link<B.Element, Performer> {
 		
 		var elemLinks = Array<Link<B.Element, Performer>>()
 		
-		return self.chain { (b:B) -> Void in
+		return self.chain(file: file, line: line, functionDescription: functionDescription ?? "reduce") { (b:B) -> Void in
 			for elem in b {
 				elemLinks.append(self.insert(elem))
 			}
@@ -1081,7 +1107,7 @@ fileprivate var limitPathsToSemaphores: [String:DispatchSemaphore] = [:]
 
 extension Link  {
 	fileprivate static func semaphore<X, SomePerformer>(for link: Link<X, SomePerformer>, withValue value: Int) -> DispatchSemaphore {
-		let pathString = link.path.joined()
+		let pathString = link.trace.toString()
 		
 		limitPathsToSemaphoresLock.lock()
 		let semaphore = limitPathsToSemaphores[pathString] ?? DispatchSemaphore(value: value)

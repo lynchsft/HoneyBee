@@ -23,7 +23,6 @@ public struct ErrorContext {
 	/// The line where the erroring `Link` was created.
 	public let line: UInt
 	
-	/// An Array of String representing the internal path of `Links` which result in the erroring `Link`.
-	/// The internal path may not seem similar to the declaring chain which generated it. The differences are due to internal function manipulations to support the various chain parameter types. For example, the internal chain may have more links than the declaring chain.
-	public let internalPath: [String]
+	/// A represention of the path of `Links` which result in the erroring `Link`.
+	public let trace: AsyncTrace
 }

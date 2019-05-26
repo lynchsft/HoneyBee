@@ -116,6 +116,9 @@ class TestingFunctions : Equatable {
 func fail(on error: Error) {
 	XCTFail("Error occured during test \(error)")
 }
+func fail() -> Void {
+	XCTFail("This function shoult not be reachable")
+}
 
 class FibonaciGenerator {
 	

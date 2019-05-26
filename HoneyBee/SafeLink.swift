@@ -175,8 +175,8 @@ extension SafeLink {
 	/// `drop` ignores "drops" the inbound value and returns a `SafeLink` whose value is `Void`
 	///
 	/// - Returns: a `SafeLink` whose child links will receive `Void` as their function argument.
-	public func drop(file: StaticString = #file, line: UInt = #line) -> SafeLink<Void, Performer> {
-		return SafeLink<Void, Performer>(self.link.drop(file: file, line: line))
+	public func drop() -> SafeLink<Void, Performer> {
+		return SafeLink<Void, Performer>(self.link.drop())
 	}
 	
 	/// `tunnel` defines a subchain with whose value is ultimately discarded. The links within the `tunnel` subchain run sequentially before the link which is the return value of `tunnel`. `tunnel` returns a `SafeLink` whose execution result `B` is the result the receiver link. Thus the value `B` "hides" or "goes under ground" while the subchain processes and "pops back up" when it is completed.
@@ -421,11 +421,22 @@ extension SafeLink where B : Collection {
 	/// The `SafeLink` which is given as argument to the define block will pass to its child links the element of the sequence which is currently being processed.
 	///
 	/// - Parameter defineBlock: a block which creates a subchain for each element of the Collection
-	/// - Returns: a SafeLink which will pass the nonfailing elements of `B` to its child links
-	@discardableResult
-	public func each(limit: Int? = nil, acceptableFailure: FailureRate = .none, _ defineBlock: @escaping (SafeLink<B.Element, Performer>) -> Void) -> SafeLink<[B.Element], Performer> {
-		return SafeLink<[B.Element], Performer>(self.link.each(limit: limit, acceptableFailure: acceptableFailure) { (inLink: Link<B.Element, Performer>) -> Void in
+	public func each(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, limit: Int? = nil, _ defineBlock: @escaping (SafeLink<B.Element, Performer>) -> Void) -> Void {
+		self.link.each(file: file, line: line, functionDescription: functionDescription, limit: limit, acceptableFailure: .none) { (inLink: Link<B.Element, Performer>) -> Void in
 			defineBlock(SafeLink<B.Element, Performer>(inLink))
+		}
+	}
+	
+	/// When the inbound type is a `Collection`, you may call `each`
+	/// Each accepts a define block which creates a subchain which will be invoked once per element of the sequence.
+	/// The `Link` which is given as argument to the define block will pass to its child links the element of the sequence which is currently being processed.
+	///
+	/// - Parameter defineBlock: a block which creates a subchain for each element of the Collection
+	/// - Returns: a Link which will pass the nonfailing elements of `B` to its child links
+	@discardableResult
+	public func each<R, OtherPerformer: AsyncBlockPerformer>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, limit: Int? = nil, _ defineBlock: @escaping (SafeLink<B.Element, Performer>) -> SafeLink<R, OtherPerformer>) -> SafeLink<[B.Element], Performer>  {
+		return SafeLink<[B.Element], Performer>(self.link.each(file: file, line: line, functionDescription: functionDescription, limit: limit, acceptableFailure: .none) { (inLink: Link<B.Element, Performer>) -> Link<R, OtherPerformer>  in
+			return defineBlock(SafeLink<B.Element, Performer>(inLink)).link
 		})
 	}
 	

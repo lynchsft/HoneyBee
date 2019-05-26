@@ -8,7 +8,7 @@
 
 import Foundation
 
-final class JoinPoint<A, Performer: AsyncBlockPerformer> : Executable, PathDescribing {
+final class JoinPoint<A, Performer: AsyncBlockPerformer> : Executable {
 	typealias ExecutionResult = (Any?, () -> Void)
 	
 	private let resultLock = NSLock()
@@ -16,11 +16,11 @@ final class JoinPoint<A, Performer: AsyncBlockPerformer> : Executable, PathDescr
 	private var resultCallback: ((ExecutionResult) -> Void)?
 	private let blockPerformer: Performer
 	private let errorHandler: ((ErrorContext) -> Void)
-	let path: [String]
+	let trace: AsyncTrace
 	
-	init(blockPerformer: Performer, path: [String], errorHandler: @escaping ((ErrorContext) -> Void)) {
+	init(blockPerformer: Performer, trace: AsyncTrace, errorHandler: @escaping ((ErrorContext) -> Void)) {
 		self.blockPerformer = blockPerformer
-		self.path = path
+		self.trace = trace
 		self.errorHandler = errorHandler
 	}
 	
@@ -58,12 +58,17 @@ final class JoinPoint<A, Performer: AsyncBlockPerformer> : Executable, PathDescr
 		HoneyBee.mismatchedConjoinResponse.evaluate(self.blockPerformer == other.blockPerformer,
 												 "conjoin detected between Links with different AsyncBlockPerformers. This can lead to unexpected results.")
 		var tuple: (A,B)? = nil
+		guard let otherLastComp = other.trace.last else {
+			HoneyBee.internalFailureResponse.evaluate(false, "AsyncTrace with no components joined.")
+			preconditionFailure("AsyncTrace with no components joined.")
+		}
 		
+		var newTrace = self.trace
 		let link = Link<(A,B), Performer>(function: { _, callback in
 			callback(.success(tuple!))
 		}, errorHandler: self.errorHandler,
 		   blockPerformer: self.blockPerformer,
-		   path: self.path+["conjoin"],
+		   trace: other.trace.join(newTrace),
 		   functionFile: #file,
 		   functionLine: #line)
 		

@@ -199,9 +199,12 @@ class ErrorHandlingTests: XCTestCase {
 			}
 		}
 		
-		let finishExpectation = expectation(description: "Should reach the end of the chain")
-		let errorExpectation = expectation(description: "Should error \(source.count) times")
-		errorExpectation.expectedFulfillmentCount = source.count
+		let finishExpectation = expectation(description: "Should reach NOT the end of the chain")
+		finishExpectation.isInverted = true
+		
+		let errorCount = source.count + 1
+		let errorExpectation = expectation(description: "Should error \(errorCount) times")
+		errorExpectation.expectedFulfillmentCount = errorCount
 		
 		HoneyBee.start { root in
 			root.handlingErrors { _ in errorExpectation.fulfill()}

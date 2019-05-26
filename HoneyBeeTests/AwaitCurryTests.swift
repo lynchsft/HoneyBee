@@ -35,6 +35,10 @@ enum User {
 
 class AsyncCurryTests: XCTestCase {
 	
+	private var filename: String {
+		return  URL(fileURLWithPath: #file).lastPathComponent
+	}
+	
 	override func setUp() {
 		// Put setup code here. This method is called before the invocation of each test method in the class.
 	}
@@ -48,7 +52,6 @@ class AsyncCurryTests: XCTestCase {
 		let expect2 = expectation(description: "Chain 2 should complete")
 		
 		func handleError(_ context: ErrorContext) {
-			print(context)
 			fail(on: context.error)
 		}
 		
@@ -76,6 +79,163 @@ class AsyncCurryTests: XCTestCase {
 		a.await(increment)(fox: r3)({
 			XCTAssertEqual($0, 4)
 		}).await(expect2.fulfill)
+		
+		waitForExpectations(timeout: 3) { error in
+			if let error = error {
+				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
+			}
+		}
+	}
+	
+	func testErrorContext() {
+		let expect = expectation(description: "Chainshould complete")
+		
+		func handleError(_ context: ErrorContext) {
+//			print(context.trace.toString())
+			let traceString = context.trace.toString()
+			let chains = traceString.components(separatedBy: self.filename)
+			XCTAssertEqual(chains.count, 7)
+			expect.fulfill()
+		}
+		
+		let a = HoneyBee.start().handlingErrors(with: handleError)
+		
+		let r1 = a.await(increment)(3)
+		let r2 = a.await(increment)(val: r1)
+		let r3 = a.await(increment(val:))(val: r2)({
+			$0/2
+		})
+		a.await(increment)(fox: r3)({
+			XCTAssertEqual($0, 4)
+		}).await(TestingFunctions().explode)
+		
+		waitForExpectations(timeout: 3) { error in
+			if let error = error {
+				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
+			}
+		}
+	}
+	
+	func testErrorContext2() {
+		let source = [1, 2, 3, 4, 5]
+		let errorCount = source.count + 1
+		let expect = expectation(description: "Chain should expload \(errorCount) times.")
+		expect.expectedFulfillmentCount = errorCount
+		
+		let finalExpect = expectation(description: "Chain should finalize")
+		
+		func shortError(_ context: ErrorContext) { // this one handles the error thrown by reduce(map) itself
+//			print(context.trace.toString())
+			let traceString = context.trace.toString()
+			let chains = traceString.components(separatedBy: self.filename)
+			XCTAssertEqual(chains.count, 5) //"commands" + 1
+			expect.fulfill()
+		}
+		
+		func longError(_ context: ErrorContext) { // this one handles the errors thrown by `explode`.
+//			print(context.trace.toString())
+			let traceString = context.trace.toString()
+			let chains = traceString.components(separatedBy: self.filename)
+			XCTAssertEqual(chains.count, 8) //"commands" + 1
+			expect.fulfill()
+		}
+		
+		do {
+			let a = HoneyBee.start().handlingErrors(with: shortError).finally {
+				$0.chain(finalExpect.fulfill)
+			}
+			
+			let sum = a.insert(source)
+				.map {
+					a.await(increment)(val: $0)
+				}
+				.reduce(with: 0) {
+					a.handlingErrors(with: longError)
+						.await(+)(a: $0)
+						.chain(increment)
+						.await(TestingFunctions().explode)
+				}
+			
+			sum.drop().chain(fail) // shouldn't run
+		}
+		
+		waitForExpectations(timeout: 60) { error in
+			if let error = error {
+				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
+			}
+		}
+	}
+	
+	func testErrorContext3() {
+		let expect = expectation(description: "Chainshould complete")
+		
+		func handleError(_ context: ErrorContext) {
+			print(context.trace.toString())
+			let traceString = context.trace.toString()
+			let chains = traceString.components(separatedBy: filename)
+			XCTAssertEqual(chains.count, 7) // "commands" + 1
+			expect.fulfill()
+		}
+		
+		let a = HoneyBee.start().handlingErrors(with: handleError)
+		
+		let source = [1, 2, 3]
+		let sum = a.insert(source)
+			.map {
+				a.await(increment)(val: $0)
+			}.reduce(with: 0) {
+				a.await(+)(a: $0)
+			}
+		
+		a.await(increment)(val: sum)({
+			XCTAssertEqual($0, 10)
+		}).await(TestingFunctions().explode)
+		
+		waitForExpectations(timeout: 3) { error in
+			if let error = error {
+				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
+			}
+		}
+	}
+	
+	func testErrorContext4() {
+		let source = [1, 2, 3, 4, 5]
+		let errorCount = source.count + 1
+		let expect = expectation(description: "Chain should expload \(errorCount) times.")
+		expect.expectedFulfillmentCount = errorCount
+		
+		let finalExpect = expectation(description: "Chain should finalize")
+		
+		func shortError(_ context: ErrorContext) { // this one handles the error thrown by map itsself
+//			print(context.trace.toString())
+			let traceString = context.trace.toString()
+			let chains = traceString.components(separatedBy: self.filename)
+			XCTAssertEqual(chains.count, 4) //"commands" + 1
+			expect.fulfill()
+		}
+		
+		func longError(_ context: ErrorContext) { // this one handles the errors thrown by `explode`.
+//			print(context.trace.toString())
+			let traceString = context.trace.toString()
+			let chains = traceString.components(separatedBy: self.filename)
+			XCTAssertEqual(chains.count, 6) //"commands" + 1
+			expect.fulfill()
+		}
+		
+		do {
+			let a = HoneyBee.start().handlingErrors(with: shortError).finally {
+				$0.chain(finalExpect.fulfill)
+			}
+		
+			let mapping = a.insert(source)
+				.map {
+					a.handlingErrors(with: longError)
+						.await(increment)(val: $0)
+						.await(TestingFunctions().explode)
+			}
+			
+			mapping.drop().chain(fail) // shouldn't run
+		}
 		
 		waitForExpectations(timeout: 3) { error in
 			if let error = error {
