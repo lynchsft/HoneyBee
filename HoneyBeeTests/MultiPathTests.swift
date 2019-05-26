@@ -89,9 +89,8 @@ class MultiPathTests: XCTestCase {
 				.branch { stem in
 					let result1 = stem.chain(self.funcContainer.constantInt)
 					
-					let result2 = stem.chain(sleep =<< sleepTime)
-						.drop()
-						.chain(self.funcContainer.constantString)
+					let result2 = stem.chain(sleep =<< sleepTime).drop
+										.chain(self.funcContainer.constantString)
 					
 					(result2 + result1)
 						.chain(self.funcContainer.multiplyString)
@@ -134,9 +133,8 @@ class MultiPathTests: XCTestCase {
 				.branch { stem -> Link<String, DefaultDispatchQueue> in
 					let result1 = stem.chain(self.funcContainer.constantInt)
 					
-					let result2 = stem.chain(sleep =<< sleepTime)
-						.drop()
-						.chain(self.funcContainer.constantString)
+					let result2 = stem.chain(sleep =<< sleepTime).drop
+										.chain(self.funcContainer.constantString)
 					
 					return (result2 <+ result1)
 				}
@@ -192,7 +190,7 @@ class MultiPathTests: XCTestCase {
 						}
 					}
 				}
-				.drop()
+				.drop
 				.chain(finishExpectation.fulfill)
 		}
 		
@@ -238,8 +236,7 @@ class MultiPathTests: XCTestCase {
 				.insert(source)
 				.map(limit: 1) { elem in
 					elem.tunnel { link in
-						link.chain(asynchronouslyHoldLock)
-							.drop()
+						link.chain(asynchronouslyHoldLock).drop
 							.chain(elementExpectation.fulfill)
 					}
 					.chain(self.funcContainer.multiplyInt)
@@ -254,7 +251,7 @@ class MultiPathTests: XCTestCase {
 						}
 					}
 				}
-				.drop()
+				.drop
 				.chain(finishExpectation.fulfill)
 		}
 		
@@ -279,7 +276,7 @@ class MultiPathTests: XCTestCase {
 						return int*2
 					}
 				}
-				.drop()
+				.drop
 				.chain(finishExpectation.fulfill)
 		}
 		
@@ -344,8 +341,7 @@ class MultiPathTests: XCTestCase {
 				.insert(source)
 				.filter(limit: 1) { elem in
 					elem.tunnel { link in
-						link.chain(asynchronouslyHoldLock)
-							.drop()
+						link.chain(asynchronouslyHoldLock).drop
 							.chain(elementExpectation.fulfill)
 						}
 						.chain(self.funcContainer.isEven)
@@ -382,7 +378,7 @@ class MultiPathTests: XCTestCase {
 					elem.chain(XCTestExpectation.fulfill)
 						.chain(incrementFullfilledExpectCount)
 				}
-				.drop()
+				.drop
 				.chain {
 					XCTAssert(filledExpectationCount.get() == expectations.count, "All expectations should be filled by now, but was actually \(filledExpectationCount.get()) != \(expectations.count)")
 				}
@@ -423,7 +419,7 @@ class MultiPathTests: XCTestCase {
 							.chain(incrementFullfilledExpectCount)
 					}
 				}
-				.drop()
+				.drop
 				.chain(assertAllExpectationsFullfilled)
 				.chain(finishExpectation.fulfill)
 		}
@@ -462,11 +458,10 @@ class MultiPathTests: XCTestCase {
 			root.handlingErrors(with: fail)
 				.insert(source)
 				.each(limit: 1) { elem in
-					elem.chain(asynchronouslyHoldLock)
-						.drop()
+					elem.chain(asynchronouslyHoldLock).drop
 						.chain(elementExpectation.fulfill)
 				}
-				.drop()
+				.drop
 				.chain(finishExpectation.fulfill)
 		}
 		
@@ -512,11 +507,11 @@ class MultiPathTests: XCTestCase {
 							.chain(asynchronouslyHoldLock)
 							.chain(asynchronouslyHoldLock)
 						}
-						.drop()
+						.drop
 						.chain(startParalleCodeExpectation.fulfill)
 						// parallelize
 						.chain{ _ in usleep(sleepNanoSeconds * 3) }
-						.drop()
+						.drop
 						.chain(finishParalleCodeExpectation.fulfill)
 						.chain({ () -> Void in
 							parallelCodeFinishedLock.lock()
@@ -524,7 +519,7 @@ class MultiPathTests: XCTestCase {
 							parallelCodeFinishedLock.unlock()
 						})
 				}
-				.drop()
+				.drop
 				.chain{ XCTAssert(parallelCodeFinished, "the parallel code should have finished before this") }
 				.chain(finishExpectation.fulfill)
 		}
@@ -547,8 +542,7 @@ class MultiPathTests: XCTestCase {
 			root.handlingErrors(with: fail)
 				.limit(29) { link in
 					link.insert("Right")
-						.chain(self.funcContainer.stringCat)
-						.drop()
+						.chain(self.funcContainer.stringCat).drop
 						.chain(intermediateExpectation.fulfill)
 						.chain{ intermediateFullfilled = true }
 				}
@@ -584,11 +578,11 @@ class MultiPathTests: XCTestCase {
 				.insert(source)
 				.each { elem in
 					elem.limit(1) { link in
-						link.drop()
+						link.drop
 							.chain(expect.fulfill)
 						
-						let _ = link.drop() // not semantically relevant.
-						// Just need this to invoke the "no return" limit.
+						let _ = link.drop // not semantically relevant.
+						// Just need this to invoke the "no return" form limit.
 					}
 				}
 		}
@@ -634,11 +628,11 @@ class MultiPathTests: XCTestCase {
 		HoneyBee.start()
 				.handlingErrors(with: fail)
 				.branch { stem in
-					stem.drop()
+					stem.drop
 						.move(to: DispatchQueue.main)
 						.chain(self.funcContainer.constantInt)
 					+
-					stem.drop()
+					stem.drop
 					  	.move(to: DispatchQueue.global())
 						.chain(self.funcContainer.constantString)
 				}

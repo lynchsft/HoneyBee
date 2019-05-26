@@ -175,8 +175,8 @@ extension SafeLink {
 	/// `drop` ignores "drops" the inbound value and returns a `SafeLink` whose value is `Void`
 	///
 	/// - Returns: a `SafeLink` whose child links will receive `Void` as their function argument.
-	public func drop() -> SafeLink<Void, Performer> {
-		return SafeLink<Void, Performer>(self.link.drop())
+	public var drop: SafeLink<Void, Performer> {
+		return SafeLink<Void, Performer>(self.link.drop)
 	}
 	
 	/// `tunnel` defines a subchain with whose value is ultimately discarded. The links within the `tunnel` subchain run sequentially before the link which is the return value of `tunnel`. `tunnel` returns a `SafeLink` whose execution result `B` is the result the receiver link. Thus the value `B` "hides" or "goes under ground" while the subchain processes and "pops back up" when it is completed.

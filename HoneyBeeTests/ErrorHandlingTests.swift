@@ -36,11 +36,9 @@ class ErrorHandlingTests: XCTestCase {
 				.insert(self.funcContainer)
 				.chain(TestingFunctions.randomInt)
 				.chain(self.funcContainer.intToString)
-				.chain(self.funcContainer.stringCat)
-				.drop()
+				.chain(self.funcContainer.stringCat).drop
 				.chain(self.funcContainer.explode)
-				.chain(self.funcContainer.multiplyInt)
-				.drop()
+				.chain(self.funcContainer.multiplyInt).drop
 				.chain(failIfReached)
 		}
 		
@@ -65,7 +63,7 @@ class ErrorHandlingTests: XCTestCase {
 				.chain(self.funcContainer.intToString)
 				.chain(self.funcContainer.stringCat)
 				.retry(retryCount) { link in
-					link.drop()
+					link.drop
 						.chain(retryExpectation.fulfill)
 						.chain(self.funcContainer.explode)
 						.chain(self.funcContainer.multiplyInt)
@@ -94,7 +92,7 @@ class ErrorHandlingTests: XCTestCase {
 				.chain(self.funcContainer.constantInt)
 				.retry(retryCount) { link in
 					link.tunnel { link in
-							link.drop()
+							link.drop
 								.chain(retryExpectation.fulfill)
 								.chain{
 									if !failed {
@@ -106,8 +104,7 @@ class ErrorHandlingTests: XCTestCase {
 						.chain(self.funcContainer.multiplyInt)
 				}
 				.chain(self.funcContainer.multiplyInt)
-				.chain(assertEquals =<< 32)
-				.drop()
+				.chain(assertEquals =<< 32).drop
 				.chain(finishExpectation.fulfill)
 		}
 		
@@ -132,7 +129,7 @@ class ErrorHandlingTests: XCTestCase {
 				.chain(self.funcContainer.intToString)
 				.chain(self.funcContainer.stringCat)
 				.retry(retryCount) { link in
-					link.drop()
+					link.drop
 						.chain(retryExpectation.fulfill)
 						.chain(self.funcContainer.explode)
 						.chain(self.funcContainer.multiplyInt)
@@ -174,8 +171,7 @@ class ErrorHandlingTests: XCTestCase {
 				.chain(self.funcContainer.intToString)
 				.chain(self.funcContainer.stringCat)
 				.chain{(string:String) -> String in expectedFile = #file; expectedLine = #line; return string}.chain(self.funcContainer.stringToInt)
-				.chain(self.funcContainer.multiplyInt)
-				.drop()
+				.chain(self.funcContainer.multiplyInt).drop
 				.chain(failIfReached)
 		}
 		
@@ -213,7 +209,7 @@ class ErrorHandlingTests: XCTestCase {
 					elem.chain(asynchronouslyHoldLock)
 						.chain(self.funcContainer.explode)
 				}
-				.drop()
+				.drop
 				.chain(finishExpectation.fulfill)
 		}
 		
@@ -248,7 +244,7 @@ class ErrorHandlingTests: XCTestCase {
 									.chain(TestingFunctions.explode) // error here
 									.chain(assertEquals =<< Int.max)
 							} else {
-								return link.drop()
+								return link.drop
 									.chain(successExpectation.fulfill)
 							}
 						}
@@ -300,10 +296,8 @@ class ErrorHandlingTests: XCTestCase {
 									}
 									.chain(self.funcContainer.constantInt)
 						
-						let result2 = stem.chain(sleep =<< sleepTime)
-							.drop()
-							.chain(self.funcContainer.explode)
-							.drop()
+						let result2 = stem.chain(sleep =<< sleepTime).drop
+							.chain(self.funcContainer.explode).drop
 							.chain(failIfReached)
 							.chain(self.funcContainer.constantString)
 						
@@ -313,8 +307,7 @@ class ErrorHandlingTests: XCTestCase {
 						}
 						let joinedLink = customConjoin(result2,result1)
 						
-						let _ = joinedLink
-								.drop()
+						let _ = joinedLink.drop
 								.conjoin(downstreamLink)
 				}
 			}
@@ -360,15 +353,13 @@ class ErrorHandlingTests: XCTestCase {
 						}
 						.chain(self.funcContainer.constantInt)
 					
-					let result2 = stem.chain(sleep =<< sleepTime)
-						.drop()
-						.chain(self.funcContainer.explode)
-						.drop()
+					let result2 = stem.chain(sleep =<< sleepTime).drop
+						.chain(self.funcContainer.explode).drop
 						.insert(["contents don't matter"])
 						.map { link in
 							link.chain(self.funcContainer.stringToInt)
 						}
-						.drop()
+						.drop
 						.chain(failIfReached)
 						.chain(self.funcContainer.constantString)
 					
@@ -444,7 +435,7 @@ class ErrorHandlingTests: XCTestCase {
 						let expected = ["0","1","2","3","4","5","6","7","8","9"]
 						XCTAssert(strings == expected, "Expected \(strings) to equal \(expected)")
 					}
-					.drop()
+					.drop
 					.chain(finishExpectation.fulfill)
 			}
 			
@@ -559,7 +550,7 @@ class ErrorHandlingTests: XCTestCase {
 			root.handlingErrors(with: errorHandlder)
 				.insert(source)
 				.finally { link in
-					link.drop()
+					link.drop
 						.chain(finallyExpectation.fulfill)
 				}
 				.reduce { pair in

@@ -87,7 +87,7 @@ class SinglePathTests: XCTestCase {
 						.chain(optionalExpect.fulfill)
 						.chain{ optionallyCompleted = true }
 				}
-				.drop()
+				.drop
 				.chain{ XCTAssert(optionallyCompleted, "Optionally chain should have completed by now") }
 				.chain(expect.fulfill)
 
@@ -106,10 +106,10 @@ class SinglePathTests: XCTestCase {
 		HoneyBee.start(on: DispatchQueue.main)
 				.insert(Optional<Int>.none)
 				.optionally { link in
-					link.drop()
+					link.drop
 						.chain(optionalExpect.fulfill)
 				}
-				.drop()
+				.drop
 				.chain(expect.fulfill)
 
 		waitForExpectations(timeout: 1) { error in

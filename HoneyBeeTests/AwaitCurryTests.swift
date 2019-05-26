@@ -156,7 +156,7 @@ class AsyncCurryTests: XCTestCase {
 						.await(TestingFunctions().explode)
 				}
 			
-			sum.drop().chain(fail) // shouldn't run
+			sum.drop.chain(fail) // shouldn't run
 		}
 		
 		waitForExpectations(timeout: 60) { error in
@@ -234,7 +234,7 @@ class AsyncCurryTests: XCTestCase {
 						.await(TestingFunctions().explode)
 			}
 			
-			mapping.drop().chain(fail) // shouldn't run
+			mapping.drop.chain(fail) // shouldn't run
 		}
 		
 		waitForExpectations(timeout: 3) { error in

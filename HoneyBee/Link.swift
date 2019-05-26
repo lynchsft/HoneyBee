@@ -283,7 +283,7 @@ extension Link {
 	/// `drop` ignores "drops" the inbound value and returns a `Link` whose value is `Void`
 	///
 	/// - Returns: a `Link` whose child links will receive `Void` as their function argument.
-	public func drop() -> Link<Void, Performer> {
+	public var drop: Link<Void, Performer> {
 		return self.insert(Void())
 	}
 	
@@ -1091,7 +1091,7 @@ extension Link where B : OptionalProtocol {
 			if let unwrapped = b.getWrapped() {
 				let unwrappedLink = self.insert(unwrapped)
 					.finally{
-						$0.drop()
+						$0.drop
 						  .chain(completion)
 					}
 				let _ = defineBlock(unwrappedLink)

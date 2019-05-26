@@ -76,7 +76,7 @@ class FinallyTests: XCTestCase {
 						}
 						.chain(self.funcContainer.explode)
 						.finally { link in
-							link.drop()
+							link.drop
 								.chain(unreachableExpectation.fulfill)
 						}
 			//^^ The "let _" suppresses the warning that you get when discarding finally's result
@@ -131,8 +131,7 @@ class FinallyTests: XCTestCase {
 				.retry(1) { link in
 					link.chain(self.funcContainer.constantInt)
 				}
-				.chain(self.funcContainer.multiplyInt)
-				.drop()
+				.chain(self.funcContainer.multiplyInt).drop
 				.chain(finishExpectation.fulfill)
 		
 		waitForExpectations(timeout: 141) { error in
