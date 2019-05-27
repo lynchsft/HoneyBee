@@ -74,4 +74,31 @@ struct PrettyExamples {
 				.chain(dewarpAndCleanupImage)
 				.chain{ completionBlock($0, nil) }
 	}
+	
+	func processImageDataCurried(completionBlock: @escaping (Image?, Error?) -> Void) {
+		func loadWebResource(named name: String, completion: (Data?, Error?) -> Void) {}
+		func decodeImage(dataProfile: Data, image: Data) throws -> Image { return Image() }
+		func dewarpAndCleanupImage(_ image: Image, completion: (Image?, Error?) -> Void) {}
+		
+		func completionWrapper(_ result: Result<Image, ErrorContext>) {
+			switch result {
+			case .failure(let context):
+				completionBlock(nil, context.error)
+			case .success(let image):
+				completionBlock(image, nil)
+			}
+		}
+		
+		HoneyBee.async(completion: completionWrapper) { a in
+			
+			let dataProfile = a.await(loadWebResource)(named: "dataprofile.txt")
+			let imageData = a.await(loadWebResource)(named: "imagedata.dat")
+			
+			let image = a.await(decodeImage)(dataProfile: dataProfile)(image: imageData)
+			let cleanedImage = a.await(dewarpAndCleanupImage)(image)
+			
+			return cleanedImage
+		}
+	}
 }
+

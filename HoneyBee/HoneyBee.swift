@@ -154,3 +154,67 @@ public struct HoneyBee {
 		return link.getBlockPerformer()
 	}
 }
+
+
+extension HoneyBee {
+	public static func async<R, Performer>(on blockPerformer: Performer,
+										   callback: @escaping (R) -> Void,
+										   file: StaticString = #file,
+										   line: UInt = #line,
+										   _ defineBlock: @escaping (SafeLink<Void, Performer>) -> SafeLink<R, Performer>) -> Void
+	where Performer: AsyncBlockPerformer {
+		
+		self.start(on: blockPerformer, file: file, line: line) { context in
+			let result = defineBlock(context)
+			result.chain(callback)
+		}
+	}
+	
+	public static func async<R, Performer>(on blockPerformer: Performer,
+										   completion: @escaping (Result<R, Error>) -> Void,
+										   file: StaticString = #file,
+										   line: UInt = #line,
+										   _ defineBlock: @escaping (Link<Void, Performer>) -> Link<R, Performer>) -> Void
+	where Performer: AsyncBlockPerformer {
+		
+		let context = self.start(on: blockPerformer, file: file, line: line).handlingErrors { completion(.failure($0)) }
+		let result = defineBlock(context)
+		result.chain { completion(.success($0)) }
+	}
+	
+	public static func async<R, Performer>(on blockPerformer: Performer,
+										   completion: @escaping (Result<R, ErrorContext>) -> Void,
+										   file: StaticString = #file,
+										   line: UInt = #line,
+										   _ defineBlock: @escaping (Link<Void, Performer>) -> Link<R, Performer>) -> Void
+		where Performer: AsyncBlockPerformer {
+			
+			let context = self.start(on: blockPerformer, file: file, line: line).handlingErrors { completion(.failure($0)) }
+			let result = defineBlock(context)
+			result.chain { completion(.success($0)) }
+	}
+	
+	public static func async<R>(callback: @escaping (R) -> Void,
+								file: StaticString = #file,
+								line: UInt = #line,
+								_ defineBlock: @escaping (SafeLink<Void, DefaultDispatchQueue>) -> SafeLink<R, DefaultDispatchQueue>) -> Void {
+		
+		self.async(on: DefaultDispatchQueue(), callback: callback, file: file, line: line, defineBlock)
+	}
+	
+	public static func async<R>(completion: @escaping (Result<R, Error>) -> Void,
+								file: StaticString = #file,
+								line: UInt = #line,
+								_ defineBlock: @escaping (Link<Void, DefaultDispatchQueue>) -> Link<R, DefaultDispatchQueue>) -> Void {
+		
+		self.async(on: DefaultDispatchQueue(), completion: completion, file: file, line: line, defineBlock)
+	}
+	
+	public static func async<R>(completion: @escaping (Result<R, ErrorContext>) -> Void,
+								file: StaticString = #file,
+								line: UInt = #line,
+								_ defineBlock: @escaping (Link<Void, DefaultDispatchQueue>) -> Link<R, DefaultDispatchQueue>) -> Void {
+			
+		self.async(on: DefaultDispatchQueue(), completion: completion, file: file, line: line, defineBlock)
+	}
+}

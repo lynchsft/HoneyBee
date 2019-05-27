@@ -502,8 +502,8 @@ class ErrorHandlingTests: XCTestCase {
 				errorExpectation.fulfill()
 			}
 			
-			HoneyBee.start { root in
-				root.handlingErrors(with: errorHandlder)
+			HoneyBee.start()
+					.handlingErrors(with: errorHandlder)
 					.insert(source)
 					.reduce(with: 0, acceptableFailure: .ratio(0.1)) { elem in
 						elem.tunnel { link in
@@ -515,9 +515,10 @@ class ErrorHandlingTests: XCTestCase {
 						}
 						.chain(+)
 					}
-					.chain{ XCTAssert($0 == result, "Reduce failed. Expected: \(result). Received: \($0).") }
+					.chain{ (int: Int)-> Void in
+						XCTAssert(int == result, "Reduce failed. Expected: \(result). Received: \(int).")
+					}
 					.chain(finishExpectation.fulfill)
-			}
 			
 			waitForExpectations(timeout: 3) { error in
 				if let error = error {

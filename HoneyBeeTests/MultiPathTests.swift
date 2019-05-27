@@ -601,15 +601,14 @@ class MultiPathTests: XCTestCase {
 		
 		let finishExpectation = expectation(description: "Should reach the end of the chain")
 		
-		HoneyBee.start { root in
-			root.handlingErrors(with: fail)
+		HoneyBee.start()
 				.insert(source)
 				.reduce { pair in
 					pair.chain(+)
 				}
 				.chain{ XCTAssert($0 == result, "Reduce failed. Expected: \(result). Received: \($0).") }
 				.chain(finishExpectation.fulfill)
-		}
+		
 		
 		waitForExpectations(timeout: 3) { error in
 			if let error = error {
