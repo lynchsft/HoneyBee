@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FA036D05229B79B9008DC738 /* SwiftTeamTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA036D04229B79B9008DC738 /* SwiftTeamTests.swift */; };
 		FA1A841B1FD2E0470093D11A /* FinallyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA1A841A1FD2E0470093D11A /* FinallyTests.swift */; };
 		FA202E5120F5C67700B2489D /* SafeLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA202E5020F5C67700B2489D /* SafeLink.swift */; };
 		FA2081DB1FD1C0A4003145FB /* FaultResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA2081DA1FD1C0A4003145FB /* FaultResponse.swift */; };
@@ -50,6 +51,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		FA036D04229B79B9008DC738 /* SwiftTeamTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftTeamTests.swift; sourceTree = "<group>"; };
 		FA1A841A1FD2E0470093D11A /* FinallyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinallyTests.swift; sourceTree = "<group>"; };
 		FA202E5020F5C67700B2489D /* SafeLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafeLink.swift; sourceTree = "<group>"; };
 		FA2081DA1FD1C0A4003145FB /* FaultResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaultResponse.swift; sourceTree = "<group>"; };
@@ -110,14 +112,15 @@
 		FA4109791E9CFBC4002A6BA6 /* HoneyBeeTests */ = {
 			isa = PBXGroup;
 			children = (
-				FA1A841A1FD2E0470093D11A /* FinallyTests.swift */,
+				FAA722B8226F2D5500A8CB7B /* AwaitCurryTests.swift */,
 				FA2D12561FA01D8A004C491E /* ErrorHandlingTests.swift */,
+				FA1A841A1FD2E0470093D11A /* FinallyTests.swift */,
 				FA41097C1E9CFBC4002A6BA6 /* Info.plist */,
 				FA25B0161F9D0931006F8DEE /* MultiPathTests.swift */,
-				FA41097A1E9CFBC4002A6BA6 /* SinglePathTests.swift */,
-				FA25B0141F9D0885006F8DEE /* TestingFunctions.swift */,
 				FA575F8A20024A630075C89C /* PrettyExamples.swift */,
-				FAA722B8226F2D5500A8CB7B /* AwaitCurryTests.swift */,
+				FA41097A1E9CFBC4002A6BA6 /* SinglePathTests.swift */,
+				FA036D04229B79B9008DC738 /* SwiftTeamTests.swift */,
+				FA25B0141F9D0885006F8DEE /* TestingFunctions.swift */,
 			);
 			path = HoneyBeeTests;
 			sourceTree = "<group>";
@@ -351,6 +354,7 @@
 				FA1A841B1FD2E0470093D11A /* FinallyTests.swift in Sources */,
 				FA2D12571FA01D8A004C491E /* ErrorHandlingTests.swift in Sources */,
 				FA41097B1E9CFBC4002A6BA6 /* SinglePathTests.swift in Sources */,
+				FA036D05229B79B9008DC738 /* SwiftTeamTests.swift in Sources */,
 				FA25B0171F9D0931006F8DEE /* MultiPathTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

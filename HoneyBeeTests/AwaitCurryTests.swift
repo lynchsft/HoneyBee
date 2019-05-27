@@ -10,14 +10,6 @@ import XCTest
 import Foundation
 import HoneyBee
 
-func increment(val: Int) -> Int {
-	return val + 1
-}
-
-func addTogether(one: Int, two: Double) throws -> Double {
-	return Double(one) + two
-}
-
 enum User {
 	case any
 	func reset(in seconds: Int) {

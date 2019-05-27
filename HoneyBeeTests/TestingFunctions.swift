@@ -136,3 +136,12 @@ class FibonaciGenerator {
 		completion?(next, nil)
 	}
 }
+
+func increment(val: Int) -> Int {
+	return val + 1
+}
+
+func addTogether(one: Int, two: Double) throws -> Double {
+	return Double(one) + two
+}
+
