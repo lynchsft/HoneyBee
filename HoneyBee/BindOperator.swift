@@ -68,6 +68,25 @@ public func =<< <A,C,R>(_ function: @escaping (A,A,C) -> R, _ arg: A) -> (A,C) -
 	return bind(function,arg)
 }
 
+/// bind argument to function. Type: 3 onto 3
+public func =<< <A,C,R>(_ function: @escaping (A,A,C) throws -> R, _ arg: C) -> (A,A) throws -> R {
+	return bind(function,arg)
+}
+
+/// bind argument to function. Type: 3 onto 3
+public func =<< <A,C,R>(_ function: @escaping (A,A,C) -> R, _ arg: C) -> (A,A) -> R {
+	return bind(function,arg)
+}
+
+/// bind argument to function. Type: instance curried 2 onto 3
+public func =<< <A,C,R>(_ function: @escaping (A)->(A,C) throws -> R, _ arg: C) -> (A,A) throws -> R {
+	return bind(function,arg)
+}
+
+/// bind argument to function. Type: instance curried 2 onto 3
+public func =<< <A,C,R>(_ function: @escaping (A)->(A,C) -> R, _ arg: C) -> (A,A) -> R {
+	return bind(function,arg)
+}
 
 /// bind argument to function. Type: 1 onto 3
 public func =<< <A,B,C,R>(_ function: @escaping (A,B,C) throws -> R, _ arg: A) -> (B,C) throws -> R {

@@ -74,7 +74,7 @@ def generate_chainable()
 		
 		declarations = include_error_handler ? erroring_chain_declarations : safe_chain_declarations
 		declarations << documentation
-		declarations << "@discardableResult\nfunc chain#{extra_generic_parameter}(file: StaticString, line: UInt, functionDescription: String?, _ function: @escaping #{function_signature} ) -> #{include_error_handler ? "":"Safe"}Link<#{transform_result_type}>"
+		declarations << "@discardableResult\nfunc chain#{extra_generic_parameter}(file: StaticString, line: UInt, functionDescription: String?, _ function: @escaping #{function_signature} ) -> #{include_error_handler ? "":"Safe"}Link<#{transform_result_type}, Performer>"
 		declarations << ""
 	}
 
@@ -83,6 +83,7 @@ def generate_chainable()
 /// Generated protocol declaring safe chain functions.
 protocol SafeChainable {
 	associatedtype B
+	associatedtype Performer: AsyncBlockPerformer
 
 #{safe_chain_declarations.join("\n")}
 }
@@ -90,6 +91,7 @@ protocol SafeChainable {
 /// Generated protocol declaring erroring chain functions.
 protocol ErroringChainable  {
 	associatedtype B
+	associatedtype Performer: AsyncBlockPerformer
 
 #{erroring_chain_declarations.join("\n")}
 }
@@ -113,6 +115,7 @@ bind_patterns = %w[
 	A
 	AB
 	AA
+	AAC
 	ABC
 	ABCD
 ]
