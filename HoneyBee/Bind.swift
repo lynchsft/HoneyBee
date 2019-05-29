@@ -87,28 +87,28 @@ public func bind<A,C,R>(_ function: @escaping (A,A,C) -> R, _ arg: A) -> (A,C) -
 
 /// bind argument to function. Type: 3 onto 3
 public func bind<A,C,R>(_ function: @escaping (A,A,C) throws -> R, _ arg: C) -> (A,A) throws -> R {
-	return { (a: A, a: A) in
-		return try function(a, a, arg)
+	return { (a: A, a2: A) in
+		return try function(a, a2, arg)
 	}
 }
 
 /// bind argument to function. Type: 3 onto 3
 public func bind<A,C,R>(_ function: @escaping (A,A,C) -> R, _ arg: C) -> (A,A) -> R {
-	return { (a: A, a: A) in
-		return  function(a, a, arg)
+	return { (a: A, a2: A) in
+		return  function(a, a2, arg)
 	}
 }
 
 /// bind argument to function. Type: instance curried 2 onto 3
 public func bind<A,C,R>(_ function: @escaping (A)->(A,C) throws -> R, _ arg: C) -> (A,A) throws -> R {
-	return { (a: A, a: A) in
+	return { (a: A, a2: A) in
 		return try function(a)(a, arg)
 	}
 }
 
 /// bind argument to function. Type: instance curried 2 onto 3
 public func bind<A,C,R>(_ function: @escaping (A)->(A,C) -> R, _ arg: C) -> (A,A) -> R {
-	return { (a: A, a: A) in
+	return { (a: A, a2: A) in
 		return  function(a)(a, arg)
 	}
 }

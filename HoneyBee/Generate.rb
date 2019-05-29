@@ -142,10 +142,28 @@ def generate_bind()
 		consumed_arguments= arguments.dup
 		consumed_arguments[consumed_index,1] = ''
 		consumed_argument_declaration = consumed_arguments.split('').join(",")
-		consumed_argument_params = consumed_arguments.split('').collect {|letter| "#{letter.downcase}: #{letter}"}.join(", ")
+		argCounter = {}
+		consumed_argument_params = consumed_arguments.split('').collect {|letter|
+			argCounter[letter] ||= 0
+			count = argCounter[letter] += 1
+			if count == 1
+				"#{letter.downcase}: #{letter}"
+			else
+				"#{letter.downcase}#{count}: #{letter}"
+			end
+		}.join(", ")
 		replaced_arguments= arguments.dup
 		replaced_arguments[consumed_index,1] = 'X'
-		replaced_arguments = replaced_arguments.split('').collect {|letter| letter.downcase}.join(", ")
+		argCounter = {}
+		replaced_arguments = replaced_arguments.split('').collect {|letter|
+			argCounter[letter] ||= 0
+			count = argCounter[letter] += 1
+			if count == 1
+				"#{letter.downcase}"
+				else
+				"#{letter.downcase}#{count}"
+			end
+		}.join(", ")
 		replaced_arguments.gsub!("x","arg")
 		
 		["throws ", ""].each {|throw_or_no|		
