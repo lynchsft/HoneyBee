@@ -32,12 +32,13 @@ class ErrorHandlingTests: XCTestCase {
 		let expect = expectation(description: "Chain should fail with error")
 		
 		HoneyBee.start { root in
-			root.setErrorHandler {error in expect.fulfill()}
+			let a = root.setErrorHandler {error in expect.fulfill()}
 				.insert(self.funcContainer)
 				.chain(TestingFunctions.randomInt)
 				.chain(self.funcContainer.intToString)
 				.chain(self.funcContainer.stringCat)
-				.drop()
+				
+				a.drop()
 				.chain(self.funcContainer.explode)
 				.chain(self.funcContainer.multiplyInt)
 				.drop()
@@ -126,12 +127,13 @@ class ErrorHandlingTests: XCTestCase {
 		retryExpectation.expectedFulfillmentCount = retryCount + 1
 		
 		HoneyBee.start { root in
-			root.setErrorHandler {_ in finalErrorExpectation.fulfill()}
+			let a = root.setErrorHandler {_ in finalErrorExpectation.fulfill()}
 				.insert(self.funcContainer)
 				.chain(TestingFunctions.randomInt)
 				.chain(self.funcContainer.intToString)
 				.chain(self.funcContainer.stringCat)
-				.retry(retryCount) { link in
+				
+				a.retry(retryCount) { link in
 					link.drop()
 						.chain(retryExpectation.fulfill)
 						.chain(self.funcContainer.explode)
@@ -169,11 +171,12 @@ class ErrorHandlingTests: XCTestCase {
 		}
 		
 		HoneyBee.start { root in
-			root.setErrorHandler(errorHanlderWithContext)
+			let a = root.setErrorHandler(errorHanlderWithContext)
 				.insert(7)
 				.chain(self.funcContainer.intToString)
 				.chain(self.funcContainer.stringCat)
-				.chain{(string:String) -> String in expectedFile = #file; expectedLine = #line; return string}.chain(self.funcContainer.stringToInt)
+				
+				a.chain{(string:String) -> String in expectedFile = #file; expectedLine = #line; return string}.chain(self.funcContainer.stringToInt)
 				.chain(self.funcContainer.multiplyInt)
 				.drop()
 				.chain(failIfReached)
@@ -357,12 +360,13 @@ class ErrorHandlingTests: XCTestCase {
 						}
 						.chain(self.funcContainer.constantInt)
 					
-					let result2 = stem.chain(sleep =<< sleepTime)
+					let a = stem.chain(sleep =<< sleepTime)
 						.drop()
 						.chain(self.funcContainer.explode)
 						.drop()
 						.insert(["contents don't matter"])
-						.map { link in
+						
+					let result2 = a.map { link in
 							link.chain(self.funcContainer.stringToInt)
 						}
 						.drop()
@@ -427,9 +431,10 @@ class ErrorHandlingTests: XCTestCase {
 			}
 			
 			HoneyBee.start { root in
-				root.setErrorHandler(errorHandlder)
+				let a = root.setErrorHandler(errorHandlder)
 					.insert(source)
-					.map(acceptableFailure: .count(failures)) { elem in
+					
+				let b = a.map(acceptableFailure: .count(failures)) { elem in
 						elem.chain(failableIntConverter)
 							.tunnel { link in
 								link.chain { (string: String) -> Void in
@@ -437,7 +442,8 @@ class ErrorHandlingTests: XCTestCase {
 								}
 							}
 					}
-					.chain { (strings: [String]) -> Void in
+						
+					b.chain { (strings: [String]) -> Void in
 						let expected = ["0","1","2","3","4","5","6","7","8","9"]
 						XCTAssert(strings == expected, "Expected \(strings) to equal \(expected)")
 					}
@@ -471,7 +477,7 @@ class ErrorHandlingTests: XCTestCase {
 		}
 		
 		HoneyBee.start { root in
-			root.setErrorHandler(errorHandlder)
+			let a = root.setErrorHandler(errorHandlder)
 				.insert(source)
 				.filter(acceptableFailure: .ratio(0.1)) { elem in
 					elem.tunnel { link in
@@ -483,7 +489,8 @@ class ErrorHandlingTests: XCTestCase {
 					}
 					.chain(self.funcContainer.isEven)
 				}
-				.chain{ XCTAssert($0 == result, "Filter failed. expected: \(result). Received: \($0).") }
+				
+			a.chain{ XCTAssert($0 == result, "Filter failed. expected: \(result). Received: \($0).") }
 				.chain(finishExpectation.fulfill)
 		}
 		
@@ -553,13 +560,13 @@ class ErrorHandlingTests: XCTestCase {
 		}
 		
 		HoneyBee.start { root in
-			root.setErrorHandler(errorHandlder)
+			let a = root.setErrorHandler(errorHandlder)
 				.insert(source)
 				.finally { link in
 					link.drop()
 						.chain(finallyExpectation.fulfill)
 				}
-				.reduce { pair in
+				a.reduce { pair in
 					pair.tunnel { link in
 						link.chain { (int1: Int, int2:Int) throws -> Void in
 							if int1+int2 == sum {
@@ -592,13 +599,14 @@ class ErrorHandlingTests: XCTestCase {
 		}
 		
 		HoneyBee.start(on: DispatchQueue.main) { root in
-			root.setCompletionHandler(errorHandler)
+			let a = root.setCompletionHandler(errorHandler)
 				.setBlockPerformer(DispatchQueue.global())
 				.insert(4)
 				.chain(self.funcContainer.intToString)
 				.chain(self.funcContainer.stringToInt)
 				.chain(self.funcContainer.multiplyInt)
-				.branch {
+				
+				a.branch {
 					  $0.chain(self.funcContainer.explode)
 						.chain(assertEquals =<< 8)
 					

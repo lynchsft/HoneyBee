@@ -151,13 +151,14 @@ class SinglePathTests: XCTestCase {
 			XCTAssert(Thread.isMainThread == isMain, "Thead-mainness expected to be \(isMain) but is \(Thread.isMainThread)")
 		}
 		
-		HoneyBee.start(on: DispatchQueue.main)
+		let a = HoneyBee.start(on: DispatchQueue.main)
 				.insert(4)
 				.chain(self.funcContainer.intToString)
 				.drop()
 				.chain(assertThreadIsMain =<< true)
 				.setBlockPerformer(DispatchQueue.global())
-				.chain(assertThreadIsMain =<< false)
+			
+				a.chain(assertThreadIsMain =<< false)
 				.setBlockPerformer(DispatchQueue.main)
 				.chain(assertThreadIsMain =<< true)
 				.chain(expect.fulfill)

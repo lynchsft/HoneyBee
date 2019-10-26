@@ -437,7 +437,8 @@ extension SafeLink {
 	/// - Parameter completionHandler: a function which takes an optional `ErrorContext`. The context contains all available debug information on the erroring function, including the error itself.
 	/// - Returns: A `Link` which has the completion handler installed.
 	public func setCompletionHandler(_ completionHandler: @escaping (ErrorContext?) -> Void ) -> Link<B> {
-		let finallyCalled: AtomicBool = false
+		let finallyCalled = AtomicBool(booleanLiteral: false)
+		// if we use actual boolean literal initialization swift 5.1 emits garbage :PPP
 		let blockPerformer = HoneyBee.getBlockPerformer(of: self.link)
 		return self.setErrorHandler({ (context: ErrorContext) in
 			finallyCalled.access { called in
