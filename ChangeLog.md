@@ -1,6 +1,7 @@
 
 # Change Log
 ---
+ * [4f24cee](../../commit/4f24cee) - __(Alex Lynch)__ Mark as v2.8.2
  * [580413a](../../commit/580413a) - __(Alex Lynch)__ Compatibility with Swift 5.1
  * [6f89ac5](../../commit/6f89ac5) - __(Alex Lynch)__ Xcode-suggested project reorganization.
  * [72a6a26](../../commit/72a6a26) - __(Alex Lynch)__ Mark as v2.8.1
