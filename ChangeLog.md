@@ -1,6 +1,9 @@
 
 # Change Log
 ---
+ * [580413a](../../commit/580413a) - __(Alex Lynch)__ Compatibility with Swift 5.1
+ * [6f89ac5](../../commit/6f89ac5) - __(Alex Lynch)__ Xcode-suggested project reorganization.
+ * [72a6a26](../../commit/72a6a26) - __(Alex Lynch)__ Mark as v2.8.1
  * [142da4e](../../commit/142da4e) - __(Alex Lynch)__ Change project hosting to github.
  * [5cf332d](../../commit/5cf332d) - __(Alex Lynch)__ Mark as v2.8
  * [46b05c5](../../commit/46b05c5) - __(Alex Lynch)__ Implement swift 5.0 support.
