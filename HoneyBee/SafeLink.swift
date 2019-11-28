@@ -421,10 +421,11 @@ extension SafeLink where B : Collection {
 	/// The `SafeLink` which is given as argument to the define block will pass to its child links the element of the sequence which is currently being processed.
 	///
 	/// - Parameter defineBlock: a block which creates a subchain for each element of the Collection
+    @available(*, deprecated)
 	public func each(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, limit: Int? = nil, _ defineBlock: @escaping (SafeLink<B.Element, Performer>) -> Void) -> Void {
-		self.link.each(file: file, line: line, functionDescription: functionDescription, limit: limit, acceptableFailure: .none) { (inLink: Link<B.Element, Performer>) -> Void in
-			defineBlock(SafeLink<B.Element, Performer>(inLink))
-		}
+        self.link.each(file: file, line: line, functionDescription: functionDescription, limit: limit, acceptableFailure: .none) { (inLink: Link<B.Element, Performer>) in
+            defineBlock(SafeLink<B.Element, Performer>(inLink))
+        }
 	}
 	
 	/// When the inbound type is a `Collection`, you may call `each`
@@ -494,7 +495,7 @@ extension SafeLink {
 	/// - Parameter completionHandler: a function which takes an optional `ErrorContext`. The context contains all available debug information on the erroring function, including the error itself.
 	/// - Returns: A `Link` which has the completion handler installed.
 	public func setCompletionHandler(_ completionHandler: @escaping (ErrorContext?) -> Void ) -> Link<B, Performer> {
-		let finallyCalled: AtomicBool = false
+		let finallyCalled = AtomicBool(booleanLiteral: false)
 		let blockPerformer = HoneyBee.getBlockPerformer(of: self.link)
 		return self.handlingErrors(with: { (context: ErrorContext) in
 			finallyCalled.access { called in

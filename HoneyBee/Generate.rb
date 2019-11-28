@@ -242,6 +242,152 @@ infix operator =<< : HoneyBeeBindPrecedence
 	
 end
 
+
+await_function_signatures_text = %[
+() -> Void
+(A) -> Void
+(A, B) -> Void
+(A, B, C) -> Void
+
+() -> R
+(A) -> R
+(A, B) -> R
+(A, B, C) -> R
+
+(A) -> () -> Void
+(A) -> (B) -> Void
+(A) -> (B,C) -> Void
+
+(A) -> () -> R
+(A) -> (B) -> R
+(A) -> (B, C) -> R
+
+(A) -> (() -> Void) -> Void
+(A) -> (B, () -> Void) -> Void
+(A) -> (B, C, () -> Void) -> Void
+
+(A) -> ((R) -> Void) -> Void
+(A) -> (B, (R) -> Void) -> Void
+(A) -> (B, C, (R) -> Void) -> Void
+
+(A) -> ((Error?) -> Void) -> Void
+(A) -> (B, (Error?) -> Void) -> Void
+(A) -> (B, C, (Error?) -> Void) -> Void
+
+(A) -> ((R?, Error?) -> Void) -> Void
+(A) -> (B, (R?, Error?) -> Void) -> Void
+(A) -> (B, C, (R?, Error?) -> Void) -> Void
+
+(() -> Void) -> Void
+(A, () -> Void) -> Void
+(A, B, () -> Void) -> Void
+(A, B, C, () -> Void) -> Void
+
+((R) -> Void) -> Void
+(A, (R) -> Void) -> Void
+(A, B, (R) -> Void) -> Void
+(A, B, C, (R) -> Void) -> Void
+
+((Error?) -> Void) -> Void
+(A, (Error?) -> Void) -> Void
+(A, B, (Error?) -> Void) -> Void
+(A, B, C, (Error?) -> Void) -> Void
+
+((R?, Error?) -> Void) -> Void
+(A, (R?, Error?) -> Void) -> Void
+(A, B, (R?, Error?) -> Void) -> Void
+(A, B, C, (R?, Error?) -> Void) -> Void
+
+]
+
+@await_function_signatures = await_function_signatures_text.
+split("\n").
+delete_if { |n| n.size == 0 }.
+collect { |n| n.strip }
+
+
+@await_function_signatures = @await_function_signatures.map { |signature|
+	ret = signature
+	if signature =~ /(\([^()]*\)\s*->\sVoid)/
+		sub_func = $1
+		unless signature.end_with?(sub_func) # if the capture isn't the whole signature
+			ret = [signature.gsub(sub_func, "@escaping #{sub_func}")]
+			ret << signature.gsub(sub_func, "(#{sub_func})?")
+		end
+	end
+	ret
+}.flatten
+
+@await_function_signatures = @await_function_signatures.map { |signature|
+	ret = signature
+	unless signature_declares_error(signature)
+		insertion_index = signature.rindex(" ->")
+		ret = [signature.dup.insert(insertion_index," throws"), signature]
+	end
+	ret
+}.flatten
+
+require 'pp'
+pp @await_function_signatures
+
+def generate_await()
+	safe_await_declarations = []
+	erroring_await_declarations = []
+	
+	@await_function_signatures.each {|function_signature|
+		include_error_handler = signature_declares_error(function_signature)
+		transform_result_type = function_signature =~ /R/ ? "R" : "Void"
+		generic_parameters = []
+		%w(A B C R).each { |genricType|
+			generic_parameters << genricType if function_signature =~/#{genricType}/
+		}
+		extra_generic_parameter = generic_parameters.empty? ? "" : "<#{generic_parameters.join(", ")}>"
+		documentation = transform_result_type != "B" ?
+		"///Creates a new Link which transforms argument of type B to type C and appends the link to the execution list of this Link" :
+		"///Creates a new Link which passes through argument of type B and appends the link to the execution list of this Link"
+		discardableOrNot = transform_result_type == "R" ? "" : "@discardableResult\n"
+		
+		returnType = "ReplaceMe"
+		returnTypeParameters = generic_parameters
+		returnTypeParameters << "Void" if transform_result_type == "Void"
+		returnTypeParameterization = "<#{returnTypeParameters.join(", ")}, Performer>"
+		case returnTypeParameters.count
+		when 1
+			returnType = "#{include_error_handler ? "":"Safe"}Link#{returnTypeParameterization}"
+		when 2
+			returnType = "SingleArgFunction#{returnTypeParameterization}"
+		when 3
+			returnType = "DoubleArgFunction#{returnTypeParameterization}"
+		when 4
+			returnType = "TripleArgFunction#{returnTypeParameterization}"
+		end
+		
+		declarations = include_error_handler ? erroring_await_declarations : safe_await_declarations
+		declarations << documentation
+		declarations << "#{discardableOrNot}func await#{extra_generic_parameter}(_ function: @escaping #{function_signature}, file: StaticString, line: UInt) -> #{returnType}"
+		declarations << ""
+	}
+	
+	
+	chainable_protocol_string = %[
+/// Generated protocol declaring safe chain functions.
+protocol SafeAwaitable {
+	associatedtype Performer: AsyncBlockPerformer
+
+	#{safe_await_declarations.join("\n")}
+}
+	
+/// Generated protocol declaring erroring chain functions.
+protocol ErroringAwaitable  {
+	associatedtype Performer: AsyncBlockPerformer
+
+	#{erroring_await_declarations.join("\n")}
+}
+]
+	output_to_file_if_different("Awaitable.swift",chainable_protocol_string)
+end
+
 generate_chainable()
 generate_bind()
+generate_await()
 

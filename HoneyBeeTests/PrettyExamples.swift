@@ -63,22 +63,31 @@ struct PrettyExamples {
 		func decodeImage(dataProfile: Data, image: Data) throws -> Image { return Image() }
 		func dewarpAndCleanupImage(_ image: Image, completion: (Image?, Error?) -> Void) {}
 		
-		HoneyBee.start()
+		let a = HoneyBee.start()
 				.handlingErrors { completionBlock(nil, $0) }
-				.branch { stem -> Link<(Data,Data), DefaultDispatchQueue> in
+				
+		let b = a.branch { stem -> Link<(Data,Data), DefaultDispatchQueue> in
 					stem.chain(loadWebResource =<< "dataprofile.txt")
 					+
 					stem.chain(loadWebResource =<< "imagedata.dat")
 				}
-				.chain(decodeImage)
+			
+				b.chain(decodeImage)
 				.chain(dewarpAndCleanupImage)
 				.chain{ completionBlock($0, nil) }
 	}
 	
 	func processImageDataCurried(completionBlock: @escaping (Image?, Error?) -> Void) {
-		func loadWebResource(named name: String, completion: (Data?, Error?) -> Void) {}
-		func decodeImage(dataProfile: Data, image: Data) throws -> Image { return Image() }
-		func dewarpAndCleanupImage(_ image: Image, completion: (Image?, Error?) -> Void) {}
+        struct NaturalFunctions {
+            static func loadWebResource(named name: String, completion: (Data?, Error?) -> Void) {}
+            static func decodeImage(dataProfile: Data, image: Data) throws -> Image { return Image() }
+            static func dewarpAndCleanupImage(_ image: Image, completion: (Image?, Error?) -> Void) {}
+        }
+        
+        
+        let loadWebResource = async1(NaturalFunctions.loadWebResource, on: DefaultDispatchQueue.self)
+        let decodeImage = async2(NaturalFunctions.decodeImage, on: DefaultDispatchQueue.self)
+        let dewarpAndCleanupImage = async1(NaturalFunctions.dewarpAndCleanupImage, on: DefaultDispatchQueue.self)
 		
 		func completionWrapper(_ result: Result<Image, ErrorContext>) {
 			switch result {
@@ -89,13 +98,12 @@ struct PrettyExamples {
 			}
 		}
 		
-		HoneyBee.async(completion: completionWrapper) { a in
+		HoneyBee.async(completion: completionWrapper) { async in
+            let dataProfile = loadWebResource(async)(named: "dataprofile.txt")
+            let imageData = loadWebResource(async)(named: "imagedata.dat")
 			
-			let dataProfile = a.await(loadWebResource)(named: "dataprofile.txt")
-			let imageData = a.await(loadWebResource)(named: "imagedata.dat")
-			
-			let image = a.await(decodeImage)(dataProfile: dataProfile)(image: imageData)
-			let cleanedImage = a.await(dewarpAndCleanupImage)(image)
+            let image = decodeImage(dataProfile: dataProfile)(image: imageData)
+			let cleanedImage = dewarpAndCleanupImage(image)
 			
 			return cleanedImage
 		}

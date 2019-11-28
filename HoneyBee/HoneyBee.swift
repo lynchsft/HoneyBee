@@ -88,23 +88,23 @@ public struct HoneyBee {
 	///   - line: used for debugging
 	/// - Returns: a `SafeLink` to being declaring your recipe.
 	public static func start<Performer: AsyncBlockPerformer>(on blockPerformer: Performer, file: StaticString = #file, line: UInt = #line) -> SafeLink<Void, Performer> {
-		var trace = AsyncTrace()
-		trace.append(.init(action: "start", file: file, line: line))
+        let trace = AsyncTrace(first: .init(action: "start", file: file, line: line))
 		
 		let link = Link<Void, Performer>(function: { (_, callback) in
 			callback(.success(Void()))
-		}, errorHandler: { (errorContext) in
-			HoneyBee.internalFailureResponse.evaluate(false, "Imposible error in SafeLink: \(errorContext)")
-		}, blockPerformer: blockPerformer,
-		   trace: trace,
-		   functionFile: file,
-		   functionLine: line)
+		}, errorHandler: HoneyBee.impossibleErrorHandler,
+		   blockPerformer: blockPerformer,
+		   trace: trace)
 		
 		blockPerformer.asyncPerform {
 			link.execute(argument: Void(), completion: { })
 		}
 
 		return SafeLink<Void, Performer>(link)
+	}
+	
+	static let impossibleErrorHandler: (ErrorContext)->Void = { (errorContext) in
+		HoneyBee.internalFailureResponse.evaluate(false, "Imposible error in safe context: \(errorContext)")
 	}
 	
 	private static let functionUnderCallResponseLock = AtomicValue(value: FaultResponse.fail)

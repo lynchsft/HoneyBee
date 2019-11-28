@@ -573,8 +573,8 @@ class MultiPathTests: XCTestCase {
 			methodIsAccesssing.setFalse()
 		}
 		
-		HoneyBee.start { root in
-			root.handlingErrors(with: fail)
+		HoneyBee.start()
+                .handlingErrors(with: fail)
 				.insert(source)
 				.each { elem in
 					elem.limit(1) { link in
@@ -585,7 +585,6 @@ class MultiPathTests: XCTestCase {
 						// Just need this to invoke the "no return" form limit.
 					}
 				}
-		}
 		
 		waitForExpectations(timeout: 3) { error in
 			if let error = error {

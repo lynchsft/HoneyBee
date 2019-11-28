@@ -1,0 +1,58 @@
+{
+  "configurations" : [
+    {
+      "id" : "1831629F-0D9D-4A5D-8313-30B0B8DC0403",
+      "name" : "Run 1",
+      "options" : {
+
+      }
+    },
+    {
+      "id" : "13EBB384-BC32-4F83-B30E-9211BB02AD8F",
+      "name" : "Run 2",
+      "options" : {
+
+      }
+    },
+    {
+      "id" : "8F4F1A6E-7E68-451B-B503-F9FCBC3A7BD1",
+      "name" : "Run 3",
+      "options" : {
+
+      }
+    },
+    {
+      "id" : "5B493D61-FB7F-4703-A635-77BEC592A2BE",
+      "name" : "Run 4",
+      "options" : {
+
+      }
+    },
+    {
+      "id" : "BB95E413-815E-4A1D-9678-1DEC69CDB2F4",
+      "name" : "Run 5",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:HoneyBee.xcodeproj",
+      "identifier" : "FA473BB71E352CB1007E4D61",
+      "name" : "HoneyBee"
+    },
+    "undefinedBehaviorSanitizerEnabled" : true
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:HoneyBee.xcodeproj",
+        "identifier" : "FA4109771E9CFBC4002A6BA6",
+        "name" : "HoneyBeeTests"
+      }
+    }
+  ],
+  "version" : 1
+}

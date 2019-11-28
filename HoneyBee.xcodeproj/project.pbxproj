@@ -32,7 +32,7 @@
 		FA62A2B51FC9FBC100385D22 /* ChainableFailable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A2A61FC9FBC100385D22 /* ChainableFailable.swift */; };
 		FA62A2B81FC9FBCA00385D22 /* ConcurentQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A2B61FC9FBCA00385D22 /* ConcurentQueue.swift */; };
 		FA62A2B91FC9FBCA00385D22 /* AtomicValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A2B71FC9FBCA00385D22 /* AtomicValue.swift */; };
-		FAA722B7226F2D2100A8CB7B /* AwaitCurry.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAA722B6226F2D2100A8CB7B /* AwaitCurry.swift */; };
+		FAA722B7226F2D2100A8CB7B /* AsyncCurry.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAA722B6226F2D2100A8CB7B /* AsyncCurry.swift */; };
 		FAA722B9226F2D5500A8CB7B /* AwaitCurryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAA722B8226F2D5500A8CB7B /* AwaitCurryTests.swift */; };
 		FAA722BB226F4DBD00A8CB7B /* FunctionWrappers.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAA722BA226F4DBD00A8CB7B /* FunctionWrappers.swift */; };
 		FAABABAC228BA09800605626 /* AsyncTrace.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAABABAB228BA09800605626 /* AsyncTrace.swift */; };
@@ -51,6 +51,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		8F0D7E76238F53E3002780B8 /* HoneyBee.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = HoneyBee.xctestplan; sourceTree = "<group>"; };
 		FA036D04229B79B9008DC738 /* SwiftTeamTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftTeamTests.swift; sourceTree = "<group>"; };
 		FA1A841A1FD2E0470093D11A /* FinallyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinallyTests.swift; sourceTree = "<group>"; };
 		FA202E5020F5C67700B2489D /* SafeLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafeLink.swift; sourceTree = "<group>"; };
@@ -82,7 +83,7 @@
 		FA62A2A61FC9FBC100385D22 /* ChainableFailable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChainableFailable.swift; sourceTree = "<group>"; };
 		FA62A2B61FC9FBCA00385D22 /* ConcurentQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConcurentQueue.swift; sourceTree = "<group>"; };
 		FA62A2B71FC9FBCA00385D22 /* AtomicValue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AtomicValue.swift; sourceTree = "<group>"; };
-		FAA722B6226F2D2100A8CB7B /* AwaitCurry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AwaitCurry.swift; sourceTree = "<group>"; };
+		FAA722B6226F2D2100A8CB7B /* AsyncCurry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncCurry.swift; sourceTree = "<group>"; };
 		FAA722B8226F2D5500A8CB7B /* AwaitCurryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AwaitCurryTests.swift; sourceTree = "<group>"; };
 		FAA722BA226F4DBD00A8CB7B /* FunctionWrappers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionWrappers.swift; sourceTree = "<group>"; };
 		FAABABAB228BA09800605626 /* AsyncTrace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncTrace.swift; sourceTree = "<group>"; };
@@ -128,6 +129,7 @@
 		FA473BAE1E352CB1007E4D61 = {
 			isa = PBXGroup;
 			children = (
+				8F0D7E76238F53E3002780B8 /* HoneyBee.xctestplan */,
 				FA473BBA1E352CB1007E4D61 /* HoneyBee */,
 				FA4109791E9CFBC4002A6BA6 /* HoneyBeeTests */,
 				FADE8BE81EE4F36400A1D2BA /* Supporting Files */,
@@ -200,7 +202,7 @@
 		FAA722B5226F2D0F00A8CB7B /* Curry */ = {
 			isa = PBXGroup;
 			children = (
-				FAA722B6226F2D2100A8CB7B /* AwaitCurry.swift */,
+				FAA722B6226F2D2100A8CB7B /* AsyncCurry.swift */,
 				FAA722BA226F4DBD00A8CB7B /* FunctionWrappers.swift */,
 			);
 			name = Curry;
@@ -383,7 +385,7 @@
 				FA62A2B51FC9FBC100385D22 /* ChainableFailable.swift in Sources */,
 				FA62A2A91FC9FBC100385D22 /* ErrorContext.swift in Sources */,
 				FA62A2B31FC9FBC100385D22 /* ErrorHandling.swift in Sources */,
-				FAA722B7226F2D2100A8CB7B /* AwaitCurry.swift in Sources */,
+				FAA722B7226F2D2100A8CB7B /* AsyncCurry.swift in Sources */,
 				FA62A2AF1FC9FBC100385D22 /* HoneyBee.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

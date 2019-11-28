@@ -153,8 +153,8 @@ class ErrorHandlingTests: XCTestCase {
 			if let subjectString = context.subject as? String  {
 				XCTAssert(subjectString == "7cat")
 				if let expectedFile = expectedFile, let expectedLine = expectedLine {
-					XCTAssertEqual(context.file.description, expectedFile.description)
-					XCTAssertEqual(context.line, expectedLine)
+                    XCTAssertEqual(context.trace.lastFile.description, expectedFile.description)
+                    XCTAssertEqual(context.trace.lastLine, expectedLine)
 				} else {
 					XCTFail("expected variables not setup")
 				}
@@ -222,35 +222,33 @@ class ErrorHandlingTests: XCTestCase {
 	
 	func testLimitError() {
 		let source = Array(0..<3)
+        let intFilter = { (i:Int) -> Bool in i < 2 }
+        let invertedIntFilter = { (i:Int) -> Bool in !intFilter(i) }
 		
-		let successExpectation = expectation(description: "Should success mark")
-		successExpectation.expectedFulfillmentCount = source.count
+		let successExpectation = expectation(description: "Success mark")
+		successExpectation.expectedFulfillmentCount = source.filter(invertedIntFilter).count
 		
-		for i in 0..<3 {
-			let failureExpectation = expectation(description: "Should reach the error handler")
-			if i < 2 {
-				failureExpectation.expectedFulfillmentCount = source.count
-			} else {
-				failureExpectation.isInverted = true
-			}
-			
-			HoneyBee.start { root in
-				root.handlingErrors { (_:Error) in failureExpectation.fulfill() }
-					.insert(source)
-					.each() { elem in
-						elem.limit(1) { link -> Link<Void, DefaultDispatchQueue> in
-							if i < 2 {
-								return link.insert(self.funcContainer)
-									.chain(TestingFunctions.explode) // error here
-									.chain(assertEquals =<< Int.max)
-							} else {
-								return link.drop
-									.chain(successExpectation.fulfill)
-							}
-						}
-				}
-			}
-		}
+        let failureExpectation = expectation(description: "Error handler")
+        failureExpectation.expectedFulfillmentCount = source.filter(intFilter).count
+        
+        var passCounter = -1
+        HoneyBee.start()
+                .handlingErrors { (_:Error) in failureExpectation.fulfill() }
+                .insert(source)
+                .each(acceptableFailure: .full) {
+                    return $0.limit(1) { link -> Link<Void, DefaultDispatchQueue> in
+                        passCounter += 1
+                        if intFilter(passCounter) {
+                            return link.insert(self.funcContainer)
+                                .chain(TestingFunctions.explode) // error here
+                                .chain(assertEquals =<< Int.max).drop
+                        } else {
+                            return link.drop
+                                .chain(successExpectation.fulfill).drop
+                        }
+                        
+                    }
+                }
 		
 		waitForExpectations(timeout: 1) { error in
 			if let error = error {
@@ -499,6 +497,7 @@ class ErrorHandlingTests: XCTestCase {
 			errorExpectation.expectedFulfillmentCount = 1
 			
 			func errorHandlder(_ error: Error) {
+                XCTAssert(error is SimpleError)
 				errorExpectation.fulfill()
 			}
 			
@@ -509,6 +508,7 @@ class ErrorHandlingTests: XCTestCase {
 						elem.tunnel { link in
 							link.chain { (_: Int, int:Int) throws -> Void in
 								if int > 9 {
+                                    XCTAssertEqual(int, 10)
 									throw SimpleError.error
 								}
 							}

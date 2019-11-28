@@ -16,13 +16,7 @@ public struct ErrorContext : Error {
 	
 	/// The error which this context encapsulates.
 	public let error: Error
-	
-	/// The file where the erroring `Link` was created.
-	public let file: StaticString
-	
-	/// The line where the erroring `Link` was created.
-	public let line: UInt
-	
+		
 	/// A represention of the path of `Links` which result in the erroring `Link`.
 	public let trace: AsyncTrace
 }

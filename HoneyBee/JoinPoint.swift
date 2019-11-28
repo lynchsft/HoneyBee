@@ -16,7 +16,7 @@ final class JoinPoint<A, Performer: AsyncBlockPerformer> : Executable {
 	private var resultCallback: ((ExecutionResult) -> Void)?
 	private let blockPerformer: Performer
 	private let errorHandler: ((ErrorContext) -> Void)
-	let trace: AsyncTrace
+	var trace: AsyncTrace
 	
 	init(blockPerformer: Performer, trace: AsyncTrace, errorHandler: @escaping ((ErrorContext) -> Void)) {
 		self.blockPerformer = blockPerformer
@@ -58,19 +58,13 @@ final class JoinPoint<A, Performer: AsyncBlockPerformer> : Executable {
 		HoneyBee.mismatchedConjoinResponse.evaluate(self.blockPerformer == other.blockPerformer,
 												 "conjoin detected between Links with different AsyncBlockPerformers. This can lead to unexpected results.")
 		var tuple: (A,B)? = nil
-		guard let otherLastComp = other.trace.last else {
-			HoneyBee.internalFailureResponse.evaluate(false, "AsyncTrace with no components joined.")
-			preconditionFailure("AsyncTrace with no components joined.")
-		}
 		
-		var newTrace = self.trace
+        var newTrace = self.trace.join(other.trace)
 		let link = Link<(A,B), Performer>(function: { _, callback in
 			callback(.success(tuple!))
 		}, errorHandler: self.errorHandler,
 		   blockPerformer: self.blockPerformer,
-		   trace: other.trace.join(newTrace),
-		   functionFile: #file,
-		   functionLine: #line)
+		   trace: newTrace)
 		
 		self.yieldResult { a, myCompletion in
 			other.yieldResult { b, otherCompletion in
@@ -96,7 +90,6 @@ final class JoinPoint<A, Performer: AsyncBlockPerformer> : Executable {
 	}
 }
 
-#warning("Check this")
 /// This is a best-effort check. Both of the known conformers of AsyncBlockPerformer are NSObject
 /// (yes, even DispatchQueue, I checked). We pass anything that we can't explictly verify is wrong.
 fileprivate func ==(lhs: AsyncBlockPerformer, rhs: AsyncBlockPerformer) -> Bool {

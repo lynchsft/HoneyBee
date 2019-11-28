@@ -57,7 +57,6 @@ class AtomicBool : AtomicValue<Bool>, ExpressibleByBooleanLiteral {
 			let locationString = "\(deinitGuarantee.file):\(deinitGuarantee.line)"
 			let fullMessage = (deinitGuarantee.message ?? "<\(type(of: self)) \(Unmanaged.passUnretained(self).toOpaque())>: was \(actualValue) at deinit. Requested \(deinitGuarantee.value) at ")+locationString
 			deinitGuarantee.faultResponse.evaluate(actualValue == deinitGuarantee.value, fullMessage)
-			
 		}
 	}
 	

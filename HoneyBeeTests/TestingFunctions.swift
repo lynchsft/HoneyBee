@@ -108,6 +108,7 @@ class TestingFunctions : Equatable {
 		}
 	}
 	
+    lazy private(set) var explode = async0(self.explode, on: DefaultDispatchQueue.self)
 	func explode(callback: ((Int) -> Void)?) throws -> Void {
 		throw NSError(domain: "intentional", code: -1, userInfo: nil)
 	}
@@ -137,11 +138,12 @@ class FibonaciGenerator {
 	}
 }
 
+let increment = async1(increment(val:), on: DefaultDispatchQueue.self)
 func increment(val: Int) -> Int {
 	return val + 1
 }
 
+let addTogether = async2(addTogether(one: two:), on: DefaultDispatchQueue.self)
 func addTogether(one: Int, two: Double) throws -> Double {
 	return Double(one) + two
 }
-

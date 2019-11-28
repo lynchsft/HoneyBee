@@ -27,6 +27,7 @@ A single link's execution process is as follows:
 5. When _all_ of the child links have completed their execution, then this link signals that it has completed execution, via callback.
 */
 @dynamicCallable
+@dynamicMemberLookup
 final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
 	
 	fileprivate var createdLinks = ConcurrentQueue<Executable>()
@@ -41,17 +42,20 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
 	
 	// Debug info
 	
-	let trace: AsyncTrace
-	fileprivate let functionFile: StaticString
-	fileprivate let functionLine: UInt
+    var trace: AsyncTrace
+    
+    fileprivate var functionFile: StaticString {
+        self.trace.last.file
+    }
+    fileprivate var functionLine: UInt {
+        self.trace.last.line
+    }
 	
-	init(function:  @escaping (Any, @escaping (FailableResult<B>) -> Void) -> Void, errorHandler: @escaping ((ErrorContext) -> Void), blockPerformer: Performer, trace: AsyncTrace, functionFile: StaticString, functionLine: UInt) {
+	init(function:  @escaping (Any, @escaping (FailableResult<B>) -> Void) -> Void, errorHandler: @escaping ((ErrorContext) -> Void), blockPerformer: Performer, trace: AsyncTrace) {
 		self.function = function
 		self.errorHandler = errorHandler
 		self.blockPerformer = blockPerformer
 		self.trace = trace
-		self.functionFile = functionFile
-		self.functionLine = functionLine
 	}
 	
 	fileprivate func debug(_ message: String) {
@@ -95,9 +99,7 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
 		let link = Link<C, Performer>(function: wrapperFunction,
 		                             errorHandler: self.errorHandler,
 		                             blockPerformer: self.blockPerformer,
-		                             trace: trace,
-		                             functionFile: file,
-		                             functionLine: line)
+		                             trace: trace)
 		self.createdLinks.push(link)
 		return link
 	}
@@ -137,10 +139,7 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
 				completion(.success(bb!))
 			}, errorHandler: self.errorHandler,
 			   blockPerformer: self.blockPerformer,
-			   trace: trace,
-			   functionFile: file,
-			   functionLine: line
-			   )
+			   trace: trace)
 			
 			self.chain{ (b:B) -> Void in
 				bb = b
@@ -189,6 +188,79 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
 	public subscript<R>(_ block: @escaping (B)->R) -> Link<R, Performer> {
 		return self.chain(block)
 	}
+    
+    
+    public subscript<X,Y,Z,R>(dynamicMember keyPath: KeyPath<B, UngroundedTripleArgFunction<X,Y,Z,R, Performer>>) -> TripleArgFunction<X,Y,Z,R, Performer> {
+        let dropped = self.drop
+        return TripleArgFunction(link: dropped) { (x: Link<X, Performer>, y: Link<Y, Performer>, z: Link<Z, Performer>) -> Link<R, Performer> in
+            let function = self.chain(keyPath)
+            return function.chain { (triple: UngroundedTripleArgFunction<X,Y,Z,R, Performer>, completion: @escaping (Result<R, Error>)->Void) in
+                let root = dropped.handlingErrors { (context) in
+                    completion(.failure(context.error))
+                }
+                
+                triple.ground(root)(x)(y)(z).chain { r in
+                    completion(.success(r))
+                }
+            }
+        }
+    }
+
+    public subscript<Y,Z,R>(dynamicMember keyPath: KeyPath<B, UngroundedDoubleArgFunction<Y,Z,R, Performer>>) -> DoubleArgFunction<Y,Z,R, Performer> {
+        let dropped = self.drop
+        return DoubleArgFunction(link: dropped) { (y: Link<Y, Performer>, z: Link<Z, Performer>) -> Link<R, Performer> in
+            let function = self.chain(keyPath)
+            return function.chain { (double: UngroundedDoubleArgFunction<Y,Z,R, Performer>, completion: @escaping (Result<R, Error>)->Void) in
+                let root = dropped.handlingErrors { (context) in
+                    completion(.failure(context.error))
+                }
+                
+                double.ground(root)(y)(z).chain { r in
+                    completion(.success(r))
+                }
+            }
+        }
+    }
+
+    public subscript<Z,R>(dynamicMember keyPath: KeyPath<B, UngroundedSingleArgFunction<Z,R, Performer>>) -> SingleArgFunction<Z,R, Performer> {
+        let dropped = self.drop
+        return SingleArgFunction(link: dropped) { (z: Link<Z, Performer>) -> Link<R, Performer> in
+            let function = self.chain(keyPath)
+            return function.chain { (single: UngroundedSingleArgFunction<Z,R, Performer>, completion: @escaping (Result<R, Error>)->Void) in
+                let root = dropped.handlingErrors { (context) in
+                    completion(.failure(context.error))
+                }
+                
+                single.ground(root)(z).chain { r in
+                    completion(.success(r))
+                }
+            }
+        }
+    }
+    
+    public subscript<R>(dynamicMember keyPath: KeyPath<B, UngroundedZeroArgFunction<R, Performer>>) -> ZeroArgFunction<R, Performer> {
+        let dropped = self.drop
+        return ZeroArgFunction(link: dropped) { () -> Link<R, Performer> in
+            let function = self.chain(keyPath)
+            return function.chain { (zero: UngroundedZeroArgFunction<R, Performer>, completion: @escaping (Result<R, Error>)->Void) in
+                let root = dropped.handlingErrors { (context) in
+                    completion(.failure(context.error))
+                }
+                
+                zero.ground(root).chain { (r:R) -> Void in
+                        completion(.success(r))
+                }
+            }
+        }
+    }
+    
+    func document(with document: DocumentationBearing) {
+        return self.document(action: document.action, file: document.file, line: document.line)
+    }
+    
+    func document(action: String, file: StaticString, line: UInt) {
+        self.trace.redocumentLast(action: action, file: file, line: line)
+    }
 }
 
 extension Link {
@@ -203,7 +275,7 @@ extension Link {
 	
 	private func processError(_ error: Error, with argument: Any, completion: @escaping ()->Void) {
 		self.blockPerformer.asyncPerform {
-			let errorContext = ErrorContext(subject: argument, error: error, file: self.functionFile, line: self.functionLine, trace: self.trace)
+			let errorContext = ErrorContext(subject: argument, error: error, trace: self.trace)
 			self.errorHandler(errorContext)
 			// why not execute finally link here? Finally links are registered on `self`.
 			// If self errors, there is no downward chain to finally back from.
@@ -277,7 +349,7 @@ extension Link {
 	/// - Parameter c: Any value
 	/// - Returns: a `Link` whose child links will receive `c` as their function argument.
 	public func insert<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ c: C) -> Link<C, Performer> {
-		return self.chain(file: file, line:line, functionDescription: functionDescription ?? "insert") { (b:B, callback: (C) -> Void) in callback(c) }
+		return self.chain(file: file, line:line, functionDescription: functionDescription ?? "insert") { (_:B, callback: (C) -> Void) in callback(c) }
 	}
 	
 	/// `drop` ignores "drops" the inbound value and returns a `Link` whose value is `Void`
@@ -490,9 +562,7 @@ extension Link : ErrorHandling {
 		let link = Link<B,Performer>(function: wrapperFunction,
 										  errorHandler: errorHandler,
 										  blockPerformer: self.blockPerformer,
-										  trace: self.trace,
-										  functionFile: #file,
-										  functionLine: #line)
+										  trace: self.trace)
 		self.createdLinks.push(link)
 		return link
 	}
@@ -886,9 +956,7 @@ extension Link {
 		let link = Link<B,OtherPerformer>(function: wrapperFunction,
 										  errorHandler: self.errorHandler,
 										  blockPerformer: otherPerformer,
-										  trace: trace,
-										  functionFile: #file,
-										  functionLine: #line)
+										  trace: trace)
 		self.createdLinks.push(link)
 		return link
 	}
@@ -956,9 +1024,10 @@ extension Link where B : Collection {
 	
 	/// When the inbound type is a `Collection`, you may call `each`
 	/// Each accepts a define block which creates a subchain which will be invoked once per element of the sequence.
-	/// The `Link` which is given as argument to the define block will pass to its child links the element of the sequence which is currently being processed.
+	/// The `Link` which is given as argument to the define block will pass to its child links the element of the collection which is currently being processed.
 	///
 	/// - Parameter defineBlock: a block which creates a subchain for each element of the Collection
+    @available(*, deprecated)
 	public func each(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, limit: Int? = nil, acceptableFailure: FailureRate = .none, _ defineBlock: @escaping (Link<B.Element, Performer>) -> Void) -> Void {
 		let _ = self.map(file: file, line: line, functionDescription: functionDescription ?? "each", limit: limit, acceptableFailure: acceptableFailure) { elem in
 			elem.tunnel { link -> Link<B.Element, Performer> in
@@ -971,7 +1040,7 @@ extension Link where B : Collection {
 	
 	/// When the inbound type is a `Collection`, you may call `each`
 	/// Each accepts a define block which creates a subchain which will be invoked once per element of the sequence.
-	/// The `Link` which is given as argument to the define block will pass to its child links the element of the sequence which is currently being processed.
+	/// The `Link` which is given as argument to the define block will pass to its child links the element of the collection which is currently being processed.
 	///
 	/// - Parameter defineBlock: a block which creates a subchain for each element of the Collection
 	/// - Returns: a Link which will pass the nonfailing elements of `B` to its child links
@@ -996,16 +1065,16 @@ extension Link where B : Collection {
 	///   - defineBlock: a block which creates a subchain for each element of the Collection
 	/// - Returns: a Link which will pass the result of the reduce to its child links.
 	public func reduce<T>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, with t: T, acceptableFailure: FailureRate = .none, _ defineBlock: @escaping (Link<(T,B.Element), Performer>) -> Link<T, Performer>) -> Link<T, Performer> {
-		var mutableT = t
+        let atomicT = AtomicValue(value: t)
 		
 		return self.each(file: file, line: line, functionDescription: functionDescription ?? "reduce", limit: 1, acceptableFailure: acceptableFailure) { (elem: Link<B.Element, Performer>) in
-			defineBlock(elem.insert(mutableT) + elem)
+            defineBlock(elem.drop.chain(atomicT.get) + elem)
 				.chain { (newT: T) throws -> Void in
-					mutableT = newT
+                    atomicT.set(value: newT)
 				}
 		}
 		.chain { (_:[B.Element]) -> T in
-			return mutableT
+            return atomicT.get()
 		}
 	}
 	
