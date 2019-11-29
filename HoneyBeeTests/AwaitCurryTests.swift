@@ -12,7 +12,7 @@ import HoneyBee
 
 struct User {
     
-    var reset: UngroundedSingleArgFunction<Int, Void, DefaultDispatchQueue> { async1(self.reset, on: DefaultDispatchQueue.self) }
+    var reset: SingleArgFunction<Int, Void, DefaultDispatchQueue> { async1(self.reset, on: DefaultDispatchQueue.self) }
 	func reset(in seconds: Int) {
 		
 	}

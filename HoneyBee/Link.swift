@@ -190,11 +190,11 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
 	}
     
     
-    public subscript<X,Y,Z,R>(dynamicMember keyPath: KeyPath<B, UngroundedTripleArgFunction<X,Y,Z,R, Performer>>) -> TripleArgFunction<X,Y,Z,R, Performer> {
+    public subscript<X,Y,Z,R>(dynamicMember keyPath: KeyPath<B, TripleArgFunction<X,Y,Z,R, Performer>>) -> TripleArgAsyncFunction<X,Y,Z,R, Performer> {
         let dropped = self.drop
-        return TripleArgFunction(link: dropped) { (x: Link<X, Performer>, y: Link<Y, Performer>, z: Link<Z, Performer>) -> Link<R, Performer> in
+        return TripleArgAsyncFunction(link: dropped) { (x: Link<X, Performer>, y: Link<Y, Performer>, z: Link<Z, Performer>) -> Link<R, Performer> in
             let function = self.chain(keyPath)
-            return function.chain { (triple: UngroundedTripleArgFunction<X,Y,Z,R, Performer>, completion: @escaping (Result<R, Error>)->Void) in
+            return function.chain { (triple: TripleArgFunction<X,Y,Z,R, Performer>, completion: @escaping (Result<R, Error>)->Void) in
                 let root = dropped.handlingErrors { (context) in
                     completion(.failure(context.error))
                 }
@@ -206,11 +206,11 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
         }
     }
 
-    public subscript<Y,Z,R>(dynamicMember keyPath: KeyPath<B, UngroundedDoubleArgFunction<Y,Z,R, Performer>>) -> DoubleArgFunction<Y,Z,R, Performer> {
+    public subscript<Y,Z,R>(dynamicMember keyPath: KeyPath<B, DoubleArgFunction<Y,Z,R, Performer>>) -> DoubleArgAsyncFunction<Y,Z,R, Performer> {
         let dropped = self.drop
-        return DoubleArgFunction(link: dropped) { (y: Link<Y, Performer>, z: Link<Z, Performer>) -> Link<R, Performer> in
+        return DoubleArgAsyncFunction(link: dropped) { (y: Link<Y, Performer>, z: Link<Z, Performer>) -> Link<R, Performer> in
             let function = self.chain(keyPath)
-            return function.chain { (double: UngroundedDoubleArgFunction<Y,Z,R, Performer>, completion: @escaping (Result<R, Error>)->Void) in
+            return function.chain { (double: DoubleArgFunction<Y,Z,R, Performer>, completion: @escaping (Result<R, Error>)->Void) in
                 let root = dropped.handlingErrors { (context) in
                     completion(.failure(context.error))
                 }
@@ -222,11 +222,11 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
         }
     }
 
-    public subscript<Z,R>(dynamicMember keyPath: KeyPath<B, UngroundedSingleArgFunction<Z,R, Performer>>) -> SingleArgFunction<Z,R, Performer> {
+    public subscript<Z,R>(dynamicMember keyPath: KeyPath<B, SingleArgFunction<Z,R, Performer>>) -> SingleArgAsyncFunction<Z,R, Performer> {
         let dropped = self.drop
-        return SingleArgFunction(link: dropped) { (z: Link<Z, Performer>) -> Link<R, Performer> in
+        return SingleArgAsyncFunction(link: dropped) { (z: Link<Z, Performer>) -> Link<R, Performer> in
             let function = self.chain(keyPath)
-            return function.chain { (single: UngroundedSingleArgFunction<Z,R, Performer>, completion: @escaping (Result<R, Error>)->Void) in
+            return function.chain { (single: SingleArgFunction<Z,R, Performer>, completion: @escaping (Result<R, Error>)->Void) in
                 let root = dropped.handlingErrors { (context) in
                     completion(.failure(context.error))
                 }
@@ -238,11 +238,11 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
         }
     }
     
-    public subscript<R>(dynamicMember keyPath: KeyPath<B, UngroundedZeroArgFunction<R, Performer>>) -> ZeroArgFunction<R, Performer> {
+    public subscript<R>(dynamicMember keyPath: KeyPath<B, ZeroArgFunction<R, Performer>>) -> ZeroArgAsyncFunction<R, Performer> {
         let dropped = self.drop
-        return ZeroArgFunction(link: dropped) { () -> Link<R, Performer> in
+        return ZeroArgAsyncFunction(link: dropped) { () -> Link<R, Performer> in
             let function = self.chain(keyPath)
-            return function.chain { (zero: UngroundedZeroArgFunction<R, Performer>, completion: @escaping (Result<R, Error>)->Void) in
+            return function.chain { (zero: ZeroArgFunction<R, Performer>, completion: @escaping (Result<R, Error>)->Void) in
                 let root = dropped.handlingErrors { (context) in
                     completion(.failure(context.error))
                 }

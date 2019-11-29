@@ -355,11 +355,11 @@ def generate_await()
 		when 1
 			returnType = "#{include_error_handler ? "":"Safe"}Link#{returnTypeParameterization}"
 		when 2
-			returnType = "SingleArgFunction#{returnTypeParameterization}"
+			returnType = "SingleArgAsyncFunction#{returnTypeParameterization}"
 		when 3
-			returnType = "DoubleArgFunction#{returnTypeParameterization}"
+			returnType = "DoubleArgAsyncFunction#{returnTypeParameterization}"
 		when 4
-			returnType = "TripleArgFunction#{returnTypeParameterization}"
+			returnType = "TripleArgAsyncFunction#{returnTypeParameterization}"
 		end
 		
 		declarations = include_error_handler ? erroring_await_declarations : safe_await_declarations

@@ -38,7 +38,7 @@ class MultiPathTests: XCTestCase {
 		let expect1 = expectation(description: "First branch should be reached")
 		let expect2 = expectation(description: "Second branch should be reached")
 		
-        let assertEquals = async2(assertEquals(t1: t2:), on: DefaultDispatchQueue.self) as UngroundedDoubleArgFunction<Int, Int, Void, DefaultDispatchQueue>
+        let assertEquals = async2(assertEquals(t1: t2:), on: DefaultDispatchQueue.self) as DoubleArgFunction<Int, Int, Void, DefaultDispatchQueue>
 		
 		let async = HoneyBee.start().handlingErrors(with: fail)
             
@@ -65,7 +65,7 @@ class MultiPathTests: XCTestCase {
         let expect1 = expectation(description: "First branch should be reached")
         let expect2 = expectation(description: "Second branch should be reached")
         
-        let assertEquals = async2(assertEquals(t1: t2:), on: DefaultDispatchQueue.self) as UngroundedDoubleArgFunction<Int, Int, Void, DefaultDispatchQueue>
+        let assertEquals = async2(assertEquals(t1: t2:), on: DefaultDispatchQueue.self) as DoubleArgFunction<Int, Int, Void, DefaultDispatchQueue>
         
         let async = HoneyBee.start().handlingErrors(with: fail)
         let asynFuncs = async.insert(self.funcContainer)
@@ -119,8 +119,8 @@ class MultiPathTests: XCTestCase {
 		let expectA = expectation(description: "Join should be reached, path A")
 		let expectB = expectation(description: "Join should be reached, path B")
 		
-        func assertEquals<T: Equatable>() -> UngroundedDoubleArgFunction<T, T, Void, DefaultDispatchQueue> {
-            async2(assertEquals(t1: t2:), on: DefaultDispatchQueue.self) as UngroundedDoubleArgFunction<T, T, Void, DefaultDispatchQueue>
+        func assertEquals<T: Equatable>() -> DoubleArgFunction<T, T, Void, DefaultDispatchQueue> {
+            async2(assertEquals(t1: t2:), on: DefaultDispatchQueue.self) as DoubleArgFunction<T, T, Void, DefaultDispatchQueue>
         }
         
 		let sleepTime:UInt32 = 1

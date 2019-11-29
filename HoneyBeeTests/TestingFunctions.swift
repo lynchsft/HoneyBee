@@ -32,12 +32,12 @@ class TestingFunctions : Equatable {
 		return int * 2
 	}
 	
-    lazy private(set) var stringCat = async1(self.stringCat, on: DefaultDispatchQueue.self) as UngroundedSingleArgFunction<String, String, DefaultDispatchQueue>
+    lazy private(set) var stringCat = async1(self.stringCat, on: DefaultDispatchQueue.self) as SingleArgFunction<String, String, DefaultDispatchQueue>
 	func stringCat(string: String, callback: (String?, Error?) -> Void) -> Void {
 		callback("\(string)cat",nil)
 	}
 	
-    lazy private(set) var stringToInt = async1(self.stringToInt, on: DefaultDispatchQueue.self) as UngroundedSingleArgFunction<String, Int, DefaultDispatchQueue>
+    lazy private(set) var stringToInt = async1(self.stringToInt, on: DefaultDispatchQueue.self) as SingleArgFunction<String, Int, DefaultDispatchQueue>
 	#if swift(>=5.0)
 	func stringToInt(string: String, callback: ((Result<Int, Error>) -> Void)?) {
 		if let int = Int(string) {
