@@ -27,14 +27,17 @@ class TestingFunctions : Equatable {
 		return true // just a type check since we have no state
 	}
 	
+    lazy private(set) var multiplyInt = async1(self.multiplyInt, on: DefaultDispatchQueue.self)
 	func multiplyInt(int: Int) -> Int {
 		return int * 2
 	}
 	
+    lazy private(set) var stringCat = async1(self.stringCat, on: DefaultDispatchQueue.self) as UngroundedSingleArgFunction<String, String, DefaultDispatchQueue>
 	func stringCat(string: String, callback: (String?, Error?) -> Void) -> Void {
 		callback("\(string)cat",nil)
 	}
 	
+    lazy private(set) var stringToInt = async1(self.stringToInt, on: DefaultDispatchQueue.self) as UngroundedSingleArgFunction<String, Int, DefaultDispatchQueue>
 	#if swift(>=5.0)
 	func stringToInt(string: String, callback: ((Result<Int, Error>) -> Void)?) {
 		if let int = Int(string) {
@@ -55,14 +58,17 @@ class TestingFunctions : Equatable {
 	}
 	#endif
 	
+    lazy private(set) var intToString = async1(self.intToString, on: DefaultDispatchQueue.self)
 	func intToString(int: Int, callback: (String) -> Void) {
 		return callback("\(int)")
 	}
 	
+    lazy private(set) var constantInt = async0(self.constantInt, on: DefaultDispatchQueue.self)
 	func constantInt(callback:(FailableResult<Int>)->Void) {
 		callback(.success(8))
 	}
 	
+    lazy private(set) var constantString = async0(self.constantString, on: DefaultDispatchQueue.self)
 	func constantString(callback: ((String?, Error?) -> Void)? ) -> Void {
 		callback?("lamb", nil)
 	}
@@ -83,6 +89,7 @@ class TestingFunctions : Equatable {
 		callback(nil)
 	}
 	
+    lazy private(set) var multiplyString = async2(self.multiplyString, on: DefaultDispatchQueue.self)
 	func multiplyString(string: String, count: Int) -> String {
 		var acc = ""
 		for _ in 0..<count {
@@ -91,6 +98,7 @@ class TestingFunctions : Equatable {
 		return acc
 	}
 	
+    lazy private(set) var stringLengthEquals = async2(self.stringLengthEquals, on: DefaultDispatchQueue.self)
 	func stringLengthEquals(length: Int, string: String) -> Bool {
 		return string.count == length
 	}

@@ -9,6 +9,14 @@
 import XCTest
 @testable import HoneyBee
 
+fileprivate extension Link {
+    func wait(seconds: UInt32) -> Link<B, Performer> {
+        self.tunnel { (link: Link<B, Performer>) in
+            link.drop.chain(sleep =<< seconds)
+        }
+    }
+}
+
 class MultiPathTests: XCTestCase {
 	let funcContainer = TestingFunctions()
 	
@@ -26,26 +34,26 @@ class MultiPathTests: XCTestCase {
 		super.tearDown()
 	}
 	
-	func testFork() {
+	func testBranch() {
 		let expect1 = expectation(description: "First branch should be reached")
 		let expect2 = expectation(description: "Second branch should be reached")
 		
+        let assertEquals = async2(assertEquals(t1: t2:), on: DefaultDispatchQueue.self) as UngroundedDoubleArgFunction<Int, Int, Void, DefaultDispatchQueue>
 		
-		HoneyBee.start { root in
-			root.handlingErrors(with: fail)
-				.insert(10)
-				.chain(self.funcContainer.intToString)
-				.chain(self.funcContainer.stringToInt)
-				.branch { stem in
-					stem.chain(assertEquals =<< 10)
-						.chain(expect1.fulfill)
-					
-					stem.chain(self.funcContainer.multiplyInt)
-						.chain(assertEquals =<< 20)
-						.chain(expect2.fulfill)
-			}
-		}
-		
+		let async = HoneyBee.start().handlingErrors(with: fail)
+            
+        let string = self.funcContainer.intToString(async)(10)
+        let int = self.funcContainer.stringToInt(string)
+        
+        assertEquals(t1: int)(t2: 10)({ _ in
+            expect1.fulfill()
+        })
+            
+        let doubleInt = self.funcContainer.multiplyInt(int)
+        assertEquals(t1: doubleInt)(t2: 20)({ _ in
+            expect2.fulfill()
+        })
+        
 		waitForExpectations(timeout: 1) { error in
 			if let error = error {
 				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
@@ -53,6 +61,34 @@ class MultiPathTests: XCTestCase {
 		}
 	}
 	
+    func testBranchWithInsert() {
+        let expect1 = expectation(description: "First branch should be reached")
+        let expect2 = expectation(description: "Second branch should be reached")
+        
+        let assertEquals = async2(assertEquals(t1: t2:), on: DefaultDispatchQueue.self) as UngroundedDoubleArgFunction<Int, Int, Void, DefaultDispatchQueue>
+        
+        let async = HoneyBee.start().handlingErrors(with: fail)
+        let asynFuncs = async.insert(self.funcContainer)
+            
+        let string = asynFuncs.intToString(10)
+        let int = asynFuncs.stringToInt(string)
+        
+        assertEquals(t1: int)(t2: 10)({ _ in
+            expect1.fulfill()
+        })
+            
+        let doubleInt = asynFuncs.multiplyInt(int)
+        assertEquals(t1: doubleInt)(t2: 20)({ _ in
+            expect2.fulfill()
+        })
+        
+        waitForExpectations(timeout: 1) { error in
+            if let error = error {
+                XCTFail("waitForExpectationsWithTimeout errored: \(error)")
+            }
+        }
+    }
+    
 	func testCompoundJoin() {
 		let expectA = expectation(description: "Join should be reached, path A")
 		
@@ -60,16 +96,16 @@ class MultiPathTests: XCTestCase {
 			expectA.fulfill()
 		}
 		
-		HoneyBee.start()
-				.handlingErrors(with: fail)
-				.branch { stem in
-					stem.chain(self.funcContainer.constantInt)
-					+
-					stem.chain(self.funcContainer.constantString)
-					+
-					stem.chain(self.funcContainer.constantInt)
-				}
-				.chain(compoundMethod)
+		let async = HoneyBee.start().handlingErrors(with: fail)
+        
+        async.branch { stem in
+            self.funcContainer.constantInt(stem)
+            +
+            self.funcContainer.constantString(stem)
+            +
+            self.funcContainer.constantInt(stem)
+        }
+        .chain(compoundMethod)
 			
 		waitForExpectations(timeout: 1) { error in
 			if let error = error {
@@ -79,42 +115,46 @@ class MultiPathTests: XCTestCase {
 	}
 	
 	func testJoin() {
+        
 		let expectA = expectation(description: "Join should be reached, path A")
 		let expectB = expectation(description: "Join should be reached, path B")
 		
+        func assertEquals<T: Equatable>() -> UngroundedDoubleArgFunction<T, T, Void, DefaultDispatchQueue> {
+            async2(assertEquals(t1: t2:), on: DefaultDispatchQueue.self) as UngroundedDoubleArgFunction<T, T, Void, DefaultDispatchQueue>
+        }
+        
 		let sleepTime:UInt32 = 1
 		
-		HoneyBee.start { root in
-			root.handlingErrors(with: fail)
-				.branch { stem in
-					let result1 = stem.chain(self.funcContainer.constantInt)
-					
-					let result2 = stem.chain(sleep =<< sleepTime).drop
-										.chain(self.funcContainer.constantString)
-					
-					(result2 + result1)
-						.chain(self.funcContainer.multiplyString)
-						.chain(self.funcContainer.stringCat)
-						.chain(assertEquals =<< "lamblamblamblamblamblamblamblambcat")
-						.chain(expectA.fulfill)
-			}
-		}
-		
-		HoneyBee.start { root in
-			root.handlingErrors(with: fail)
-				.branch { stem in
-					let result1 = stem.chain(self.funcContainer.constantInt)
-					
-					let result2:Link<String, DefaultDispatchQueue> = stem.chain(sleep =<< sleepTime)
-						.insert(self.funcContainer)
-						.chain(TestingFunctions.constantString)
-					
-					(result1 + result2)
-						.chain(self.funcContainer.stringLengthEquals)
-						.chain(assertEquals =<< false)
-						.chain(expectB.fulfill)
-			}
-		}
+        do {
+            let async = HoneyBee.start().handlingErrors(with: fail)
+            let asyncFuncs = async.insert(self.funcContainer)
+            
+            let int = asyncFuncs.constantInt()
+            
+            let wait = asyncFuncs.wait(seconds: sleepTime)
+            let string = wait.constantString()
+            
+            let multipled = asyncFuncs.multiplyString(string)(by: int)
+            let catted = asyncFuncs.stringCat(multipled)
+            
+            assertEquals()(t1: catted)(t2: "lamblamblamblamblamblamblamblambcat")
+                .chain(expectA.fulfill)
+        }
+
+        do {
+            let async = HoneyBee.start().handlingErrors(with: fail)
+            let asyncFuncs = async.insert(self.funcContainer)
+                    
+            let int = asyncFuncs.constantInt()
+            
+            let wait = asyncFuncs.wait(seconds: sleepTime)
+            let string = wait.constantString()
+            
+            let bool = asyncFuncs.stringLengthEquals(int)(string)
+            assertEquals()(bool)(false)
+                .chain(expectB.fulfill)
+        }
+        
 		waitForExpectations(timeout: 3) { error in
 			if let error = error {
 				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
