@@ -190,11 +190,12 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
 	}
     
     
-    public subscript<X,Y,Z,R>(dynamicMember keyPath: KeyPath<B, TripleArgFunction<X,Y,Z,R, Performer>>) -> TripleArgAsyncFunction<X,Y,Z,R, Performer> {
+    public subscript<X,Y,Z,R>(dynamicMember keyPath: KeyPath<B, TripleArgFunction<X,Y,Z,R>>) -> TripleArgAsyncFunction<X,Y,Z,R, Performer> {
         let dropped = self.drop
         return TripleArgAsyncFunction(link: dropped) { (x: Link<X, Performer>, y: Link<Y, Performer>, z: Link<Z, Performer>) -> Link<R, Performer> in
             let function = self.chain(keyPath)
-            return function.chain { (triple: TripleArgFunction<X,Y,Z,R, Performer>, completion: @escaping (Result<R, Error>)->Void) in
+            return function.chain { (triple: TripleArgFunction<X,Y,Z,R>, completion: @escaping (Result<R, Error>)->Void) in
+                dropped.document(with: triple)
                 let root = dropped.handlingErrors { (context) in
                     completion(.failure(context.error))
                 }
@@ -206,11 +207,12 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
         }
     }
 
-    public subscript<Y,Z,R>(dynamicMember keyPath: KeyPath<B, DoubleArgFunction<Y,Z,R, Performer>>) -> DoubleArgAsyncFunction<Y,Z,R, Performer> {
+    public subscript<Y,Z,R>(dynamicMember keyPath: KeyPath<B, DoubleArgFunction<Y,Z,R>>) -> DoubleArgAsyncFunction<Y,Z,R, Performer> {
         let dropped = self.drop
         return DoubleArgAsyncFunction(link: dropped) { (y: Link<Y, Performer>, z: Link<Z, Performer>) -> Link<R, Performer> in
             let function = self.chain(keyPath)
-            return function.chain { (double: DoubleArgFunction<Y,Z,R, Performer>, completion: @escaping (Result<R, Error>)->Void) in
+            return function.chain { (double: DoubleArgFunction<Y,Z,R>, completion: @escaping (Result<R, Error>)->Void) in
+                dropped.document(with: double)
                 let root = dropped.handlingErrors { (context) in
                     completion(.failure(context.error))
                 }
@@ -222,11 +224,12 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
         }
     }
 
-    public subscript<Z,R>(dynamicMember keyPath: KeyPath<B, SingleArgFunction<Z,R, Performer>>) -> SingleArgAsyncFunction<Z,R, Performer> {
+    public subscript<Z,R>(dynamicMember keyPath: KeyPath<B, SingleArgFunction<Z,R>>) -> SingleArgAsyncFunction<Z,R, Performer> {
         let dropped = self.drop
         return SingleArgAsyncFunction(link: dropped) { (z: Link<Z, Performer>) -> Link<R, Performer> in
             let function = self.chain(keyPath)
-            return function.chain { (single: SingleArgFunction<Z,R, Performer>, completion: @escaping (Result<R, Error>)->Void) in
+            return function.chain { (single: SingleArgFunction<Z,R>, completion: @escaping (Result<R, Error>)->Void) in
+                dropped.document(with: single)
                 let root = dropped.handlingErrors { (context) in
                     completion(.failure(context.error))
                 }
@@ -238,11 +241,12 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
         }
     }
     
-    public subscript<R>(dynamicMember keyPath: KeyPath<B, ZeroArgFunction<R, Performer>>) -> ZeroArgAsyncFunction<R, Performer> {
+    public subscript<R>(dynamicMember keyPath: KeyPath<B, ZeroArgFunction<R>>) -> ZeroArgAsyncFunction<R, Performer> {
         let dropped = self.drop
         return ZeroArgAsyncFunction(link: dropped) { () -> Link<R, Performer> in
             let function = self.chain(keyPath)
-            return function.chain { (zero: ZeroArgFunction<R, Performer>, completion: @escaping (Result<R, Error>)->Void) in
+            return function.chain { (zero: ZeroArgFunction<R>, completion: @escaping (Result<R, Error>)->Void) in
+                dropped.document(with: zero)
                 let root = dropped.handlingErrors { (context) in
                     completion(.failure(context.error))
                 }
@@ -565,85 +569,6 @@ extension Link : ErrorHandling {
 										  trace: self.trace)
 		self.createdLinks.push(link)
 		return link
-	}
-}
-
-// function mutation
-
-fileprivate func objcErrorCallbackToSwift(_ function: @escaping (@escaping (Error?)->Void ) -> Void) -> (@escaping (FailableResult<Void>) -> Void) -> Void {
-	return {(callback: @escaping ((FailableResult<Void>) -> Void)) in
-		function { error in
-			if let error = error {
-				callback(.failure(error))
-			} else {
-				callback(.success(Void()))
-			}
-		}
-	}
-}
-
-fileprivate func objcErrorCallbackToSwift<C>(_ function: @escaping (@escaping (C?, Error?)->Void ) -> Void) -> (@escaping (FailableResult<C>) -> Void) -> Void {
-	return {(callback: @escaping ((FailableResult<C>) -> Void)) in
-		function { c, error in
-			if let error = error {
-				callback(.failure(error))
-			} else if let c = c {
-				callback(.success(c))
-			} else {
-				callback(.failure(NSError(domain: "Completion called with two nil values.", code: -99, userInfo: nil)))
-			}
-		}
-	}
-}
-
-fileprivate func populateVoid<T>(failableResult: FailableResult<Void>, with t: T) -> FailableResult<T> {
-	switch failableResult {
-	case let .failure(error):
-		return .failure(error)
-	case .success():
-		return .success(t)
-	}
-}
-
-fileprivate func elevate<T>(_ function: @escaping (T) -> (@escaping (Error?) -> Void) -> Void) -> (T, @escaping (FailableResult<T>) -> Void) -> Void {
-	return { (t: T, callback: @escaping (FailableResult<T>) -> Void) -> Void in
-		objcErrorCallbackToSwift(function(t))({ result in
-			callback(populateVoid(failableResult: result, with: t))
-		})
-	}
-}
-
-fileprivate func elevate<T>(_ function: @escaping (T, @escaping (Error?) -> Void) -> Void) -> (T, @escaping (FailableResult<T>) -> Void) -> Void {
-	return { (t: T, callback: @escaping (FailableResult<T>) -> Void) -> Void in
-		objcErrorCallbackToSwift(function =<< t)({ result in
-			callback(populateVoid(failableResult: result, with: t))
-		})
-	}
-}
-
-fileprivate func elevate<T>(_ function: @escaping (@escaping (Error?) -> Void) -> Void) -> (T, @escaping (FailableResult<T>) -> Void) -> Void {
-	return { (t: T, callback: @escaping (FailableResult<T>) -> Void) -> Void in
-		objcErrorCallbackToSwift(function)({ result in
-			callback(populateVoid(failableResult: result, with: t))
-		})
-	}
-}
-
-fileprivate func elevate<T, C>(_ function: @escaping (T, @escaping (C?, Error?) -> Void) -> Void) -> (T, @escaping (FailableResult<C>) -> Void) -> Void {
-	return { (t: T, callback: @escaping (FailableResult<C>) -> Void) -> Void in
-		objcErrorCallbackToSwift(bind(function, t))(callback)
-	}
-}
-
-fileprivate func elevate<C>(_ function: @escaping (@escaping (C?, Error?) -> Void) -> Void) -> (@escaping (FailableResult<C>) -> Void) -> Void {
-	return { (callback: @escaping (FailableResult<C>) -> Void) -> Void in
-		objcErrorCallbackToSwift(function)(callback)
-	}
-}
-
-fileprivate func elevate<T, C>(_ function: @escaping (T) -> (@escaping (C?, Error?) -> Void) -> Void) -> (T, @escaping (FailableResult<C>) -> Void) -> Void {
-	return { (t: T, callback: @escaping (FailableResult<C>) -> Void) -> Void in
-		objcErrorCallbackToSwift(function(t))(callback)
 	}
 }
 

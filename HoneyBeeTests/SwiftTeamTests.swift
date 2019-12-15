@@ -23,9 +23,9 @@ class SwiftTeamTests: XCTestCase {
         }
         
         
-        let loadWebResource = async1(NaturalFunctions.loadWebResource, on: DefaultDispatchQueue.self)
-        let decodeImage = async2(NaturalFunctions.decodeImage, on: DefaultDispatchQueue.self)
-        let dewarpAndCleanupImage = async1(NaturalFunctions.dewarpAndCleanupImage, on: DefaultDispatchQueue.self)
+        let loadWebResource = async1(NaturalFunctions.loadWebResource)
+        let decodeImage = async2(NaturalFunctions.decodeImage)
+        let dewarpAndCleanupImage = async1(NaturalFunctions.dewarpAndCleanupImage)
         
         let expect1 = expectation(description: "Async process should complete")
         
@@ -56,10 +56,7 @@ class SwiftTeamTests: XCTestCase {
         }
     }
     
-    func testAwaitCurry_SEGFAULT() {
-        // Every square bracket in this function wants to be a parenthesis.
-        // There's a bug in the compilation of generic @dynamicCallable functions...
-        // The below code is not intended to be highly semantic; it's a lexical feature test.
+    func testAwaitCurry() {
         let expect1 = expectation(description: "Chain 1 should complete")
         let expect2 = expectation(description: "Chain 2 should complete")
         
@@ -67,21 +64,21 @@ class SwiftTeamTests: XCTestCase {
             fail(on: context.error)
         }
         
-        let async = HoneyBee.start().handlingErrors(with: handleError)
+        let hb = HoneyBee.start().handlingErrors(with: handleError)
         
-        let user = async.insert(User())
+        let user = hb.insert(User())
         
         user.reset(5)({
             print($0)
         })
         
-        User.login(async)("Fred")(17)({ _ in
+        User.login(hb)("Fred")(17)({ _ in
             expect1.fulfill()
         })
         
-        addTogether(async)(one: 1)(two: 3.5)
+        addTogether(hb)(one: 1)(two: 3.5)
         
-        let r1 = increment(async)(3)
+        let r1 = increment(hb)(3)
         let r2 = increment(val: r1)
         let r3 = increment(val: r2)({
             $0/2

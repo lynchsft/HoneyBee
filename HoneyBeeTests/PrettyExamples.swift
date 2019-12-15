@@ -85,9 +85,9 @@ struct PrettyExamples {
         }
         
         
-        let loadWebResource = async1(NaturalFunctions.loadWebResource, on: DefaultDispatchQueue.self)
-        let decodeImage = async2(NaturalFunctions.decodeImage, on: DefaultDispatchQueue.self)
-        let dewarpAndCleanupImage = async1(NaturalFunctions.dewarpAndCleanupImage, on: DefaultDispatchQueue.self)
+        let loadWebResource = async1(NaturalFunctions.loadWebResource)
+        let decodeImage = async2(NaturalFunctions.decodeImage)
+        let dewarpAndCleanupImage = async1(NaturalFunctions.dewarpAndCleanupImage)
 		
 		func completionWrapper(_ result: Result<Image, ErrorContext>) {
 			switch result {

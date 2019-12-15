@@ -27,17 +27,17 @@ class TestingFunctions : Equatable {
 		return true // just a type check since we have no state
 	}
 	
-    lazy private(set) var multiplyInt = async1(self.multiplyInt, on: DefaultDispatchQueue.self)
+    lazy private(set) var multiplyInt = async1(self.multiplyInt)
 	func multiplyInt(int: Int) -> Int {
 		return int * 2
 	}
 	
-    lazy private(set) var stringCat = async1(self.stringCat, on: DefaultDispatchQueue.self) as SingleArgFunction<String, String, DefaultDispatchQueue>
+    lazy private(set) var stringCat = async1(self.stringCat)
 	func stringCat(string: String, callback: (String?, Error?) -> Void) -> Void {
 		callback("\(string)cat",nil)
 	}
 	
-    lazy private(set) var stringToInt = async1(self.stringToInt, on: DefaultDispatchQueue.self) as SingleArgFunction<String, Int, DefaultDispatchQueue>
+    lazy private(set) var stringToInt = async1(self.stringToInt) as SingleArgFunction<String, Int>
 	#if swift(>=5.0)
 	func stringToInt(string: String, callback: ((Result<Int, Error>) -> Void)?) {
 		if let int = Int(string) {
@@ -58,17 +58,17 @@ class TestingFunctions : Equatable {
 	}
 	#endif
 	
-    lazy private(set) var intToString = async1(self.intToString, on: DefaultDispatchQueue.self)
+    lazy private(set) var intToString = async1(self.intToString)
 	func intToString(int: Int, callback: (String) -> Void) {
 		return callback("\(int)")
 	}
 	
-    lazy private(set) var constantInt = async0(self.constantInt, on: DefaultDispatchQueue.self)
+    lazy private(set) var constantInt = async0(self.constantInt)
 	func constantInt(callback:(FailableResult<Int>)->Void) {
 		callback(.success(8))
 	}
 	
-    lazy private(set) var constantString = async0(self.constantString, on: DefaultDispatchQueue.self)
+    lazy private(set) var constantString = async0(self.constantString)
 	func constantString(callback: ((String?, Error?) -> Void)? ) -> Void {
 		callback?("lamb", nil)
 	}
@@ -89,7 +89,7 @@ class TestingFunctions : Equatable {
 		callback(nil)
 	}
 	
-    lazy private(set) var multiplyString = async2(self.multiplyString, on: DefaultDispatchQueue.self)
+    lazy private(set) var multiplyString = async2(self.multiplyString)
 	func multiplyString(string: String, count: Int) -> String {
 		var acc = ""
 		for _ in 0..<count {
@@ -98,7 +98,7 @@ class TestingFunctions : Equatable {
 		return acc
 	}
 	
-    lazy private(set) var stringLengthEquals = async2(self.stringLengthEquals, on: DefaultDispatchQueue.self)
+    lazy private(set) var stringLengthEquals = async2(self.stringLengthEquals)
 	func stringLengthEquals(length: Int, string: String) -> Bool {
 		return string.count == length
 	}
@@ -116,7 +116,7 @@ class TestingFunctions : Equatable {
 		}
 	}
 	
-    lazy private(set) var explode = async0(self.explode, on: DefaultDispatchQueue.self)
+    lazy private(set) var explode = async0(self.explode)
 	func explode(callback: ((Int) -> Void)?) throws -> Void {
 		throw NSError(domain: "intentional", code: -1, userInfo: nil)
 	}
@@ -146,12 +146,12 @@ class FibonaciGenerator {
 	}
 }
 
-let increment = async1(increment(val:), on: DefaultDispatchQueue.self)
+let increment = async1(increment(val:))
 func increment(val: Int) -> Int {
 	return val + 1
 }
 
-let addTogether = async2(addTogether(one: two:), on: DefaultDispatchQueue.self)
+let addTogether = async2(addTogether(one: two:))
 func addTogether(one: Int, two: Double) throws -> Double {
 	return Double(one) + two
 }

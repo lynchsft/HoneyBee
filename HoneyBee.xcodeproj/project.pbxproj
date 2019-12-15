@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8FC3271C23A47B8000E25281 /* FunctionTransformations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FC3271B23A47B8000E25281 /* FunctionTransformations.swift */; };
 		FA036D05229B79B9008DC738 /* SwiftTeamTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA036D04229B79B9008DC738 /* SwiftTeamTests.swift */; };
 		FA1A841B1FD2E0470093D11A /* FinallyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA1A841A1FD2E0470093D11A /* FinallyTests.swift */; };
 		FA202E5120F5C67700B2489D /* SafeLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA202E5020F5C67700B2489D /* SafeLink.swift */; };
@@ -52,6 +53,7 @@
 
 /* Begin PBXFileReference section */
 		8F0D7E76238F53E3002780B8 /* HoneyBee.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = HoneyBee.xctestplan; sourceTree = "<group>"; };
+		8FC3271B23A47B8000E25281 /* FunctionTransformations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionTransformations.swift; sourceTree = "<group>"; };
 		FA036D04229B79B9008DC738 /* SwiftTeamTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftTeamTests.swift; sourceTree = "<group>"; };
 		FA1A841A1FD2E0470093D11A /* FinallyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinallyTests.swift; sourceTree = "<group>"; };
 		FA202E5020F5C67700B2489D /* SafeLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafeLink.swift; sourceTree = "<group>"; };
@@ -195,6 +197,7 @@
 				FA62A2B71FC9FBCA00385D22 /* AtomicValue.swift */,
 				FA62A2B61FC9FBCA00385D22 /* ConcurentQueue.swift */,
 				FAF0C3051FD1AD6B00D1F177 /* ConcurrentFunctionTools.swift */,
+				8FC3271B23A47B8000E25281 /* FunctionTransformations.swift */,
 			);
 			name = Lib;
 			sourceTree = "<group>";
@@ -378,6 +381,7 @@
 				FAF0C3061FD1AD6B00D1F177 /* ConcurrentFunctionTools.swift in Sources */,
 				FA62A2B81FC9FBCA00385D22 /* ConcurentQueue.swift in Sources */,
 				FA62A2A81FC9FBC100385D22 /* Executable.swift in Sources */,
+				8FC3271C23A47B8000E25281 /* FunctionTransformations.swift in Sources */,
 				FA62A2AB1FC9FBC100385D22 /* FailableResult.swift in Sources */,
 				FA62A2B41FC9FBC100385D22 /* AsyncBlockPerformer.swift in Sources */,
 				FA62A2AC1FC9FBC100385D22 /* JoinPoint.swift in Sources */,

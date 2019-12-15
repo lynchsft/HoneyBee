@@ -12,12 +12,12 @@ import HoneyBee
 
 struct User {
     
-    var reset: SingleArgFunction<Int, Void, DefaultDispatchQueue> { async1(self.reset, on: DefaultDispatchQueue.self) }
+    var reset: SingleArgFunction<Int, Void> { async1(self.reset) }
 	func reset(in seconds: Int) {
 		
 	}
 	
-    static let login = async2(User.login, on: DefaultDispatchQueue.self)
+    static let login = async2(User.login)
 	static func login(username: String, age: Int, completion: ((Error?) -> Void)?) {
 		DispatchQueue.global().async {
 			sleep(1)
@@ -45,7 +45,7 @@ class AsyncCurryTests: XCTestCase {
 		let expect = expectation(description: "Chain should explode")
 		
 		func handleError(_ context: ErrorContext) {
-//			print(context.trace.toString())
+			print(context.trace.toString())
 			let traceString = context.trace.toString()
 			let chains = traceString.components(separatedBy: "\n")
 			XCTAssertEqual(chains.count, 6 + 1 /*for the trailing return*/)
@@ -90,8 +90,8 @@ class AsyncCurryTests: XCTestCase {
 		func longError(_ context: ErrorContext) { // this one handles the errors thrown by `explode`.
 //			print(context.trace.toString())
 			let traceString = context.trace.toString()
-			let chains = traceString.components(separatedBy: self.filename)
-			XCTAssertEqual(chains.count, 8) //"commands" + 1
+			let chains = traceString.components(separatedBy: "\n")
+			XCTAssertEqual(chains.count, 9) //"commands" + 1 for the "+" (conjoin) and + 1 for the final newline
 			expect.fulfill()
 		}
 		
@@ -107,7 +107,7 @@ class AsyncCurryTests: XCTestCase {
                     $0.handlingErrors(with: longError)
 						.chain(+)
 						.chain(increment)
-						.chain(TestingFunctions().explode)
+						.insert(TestingFunctions()).explode()
 				}
 			
 			sum.drop.chain(fail) // shouldn't run
