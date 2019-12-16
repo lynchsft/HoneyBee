@@ -307,18 +307,18 @@ class MultiPathTests: XCTestCase {
 		
 		let finishExpectation = expectation(description: "Should reach the end of the chain")
 		
-		HoneyBee.start(on: DispatchQueue.main) { root in
-			root.handlingErrors(with: fail)
-				.insert(source)
-				.map { elem in
-					elem.chain{ (int:Int) -> Int in
-						XCTAssert(Thread.current.isMainThread, "Not main thread")
-						return int*2
-					}
-				}
-				.drop
-				.chain(finishExpectation.fulfill)
-		}
+		let async = HoneyBee.start(on: MainDispatchQueue()).handlingErrors(with: fail)
+            
+        let asyncSource = async.insert(source)
+            
+        asyncSource.map { (elem: Link<Int, MainDispatchQueue>) -> Link<Int, MainDispatchQueue> in
+            elem.chain{ (_:Int) -> Void in
+                XCTAssert(Thread.current.isMainThread, "Not main thread")
+            }
+            return self.funcContainer.multiplyInt(elem)
+        }
+        .drop
+        .chain(finishExpectation.fulfill)
 		
 		waitForExpectations(timeout: 3) { error in
 			if let error = error {
