@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8F616FC123B19A28008F7E1E /* UploadPipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F616FC023B19A28008F7E1E /* UploadPipeline.swift */; };
 		8FC3271C23A47B8000E25281 /* FunctionTransformations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FC3271B23A47B8000E25281 /* FunctionTransformations.swift */; };
 		8FD08E3623A825EC00CB3EAF /* CodeCoverageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FD08E3523A825EC00CB3EAF /* CodeCoverageTests.swift */; };
 		FA036D05229B79B9008DC738 /* SwiftTeamTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA036D04229B79B9008DC738 /* SwiftTeamTests.swift */; };
@@ -35,7 +36,7 @@
 		FA62A2B81FC9FBCA00385D22 /* ConcurentQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A2B61FC9FBCA00385D22 /* ConcurentQueue.swift */; };
 		FA62A2B91FC9FBCA00385D22 /* AtomicValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A2B71FC9FBCA00385D22 /* AtomicValue.swift */; };
 		FAA722B7226F2D2100A8CB7B /* AsyncCurry.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAA722B6226F2D2100A8CB7B /* AsyncCurry.swift */; };
-		FAA722B9226F2D5500A8CB7B /* AwaitCurryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAA722B8226F2D5500A8CB7B /* AwaitCurryTests.swift */; };
+		FAA722B9226F2D5500A8CB7B /* AsyncCurryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAA722B8226F2D5500A8CB7B /* AsyncCurryTests.swift */; };
 		FAA722BB226F4DBD00A8CB7B /* FunctionWrappers.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAA722BA226F4DBD00A8CB7B /* FunctionWrappers.swift */; };
 		FAABABAC228BA09800605626 /* AsyncTrace.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAABABAB228BA09800605626 /* AsyncTrace.swift */; };
 		FAF0C3061FD1AD6B00D1F177 /* ConcurrentFunctionTools.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAF0C3051FD1AD6B00D1F177 /* ConcurrentFunctionTools.swift */; };
@@ -54,6 +55,7 @@
 
 /* Begin PBXFileReference section */
 		8F0D7E76238F53E3002780B8 /* HoneyBee.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = HoneyBee.xctestplan; sourceTree = "<group>"; };
+		8F616FC023B19A28008F7E1E /* UploadPipeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadPipeline.swift; sourceTree = "<group>"; };
 		8FC3271B23A47B8000E25281 /* FunctionTransformations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionTransformations.swift; sourceTree = "<group>"; };
 		8FD08E3523A825EC00CB3EAF /* CodeCoverageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeCoverageTests.swift; sourceTree = "<group>"; };
 		FA036D04229B79B9008DC738 /* SwiftTeamTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftTeamTests.swift; sourceTree = "<group>"; };
@@ -88,7 +90,7 @@
 		FA62A2B61FC9FBCA00385D22 /* ConcurentQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConcurentQueue.swift; sourceTree = "<group>"; };
 		FA62A2B71FC9FBCA00385D22 /* AtomicValue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AtomicValue.swift; sourceTree = "<group>"; };
 		FAA722B6226F2D2100A8CB7B /* AsyncCurry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncCurry.swift; sourceTree = "<group>"; };
-		FAA722B8226F2D5500A8CB7B /* AwaitCurryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AwaitCurryTests.swift; sourceTree = "<group>"; };
+		FAA722B8226F2D5500A8CB7B /* AsyncCurryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncCurryTests.swift; sourceTree = "<group>"; };
 		FAA722BA226F4DBD00A8CB7B /* FunctionWrappers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionWrappers.swift; sourceTree = "<group>"; };
 		FAABABAB228BA09800605626 /* AsyncTrace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncTrace.swift; sourceTree = "<group>"; };
 		FAF0C3051FD1AD6B00D1F177 /* ConcurrentFunctionTools.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConcurrentFunctionTools.swift; sourceTree = "<group>"; };
@@ -117,7 +119,7 @@
 		FA4109791E9CFBC4002A6BA6 /* HoneyBeeTests */ = {
 			isa = PBXGroup;
 			children = (
-				FAA722B8226F2D5500A8CB7B /* AwaitCurryTests.swift */,
+				FAA722B8226F2D5500A8CB7B /* AsyncCurryTests.swift */,
 				8FD08E3523A825EC00CB3EAF /* CodeCoverageTests.swift */,
 				FA2D12561FA01D8A004C491E /* ErrorHandlingTests.swift */,
 				FA1A841A1FD2E0470093D11A /* FinallyTests.swift */,
@@ -127,6 +129,7 @@
 				FA41097A1E9CFBC4002A6BA6 /* SinglePathTests.swift */,
 				FA036D04229B79B9008DC738 /* SwiftTeamTests.swift */,
 				FA25B0141F9D0885006F8DEE /* TestingFunctions.swift */,
+				8F616FC023B19A28008F7E1E /* UploadPipeline.swift */,
 			);
 			path = HoneyBeeTests;
 			sourceTree = "<group>";
@@ -359,7 +362,8 @@
 				FA575F8B20024A630075C89C /* PrettyExamples.swift in Sources */,
 				FA25B0151F9D0885006F8DEE /* TestingFunctions.swift in Sources */,
 				8FD08E3623A825EC00CB3EAF /* CodeCoverageTests.swift in Sources */,
-				FAA722B9226F2D5500A8CB7B /* AwaitCurryTests.swift in Sources */,
+				FAA722B9226F2D5500A8CB7B /* AsyncCurryTests.swift in Sources */,
+				8F616FC123B19A28008F7E1E /* UploadPipeline.swift in Sources */,
 				FA1A841B1FD2E0470093D11A /* FinallyTests.swift in Sources */,
 				FA2D12571FA01D8A004C491E /* ErrorHandlingTests.swift in Sources */,
 				FA41097B1E9CFBC4002A6BA6 /* SinglePathTests.swift in Sources */,

@@ -541,6 +541,22 @@ public func +><B, C, CommonPerformer: AsyncBlockPerformer>(lhs: Link<B, CommonPe
 		.chain { $0.1 }
 }
 
+public func >><B, PerformerB: AsyncBlockPerformer, PerformerC: AsyncBlockPerformer>(lhs: Link<B, PerformerB>, rhs: Link<Void, PerformerC>) -> Link<B, PerformerC> {
+    lhs.move(to: rhs.getBlockPerformer()) <+ rhs
+}
+
+public func >><B, PerformerB: AsyncBlockPerformer, PerformerC: AsyncBlockPerformer>(lhs: Link<B, PerformerB>, rhs: PerformerC) -> Link<B, PerformerC> {
+    lhs.move(to: rhs)
+}
+
+public func >><PerformerB: AsyncBlockPerformer, PerformerC: AsyncBlockPerformer>(lhs: Link<Void, PerformerB>, rhs: PerformerC) -> Link<Void, PerformerC> {
+    lhs.move(to: rhs)
+}
+
+public func >><B, C, PerformerC: AsyncBlockPerformer>(lhs: B, rhs: Link<C, PerformerC>) -> Link<B, PerformerC> {
+    rhs.insert(lhs)
+}
+
 extension Link : ErrorHandling {
 	public typealias B = B
 	public typealias Performer = Performer
@@ -904,7 +920,7 @@ extension Link where B : Collection {
 			}
 			
 			let _ = rootLink.finally { link in
-					link.chain{ () -> Void in
+					link.chain { () -> Void in
 						let finalResults = results.compactMap { $0 }
 						let failures = results.count - finalResults.count
 						do {
@@ -1125,7 +1141,7 @@ extension Link  {
 	///   - defineBlock: a block which creates a subchain to be limited.
 	/// - Returns: a `Link` whose execution result `J` is the result of the final link of the subchain.
 	@discardableResult
-	public func limit<J>(_ maxParallel: Int, _ defineBlock: (Link<B, Performer>) -> Link<J, Performer>) -> Link<J, Performer> {
+    public func limit<J, OtherPerformer: AsyncBlockPerformer>(_ maxParallel: Int, _ defineBlock: (Link<B, Performer>) -> Link<J, OtherPerformer>) -> Link<J, OtherPerformer> {
 		let semaphore = Link.semaphore(for: self, withValue: maxParallel)
 		
 		let openingLink = self.chain { (b:B) -> B in
