@@ -496,6 +496,7 @@ extension SafeLink {
 	/// - Returns: A `Link` which has the completion handler installed.
 	public func setCompletionHandler(_ completionHandler: @escaping (ErrorContext?) -> Void ) -> Link<B, Performer> {
 		let finallyCalled = AtomicBool(booleanLiteral: false)
+		// if we use actual boolean literal initialization swift 5.1 emits garbage :PPP
 		let blockPerformer = HoneyBee.getBlockPerformer(of: self.link)
 		return self.handlingErrors(with: { (context: ErrorContext) in
 			finallyCalled.access { called in
