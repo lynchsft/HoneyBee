@@ -127,6 +127,7 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
 	 - Parameter defineBlock: context within which to define the finally chain.
 	 - Returns: a `Link` with the same execution context as self, but with a finally chain registered.
 	*/
+    @discardableResult
 	public func finally(file: StaticString = #file, line: UInt = #line, _ defineBlock: (Link<B, Performer>) -> Void ) -> Link<B, Performer> {
 		if let oldFinalLink = self.finalLinkBox.get() {
 			let _ = oldFinalLink.finally(file: file, line: line, defineBlock)

@@ -252,12 +252,11 @@ class UploadPipeline: XCTestCase {
 
         let uploadComplete = asyncReferences.each(limit: uploadLimit,
                                                   acceptableFailure: .ratio(self.acceptableFailureRate)) { reference -> Link<Void, MainDispatchQueue> in
-
-            let completingRef = reference.finally { reference in
+            reference.finally { reference in
                 self.singleUploadCompletion(reference >> mainQ)
             }
 
-            let media = completingRef.limit(self.exportLimit) { reference in
+            let media = reference.limit(self.exportLimit) { reference in
                 self.export(reference) >> self.managedObjectContext
                 // the export is compute bound so limit it further
             }
