@@ -657,7 +657,7 @@ class MultiPathTests: XCTestCase {
 	}
 	
 	func testMismatchedJoin() {
-		let expectA = expectation(description: "Join should be reached, path A")
+		let expectA = expectation(description: "Join should casuse a failure")
 		
 		HoneyBee.mismatchedConjoinResponse = .custom(handler: { (message) in
 			expectA.fulfill()

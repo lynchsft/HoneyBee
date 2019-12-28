@@ -258,6 +258,10 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
             }
         }
     }
+
+    public subscript<R>(dynamicMember keyPath: KeyPath<B, R>) -> Link<R, Performer> {
+        self.chain(keyPath)
+    }
     
     func document(with document: DocumentationBearing) {
         return self.document(action: document.action, file: document.file, line: document.line)

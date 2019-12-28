@@ -10,6 +10,8 @@
 		8F48C13B23B2932F00957E59 /* MergeSortTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F48C13A23B2932F00957E59 /* MergeSortTest.swift */; };
 		8F616FC123B19A28008F7E1E /* UploadPipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F616FC023B19A28008F7E1E /* UploadPipeline.swift */; };
 		8FC3271C23A47B8000E25281 /* FunctionTransformations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FC3271B23A47B8000E25281 /* FunctionTransformations.swift */; };
+		8FC3374E23B300D500E9208F /* AsyncFlowControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FC3374D23B300D500E9208F /* AsyncFlowControl.swift */; };
+		8FC3375923B54D4F00E9208F /* AsyncFlowControlTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FC3375823B54D4E00E9208F /* AsyncFlowControlTests.swift */; };
 		8FD08E3623A825EC00CB3EAF /* CodeCoverageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FD08E3523A825EC00CB3EAF /* CodeCoverageTests.swift */; };
 		FA036D05229B79B9008DC738 /* SwiftTeamTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA036D04229B79B9008DC738 /* SwiftTeamTests.swift */; };
 		FA1A841B1FD2E0470093D11A /* FinallyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA1A841A1FD2E0470093D11A /* FinallyTests.swift */; };
@@ -59,6 +61,8 @@
 		8F48C13A23B2932F00957E59 /* MergeSortTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MergeSortTest.swift; sourceTree = "<group>"; };
 		8F616FC023B19A28008F7E1E /* UploadPipeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadPipeline.swift; sourceTree = "<group>"; };
 		8FC3271B23A47B8000E25281 /* FunctionTransformations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionTransformations.swift; sourceTree = "<group>"; };
+		8FC3374D23B300D500E9208F /* AsyncFlowControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncFlowControl.swift; sourceTree = "<group>"; };
+		8FC3375823B54D4E00E9208F /* AsyncFlowControlTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncFlowControlTests.swift; sourceTree = "<group>"; };
 		8FD08E3523A825EC00CB3EAF /* CodeCoverageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeCoverageTests.swift; sourceTree = "<group>"; };
 		FA036D04229B79B9008DC738 /* SwiftTeamTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftTeamTests.swift; sourceTree = "<group>"; };
 		FA1A841A1FD2E0470093D11A /* FinallyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinallyTests.swift; sourceTree = "<group>"; };
@@ -122,6 +126,7 @@
 			isa = PBXGroup;
 			children = (
 				FAA722B8226F2D5500A8CB7B /* AsyncCurryTests.swift */,
+				8FC3375823B54D4E00E9208F /* AsyncFlowControlTests.swift */,
 				8FD08E3523A825EC00CB3EAF /* CodeCoverageTests.swift */,
 				FA2D12561FA01D8A004C491E /* ErrorHandlingTests.swift */,
 				FA1A841A1FD2E0470093D11A /* FinallyTests.swift */,
@@ -216,6 +221,7 @@
 			children = (
 				FAA722B6226F2D2100A8CB7B /* AsyncCurry.swift */,
 				FAA722BA226F4DBD00A8CB7B /* FunctionWrappers.swift */,
+				8FC3374D23B300D500E9208F /* AsyncFlowControl.swift */,
 			);
 			name = Curry;
 			sourceTree = "<group>";
@@ -370,6 +376,7 @@
 				8F616FC123B19A28008F7E1E /* UploadPipeline.swift in Sources */,
 				FA1A841B1FD2E0470093D11A /* FinallyTests.swift in Sources */,
 				FA2D12571FA01D8A004C491E /* ErrorHandlingTests.swift in Sources */,
+				8FC3375923B54D4F00E9208F /* AsyncFlowControlTests.swift in Sources */,
 				FA41097B1E9CFBC4002A6BA6 /* SinglePathTests.swift in Sources */,
 				FA036D05229B79B9008DC738 /* SwiftTeamTests.swift in Sources */,
 				FA25B0171F9D0931006F8DEE /* MultiPathTests.swift in Sources */,
@@ -396,6 +403,7 @@
 				8FC3271C23A47B8000E25281 /* FunctionTransformations.swift in Sources */,
 				FA62A2AB1FC9FBC100385D22 /* FailableResult.swift in Sources */,
 				FA62A2B41FC9FBC100385D22 /* AsyncBlockPerformer.swift in Sources */,
+				8FC3374E23B300D500E9208F /* AsyncFlowControl.swift in Sources */,
 				FA62A2AC1FC9FBC100385D22 /* JoinPoint.swift in Sources */,
 				FA202E5120F5C67700B2489D /* SafeLink.swift in Sources */,
 				FA62A2B51FC9FBC100385D22 /* ChainableFailable.swift in Sources */,
