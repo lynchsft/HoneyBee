@@ -55,6 +55,8 @@ class AsyncFlowControlTests: XCTestCase {
                 XCTAssert(value == 0, "\(value) is not zero")
             }.else_if (int.drop.chain(fail).insert(true)) {
                 XCTFail()
+            }.else_if (int.drop.chain(fail).insert(true)) {
+                XCTFail()
             }.else {
                 XCTFail()
             }

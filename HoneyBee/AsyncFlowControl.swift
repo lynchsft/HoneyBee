@@ -92,36 +92,15 @@ extension Link where B == Bool {
 
 public class If<P: AsyncBlockPerformer> {
     let condition: Link<Bool,P>
-    let action: () -> Void
 
     var nextElseContext = AtomicValue<ElseContext<P>?>(value: nil)
     var nextElseCallback: Optional<(ElseContext<P>?)->Void> = nil
 
     init(condition: Link<Bool,P>, action: @escaping () -> Void) {
         self.condition = condition
-        self.action = action
-    }
 
-    public func `else`(_ action: @escaping () -> Void) {
-        self.else_if(self.condition.insert(true), action)
-    }
-
-
-    @discardableResult
-    public func else_if(_ condition: @escaping @autoclosure () -> Link<Bool,P>, _ action: @escaping () -> Void) -> ElseContext<P> {
-        let next = ElseContext<P>(trueCondition: self.condition.insert(true),
-                                  conditionGenerator: condition,
-                                  action: action)
-        self.nextElseContext.access { elseContext in
-            elseContext = next
-            self.nextElseCallback?(next)
-        }
-        return next
-    }
-
-    func evaluate() {
         self.condition.if {
-            self.action()
+            action()
         }
         self.condition.unless {
             self.nextElseContext.access { nextElse in
@@ -135,6 +114,22 @@ public class If<P: AsyncBlockPerformer> {
             }
         }
     }
+
+    public func `else`(_ action: @escaping () -> Void) {
+        self.else_if(self.condition.insert(true), action)
+    }
+
+    @discardableResult
+    public func else_if(_ condition: @escaping @autoclosure () -> Link<Bool,P>, _ action: @escaping () -> Void) -> ElseContext<P> {
+        let next = ElseContext<P>(trueCondition: self.condition.insert(true),
+                                  conditionGenerator: condition,
+                                  action: action)
+        self.nextElseContext.access { elseContext in
+            elseContext = next
+            self.nextElseCallback?(next)
+        }
+        return next
+    }
 }
 
 public class ElseContext<P: AsyncBlockPerformer>  {
@@ -146,18 +141,6 @@ public class ElseContext<P: AsyncBlockPerformer>  {
 
     var nextElseContext = AtomicValue<ElseContext<P>?>(value: nil)
     var nextElseCallback: Optional<(ElseContext<P>?)->Void> = nil
-
-    func getCondition() -> Link<Bool, P> {
-        self.storedCondition.access { condition -> Link<Bool,P> in
-            if let stored = condition {
-                return stored
-            } else {
-                let fetched = self.conditionGenerator()
-                condition = fetched
-                return fetched
-            }
-        }
-    }
 
     init(trueCondition: Link<Bool, P>, conditionGenerator: @escaping ()->Link<Bool,P>, action: @escaping () -> Void) {
         self.trueCondition = trueCondition
@@ -199,7 +182,5 @@ public class ElseContext<P: AsyncBlockPerformer>  {
 
 @discardableResult
 public func if_<P: AsyncBlockPerformer>(_ condition: Link<Bool,P>, _ action: @escaping () -> Void) -> If<P> {
-    let context = If(condition: condition, action: action)
-    context.evaluate()
-    return context
+    return If(condition: condition, action: action)
 }
