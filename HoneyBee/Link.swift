@@ -626,8 +626,8 @@ public func >><PerformerB: AsyncBlockPerformer, PerformerC: AsyncBlockPerformer>
     lhs.move(to: rhs)
 }
 
-public func >><B, C, PerformerC: AsyncBlockPerformer>(lhs: B, rhs: Link<C, PerformerC>) -> Link<B, PerformerC> {
-    rhs.insert(lhs)
+public func >><B, PerformerC: AsyncBlockPerformer>(lhs: @autoclosure @escaping () -> B, rhs: Link<Void, PerformerC>) -> Link<B, PerformerC> {
+    rhs.chain(lhs)
 }
 
 extension Link : ErrorHandling {

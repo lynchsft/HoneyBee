@@ -248,7 +248,7 @@ class UploadPipeline: XCTestCase {
 
         let backgroundQ = mainQ >> DefaultDispatchQueue()
 
-        let asyncReferences = mediaReferences >> backgroundQ
+        let asyncReferences = self.mediaReferences >> backgroundQ
 
         let uploadComplete = asyncReferences.each(limit: uploadLimit,
                                                   acceptableFailure: .ratio(self.acceptableFailureRate)) { reference -> Link<Void, MainDispatchQueue> in

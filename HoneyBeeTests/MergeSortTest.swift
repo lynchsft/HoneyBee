@@ -92,11 +92,11 @@ class MergeSortTest: XCTestCase {
 
         let hb = HoneyBee.start().handlingErrors(with: fail)
 
-        let leftArray = mergeSort3(hb)(Array(array[0..<middleIndex]))             // 3
+        let leftArray = mergeSort3(Array(array[0..<middleIndex]) >> hb)             // 3
 
-        let rightArray = mergeSort3(hb)(Array(array[middleIndex..<array.count]))  // 4
+        let rightArray = mergeSort3(Array(array[middleIndex..<array.count]) >> hb)  // 4
 
-        let mergedArray = merge(hb)(leftPile: leftArray)(rightPile: rightArray)
+        let mergedArray = merge(leftPile: leftArray)(rightPile: rightArray)       // 5
 
         async1(completion)(mergedArray)
     }
