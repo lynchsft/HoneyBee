@@ -259,6 +259,74 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
         }
     }
 
+    public subscript<X,Y,Z,R>(dynamicMember keyPath: KeyPath<B, BoundTripleArgFunction<X,Y,Z,R, Performer>>) -> TripleArgAsyncFunction<X,Y,Z,R, Performer> {
+        let dropped = self.drop
+        return TripleArgAsyncFunction(link: dropped) { (x: Link<X, Performer>, y: Link<Y, Performer>, z: Link<Z, Performer>) -> Link<R, Performer> in
+            let function = self.chain(keyPath)
+            return function.chain { (triple: BoundTripleArgFunction<X,Y,Z,R, Performer>, completion: @escaping (Result<R, Error>)->Void) in
+                dropped.document(with: triple.triple)
+                let root = dropped.handlingErrors { (context) in
+                    completion(.failure(context.error))
+                }
+
+                triple.ground(root)(x)(y)(z).chain { r in
+                    completion(.success(r))
+                }
+            }
+        }
+    }
+
+    public subscript<Y,Z,R>(dynamicMember keyPath: KeyPath<B, BoundDoubleArgFunction<Y,Z,R, Performer>>) -> DoubleArgAsyncFunction<Y,Z,R, Performer> {
+        let dropped = self.drop
+        return DoubleArgAsyncFunction(link: dropped) { (y: Link<Y, Performer>, z: Link<Z, Performer>) -> Link<R, Performer> in
+            let function = self.chain(keyPath)
+            return function.chain { (double: BoundDoubleArgFunction<Y,Z,R, Performer>, completion: @escaping (Result<R, Error>)->Void) in
+                dropped.document(with: double.double)
+                let root = dropped.handlingErrors { (context) in
+                    completion(.failure(context.error))
+                }
+
+                double.ground(root)(y)(z).chain { r in
+                    completion(.success(r))
+                }
+            }
+        }
+    }
+
+    public subscript<Z,R>(dynamicMember keyPath: KeyPath<B, BoundSingleArgFunction<Z,R, Performer>>) -> SingleArgAsyncFunction<Z,R, Performer> {
+        let dropped = self.drop
+        return SingleArgAsyncFunction(link: dropped) { (z: Link<Z, Performer>) -> Link<R, Performer> in
+            let function = self.chain(keyPath)
+            return function.chain { (single: BoundSingleArgFunction<Z,R, Performer>, completion: @escaping (Result<R, Error>)->Void) in
+                dropped.document(with: single.single)
+                let root = dropped.handlingErrors { (context) in
+                    completion(.failure(context.error))
+                }
+
+                single.ground(root)(z).chain { r in
+                    completion(.success(r))
+                }
+            }
+        }
+    }
+
+    public subscript<R>(dynamicMember keyPath: KeyPath<B, BoundZeroArgFunction<R, Performer>>) -> ZeroArgAsyncFunction<R, Performer> {
+        let dropped = self.drop
+        return ZeroArgAsyncFunction(link: dropped) { () -> Link<R, Performer> in
+            let function = self.chain(keyPath)
+            return function.chain { (zero: BoundZeroArgFunction<R, Performer>, completion: @escaping (Result<R, Error>)->Void) in
+                dropped.document(with: zero.zero)
+                let root = dropped.handlingErrors { (context) in
+                    completion(.failure(context.error))
+                }
+
+                zero.ground(root).chain { (r:R) -> Void in
+                        completion(.success(r))
+                }
+            }
+        }
+    }
+
     public subscript<R>(dynamicMember keyPath: KeyPath<B, R>) -> Link<R, Performer> {
         self.chain(keyPath)
     }
@@ -1096,25 +1164,38 @@ extension Optional : OptionalProtocol {
 
 extension Link where B : OptionalProtocol {
 	/// When `B` is an `Optional` you may call `optionally`. The supplied define block creates a subchain which will be run if the Optional value is non-nil. The `Link` given to the define block yields a non-optional value of `B.WrappedType` to its child links
-	/// This function returns a `Link` with a void result value, because the subchain defined by optionally will not be executed if `B` is `nil`.
+	/// This function returns a `Link` with a `B` result value, because the subchain defined by optionally will not be executed if `B` is `nil`.
 	///
 	/// - Parameter defineBlock: a block which creates a subchain to run if B is non-nil
-	/// - Returns: a `Link` with a void value type.
+	/// - Returns: a `Link<B>`
 	@discardableResult
 	public func optionally<X, OtherPerformer: AsyncBlockPerformer>(_ defineBlock: @escaping (Link<B.WrappedType, Performer>) -> Link<X, OtherPerformer>) -> Link<B, Performer> {
+        let dropped = self.drop
 		return self.chain { (b: B, completion: @escaping () -> Void)->Void in
 			if let unwrapped = b.getWrapped() {
-				let unwrappedLink = self.insert(unwrapped)
-					.finally{
-						$0.drop
-						  .chain(completion)
-					}
-				let _ = defineBlock(unwrappedLink)
+                defineBlock(dropped.insert(unwrapped)).drop.chain(completion)
 			} else {
 				completion()
 			}
 		}
 	}
+
+    /// When `B` is an `Optional` you may call `map`. The supplied define block creates a subchain which will be run if the Optional value is non-nil. The `Link` given to the define block yields a non-optional value of `B.WrappedType` to its child links
+    /// This function returns a `Link` with a` X?` result value, because the subchain defined by optionally will not be executed if `B` is `nil`.
+    ///
+    /// - Parameter defineBlock: a block which creates a subchain to run if B is non-nil
+    /// - Returns: a `Link` with a void value type.
+    @discardableResult
+    public func map<X, OtherPerformer: AsyncBlockPerformer>(_ defineBlock: @escaping (Link<B.WrappedType, Performer>) -> Link<X, OtherPerformer>) -> Link<X?, Performer> {
+        let dropped = self.drop
+        return self.chain { (b: B, completion: @escaping (X?) -> Void)->Void in
+            if let unwrapped = b.getWrapped() {
+                defineBlock(dropped.insert(unwrapped)).chain(completion)
+            } else {
+                completion(nil)
+            }
+        }
+    }
 }
 
 fileprivate let limitPathsToSemaphoresLock = NSLock()

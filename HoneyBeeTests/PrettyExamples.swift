@@ -57,56 +57,59 @@ struct PrettyExamples {
 				.chain(updateUI)
 	}
 	
-	struct Image {}
+
+    // PyramidOfDoom {
+    struct Image {}
+    private var loadWebResource: SingleArgFunction<String,Data> { async1(self.loadWebResource) }
+    private func loadWebResource(named name: String, completion: (Data?, Error?) -> Void) {}
+
+    private var decodeImage: DoubleArgFunction<Data, Data, Image> { async2(self.decodeImage) }
+    private func decodeImage(dataProfile: Data, image: Data) throws -> Image { return Image() }
+
+    private var dewarpAndCleanupImage: SingleArgFunction<Image, Image> { async1(self.dewarpAndCleanupImage) }
+    private func dewarpAndCleanupImage(_ image: Image, completion: (Image?, Error?) -> Void) {}
+
 	func processImageData(completionBlock: @escaping (Image?, Error?) -> Void) {
-		func loadWebResource(named name: String, completion: (Data?, Error?) -> Void) {}
-		func decodeImage(dataProfile: Data, image: Data) throws -> Image { return Image() }
-		func dewarpAndCleanupImage(_ image: Image, completion: (Image?, Error?) -> Void) {}
-		
+
 		let a = HoneyBee.start()
 				.handlingErrors { completionBlock(nil, $0) }
-				
+
 		let b = a.branch { stem -> Link<(Data,Data), DefaultDispatchQueue> in
-					stem.chain(loadWebResource =<< "dataprofile.txt")
+                    stem.chain(loadWebResource(named: completion:) =<< "dataprofile.txt")
 					+
-					stem.chain(loadWebResource =<< "imagedata.dat")
+                    stem.chain(loadWebResource(named: completion:) =<< "imagedata.dat")
 				}
-			
+
 				b.chain(decodeImage)
 				.chain(dewarpAndCleanupImage)
 				.chain{ completionBlock($0, nil) }
 	}
 	
-	func processImageDataCurried(completionBlock: @escaping (Image?, Error?) -> Void) {
-        struct NaturalFunctions {
-            static func loadWebResource(named name: String, completion: (Data?, Error?) -> Void) {}
-            static func decodeImage(dataProfile: Data, image: Data) throws -> Image { return Image() }
-            static func dewarpAndCleanupImage(_ image: Image, completion: (Image?, Error?) -> Void) {}
-        }
-        
-        
-        let loadWebResource = async1(NaturalFunctions.loadWebResource)
-        let decodeImage = async2(NaturalFunctions.decodeImage)
-        let dewarpAndCleanupImage = async1(NaturalFunctions.dewarpAndCleanupImage)
-		
-		func completionWrapper(_ result: Result<Image, ErrorContext>) {
-			switch result {
-			case .failure(let context):
-				completionBlock(nil, context.error)
-			case .success(let image):
-				completionBlock(image, nil)
-			}
-		}
-		
-		HoneyBee.async(completion: completionWrapper) { async in
-            let dataProfile = loadWebResource(async)(named: "dataprofile.txt")
-            let imageData = loadWebResource(async)(named: "imagedata.dat")
+	func processImageDataCurried(completion: @escaping (Result<Image, ErrorContext>) -> Void) {
+		HoneyBee.async(completion: completion) { hb in
+            let dataProfile = self.loadWebResource(named: "dataprofile.txt")(hb)
+            let imageData = self.loadWebResource(named: "imagedata.dat")(hb)
 			
-            let image = decodeImage(dataProfile: dataProfile)(image: imageData)
-			let cleanedImage = dewarpAndCleanupImage(image)
+            let image = self.decodeImage(dataProfile: dataProfile)(image: imageData)
+            let cleanedImage = self.dewarpAndCleanupImage(image)
 			
 			return cleanedImage
 		}
 	}
+
+    func processImageDataCurried2(completion: @escaping (Result<Image, ErrorContext>) -> Void) {
+        let errorHandler = { completion(.failure($0)) }
+        let success = async1(){ completion(.success($0)) }
+
+        let hb = HoneyBee.start().handlingErrors(with: errorHandler)
+
+        let dataProfile = loadWebResource(named: "dataprofile.txt" >> hb)
+        let imageData = loadWebResource(namd: "imagedata.dat" >> hb)
+
+        let image = decodeImage(dataProfile: dataProfile)(image: imageData)
+        let cleanedImage = dewarpAndCleanupImage(image)
+
+        success(cleanedImage)
+    }
 }
 
