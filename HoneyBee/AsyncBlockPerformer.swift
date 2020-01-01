@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import CoreData
 
 /// Protocol describing an entity which is able to perform Void->Void blocks asynchronously.
 public protocol AsyncBlockPerformer {
@@ -27,6 +26,8 @@ extension DispatchQueue : AsyncBlockPerformer {
 	}
 }
 
+#if canImport(CoreData)
+import CoreData
 extension NSManagedObjectContext : AsyncBlockPerformer {
 	/// Perform supplied block asynchronously
 	///
@@ -35,6 +36,7 @@ extension NSManagedObjectContext : AsyncBlockPerformer {
 		self.perform(block)
 	}
 }
+#endif
 
 public struct MainDispatchQueue: AsyncBlockPerformer {
 	public init(){}
