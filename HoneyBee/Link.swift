@@ -191,9 +191,9 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
 	}
     
     
-    public subscript<X,Y,Z,R>(dynamicMember keyPath: KeyPath<B, TripleArgFunction<X,Y,Z,R>>) -> TripleArgAsyncFunction<X,Y,Z,R, Performer> {
+    public subscript<X,Y,Z,R>(dynamicMember keyPath: KeyPath<B, TripleArgFunction<X,Y,Z,R>>) -> AsyncTripleArgFunction<X,Y,Z,R, Performer> {
         let dropped = self.drop
-        return TripleArgAsyncFunction(link: dropped) { (x: Link<X, Performer>, y: Link<Y, Performer>, z: Link<Z, Performer>) -> Link<R, Performer> in
+        return AsyncTripleArgFunction(link: dropped) { (x: Link<X, Performer>, y: Link<Y, Performer>, z: Link<Z, Performer>) -> Link<R, Performer> in
             let function = self.chain(keyPath)
             return function.chain { (triple: TripleArgFunction<X,Y,Z,R>, completion: @escaping (Result<R, Error>)->Void) in
                 dropped.document(with: triple)
@@ -208,9 +208,9 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
         }
     }
 
-    public subscript<Y,Z,R>(dynamicMember keyPath: KeyPath<B, DoubleArgFunction<Y,Z,R>>) -> DoubleArgAsyncFunction<Y,Z,R, Performer> {
+    public subscript<Y,Z,R>(dynamicMember keyPath: KeyPath<B, DoubleArgFunction<Y,Z,R>>) -> AsyncDoubleArgFunction<Y,Z,R, Performer> {
         let dropped = self.drop
-        return DoubleArgAsyncFunction(link: dropped) { (y: Link<Y, Performer>, z: Link<Z, Performer>) -> Link<R, Performer> in
+        return AsyncDoubleArgFunction(link: dropped) { (y: Link<Y, Performer>, z: Link<Z, Performer>) -> Link<R, Performer> in
             let function = self.chain(keyPath)
             return function.chain { (double: DoubleArgFunction<Y,Z,R>, completion: @escaping (Result<R, Error>)->Void) in
                 dropped.document(with: double)
@@ -225,9 +225,9 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
         }
     }
 
-    public subscript<Z,R>(dynamicMember keyPath: KeyPath<B, SingleArgFunction<Z,R>>) -> SingleArgAsyncFunction<Z,R, Performer> {
+    public subscript<Z,R>(dynamicMember keyPath: KeyPath<B, SingleArgFunction<Z,R>>) -> AsyncSingleArgFunction<Z,R, Performer> {
         let dropped = self.drop
-        return SingleArgAsyncFunction(link: dropped) { (z: Link<Z, Performer>) -> Link<R, Performer> in
+        return AsyncSingleArgFunction(link: dropped) { (z: Link<Z, Performer>) -> Link<R, Performer> in
             let function = self.chain(keyPath)
             return function.chain { (single: SingleArgFunction<Z,R>, completion: @escaping (Result<R, Error>)->Void) in
                 dropped.document(with: single)
@@ -242,9 +242,9 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
         }
     }
     
-    public subscript<R>(dynamicMember keyPath: KeyPath<B, ZeroArgFunction<R>>) -> ZeroArgAsyncFunction<R, Performer> {
+    public subscript<R>(dynamicMember keyPath: KeyPath<B, ZeroArgFunction<R>>) -> AsyncZeroArgFunction<R, Performer> {
         let dropped = self.drop
-        return ZeroArgAsyncFunction(link: dropped) { () -> Link<R, Performer> in
+        return AsyncZeroArgFunction(link: dropped) { () -> Link<R, Performer> in
             let function = self.chain(keyPath)
             return function.chain { (zero: ZeroArgFunction<R>, completion: @escaping (Result<R, Error>)->Void) in
                 dropped.document(with: zero)
@@ -259,9 +259,9 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
         }
     }
 
-    public subscript<X,Y,Z,R>(dynamicMember keyPath: KeyPath<B, BoundTripleArgFunction<X,Y,Z,R, Performer>>) -> TripleArgAsyncFunction<X,Y,Z,R, Performer> {
+    public subscript<X,Y,Z,R>(dynamicMember keyPath: KeyPath<B, BoundTripleArgFunction<X,Y,Z,R, Performer>>) -> AsyncTripleArgFunction<X,Y,Z,R, Performer> {
         let dropped = self.drop
-        return TripleArgAsyncFunction(link: dropped) { (x: Link<X, Performer>, y: Link<Y, Performer>, z: Link<Z, Performer>) -> Link<R, Performer> in
+        return AsyncTripleArgFunction(link: dropped) { (x: Link<X, Performer>, y: Link<Y, Performer>, z: Link<Z, Performer>) -> Link<R, Performer> in
             let function = self.chain(keyPath)
             return function.chain { (triple: BoundTripleArgFunction<X,Y,Z,R, Performer>, completion: @escaping (Result<R, Error>)->Void) in
                 dropped.document(with: triple.triple)
@@ -276,9 +276,9 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
         }
     }
 
-    public subscript<Y,Z,R>(dynamicMember keyPath: KeyPath<B, BoundDoubleArgFunction<Y,Z,R, Performer>>) -> DoubleArgAsyncFunction<Y,Z,R, Performer> {
+    public subscript<Y,Z,R>(dynamicMember keyPath: KeyPath<B, BoundDoubleArgFunction<Y,Z,R, Performer>>) -> AsyncDoubleArgFunction<Y,Z,R, Performer> {
         let dropped = self.drop
-        return DoubleArgAsyncFunction(link: dropped) { (y: Link<Y, Performer>, z: Link<Z, Performer>) -> Link<R, Performer> in
+        return AsyncDoubleArgFunction(link: dropped) { (y: Link<Y, Performer>, z: Link<Z, Performer>) -> Link<R, Performer> in
             let function = self.chain(keyPath)
             return function.chain { (double: BoundDoubleArgFunction<Y,Z,R, Performer>, completion: @escaping (Result<R, Error>)->Void) in
                 dropped.document(with: double.double)
@@ -293,9 +293,9 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
         }
     }
 
-    public subscript<Z,R>(dynamicMember keyPath: KeyPath<B, BoundSingleArgFunction<Z,R, Performer>>) -> SingleArgAsyncFunction<Z,R, Performer> {
+    public subscript<Z,R>(dynamicMember keyPath: KeyPath<B, BoundSingleArgFunction<Z,R, Performer>>) -> AsyncSingleArgFunction<Z,R, Performer> {
         let dropped = self.drop
-        return SingleArgAsyncFunction(link: dropped) { (z: Link<Z, Performer>) -> Link<R, Performer> in
+        return AsyncSingleArgFunction(link: dropped) { (z: Link<Z, Performer>) -> Link<R, Performer> in
             let function = self.chain(keyPath)
             return function.chain { (single: BoundSingleArgFunction<Z,R, Performer>, completion: @escaping (Result<R, Error>)->Void) in
                 dropped.document(with: single.single)
@@ -310,9 +310,9 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
         }
     }
 
-    public subscript<R>(dynamicMember keyPath: KeyPath<B, BoundZeroArgFunction<R, Performer>>) -> ZeroArgAsyncFunction<R, Performer> {
+    public subscript<R>(dynamicMember keyPath: KeyPath<B, BoundZeroArgFunction<R, Performer>>) -> AsyncZeroArgFunction<R, Performer> {
         let dropped = self.drop
-        return ZeroArgAsyncFunction(link: dropped) { () -> Link<R, Performer> in
+        return AsyncZeroArgFunction(link: dropped) { () -> Link<R, Performer> in
             let function = self.chain(keyPath)
             return function.chain { (zero: BoundZeroArgFunction<R, Performer>, completion: @escaping (Result<R, Error>)->Void) in
                 dropped.document(with: zero.zero)
