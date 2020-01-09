@@ -20,7 +20,7 @@ class UploadPipeline: XCTestCase {
     private let concurrentExportCounter: AtomicInt = 0
     private let concurrentUploadCounter: AtomicInt = 0
 
-    private var managedObjectContext: UtilityDispatchQueue!
+    private var managedObjectContext: BackgroundDispatchQueue!
     private var totalExpectation: XCTestExpectation!
     private var singleUploadCompletionExpectation: XCTestExpectation!
     private var singleUploadSuccessExpectation: XCTestExpectation!
@@ -29,7 +29,7 @@ class UploadPipeline: XCTestCase {
 
     override func setUp() {
         // Put setup code here. This method is called before the invocation of each test method in the class.
-        self.managedObjectContext = UtilityDispatchQueue()
+        self.managedObjectContext = BackgroundDispatchQueue()
         // A faux ManagedObjectContext
 
         self.totalExpectation = self.expectation(description: "Final completion called")
@@ -57,7 +57,7 @@ class UploadPipeline: XCTestCase {
     }
 
 
-    private lazy var export = (async1(self.export) as SingleArgFunction<String, Media>).on(DefaultDispatchQueue.self)
+    private lazy var export = (async1(self.export) as SingleArgFunction<String, Media>).on(UtilityDispatchQueue.self)
     private func export(_ mediaRef: String, completion: @escaping (Media?, Error?) -> Void) {
         XCTAssert(concurrentExportCounter.increment() < exportLimit+1)
         DispatchQueue.global().async {
@@ -68,7 +68,7 @@ class UploadPipeline: XCTestCase {
     }
 
 
-    private lazy var upload = (async1(self.upload) as SingleArgFunction<Media, Void>).on(UtilityDispatchQueue.self)
+    private lazy var upload = (async1(self.upload) as SingleArgFunction<Media, Void>).on(BackgroundDispatchQueue.self)
     private func upload(_ media: Media, completion: @escaping (Error?) -> Void) {
         XCTAssert(concurrentUploadCounter.increment() < uploadLimit+1)
         DispatchQueue.global().async {
@@ -246,9 +246,9 @@ class UploadPipeline: XCTestCase {
         let mainQ = HoneyBee.start(on: MainDispatchQueue())
                             .handlingErrors(with: self.errorHandler)
 
-        let backgroundQ = mainQ >> DefaultDispatchQueue()
+        let exportQ = mainQ >> UtilityDispatchQueue()
 
-        let asyncReferences = self.mediaReferences >> backgroundQ
+        let asyncReferences = self.mediaReferences >> exportQ
 
         let uploadComplete = asyncReferences.each(limit: uploadLimit,
                                                   acceptableFailure: .ratio(self.acceptableFailureRate)) { reference -> Link<Void, MainDispatchQueue> in
@@ -263,7 +263,7 @@ class UploadPipeline: XCTestCase {
 
             let uploaded = media.retry(self.uploadRetries) { media in
                 self.upload(media) +> media
-                // the upload is subject to transient failure
+                // the upload is subject to transient failure so retry it
             }
 
             return self.singleUploadSuccess(uploaded >> mainQ)
