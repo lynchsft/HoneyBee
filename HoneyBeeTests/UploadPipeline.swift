@@ -251,7 +251,7 @@ class UploadPipeline: XCTestCase {
         let asyncReferences = self.mediaReferences >> exportQ
 
         let uploadComplete = asyncReferences.each(limit: uploadLimit,
-                                                  acceptableFailure: .ratio(self.acceptableFailureRate)) { reference -> Link<Void, MainDispatchQueue> in
+                                                  acceptableFailure: .ratio(self.acceptableFailureRate)) { reference in
             reference.finally { reference in
                 self.singleUploadCompletion(reference >> mainQ)
             }
@@ -266,7 +266,7 @@ class UploadPipeline: XCTestCase {
                 // the upload is subject to transient failure so retry it
             }
 
-            return self.singleUploadSuccess(uploaded >> mainQ)
+            self.singleUploadSuccess(uploaded >> mainQ)
         }.drop
 
         self.totalProcessSuccessA(uploadComplete >> mainQ)

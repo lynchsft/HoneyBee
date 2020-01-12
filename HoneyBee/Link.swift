@@ -1041,15 +1041,15 @@ extension Link where B : Collection {
 	/// The `Link` which is given as argument to the define block will pass to its child links the element of the collection which is currently being processed.
 	///
 	/// - Parameter defineBlock: a block which creates a subchain for each element of the Collection
-    @available(*, deprecated)
-	public func each(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, limit: Int? = nil, acceptableFailure: FailureRate = .none, _ defineBlock: @escaping (Link<B.Element, Performer>) -> Void) -> Void {
-		let _ = self.map(file: file, line: line, functionDescription: functionDescription ?? "each", limit: limit, acceptableFailure: acceptableFailure) { elem in
-			elem.tunnel { link -> Link<B.Element, Performer> in
-				defineBlock(elem)
-				return link // hack
-				// this return would introduce a discontinuity in the chain
-			}
-		}
+    /// - Returns: a Link which will pass the collection `B` to its child links
+    @discardableResult
+    public func each(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, limit: Int? = nil, acceptableFailure: FailureRate = .none, _ defineBlock: @escaping (Link<B.Element, Performer>) -> Void) -> Link<B, Performer> {
+        return self.tunnel { collection in
+            self.map(file: file, line: line, functionDescription: functionDescription ?? "each", limit: limit, acceptableFailure: acceptableFailure) { elem -> Link<B.Element, Performer> in
+                defineBlock(elem)
+                return elem // hack
+            }
+        }
 	}
 	
 	/// When the inbound type is a `Collection`, you may call `each`
@@ -1057,7 +1057,7 @@ extension Link where B : Collection {
 	/// The `Link` which is given as argument to the define block will pass to its child links the element of the collection which is currently being processed.
 	///
 	/// - Parameter defineBlock: a block which creates a subchain for each element of the Collection
-	/// - Returns: a Link which will pass the nonfailing elements of `B` to its child links
+	/// - Returns: a Link which will pass an Array of the nonfailing elements of `B` to its child links
 	@discardableResult
 	public func each<R, OtherPerformer: AsyncBlockPerformer>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, limit: Int? = nil, acceptableFailure: FailureRate = .none, _ defineBlock: @escaping (Link<B.Element, Performer>) -> Link<R, OtherPerformer>) -> Link<[B.Element], Performer> {
 		return self.map(file: file, line: line, functionDescription: functionDescription ?? "each", limit: limit, acceptableFailure: acceptableFailure) { elem in
