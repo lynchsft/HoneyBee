@@ -38,42 +38,54 @@ extension NSManagedObjectContext : AsyncBlockPerformer {
 }
 #endif
 
+/// An uninhabited type conforming to `AsyncBlockPerformer` which dispatches to `DispatchQueue.main`
 public struct MainDispatchQueue: AsyncBlockPerformer {
+    /// Creates a new instance
 	public init(){}
 	public func asyncPerform(_ block: @escaping () -> Void) {
 		DispatchQueue.main.async(execute: block)
 	}
 }
 
+/// An uninhabited type conforming to `AsyncBlockPerformer` which dispatches to `DispatchQueue.global()`
 public struct DefaultDispatchQueue: AsyncBlockPerformer {
+    /// Creates a new instance
 	public init(){}
 	public func asyncPerform(_ block: @escaping () -> Void) {
 		DispatchQueue.global().async(execute: block)
 	}
 }
 
+/// An uninhabited type conforming to `AsyncBlockPerformer` which dispatches to `DispatchQueue.global(qos: .background)`
 public struct BackgroundDispatchQueue: AsyncBlockPerformer {
+    /// Creates a new instance
 	public init(){}
 	public func asyncPerform(_ block: @escaping () -> Void) {
 		DispatchQueue.global(qos: .background).async(execute: block)
 	}
 }
 
+/// An uninhabited type conforming to `AsyncBlockPerformer` which dispatches to `DispatchQueue.global(qos: .utility)`
 public struct UtilityDispatchQueue: AsyncBlockPerformer {
+    /// Creates a new instance
 	public init(){}
 	public func asyncPerform(_ block: @escaping () -> Void) {
 		DispatchQueue.global(qos: .utility).async(execute: block)
 	}
 }
 
+/// An uninhabited type conforming to `AsyncBlockPerformer` which dispatches to `DispatchQueue.global(qos: .userInitiated)`
 public struct UserInitiatedDispatchQueue: AsyncBlockPerformer {
+    /// Creates a new instance
 	public init(){}
 	public func asyncPerform(_ block: @escaping () -> Void) {
 		DispatchQueue.global(qos: .userInitiated).async(execute: block)
 	}
 }
 
+/// An uninhabited type conforming to `AsyncBlockPerformer` which dispatches to `DispatchQueue.global(qos: .userInteractive)`
 public struct UserInteractiveDispatchQueue: AsyncBlockPerformer {
+    /// Creates a new instance
 	public init(){}
 	public func asyncPerform(_ block: @escaping () -> Void) {
 		DispatchQueue.global(qos: .userInteractive).async(execute: block)
