@@ -11,9 +11,8 @@ import Foundation
 final class JoinPoint<A, Performer: AsyncBlockPerformer> : Executable {
 	typealias ExecutionResult = (Result<A, ErrorContext>, () -> Void)
 	
-	private let resultLock = NSLock()
-	private var executionResult: ExecutionResult?
-	private var resultCallback: ((ExecutionResult) -> Void)?
+    private let executionBox = ConcurrentBox<ExecutionResult>()
+
 	private let blockPerformer: Performer
 	private let errorHandler: ((ErrorContext) -> Void)
 	var trace: AsyncTrace
@@ -25,29 +24,11 @@ final class JoinPoint<A, Performer: AsyncBlockPerformer> : Executable {
 	}
 	
 	private func yieldResult(_ callback: @escaping (ExecutionResult) -> Void) {
-		self.resultLock.lock()
-		defer {
-			self.resultLock.unlock()
-		}
-		// this needs to be atomic
-		if let result = executionResult {
-			callback(result)
-		} else {
-			self.resultCallback = callback
-		}
+        self.executionBox.yieldValue(callback)
 	}
 
     private func handleAncestorResult(_ result: Result<A, ErrorContext>, completion: @escaping () -> Void) {
-        self.resultLock.lock()
-        defer {
-            self.resultLock.unlock()
-        }
-
-        executionResult = (result, guarantee(faultResponse: HoneyBee.internalFailureResponse, completion))
-
-        if let resultCallback = self.resultCallback {
-            resultCallback(executionResult!)
-        }
+        self.executionBox.setValue((result, completion))
     }
 
 	override func execute(argument: Any?, completion: @escaping () -> Void) {

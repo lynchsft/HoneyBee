@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		8F48C13B23B2932F00957E59 /* MergeSortTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F48C13A23B2932F00957E59 /* MergeSortTest.swift */; };
 		8F616FC123B19A28008F7E1E /* UploadPipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F616FC023B19A28008F7E1E /* UploadPipeline.swift */; };
+		8F7EBDB323CF8812007C9EDB /* ConcurrentBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F7EBDB223CF8812007C9EDB /* ConcurrentBox.swift */; };
 		8FC3271C23A47B8000E25281 /* FunctionTransformations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FC3271B23A47B8000E25281 /* FunctionTransformations.swift */; };
 		8FC3374E23B300D500E9208F /* AsyncFlowControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FC3374D23B300D500E9208F /* AsyncFlowControl.swift */; };
 		8FC3375923B54D4F00E9208F /* AsyncFlowControlTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FC3375823B54D4E00E9208F /* AsyncFlowControlTests.swift */; };
@@ -59,6 +60,7 @@
 		8F0D7E76238F53E3002780B8 /* HoneyBee.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = HoneyBee.xctestplan; sourceTree = "<group>"; };
 		8F48C13A23B2932F00957E59 /* MergeSortTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MergeSortTest.swift; sourceTree = "<group>"; };
 		8F616FC023B19A28008F7E1E /* UploadPipeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadPipeline.swift; sourceTree = "<group>"; };
+		8F7EBDB223CF8812007C9EDB /* ConcurrentBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConcurrentBox.swift; sourceTree = "<group>"; };
 		8FC3271B23A47B8000E25281 /* FunctionTransformations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionTransformations.swift; sourceTree = "<group>"; };
 		8FC3374D23B300D500E9208F /* AsyncFlowControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncFlowControl.swift; sourceTree = "<group>"; };
 		8FC3375823B54D4E00E9208F /* AsyncFlowControlTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncFlowControlTests.swift; sourceTree = "<group>"; };
@@ -207,6 +209,7 @@
 			children = (
 				FA62A2B71FC9FBCA00385D22 /* AtomicValue.swift */,
 				FA62A2B61FC9FBCA00385D22 /* ConcurentQueue.swift */,
+				8F7EBDB223CF8812007C9EDB /* ConcurrentBox.swift */,
 				FAF0C3051FD1AD6B00D1F177 /* ConcurrentFunctionTools.swift */,
 				8FC3271B23A47B8000E25281 /* FunctionTransformations.swift */,
 			);
@@ -395,6 +398,7 @@
 				FAA722BB226F4DBD00A8CB7B /* FunctionWrappers.swift in Sources */,
 				FA2081DB1FD1C0A4003145FB /* FaultResponse.swift in Sources */,
 				FAF0C3061FD1AD6B00D1F177 /* ConcurrentFunctionTools.swift in Sources */,
+				8F7EBDB323CF8812007C9EDB /* ConcurrentBox.swift in Sources */,
 				FA62A2B81FC9FBCA00385D22 /* ConcurentQueue.swift in Sources */,
 				FA62A2A81FC9FBC100385D22 /* Executable.swift in Sources */,
 				8FC3271C23A47B8000E25281 /* FunctionTransformations.swift in Sources */,
