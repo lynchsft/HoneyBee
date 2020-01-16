@@ -646,7 +646,7 @@ extension Link : ErrorHandling {
 			guard let b = a as? B else {
 				let message = "a is not of type B"
 				HoneyBee.internalFailureResponse.evaluate(false, message)
-				preconditionFailure(message)
+				return
 			}
 			callback(.success(b))
 		}
@@ -951,7 +951,7 @@ extension Link {
 			guard let b = a as? B else {
 				let message = "a is not of type B"
 				HoneyBee.internalFailureResponse.evaluate(false, message)
-				preconditionFailure(message)
+				return
 			}
 			callback(.success(b))
 		}
@@ -1334,7 +1334,7 @@ extension Link {
 				} else {
 					let message = "Lost self reference in retry"
 					HoneyBee.internalFailureResponse.evaluate(false, message)
-					preconditionFailure(message)
+					return
 				}
 			}
 			
