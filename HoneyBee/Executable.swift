@@ -11,7 +11,7 @@ import Foundation
 /// Super type of executable types.
 public class Executable {
 	func execute(argument: Any, completion: @escaping () -> Void) -> Void {}
-	func ancestorFailed() {}
+    func ancestorFailed(_ context: ErrorContext) {}
 	
 	var debugInstance = false
 }

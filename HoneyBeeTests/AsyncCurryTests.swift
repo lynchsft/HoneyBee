@@ -113,7 +113,7 @@ class AsyncCurryTests: XCTestCase {
 			sum.drop.chain(fail) // shouldn't run
 		}
 		
-		waitForExpectations(timeout: 60) { error in
+		waitForExpectations(timeout: 6) { error in
 			if let error = error {
 				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
 			}

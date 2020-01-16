@@ -9,7 +9,7 @@
 import Foundation
 
 final class JoinPoint<A, Performer: AsyncBlockPerformer> : Executable {
-	typealias ExecutionResult = (Any?, () -> Void)
+	typealias ExecutionResult = (Result<A, ErrorContext>, () -> Void)
 	
 	private let resultLock = NSLock()
 	private var executionResult: ExecutionResult?
@@ -36,22 +36,32 @@ final class JoinPoint<A, Performer: AsyncBlockPerformer> : Executable {
 			self.resultCallback = callback
 		}
 	}
-	
-	override func execute(argument: Any?, completion: @escaping () -> Void) {
-		self.resultLock.lock()
-		defer {
-			self.resultLock.unlock()
-		}
 
-		executionResult = (argument, guarantee(faultResponse: HoneyBee.internalFailureResponse, completion))
-		
-		if let resultCallback = self.resultCallback {
-			resultCallback(executionResult!)
-		}
+    private func handleAncestorResult(_ result: Result<A, ErrorContext>, completion: @escaping () -> Void) {
+        self.resultLock.lock()
+        defer {
+            self.resultLock.unlock()
+        }
+
+        executionResult = (result, guarantee(faultResponse: HoneyBee.internalFailureResponse, completion))
+
+        if let resultCallback = self.resultCallback {
+            resultCallback(executionResult!)
+        }
+    }
+
+	override func execute(argument: Any?, completion: @escaping () -> Void) {
+        guard let a = argument as? A else {
+            HoneyBee.internalFailureResponse.evaluate(true, "Agrument is not of type A")
+            completion()
+            return
+        }
+
+        self.handleAncestorResult(.success(a), completion: completion)
 	}
 	
-	override func ancestorFailed() {
-		self.execute(argument: nil, completion:  {/* empty completion */})
+    override func ancestorFailed(_ context: ErrorContext) {
+        self.handleAncestorResult(.failure(context), completion: { /* no op */ })
 	}
 	
 	func conjoin<B>(_ other: JoinPoint<B, Performer>) -> Link<(A,B), Performer> {
@@ -72,13 +82,27 @@ final class JoinPoint<A, Performer: AsyncBlockPerformer> : Executable {
 					myCompletion()
 					otherCompletion()
 				}
-				guard let aa = a as? A,
-					let bb = b as? B else {
-					// ancestorFailure
-					callback()
-					link.ancestorFailed()
-					return
-				}
+                let aa: A
+                let bb: B
+
+                switch a {
+                case let .success(a):
+                    aa = a
+                case let .failure(context):
+                    link.ancestorFailed(context)
+                    callback()
+                    return
+                }
+
+                switch b {
+                case let .success(b):
+                    bb = b
+                case let .failure(context):
+                    link.ancestorFailed(context)
+                    callback()
+                    return
+                }
+
 				tuple = (aa, bb)
 				link.execute(argument: Void(), completion: {
 					callback()
