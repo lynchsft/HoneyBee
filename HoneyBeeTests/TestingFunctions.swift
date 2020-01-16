@@ -48,7 +48,7 @@ class TestingFunctions : Equatable {
 		}
 	}
 	#else
-	func stringToInt(string: String, callback: ((FailableResult<Int>) -> Void)?) {
+	func stringToInt(string: String, callback: ((Result<Int, Error>) -> Void)?) {
 		if let int = Int(string) {
 			callback?(.success(int))
 		} else {
@@ -64,7 +64,7 @@ class TestingFunctions : Equatable {
 	}
 	
     lazy private(set) var constantInt = async0(self.constantInt)
-	func constantInt(callback:(FailableResult<Int>)->Void) {
+	func constantInt(callback:(Result<Int, Error>)->Void) {
 		callback(.success(8))
 	}
 	
@@ -73,7 +73,7 @@ class TestingFunctions : Equatable {
 		callback?("lamb", nil)
 	}
 	
-	func randomInt(callback: ((FailableResult<Int>) -> Void)) -> Void {
+	func randomInt(callback: ((Result<Int, Error>) -> Void)) -> Void {
 		callback(.success(Int(arc4random())))
 	}
 	
@@ -134,7 +134,7 @@ class FibonaciGenerator {
 	private var a = 0
 	private var b = 1
 	
-	func ready(completion: ((FailableResult<Bool>) -> Void)) {
+	func ready(completion: ((Result<Bool, Error>) -> Void)) {
 		completion(.success(true))
 	}
 	

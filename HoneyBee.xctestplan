@@ -2,16 +2,18 @@
   "configurations" : [
     {
       "id" : "1831629F-0D9D-4A5D-8313-30B0B8DC0403",
-      "name" : "Run 1",
+      "name" : "Standard",
       "options" : {
 
       }
     },
     {
       "id" : "13EBB384-BC32-4F83-B30E-9211BB02AD8F",
-      "name" : "Run 2",
+      "name" : "Memory Logging",
       "options" : {
-
+        "mallocStackLoggingOptions" : {
+          "loggingType" : "allAllocations"
+        }
       }
     },
     {

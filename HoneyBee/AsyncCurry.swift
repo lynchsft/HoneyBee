@@ -393,47 +393,37 @@ public func async2<A,B,E: Error>(file: StaticString = #file, line: UInt = #line,
 /// Wraps an asynchronous function taking zero parameters
 /// - Parameters:
 ///   - function: the function to wrap
-public func async0<R,Failable>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (@escaping (Failable) -> Void) -> Void) -> ZeroArgFunction<R> where Failable : FailableResultProtocol, Failable.Wrapped == R {
-    ZeroArgFunction(action: tname(function), file: file, line: line) { (completion: @escaping FunctionWrapperCompletion<R>) ->Void in
-        function { (failable: Failable) -> Void in
-            completion(FailableResult(failable))
-        }
-    }
+public func async0<R>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (@escaping (Result<R, Error>) -> Void) -> Void) -> ZeroArgFunction<R> {
+    ZeroArgFunction(action: tname(function), file: file, line: line, function: function)
 }
 
 /// Wraps an asynchronous function taking a single parameter
 /// - Parameters:
 ///   - function: the function to wrap
-public func async1<A,R,Failable>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (A, @escaping (Failable) -> Void) -> Void) -> SingleArgFunction<A, R>  where Failable : FailableResultProtocol, Failable.Wrapped == R {
+public func async1<A,R>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (A, @escaping (Result<R, Error>) -> Void) -> Void) -> SingleArgFunction<A, R> {
     SingleArgFunction(action: tname(function), file: file, line: line) { (a: A, completion: @escaping FunctionWrapperCompletion<R>) ->Void in
         let boundFunction = function =<< a
-        boundFunction { (failable: Failable) -> Void in
-            completion(FailableResult(failable))
-        }
+        boundFunction(completion)
     }
 }
 
 /// Wraps an asynchronous function taking two parameters
 /// - Parameters:
 ///   - function: the function to wrap
-public func async2<A,B,R,Failable>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (A,B, @escaping (Failable) -> Void) -> Void) -> DoubleArgFunction<A, B, R> where Failable : FailableResultProtocol, Failable.Wrapped == R {
+public func async2<A,B,R>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (A,B, @escaping (Result<R, Error>) -> Void) -> Void) -> DoubleArgFunction<A, B, R> {
     DoubleArgFunction(action: tname(function), file: file, line: line) { (a: A, b: B, completion: @escaping FunctionWrapperCompletion<R>) -> Void in
         let boundFunction = function =<< a =<< b
-        boundFunction { (failable: Failable) -> Void in
-            completion(FailableResult(failable))
-        }
+        boundFunction(completion)
     }
 }
 
 /// Wraps an asynchronous function taking 3 parameters
 /// - Parameters:
 ///   - function: the function to wrap
-public func async3<A,B,C,R,Failable>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (A,B,C, @escaping (Failable) -> Void) -> Void) -> TripleArgFunction<A, B, C, R> where Failable : FailableResultProtocol, Failable.Wrapped == R {
+public func async3<A,B,C,R>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (A,B,C, @escaping (Result<R, Error>) -> Void) -> Void) -> TripleArgFunction<A, B, C, R> {
     TripleArgFunction(action: tname(function), file: file, line: line) { (a: A, b: B, c: C, completion: @escaping FunctionWrapperCompletion<R>) in
         let boundFunction = function =<< a =<< b =<< c
-        boundFunction { (failable: Failable) -> Void in
-            completion(FailableResult(failable))
-        }
+        boundFunction(completion)
     }
 }
 

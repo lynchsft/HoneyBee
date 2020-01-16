@@ -14,7 +14,7 @@ struct PrettyExamples {
 	func example1() {
 		func handleError(_ error: Error) {}
 		func fetchNewMovieTitle(completion: (String?, Error?) -> Void) {}
-		func fetchReviews(for movieTitle: String, completion: (FailableResult<[String]>) -> Void) {}
+		func fetchReviews(for movieTitle: String, completion: (Result<[String], Error>) -> Void) {}
 		func averageReviews(_ reviews: [String]) throws -> Int { return reviews.count }
 		func fetchComments(for movieTitle: String, completion: (([String]?, Error?) -> Void)?) {}
 		func countComments(_ comments: [String]) -> Int { return comments.count }
@@ -37,7 +37,7 @@ struct PrettyExamples {
 	func example2() {
 		func handleError(_ error: Error) {}
 		func fetchNewMovieTitle(completion: (String?, Error?) -> Void) {}
-		func fetchReviews(for movieTitle: String, completion: (FailableResult<[String]>) -> Void) {}
+		func fetchReviews(for movieTitle: String, completion: (Result<[String], Error>) -> Void) {}
 		func isNonTrivial(_ int: Int, completion: (Bool) -> Void) {}
 		func updateUI(withTotalWordsInNonTrivialReviews: Int) {}
 		

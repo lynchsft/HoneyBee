@@ -128,7 +128,7 @@ class SinglePathTests: XCTestCase {
 		
 		HoneyBee.start()
 				.handlingErrors(with: fail)
-				.chain{ (callback: (FailableResult<Int>) -> Void) in
+				.chain{ (callback: (Result<Int, Error>) -> Void) in
 					callback(.success(1))
 					callback(.success(2))
 					callback(.failure(NSError(domain: "Purposeful error", code: 3, userInfo: nil)))

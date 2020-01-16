@@ -610,7 +610,7 @@ class ErrorHandlingTests: XCTestCase {
 		}
 	}
 	
-	func testFailableResultChains() {
+	func testResultChains() {
 		let expect1 = expectation(description: "Chain 1 should complete")
 		let expect2 = expectation(description: "Chain 2 should complete")
 		

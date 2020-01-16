@@ -27,7 +27,7 @@
 		FA62A2A81FC9FBC100385D22 /* Executable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A2991FC9FBC000385D22 /* Executable.swift */; };
 		FA62A2A91FC9FBC100385D22 /* ErrorContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A29A1FC9FBC100385D22 /* ErrorContext.swift */; };
 		FA62A2AA1FC9FBC100385D22 /* BindOperator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A29B1FC9FBC100385D22 /* BindOperator.swift */; };
-		FA62A2AB1FC9FBC100385D22 /* FailableResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A29C1FC9FBC100385D22 /* FailableResult.swift */; };
+		FA62A2AB1FC9FBC100385D22 /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A29C1FC9FBC100385D22 /* Result.swift */; };
 		FA62A2AC1FC9FBC100385D22 /* JoinPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A29D1FC9FBC100385D22 /* JoinPoint.swift */; };
 		FA62A2AD1FC9FBC100385D22 /* Link.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A29E1FC9FBC100385D22 /* Link.swift */; };
 		FA62A2AE1FC9FBC100385D22 /* Bind.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A29F1FC9FBC100385D22 /* Bind.swift */; };
@@ -35,7 +35,6 @@
 		FA62A2B01FC9FBC100385D22 /* Chainable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A2A11FC9FBC100385D22 /* Chainable.swift */; };
 		FA62A2B31FC9FBC100385D22 /* ErrorHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A2A41FC9FBC100385D22 /* ErrorHandling.swift */; };
 		FA62A2B41FC9FBC100385D22 /* AsyncBlockPerformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A2A51FC9FBC100385D22 /* AsyncBlockPerformer.swift */; };
-		FA62A2B51FC9FBC100385D22 /* ChainableFailable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A2A61FC9FBC100385D22 /* ChainableFailable.swift */; };
 		FA62A2B81FC9FBCA00385D22 /* ConcurentQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A2B61FC9FBCA00385D22 /* ConcurentQueue.swift */; };
 		FA62A2B91FC9FBCA00385D22 /* AtomicValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A2B71FC9FBCA00385D22 /* AtomicValue.swift */; };
 		FAA722B7226F2D2100A8CB7B /* AsyncCurry.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAA722B6226F2D2100A8CB7B /* AsyncCurry.swift */; };
@@ -84,7 +83,7 @@
 		FA62A2991FC9FBC000385D22 /* Executable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Executable.swift; sourceTree = "<group>"; };
 		FA62A29A1FC9FBC100385D22 /* ErrorContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ErrorContext.swift; sourceTree = "<group>"; };
 		FA62A29B1FC9FBC100385D22 /* BindOperator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BindOperator.swift; sourceTree = "<group>"; };
-		FA62A29C1FC9FBC100385D22 /* FailableResult.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FailableResult.swift; sourceTree = "<group>"; };
+		FA62A29C1FC9FBC100385D22 /* Result.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Result.swift; sourceTree = "<group>"; };
 		FA62A29D1FC9FBC100385D22 /* JoinPoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JoinPoint.swift; sourceTree = "<group>"; };
 		FA62A29E1FC9FBC100385D22 /* Link.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Link.swift; sourceTree = "<group>"; };
 		FA62A29F1FC9FBC100385D22 /* Bind.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bind.swift; sourceTree = "<group>"; };
@@ -92,7 +91,6 @@
 		FA62A2A11FC9FBC100385D22 /* Chainable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Chainable.swift; sourceTree = "<group>"; };
 		FA62A2A41FC9FBC100385D22 /* ErrorHandling.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ErrorHandling.swift; sourceTree = "<group>"; };
 		FA62A2A51FC9FBC100385D22 /* AsyncBlockPerformer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AsyncBlockPerformer.swift; sourceTree = "<group>"; };
-		FA62A2A61FC9FBC100385D22 /* ChainableFailable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChainableFailable.swift; sourceTree = "<group>"; };
 		FA62A2B61FC9FBCA00385D22 /* ConcurentQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConcurentQueue.swift; sourceTree = "<group>"; };
 		FA62A2B71FC9FBCA00385D22 /* AtomicValue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AtomicValue.swift; sourceTree = "<group>"; };
 		FAA722B6226F2D2100A8CB7B /* AsyncCurry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncCurry.swift; sourceTree = "<group>"; };
@@ -189,17 +187,16 @@
 				FA62A29F1FC9FBC100385D22 /* Bind.swift */,
 				FA62A29B1FC9FBC100385D22 /* BindOperator.swift */,
 				FA62A2A11FC9FBC100385D22 /* Chainable.swift */,
-				FA62A2A61FC9FBC100385D22 /* ChainableFailable.swift */,
 				FA62A29A1FC9FBC100385D22 /* ErrorContext.swift */,
 				FA62A2A41FC9FBC100385D22 /* ErrorHandling.swift */,
 				FA62A2991FC9FBC000385D22 /* Executable.swift */,
-				FA62A29C1FC9FBC100385D22 /* FailableResult.swift */,
 				FA62A2981FC9FBC000385D22 /* FailureRate.swift */,
 				FA2081DA1FD1C0A4003145FB /* FaultResponse.swift */,
 				FA62A2A01FC9FBC100385D22 /* HoneyBee.swift */,
 				FA62A29D1FC9FBC100385D22 /* JoinPoint.swift */,
 				FA62A29E1FC9FBC100385D22 /* Link.swift */,
 				FAF5828020FE0E0B00E135CB /* LinkCommon.swift */,
+				FA62A29C1FC9FBC100385D22 /* Result.swift */,
 				FA202E5020F5C67700B2489D /* SafeLink.swift */,
 			);
 			name = Core;
@@ -401,12 +398,11 @@
 				FA62A2B81FC9FBCA00385D22 /* ConcurentQueue.swift in Sources */,
 				FA62A2A81FC9FBC100385D22 /* Executable.swift in Sources */,
 				8FC3271C23A47B8000E25281 /* FunctionTransformations.swift in Sources */,
-				FA62A2AB1FC9FBC100385D22 /* FailableResult.swift in Sources */,
+				FA62A2AB1FC9FBC100385D22 /* Result.swift in Sources */,
 				FA62A2B41FC9FBC100385D22 /* AsyncBlockPerformer.swift in Sources */,
 				8FC3374E23B300D500E9208F /* AsyncFlowControl.swift in Sources */,
 				FA62A2AC1FC9FBC100385D22 /* JoinPoint.swift in Sources */,
 				FA202E5120F5C67700B2489D /* SafeLink.swift in Sources */,
-				FA62A2B51FC9FBC100385D22 /* ChainableFailable.swift in Sources */,
 				FA62A2A91FC9FBC100385D22 /* ErrorContext.swift in Sources */,
 				FA62A2B31FC9FBC100385D22 /* ErrorHandling.swift in Sources */,
 				FAA722B7226F2D2100A8CB7B /* AsyncCurry.swift in Sources */,
