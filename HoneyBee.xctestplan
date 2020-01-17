@@ -8,6 +8,7 @@
       }
     },
     {
+      "enabled" : false,
       "id" : "13EBB384-BC32-4F83-B30E-9211BB02AD8F",
       "name" : "Memory Logging",
       "options" : {

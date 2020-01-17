@@ -30,9 +30,17 @@ class ConcurrentBox<T> {
         }
     }
 
-    func yieldValue(_ block: @escaping (T) -> Void) {
-        HoneyBee.internalFailureResponse.evaluate(!self.hasSetBlock.setTrue(), "Block set more than once")
-       self.valueLock.lock()
+    func getValue() -> T? {
+        self.value
+    }
+
+    private var firstTimeFile: StaticString = #file
+    private var firstTimeLine: UInt = #line
+    func yieldValue(file: StaticString = #file, line: UInt = #line, _ block: @escaping (T) -> Void) {
+        HoneyBee.internalFailureResponse.evaluate(!self.hasSetBlock.setTrue(), "Block set more than once. First time from: \(self.firstTimeFile):\(self.firstTimeLine)")
+        firstTimeFile = file
+        firstTimeLine = line
+        self.valueLock.lock()
         defer {
             self.valueLock.unlock()
         }

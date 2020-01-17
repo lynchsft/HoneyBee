@@ -42,14 +42,16 @@ class AsyncCurryTests: XCTestCase {
 	}
 	
 	func testErrorContext() {
-		let expect = expectation(description: "Chain should explode")
+		let explode = expectation(description: "Chain should explode")
+        let successfulResult = expectation(description: "Successful result")
+        let unsuccessfulResult = expectation(description: "Unsuccessful result")
 		
 		func handleError(_ context: ErrorContext) {
 			print(context.trace.toString())
 			let traceString = context.trace.toString()
 			let chains = traceString.components(separatedBy: "\n")
 			XCTAssertEqual(chains.count, 6 + 1 /*for the trailing return*/)
-			expect.fulfill()
+			explode.fulfill()
 		}
 		
 		let hb = HoneyBee.start().handlingErrors(with: handleError)
@@ -62,7 +64,23 @@ class AsyncCurryTests: XCTestCase {
         let r4 = increment(fox: r3)({
 			XCTAssertEqual($0, 4)
         })
-        TestingFunctions().explode(r4.drop)
+        r4.result { (result: Result<Int, ErrorContext>) in
+            switch result {
+            case .success(_):
+                successfulResult.fulfill()
+            case .failure(_):
+                XCTFail()
+            }
+        }
+        let error = TestingFunctions().explode(r4.drop)
+        error.result { (result: Result<Int, Error>) in
+            switch result {
+            case .success(_):
+                XCTFail()
+            case .failure(_):
+                unsuccessfulResult.fulfill()
+            }
+        }
 		
 		waitForExpectations(timeout: 3) { error in
 			if let error = error {

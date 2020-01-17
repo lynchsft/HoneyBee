@@ -37,6 +37,10 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
 	
 	fileprivate let function: (Any, @escaping (Result<B, Error>) -> Void) -> Void
 	fileprivate let errorHandler: (ErrorContext) -> Void
+
+    // Ancestor failure
+    fileprivate var ancestorFailureBox = ConcurrentBox<ErrorContext>()
+    
 	/// The queue which is passed on to sub chains
 	fileprivate let blockPerformer: Performer
 	
@@ -98,7 +102,12 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
 		                             errorHandler: self.errorHandler,
 		                             blockPerformer: self.blockPerformer,
 		                             trace: trace)
-		self.createdLinks.push(link)
+
+        if let existingFailure = self.ancestorFailureBox.getValue() {
+            link.ancestorFailed(existingFailure)
+        } else {
+            self.createdLinks.push(link)
+        }
 		return link
 	}
 	
@@ -409,11 +418,32 @@ extension Link {
 	}
 	
     fileprivate func propagateFailureToDecendants(_ context: ErrorContext) {
+        self.ancestorFailureBox.setValue(context)
 		self.createdLinks.drain { child in
             child.ancestorFailed(context)
 		}
 		self.finalLinkBox.get()?.ancestorFailed(context)
 	}
+}
+
+extension Link {
+    // Result special link
+    public func result(file: StaticString = #file,  line: UInt = #line, completion: @escaping  (Result<B, ErrorContext>) -> Void) {
+        self.chain { (b: B) -> Void in
+            completion(.success(b))
+        }
+        self.ancestorFailureBox.yieldValue(file: file, line: line) { context in
+            completion(.failure(context))
+        }
+    }
+    public func result(file: StaticString = #file, line: UInt = #line, completion: @escaping  (Result<B, Error>) -> Void) {
+        self.chain { (b: B) -> Void in
+            completion(.success(b))
+        }
+        self.ancestorFailureBox.yieldValue(file: file, line: line) { context in
+            completion(.failure(context.error))
+        }
+    }
 }
 
 extension Link {
