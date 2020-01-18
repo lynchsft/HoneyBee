@@ -40,19 +40,19 @@ class MultiPathTests: XCTestCase {
 		
         let assertEquals = async2(assertEquals(t1: t2:)) as DoubleArgFunction<Int, Int, Void>
 		
-		let async = HoneyBee.start().handlingErrors(with: fail)
+		let async = HoneyBee.start()
             
         let string = self.funcContainer.intToString(async)(10)
         let int = self.funcContainer.stringToInt(string)
         
-        assertEquals(t1: int)(t2: 10)({ _ in
-            expect1.fulfill()
-        })
+        let eq1 = assertEquals(t1: int)(t2: 10)
+        expect1.fulfill(eq1.drop)
             
         let doubleInt = self.funcContainer.multiplyInt(int)
-        assertEquals(t1: doubleInt)(t2: 20)({ _ in
-            expect2.fulfill()
-        })
+        let eq2 = assertEquals(t1: doubleInt)(t2: 20)
+        expect2.fulfill(eq2)
+
+        eq2.error(fail)
         
 		waitForExpectations(timeout: 1) { error in
 			if let error = error {
@@ -67,20 +67,20 @@ class MultiPathTests: XCTestCase {
         
         let assertEquals = async2(assertEquals(t1: t2:)) as DoubleArgFunction<Int, Int, Void>
         
-        let async = HoneyBee.start().handlingErrors(with: fail)
+        let async = HoneyBee.start()
         let asynFuncs = async.insert(self.funcContainer)
             
         let string = asynFuncs.intToString(10)
         let int = asynFuncs.stringToInt(string)
         
-        assertEquals(t1: int)(t2: 10)({ _ in
-            expect1.fulfill()
-        })
+        let eq1 = assertEquals(t1: int)(t2: 10)
+        expect1.fulfill(eq1.drop)
             
         let doubleInt = asynFuncs.multiplyInt(int)
-        assertEquals(t1: doubleInt)(t2: 20)({ _ in
-            expect2.fulfill()
-        })
+        let eq2 = assertEquals(t1: doubleInt)(t2: 20)
+        expect2.fulfill(eq2.drop)
+
+        eq2.error(fail)
         
         waitForExpectations(timeout: 1) { error in
             if let error = error {
@@ -96,7 +96,7 @@ class MultiPathTests: XCTestCase {
 			expectA.fulfill()
 		}
 		
-		let async = HoneyBee.start().handlingErrors(with: fail)
+		let async = HoneyBee.start()
         
         async.branch { stem in
             self.funcContainer.constantInt(stem)
@@ -106,6 +106,7 @@ class MultiPathTests: XCTestCase {
             self.funcContainer.constantInt(stem)
         }
         .chain(compoundMethod)
+        .error(fail)
 			
 		waitForExpectations(timeout: 1) { error in
 			if let error = error {
@@ -126,7 +127,7 @@ class MultiPathTests: XCTestCase {
 		let sleepTime:UInt32 = 1
 		
         do {
-            let async = HoneyBee.start().handlingErrors(with: fail)
+            let async = HoneyBee.start()
             let asyncFuncs = async.insert(self.funcContainer)
             
             let int = asyncFuncs.constantInt()
@@ -139,10 +140,11 @@ class MultiPathTests: XCTestCase {
             
             assertEquals()(t1: catted)(t2: "lamblamblamblamblamblamblamblambcat")
                 .chain(expectA.fulfill)
+                .error(fail)
         }
 
         do {
-            let async = HoneyBee.start().handlingErrors(with: fail)
+            let async = HoneyBee.start()
             let asyncFuncs = async.insert(self.funcContainer)
                     
             let int = asyncFuncs.constantInt()
@@ -153,6 +155,7 @@ class MultiPathTests: XCTestCase {
             let bool = asyncFuncs.stringLengthEquals(int)(string)
             assertEquals()(bool)(false)
                 .chain(expectB.fulfill)
+                .error(fail)
         }
         
 		waitForExpectations(timeout: 3) { error in
@@ -168,9 +171,8 @@ class MultiPathTests: XCTestCase {
 		
 		let sleepTime:UInt32 = 1
 		
-		HoneyBee.start { root in
-			root.handlingErrors(with: fail)
-				.branch { stem -> Link<String, DefaultDispatchQueue> in
+		HoneyBee.start()
+                .branch { stem -> Link<String, DefaultDispatchQueue> in
 					let result1 = stem.chain(self.funcContainer.constantInt)
 					
 					let result2 = stem.chain(sleep =<< sleepTime).drop
@@ -181,11 +183,10 @@ class MultiPathTests: XCTestCase {
 				.chain(self.funcContainer.stringCat)
 				.chain(assertEquals =<< "lambcat")
 				.chain(expectA.fulfill)
-		}
+                .error(fail)
 		
-		HoneyBee.start { root in
-			root.handlingErrors(with: fail)
-				.branch { stem in
+		HoneyBee.start()
+                .branch { stem in
 					let result1 = stem.chain(self.funcContainer.constantInt)
 					
 					let result2:Link<String, DefaultDispatchQueue> = stem.chain(sleep =<< sleepTime)
@@ -196,7 +197,8 @@ class MultiPathTests: XCTestCase {
 				}
 				.chain(assertEquals =<< "lamb")
 				.chain(expectB.fulfill)
-		}
+                .error(fail)
+
 		waitForExpectations(timeout: 3) { error in
 			if let error = error {
 				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
@@ -214,9 +216,8 @@ class MultiPathTests: XCTestCase {
 		
 		let finishExpectation = expectation(description: "Should reach the end of the chain")
 		
-		HoneyBee.start { root in
-			root.handlingErrors(with: fail)
-				.insert(source)
+		HoneyBee.start()
+                .insert(source)
 				.map { elem in
 					elem.chain(self.funcContainer.multiplyInt)
 				}
@@ -232,7 +233,7 @@ class MultiPathTests: XCTestCase {
 				}
 				.drop
 				.chain(finishExpectation.fulfill)
-		}
+                .error(fail)
 		
 		waitForExpectations(timeout: 3) { error in
 			if let error = error {
@@ -271,9 +272,8 @@ class MultiPathTests: XCTestCase {
 		let elementExpectation = expectation(description: "Element should finish \(source.count) times")
 		elementExpectation.expectedFulfillmentCount = source.count
 		
-		HoneyBee.start { root in
-			root.handlingErrors(with: fail)
-				.insert(source)
+		HoneyBee.start()
+                .insert(source)
 				.map(limit: 1) { elem in
 					elem.tunnel { link in
 						link.chain(asynchronouslyHoldLock).drop
@@ -293,7 +293,7 @@ class MultiPathTests: XCTestCase {
 				}
 				.drop
 				.chain(finishExpectation.fulfill)
-		}
+                .error(fail)
 		
 		waitForExpectations(timeout: TimeInterval(Double(source.count) * sleepSeconds + 2.0)) { error in
 			if let error = error {
@@ -307,7 +307,7 @@ class MultiPathTests: XCTestCase {
 		
 		let finishExpectation = expectation(description: "Should reach the end of the chain")
 		
-		let async = HoneyBee.start(on: MainDispatchQueue()).handlingErrors(with: fail)
+		let async = HoneyBee.start(on: MainDispatchQueue())
             
         let asyncSource = async.insert(source)
             
@@ -319,6 +319,7 @@ class MultiPathTests: XCTestCase {
         }
         .drop
         .chain(finishExpectation.fulfill)
+        .error(fail)
 		
 		waitForExpectations(timeout: 3) { error in
 			if let error = error {
@@ -333,15 +334,14 @@ class MultiPathTests: XCTestCase {
 		
 		let finishExpectation = expectation(description: "Should reach the end of the chain")
 		
-		HoneyBee.start { root in
-			root.handlingErrors(with: fail)
-				.insert(source)
+		HoneyBee.start()
+                .insert(source)
 				.filter { elem in
 					elem.chain(self.funcContainer.isEven)
 				}
 				.chain{ XCTAssert($0 == result, "Filter failed. expected: \(result). Received: \($0).") }
 				.chain(finishExpectation.fulfill)
-		}
+                .error(fail)
 		
 		waitForExpectations(timeout: 3) { error in
 			if let error = error {
@@ -376,8 +376,7 @@ class MultiPathTests: XCTestCase {
 		let elementExpectation = expectation(description: "Element should finish \(source.count) times")
 		elementExpectation.expectedFulfillmentCount = source.count
 		
-		HoneyBee.start { root in
-			root.handlingErrors(with: fail)
+		HoneyBee.start()
 				.insert(source)
 				.filter(limit: 1) { elem in
 					elem.tunnel { link in
@@ -388,7 +387,7 @@ class MultiPathTests: XCTestCase {
 				}
 				.chain{ XCTAssert($0 == result, "Filter failed. expected: \(result). Received: \($0).") }
 				.chain(finishExpectation.fulfill)
-		}
+                .error(fail)
 		
 		waitForExpectations(timeout: TimeInterval(Double(source.count) * sleepSeconds + 2.0)) { error in
 			if let error = error {
@@ -411,8 +410,7 @@ class MultiPathTests: XCTestCase {
 		
 		let finishExpectation = expectation(description: "Should reach the end of the chain")
 		
-		HoneyBee.start { root in
-			root.handlingErrors(with: fail)
+		HoneyBee.start()
 				.insert(expectations)
 				.each { elem in
 					elem.chain(XCTestExpectation.fulfill)
@@ -423,7 +421,7 @@ class MultiPathTests: XCTestCase {
 					XCTAssert(filledExpectationCount.get() == expectations.count, "All expectations should be filled by now, but was actually \(filledExpectationCount.get()) != \(expectations.count)")
 				}
 				.chain(finishExpectation.fulfill)
-		}
+                .error(fail)
 		
 		waitForExpectations(timeout: 3) { error in
 			if let error = error {
@@ -450,8 +448,7 @@ class MultiPathTests: XCTestCase {
 			XCTAssert(filledExpectationCount.get() == expectations.count, "All expectations should be filled by now, but was actually \(filledExpectationCount) != \(expectations.count)")
 		}
 		
-		HoneyBee.start { root in
-			root.handlingErrors(with: fail)
+		HoneyBee.start()
 				.insert(expectations)
 				.each { elem in
 					elem.limit(3) { link in
@@ -462,7 +459,7 @@ class MultiPathTests: XCTestCase {
 				.drop
 				.chain(assertAllExpectationsFullfilled)
 				.chain(finishExpectation.fulfill)
-		}
+                .error(fail)
 		
 		waitForExpectations(timeout: 3) { error in
 			if let error = error {
@@ -494,16 +491,15 @@ class MultiPathTests: XCTestCase {
 		let elementExpectation = expectation(description: "Element should finish \(source.count) times")
 		elementExpectation.expectedFulfillmentCount = source.count
 		
-		HoneyBee.start { root in
-			root.handlingErrors(with: fail)
-				.insert(source)
+		HoneyBee.start()
+                .insert(source)
 				.each(limit: 1) { elem in
 					elem.chain(asynchronouslyHoldLock).drop
 						.chain(elementExpectation.fulfill)
 				}
 				.drop
 				.chain(finishExpectation.fulfill)
-		}
+                .error(fail)
 		
 		waitForExpectations(timeout: TimeInterval(Double(source.count) * sleepSeconds + 2.0)) { error in
 			if let error = error {
@@ -538,9 +534,8 @@ class MultiPathTests: XCTestCase {
 		var parallelCodeFinished = false
 		let parallelCodeFinishedLock = NSLock()
 		
-		HoneyBee.start { root in
-			root.handlingErrors(with: fail)
-				.insert(source)
+		HoneyBee.start()
+                .insert(source)
 				.each() { elem in
 					elem.limit(1) { link in
 						link.chain(asynchronouslyHoldLock)
@@ -562,7 +557,7 @@ class MultiPathTests: XCTestCase {
 				.drop
 				.chain{ XCTAssert(parallelCodeFinished, "the parallel code should have finished before this") }
 				.chain(finishExpectation.fulfill)
-		}
+                .error(fail)
 		
 		let sleepSeconds = (Double(sleepNanoSeconds)/1000.0)
 		waitForExpectations(timeout: TimeInterval(Double(source.count) * sleepSeconds * 4.0 + 2.0)) { error in
@@ -578,9 +573,8 @@ class MultiPathTests: XCTestCase {
 		
 		var intermediateFullfilled = false
 		
-		HoneyBee.start { root in
-			root.handlingErrors(with: fail)
-				.limit(29) { link in
+		HoneyBee.start()
+                .limit(29) { link in
 					link.insert("Right")
 						.chain(self.funcContainer.stringCat).drop
 						.chain(intermediateExpectation.fulfill)
@@ -588,7 +582,7 @@ class MultiPathTests: XCTestCase {
 				}
 				.chain{ XCTAssert(intermediateFullfilled, "Intermediate expectation not fullfilled") }
 				.chain(finishExpectation.fulfill)
-		}
+                .error(fail)
 		
 		waitForExpectations(timeout: 3) { error in
 			if let error = error {
@@ -614,7 +608,6 @@ class MultiPathTests: XCTestCase {
 		}
 		
 		HoneyBee.start()
-                .handlingErrors(with: fail)
 				.insert(source)
 				.each { elem in
 					elem.limit(1) { link in
@@ -625,6 +618,7 @@ class MultiPathTests: XCTestCase {
 						// Just need this to invoke the "no return" form limit.
 					}
 				}
+                .error(fail)
 		
 		waitForExpectations(timeout: 3) { error in
 			if let error = error {
@@ -664,7 +658,6 @@ class MultiPathTests: XCTestCase {
 		})
 		
 		HoneyBee.start()
-				.handlingErrors(with: fail)
 				.branch { stem in
 					stem.drop
 						.move(to: DispatchQueue.main)
@@ -674,6 +667,7 @@ class MultiPathTests: XCTestCase {
 					  	.move(to: DispatchQueue.global())
 						.chain(self.funcContainer.constantString)
 				}
+                .error(fail)
 		
 		waitForExpectations(timeout: 3) { error in
 			if let error = error {

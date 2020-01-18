@@ -8,7 +8,6 @@
       }
     },
     {
-      "enabled" : false,
       "id" : "13EBB384-BC32-4F83-B30E-9211BB02AD8F",
       "name" : "Memory Logging",
       "options" : {
@@ -19,9 +18,9 @@
     },
     {
       "id" : "8F4F1A6E-7E68-451B-B503-F9FCBC3A7BD1",
-      "name" : "Run 3",
+      "name" : "Zombies",
       "options" : {
-
+        "nsZombieEnabled" : true
       }
     },
     {

@@ -50,21 +50,19 @@ class AsyncCurryTests: XCTestCase {
 			print(context.trace.toString())
 			let traceString = context.trace.toString()
 			let chains = traceString.components(separatedBy: "\n")
-			XCTAssertEqual(chains.count, 6 + 1 /*for the trailing return*/)
+			XCTAssertEqual(chains.count, 7 + 1 /*for the trailing return*/)
 			explode.fulfill()
 		}
 		
-		let hb = HoneyBee.start().handlingErrors(with: handleError)
+		let hb = HoneyBee.start()
         
         let r1 = increment(3)(hb)
         let r2 = increment(val: r1)
-        let r3 = increment(val: r2)({
-			$0/2
-		})
-        let r4 = increment(fox: r3)({
-			XCTAssertEqual($0, 4)
-        })
-        r4.result { (result: Result<Int, ErrorContext>) in
+        let r3 = increment(val: r2)
+        let r4 = increment(fox: r3).chain {
+			XCTAssertEqual($0, 7)
+        }
+        r4.result { (result: Result<Int, Error>) in
             switch result {
             case .success(_):
                 successfulResult.fulfill()
@@ -73,12 +71,13 @@ class AsyncCurryTests: XCTestCase {
             }
         }
         let error = TestingFunctions().explode(r4.drop)
-        error.result { (result: Result<Int, Error>) in
+        error.result { (result: Result<Int, ErrorContext>) in
             switch result {
             case .success(_):
                 XCTFail()
-            case .failure(_):
+            case let .failure(context):
                 unsuccessfulResult.fulfill()
+                handleError(context)
             }
         }
 		
@@ -114,7 +113,7 @@ class AsyncCurryTests: XCTestCase {
 		}
 		
 		do {
-			let a = HoneyBee.start().handlingErrors(with: shortError).finally {
+			let a = HoneyBee.start().finally {
 				$0.chain(finalExpect.fulfill)
 			}
 			
@@ -122,12 +121,14 @@ class AsyncCurryTests: XCTestCase {
 				.map {
                     increment($0)
                 }.reduce(with: 0) {
-                    $0.handlingErrors(with: longError)
-						.chain(+)
+                    let value = $0.chain(+)
 						.chain(increment)
 						.insert(TestingFunctions()).explode()
+
+                    value.error(longError)
+                    return value
 				}
-			
+            sum.error(shortError)
 			sum.drop.chain(fail) // shouldn't run
 		}
 		
@@ -145,11 +146,11 @@ class AsyncCurryTests: XCTestCase {
 			print(context.trace.toString())
 			let traceString = context.trace.toString()
 			let chains = traceString.components(separatedBy: "\n")
-			XCTAssertEqual(chains.count, 7) // "commands" + 1
+			XCTAssertEqual(chains.count, 8) // "commands" + 1
 			expect.fulfill()
 		}
 		
-		let a = HoneyBee.start().handlingErrors(with: handleError)
+		let a = HoneyBee.start()
 		
 		let source = [1, 2, 3]
 		let sum = a.insert(source)
@@ -159,9 +160,10 @@ class AsyncCurryTests: XCTestCase {
 				$0.chain(+)
 			}
 		
-        increment(val: sum)({
+        increment(val: sum).chain {
 			XCTAssertEqual($0, 10)
-		}).chain(TestingFunctions().explode)
+		}.chain(TestingFunctions().explode)
+            .error(handleError)
 		
 		waitForExpectations(timeout: 3) { error in
 			if let error = error {
@@ -195,19 +197,21 @@ class AsyncCurryTests: XCTestCase {
 		}
 		
 		do {
-			let a = HoneyBee.start().handlingErrors(with: shortError).finally {
+			let a = HoneyBee.start().finally {
 				$0.chain(finalExpect.fulfill)
 			}
 		
 			let mapping = a.insert(source)
                 .map { (int: Link<Int, DefaultDispatchQueue>) -> Link<Int, DefaultDispatchQueue> in
-					let longHandledInt = int.handlingErrors(with: longError)
-                    let bigger = increment(longHandledInt)
-                        
-                    return TestingFunctions().explode(bigger.drop)
+                    let bigger = increment(int)
+
+                    let explode = TestingFunctions().explode(bigger.drop)
+                    explode.error(longError)
+                    return explode
 			}
 			
 			mapping.drop.chain(fail) // shouldn't run
+            mapping.error(shortError)
 		}
 		
 		waitForExpectations(timeout: 3) { error in

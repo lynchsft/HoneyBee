@@ -26,7 +26,7 @@ public struct HoneyBee {
 	///   - file: used for debugging
 	///   - line: used for debugging
 	///   - defineBlock: the define block is where you declare your process chain. The value passed into `defineBlock` is a `SafeLink`.
-	public static func start(file: StaticString = #file, line: UInt = #line, _ defineBlock: @escaping (SafeLink<Void, DefaultDispatchQueue>) -> Void) {
+	public static func start(file: StaticString = #file, line: UInt = #line, _ defineBlock: @escaping (Link<Void, DefaultDispatchQueue>) -> Void) {
 		self.start(on: DefaultDispatchQueue(), file: file, line: line, defineBlock)
 	}
 	
@@ -46,7 +46,7 @@ public struct HoneyBee {
 	///   - file: used for debugging
 	///   - line: used for debugging
 	///   - defineBlock: the define block is where you declare your process chain. The value passed into `defineBlock` is a `SafeLink`.
-	public static func start<Performer: AsyncBlockPerformer>(on blockPerformer: Performer, file: StaticString = #file, line: UInt = #line, _ defineBlock: @escaping (SafeLink<Void, Performer>) -> Void) {
+	public static func start<Performer: AsyncBlockPerformer>(on blockPerformer: Performer, file: StaticString = #file, line: UInt = #line, _ defineBlock: @escaping (Link<Void, Performer>) -> Void) {
 		let safeLink = self.start(on: blockPerformer, file: file, line: line)
 		
 		blockPerformer.asyncPerform {
@@ -68,7 +68,7 @@ public struct HoneyBee {
 	///   - file: used for debugging
 	///   - line: used for debugging
 	/// - Returns: a `SafeLink` to being declaring your recipe.
-	public static func start(file: StaticString = #file, line: UInt = #line) -> SafeLink<Void, DefaultDispatchQueue> {
+	public static func start(file: StaticString = #file, line: UInt = #line) -> Link<Void, DefaultDispatchQueue> {
 		return self.start(on: DefaultDispatchQueue(), file: file, line: line)
 	}
 	
@@ -87,12 +87,12 @@ public struct HoneyBee {
 	///   - file: used for debugging
 	///   - line: used for debugging
 	/// - Returns: a `SafeLink` to being declaring your recipe.
-	public static func start<Performer: AsyncBlockPerformer>(on blockPerformer: Performer, file: StaticString = #file, line: UInt = #line) -> SafeLink<Void, Performer> {
+	public static func start<Performer: AsyncBlockPerformer>(on blockPerformer: Performer, file: StaticString = #file, line: UInt = #line) -> Link<Void, Performer> {
         let trace = AsyncTrace(first: .init(action: "start", file: file, line: line))
 		
 		let link = Link<Void, Performer>(function: { (_, callback) in
 			callback(.success(Void()))
-		}, errorHandler: HoneyBee.impossibleErrorHandler,
+		},
 		   blockPerformer: blockPerformer,
 		   trace: trace)
 		
@@ -100,7 +100,7 @@ public struct HoneyBee {
 			link.execute(argument: Void(), completion: { })
 		}
 
-		return SafeLink<Void, Performer>(link)
+		return link
 	}
 	
 	static let impossibleErrorHandler: (ErrorContext)->Void = { (errorContext) in
@@ -147,12 +147,6 @@ public struct HoneyBee {
 		return link.getBlockPerformer()
 	}
 	
-	/// Utility function to retreive the block performer of a given link.
-	/// This method is useful to implementors of custom link behaviors.
-	/// - Returns: the `AsyncBlockPerformer` of the given link.
-	public static func getBlockPerformer<X, Performer: AsyncBlockPerformer>(of link: SafeLink<X, Performer>) -> Performer {
-		return link.getBlockPerformer()
-	}
 }
 
 
@@ -161,7 +155,7 @@ extension HoneyBee {
 										   callback: @escaping (R) -> Void,
 										   file: StaticString = #file,
 										   line: UInt = #line,
-										   _ defineBlock: @escaping (SafeLink<Void, Performer>) -> SafeLink<R, Performer>) -> Void
+										   _ defineBlock: @escaping (Link<Void, Performer>) -> Link<R, Performer>) -> Void
 	where Performer: AsyncBlockPerformer {
 		
 		self.start(on: blockPerformer, file: file, line: line) { context in
@@ -177,9 +171,8 @@ extension HoneyBee {
 										   _ defineBlock: @escaping (Link<Void, Performer>) -> Link<R, Performer>) -> Void
 	where Performer: AsyncBlockPerformer {
 		
-		let context = self.start(on: blockPerformer, file: file, line: line).handlingErrors { completion(.failure($0)) }
-		let result = defineBlock(context)
-		result.chain { completion(.success($0)) }
+		let context = self.start(on: blockPerformer, file: file, line: line)
+        defineBlock(context).result(completion)
 	}
 	
 	public static func async<R, Performer>(on blockPerformer: Performer,
@@ -189,15 +182,14 @@ extension HoneyBee {
 										   _ defineBlock: @escaping (Link<Void, Performer>) -> Link<R, Performer>) -> Void
 		where Performer: AsyncBlockPerformer {
 			
-			let context = self.start(on: blockPerformer, file: file, line: line).handlingErrors { completion(.failure($0)) }
-			let result = defineBlock(context)
-			result.chain { completion(.success($0)) }
+			let context = self.start(on: blockPerformer, file: file, line: line)
+            defineBlock(context).result(completion)
 	}
 	
 	public static func async<R>(callback: @escaping (R) -> Void,
 								file: StaticString = #file,
 								line: UInt = #line,
-								_ defineBlock: @escaping (SafeLink<Void, DefaultDispatchQueue>) -> SafeLink<R, DefaultDispatchQueue>) -> Void {
+								_ defineBlock: @escaping (Link<Void, DefaultDispatchQueue>) -> Link<R, DefaultDispatchQueue>) -> Void {
 		
 		self.async(on: DefaultDispatchQueue(), callback: callback, file: file, line: line, defineBlock)
 	}

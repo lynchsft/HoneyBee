@@ -32,7 +32,6 @@ class FinallyTests: XCTestCase {
 		let finishExpectation = expectation(description: "Should reach the end of the chain")
 		
 		HoneyBee.start()
-				.handlingErrors(with: fail)
 				.finally { link in
 					link.chain { XCTAssert(counter == 4, "counter should be 4: was actually \(counter)") }
 						.chain(incrementCounter)
@@ -52,6 +51,7 @@ class FinallyTests: XCTestCase {
 						.chain(incrementCounter)
 				}
 				.chain(incrementCounter)
+                .error(fail)
 		
 		waitForExpectations(timeout: 3) { error in
 			if let error = error {
@@ -68,8 +68,7 @@ class FinallyTests: XCTestCase {
 		let errorExpectation = expectation(description: "chain should error")
 		
 		HoneyBee.start { root in
-			let _ = root.handlingErrors { _ in errorExpectation.fulfill() }
-						.chain(self.funcContainer.constantString)
+			let _ = root.chain(self.funcContainer.constantString)
 						.finally { link in
 							link.chain(assertEquals =<< "lamb")
 								.chain(reachableExpectation.fulfill)
@@ -79,6 +78,7 @@ class FinallyTests: XCTestCase {
 							link.drop
 								.chain(unreachableExpectation.fulfill)
 						}
+                        .error { _ in errorExpectation.fulfill() }
 			//^^ The "let _" suppresses the warning that you get when discarding finally's result
 		}
 		
@@ -97,7 +97,6 @@ class FinallyTests: XCTestCase {
 		func handleError(_ error: Error) {} // we cause an error on purpose
 		
 		HoneyBee.start()
-				.handlingErrors(with: fail) // this is just to start off with. We update the error handler below
 				.finally { link in
 					link.chain { () -> Void in XCTAssert(counter == 2, "counter should be 2") ; finishExpectation.fulfill() }
 				}
@@ -105,9 +104,9 @@ class FinallyTests: XCTestCase {
 				.chain(incrementCounter)
 				.chain{ XCTAssert(counter == 1, "counter should be 1") }
 				.chain(incrementCounter)
-				.handlingErrors(with: handleError)
 				.chain({ throw NSError(domain: "An expected error", code: -1, userInfo: nil) })
 				.chain(incrementCounter)
+                .error(handleError)
 
 		
 		waitForExpectations(timeout: 3) { error in
@@ -124,7 +123,6 @@ class FinallyTests: XCTestCase {
 		
 		
 		HoneyBee.start(on: DispatchQueue.main)
-				.handlingErrors(with: fail)
 				.finally { link in
 					link.chain(finallyExpectation.fulfill)
 				}
@@ -133,6 +131,7 @@ class FinallyTests: XCTestCase {
 				}
 				.chain(self.funcContainer.multiplyInt).drop
 				.chain(finishExpectation.fulfill)
+                .error(fail)
 		
 		waitForExpectations(timeout: 141) { error in
 			if let error = error {

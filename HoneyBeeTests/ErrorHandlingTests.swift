@@ -31,8 +31,7 @@ class ErrorHandlingTests: XCTestCase {
 	func testErrorHandling() {
 		let expect = expectation(description: "Chain should fail with error")
 		
-		HoneyBee.start { root in
-			root.handlingErrors {error in expect.fulfill()}
+		HoneyBee.start()
 				.insert(self.funcContainer)
 				.chain(TestingFunctions.randomInt)
 				.chain(self.funcContainer.intToString)
@@ -40,7 +39,7 @@ class ErrorHandlingTests: XCTestCase {
 				.chain(self.funcContainer.explode)
 				.chain(self.funcContainer.multiplyInt).drop
 				.chain(failIfReached)
-		}
+                .error { _ in expect.fulfill() }
 		
 		waitForExpectations(timeout: 1) { error in
 			if let error = error {
@@ -56,8 +55,7 @@ class ErrorHandlingTests: XCTestCase {
 		let retryExpectation = expectation(description: "Chain should retry \(retryCount) time")
 		retryExpectation.expectedFulfillmentCount = retryCount + 1
 		
-		HoneyBee.start { root in
-			root.handlingErrors {_ in finalErrorExpectation.fulfill()}
+		HoneyBee.start()
 				.insert(self.funcContainer)
 				.chain(TestingFunctions.randomInt)
 				.chain(self.funcContainer.intToString)
@@ -68,7 +66,7 @@ class ErrorHandlingTests: XCTestCase {
 						.chain(self.funcContainer.explode)
 						.chain(self.funcContainer.multiplyInt)
 				}
-		}
+                .error {_ in finalErrorExpectation.fulfill()}
 		
 		waitForExpectations(timeout: 1) { error in
 			if let error = error {
@@ -86,9 +84,8 @@ class ErrorHandlingTests: XCTestCase {
 		
 		var failed = false
 		
-		HoneyBee.start { root in
-			root.handlingErrors(with: fail)
-				.insert(self.funcContainer)
+		HoneyBee.start()
+                .insert(self.funcContainer)
 				.chain(self.funcContainer.constantInt)
 				.retry(retryCount) { link in
 					link.tunnel { link in
@@ -106,7 +103,7 @@ class ErrorHandlingTests: XCTestCase {
 				.chain(self.funcContainer.multiplyInt)
 				.chain(assertEquals =<< 32).drop
 				.chain(finishExpectation.fulfill)
-		}
+                .error(fail)
 		
 		waitForExpectations(timeout: 1) { error in
 			if let error = error {
@@ -122,9 +119,8 @@ class ErrorHandlingTests: XCTestCase {
 		let retryExpectation = expectation(description: "Chain should retry \(retryCount) time")
 		retryExpectation.expectedFulfillmentCount = retryCount + 1
 		
-		HoneyBee.start { root in
-			root.handlingErrors {_ in finalErrorExpectation.fulfill()}
-				.insert(self.funcContainer)
+		HoneyBee.start()
+                .insert(self.funcContainer)
 				.chain(TestingFunctions.randomInt)
 				.chain(self.funcContainer.intToString)
 				.chain(self.funcContainer.stringCat)
@@ -135,7 +131,7 @@ class ErrorHandlingTests: XCTestCase {
 						.chain(self.funcContainer.multiplyInt)
 				}
 				.chain(self.funcContainer.multiplyInt)
-		}
+                .error { _ in finalErrorExpectation.fulfill() }
 		
 		waitForExpectations(timeout: 1) { error in
 			if let error = error {
@@ -165,15 +161,14 @@ class ErrorHandlingTests: XCTestCase {
 			}
 		}
 		
-		HoneyBee.start { root in
-			root.handlingErrors(with: errorHanlderWithContext)
-				.insert(7)
+		HoneyBee.start()
+                .insert(7)
 				.chain(self.funcContainer.intToString)
 				.chain(self.funcContainer.stringCat)
 				.chain{(string:String) -> String in expectedFile = #file; expectedLine = #line; return string}.chain(self.funcContainer.stringToInt)
 				.chain(self.funcContainer.multiplyInt).drop
 				.chain(failIfReached)
-		}
+                .error(errorHanlderWithContext)
 		
 		waitForExpectations(timeout: 2) { error in
 			if let error = error {
@@ -198,26 +193,24 @@ class ErrorHandlingTests: XCTestCase {
 		let finishExpectation = expectation(description: "Should reach NOT the end of the chain")
 		finishExpectation.isInverted = true
 		
-		let errorCount = source.count + 1
+		let errorCount = source.count
 		let errorExpectation = expectation(description: "Should error \(errorCount) times")
 		errorExpectation.expectedFulfillmentCount = errorCount
+
+        let finalErrorExepectation = expectation(description: "Final error should happen once")
 		
-		HoneyBee.start { root in
-			root.handlingErrors { _ in errorExpectation.fulfill()}
-				.insert(source)
+		HoneyBee.start()
+                .insert(source)
 				.each(limit: 5) { elem in
 					elem.chain(asynchronouslyHoldLock)
 						.chain(self.funcContainer.explode)
+                        .error  { _ in errorExpectation.fulfill()}
 				}
 				.drop
 				.chain(finishExpectation.fulfill)
-		}
+                .error  { _ in finalErrorExepectation.fulfill()}
 		
-		waitForExpectations(timeout: TimeInterval(Double(source.count) * sleepSeconds + 1.0)) { error in
-			if let error = error {
-				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
-			}
-		}
+		waitForExpectations(timeout: TimeInterval(Double(source.count) * sleepSeconds + 1.0))
 	}
 	
 	func testLimitError() {
@@ -230,26 +223,31 @@ class ErrorHandlingTests: XCTestCase {
 		
         let failureExpectation = expectation(description: "Error handler")
         failureExpectation.expectedFulfillmentCount = source.filter(intFilter).count
-        
+
+        let finalExpectation = expectation(description: "Chain should complete")
+
         var passCounter = -1
         HoneyBee.start()
-                .handlingErrors { (_:Error) in failureExpectation.fulfill() }
                 .insert(source)
-                .each(acceptableFailure: .full) {
-                    return $0.limit(1) { link -> Link<Void, DefaultDispatchQueue> in
+                .each(acceptableFailure: .full) { int -> Link<Void, DefaultDispatchQueue> in
+                    let a = int.limit(1) { link -> Link<Void, DefaultDispatchQueue> in
                         passCounter += 1
                         if intFilter(passCounter) {
                             return link.insert(self.funcContainer)
                                 .chain(TestingFunctions.explode) // error here
                                 .chain(assertEquals =<< Int.max).drop
+
                         } else {
                             return link.drop
                                 .chain(successExpectation.fulfill).drop
                         }
-                        
                     }
-                }
-		
+
+                    a.error { (_:Error) in failureExpectation.fulfill() }
+                    return a
+                }.drop
+                .chain(finalExpectation.fulfill)
+
 		waitForExpectations(timeout: 1) { error in
 			if let error = error {
 				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
@@ -283,8 +281,7 @@ class ErrorHandlingTests: XCTestCase {
 					.chain(expectFinnally.fulfill)
 			}
 		
-			HoneyBee.start { root in
-				root.handlingErrors(with: errorHandler)
+			HoneyBee.start()
 					.finally { link in
 						excerciseFinally(link)
 					}
@@ -307,8 +304,9 @@ class ErrorHandlingTests: XCTestCase {
 						
 						let _ = joinedLink.drop
 								.conjoin(downstreamLink)
-				}
-			}
+                                .error(errorHandler)
+                    }
+
 		}
 		
 		testJoinError { (getString, getInt) in
@@ -340,9 +338,8 @@ class ErrorHandlingTests: XCTestCase {
 			expectError.fulfill()
 		}
 		
-		HoneyBee.start { root in
-			root.handlingErrors(with: errorHandler)
-				.finally { link in
+		HoneyBee.start()
+                .finally { link in
 					link.chain(expectFinnally.fulfill)
 				}
 				.branch { stem in
@@ -365,9 +362,9 @@ class ErrorHandlingTests: XCTestCase {
 					
 					(result1 + result2)
 						.chain(self.funcContainer.stringLengthEquals)
-					
-			}
-		}
+                        .error(errorHandler)
+                }
+
 		
 		waitForExpectations(timeout: 3) { error in
 			if let error = error {
@@ -414,12 +411,11 @@ class ErrorHandlingTests: XCTestCase {
 			
 			errorExpectation.expectedFulfillmentCount = numberOfElementErrors + (failures < numberOfElementErrors ? 1 : 0)
 			
-			func errorHandlder(_ error: Error) {
+			func errorHandler(_ error: Error) {
 				errorExpectation.fulfill()
 			}
 			
-			HoneyBee.start { root in
-				root.handlingErrors(with: errorHandlder)
+			HoneyBee.start()
 					.insert(source)
 					.map(acceptableFailure: .count(failures)) { elem in
 						elem.chain(failableIntConverter)
@@ -427,7 +423,7 @@ class ErrorHandlingTests: XCTestCase {
 								link.chain { (string: String) -> Void in
 									intsToExpectations[Int(string)!]!.fulfill()
 								}
-							}
+							}.error(errorHandler)
 					}
 					.chain { (strings: [String]) -> Void in
 						let expected = ["0","1","2","3","4","5","6","7","8","9"]
@@ -435,7 +431,7 @@ class ErrorHandlingTests: XCTestCase {
 					}
 					.drop
 					.chain(finishExpectation.fulfill)
-			}
+                    .error(errorHandler)
 			
 			waitForExpectations(timeout: 0.33333) { error in
 				if let error = error {
@@ -462,9 +458,8 @@ class ErrorHandlingTests: XCTestCase {
 			errorExpectation.fulfill()
 		}
 		
-		HoneyBee.start { root in
-			root.handlingErrors(with: errorHandlder)
-				.insert(source)
+		HoneyBee.start()
+                .insert(source)
 				.filter(acceptableFailure: .ratio(0.1)) { elem in
 					elem.tunnel { link in
 						link.chain { (int:Int) throws -> Void in
@@ -474,10 +469,10 @@ class ErrorHandlingTests: XCTestCase {
 						}
 					}
 					.chain(self.funcContainer.isEven)
+                    .error(errorHandlder)
 				}
 				.chain{ XCTAssert($0 == result, "Filter failed. expected: \(result). Received: \($0).") }
 				.chain(finishExpectation.fulfill)
-		}
 		
 		waitForExpectations(timeout: 3) { error in
 			if let error = error {
@@ -494,15 +489,13 @@ class ErrorHandlingTests: XCTestCase {
 			let finishExpectation = expectation(description: "Should reach the end of the chain")
 			
 			let errorExpectation = expectation(description: "Chain should error")
-			errorExpectation.expectedFulfillmentCount = 1
 			
-			func errorHandlder(_ error: Error) {
+			func errorHandler(_ error: Error) {
                 XCTAssert(error is SimpleError)
 				errorExpectation.fulfill()
 			}
 			
 			HoneyBee.start()
-					.handlingErrors(with: errorHandlder)
 					.insert(source)
 					.reduce(with: 0, acceptableFailure: .ratio(0.1)) { elem in
 						elem.tunnel { link in
@@ -514,13 +507,14 @@ class ErrorHandlingTests: XCTestCase {
 							}
 						}
 						.chain(+)
+                        .error(errorHandler)
 					}
 					.chain{ (int: Int)-> Void in
 						XCTAssert(int == result, "Reduce failed. Expected: \(result). Received: \(int).")
 					}
 					.chain(finishExpectation.fulfill)
 			
-			waitForExpectations(timeout: 3) { error in
+            waitForExpectations(timeout: 0.33333) { error in
 				if let error = error {
 					XCTFail("waitForExpectationsWithTimeout errored: \(error)")
 				}
@@ -543,13 +537,12 @@ class ErrorHandlingTests: XCTestCase {
 		let errorExpectation = expectation(description: "Chain should error")
 		errorExpectation.expectedFulfillmentCount = 2
 		
-		func errorHandlder(_ error: Error) {
+		func errorHandler(_ error: Error) {
 			errorExpectation.fulfill()
 		}
 		
-		HoneyBee.start { root in
-			root.handlingErrors(with: errorHandlder)
-				.insert(source)
+		HoneyBee.start()
+                .insert(source)
 				.finally { link in
 					link.drop
 						.chain(finallyExpectation.fulfill)
@@ -563,9 +556,14 @@ class ErrorHandlingTests: XCTestCase {
 						}
 					}
 					.chain(+)
+                    .error(errorHandler) //†
 				}
 				.chain{ (_:Int) -> Void in /* unreachable */ }
-		}
+                .error(errorHandler) //†
+
+        // † Because this reduce has zero acceptable failure (the default)
+        // the error handler, when applied both inside the reduce and outside the reduce
+        // receives the same error, two times.
 		
 		waitForExpectations(timeout: 3) { error in
 			if let error = error {
@@ -579,29 +577,26 @@ class ErrorHandlingTests: XCTestCase {
 		
 		func errorHandler(_ error: Error?) {
 			if error != nil{
-				XCTAssert(Thread.current.isMainThread)
 				expect1.fulfill()
 			} else {
 				XCTFail("Success state should not be reached.")
 			}
 		}
 		
-		HoneyBee.start(on: DispatchQueue.main) { root in
-			root.setCompletionHandler(errorHandler)
-				.move(to: DispatchQueue.global())
+		let a = HoneyBee.start()
 				.insert(4)
 				.chain(self.funcContainer.intToString)
-				.chain(self.funcContainer.stringToInt)
-				.chain(self.funcContainer.multiplyInt)
-				.branch {
-					  $0.chain(self.funcContainer.explode)
-						.chain(assertEquals =<< 8)
-					
-					  $0.chain(self.funcContainer.explode)
-						.chain(assertEquals =<< 8)
-				}
-			
-		}
+		let b = a.chain(self.funcContainer.stringToInt)
+                .chain(self.funcContainer.multiplyInt)
+
+
+        let c = b.chain(self.funcContainer.explode)
+                    .chain(assertEquals =<< 8)
+
+        let d = b.chain(self.funcContainer.explode)
+                    .chain(assertEquals =<< 8)
+
+        (c+d).error(errorHandler)
 		
 		waitForExpectations(timeout: 3) { error in
 			if let error = error {
@@ -616,19 +611,18 @@ class ErrorHandlingTests: XCTestCase {
 		
 		let generator = FibonaciGenerator()
 		HoneyBee.start()
-			.handlingErrors(with: fail)
-			.insert(generator)
-			.chain(FibonaciGenerator.ready)
-			.chain(assertEquals =<< true)
-			.chain(expect1.fulfill)
+                .insert(generator)
+                .chain(FibonaciGenerator.ready)
+                .chain(assertEquals =<< true)
+                .chain(expect1.fulfill)
+                .error(fail)
 		
-		HoneyBee.start { root in
-			root.handlingErrors(with: fail)
+		HoneyBee.start()
 				.insert(generator)
 				.chain(FibonaciGenerator.next)
 				.chain(assertEquals =<< 1)
 				.chain(expect2.fulfill)
-		}
+                .error(fail)
 		
 		waitForExpectations(timeout: 1) { error in
 			if let error = error {

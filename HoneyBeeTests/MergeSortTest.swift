@@ -90,7 +90,7 @@ class MergeSortTest: XCTestCase {
 
         let middleIndex = array.count / 2              // 2
 
-        let hb = HoneyBee.start().handlingErrors(with: fail)
+        let hb = HoneyBee.start()
 
         let leftArray = mergeSort3(Array(array[0..<middleIndex]) >> hb)             // 3
 
@@ -98,7 +98,7 @@ class MergeSortTest: XCTestCase {
 
         let mergedArray = merge(leftPile: leftArray)(rightPile: rightArray)       // 5
 
-        async1(completion)(mergedArray)
+        async1(completion)(mergedArray).error(fail)
     }
 
     private lazy var merge = async2(self.merge)

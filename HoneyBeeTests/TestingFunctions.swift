@@ -121,7 +121,14 @@ class TestingFunctions : Equatable {
 		throw NSError(domain: "intentional", code: -1, userInfo: nil)
 	}
 }
-
+func failIfError<T>(_ result: Result<T,Error>) {
+    switch result {
+    case .success(_):
+        break
+    case let .failure(error):
+        XCTFail("Error occured during test \(error)")
+    }
+}
 func fail(on error: Error) {
 	XCTFail("Error occured during test \(error)")
 }

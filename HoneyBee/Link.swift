@@ -26,7 +26,7 @@ A single link's execution process is as follows:
 4. This link's child links are individually, in parallel executed in this link's `AsyncBlockPerformer`
 5. When _all_ of the child links have completed their execution, then this link signals that it has completed execution, via callback.
 */
-@dynamicCallable
+
 @dynamicMemberLookup
 final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
 	
@@ -36,7 +36,6 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
 	let activeLinkCounter: AtomicInt = 0
 	
 	fileprivate let function: (Any, @escaping (Result<B, Error>) -> Void) -> Void
-	fileprivate let errorHandler: (ErrorContext) -> Void
 
     // Ancestor failure
     fileprivate var ancestorFailureBox = ConcurrentBox<ErrorContext>()
@@ -55,9 +54,8 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
         self.trace.last.line
     }
 	
-	init(function:  @escaping (Any, @escaping (Result<B, Error>) -> Void) -> Void, errorHandler: @escaping ((ErrorContext) -> Void), blockPerformer: Performer, trace: AsyncTrace) {
+	init(function:  @escaping (Any, @escaping (Result<B, Error>) -> Void) -> Void, blockPerformer: Performer, trace: AsyncTrace) {
 		self.function = function
-		self.errorHandler = errorHandler
 		self.blockPerformer = blockPerformer
 		self.trace = trace
 	}
@@ -99,7 +97,6 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
 			trace.append(.init(action: (functionDescription ?? tname(function)), file: file, line: line))
 		}
 		let link = Link<C, Performer>(function: wrapperFunction,
-		                             errorHandler: self.errorHandler,
 		                             blockPerformer: self.blockPerformer,
 		                             trace: trace)
 
@@ -145,7 +142,7 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
 			trace.append(.init(action: "finally", file: file, line: line))
 			let newFinalLink = Link<B, Performer>(function: { (_: Any, completion: (Result<B, Error>)->Void) in
 				completion(.success(bb!))
-			}, errorHandler: self.errorHandler,
+			},
 			   blockPerformer: self.blockPerformer,
 			   trace: trace)
 			
@@ -161,8 +158,7 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
 	
 	fileprivate func joinPoint() -> JoinPoint<B, Performer> {
 		let link = JoinPoint<B, Performer>(blockPerformer: self.blockPerformer,
-								trace: self.trace,
-								errorHandler: self.errorHandler)
+								trace: self.trace)
 		self.createdLinks.push(link)
 		return link
 	}
@@ -175,18 +171,6 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
 	
     override func ancestorFailed(_ context: ErrorContext) {
 		self.propagateFailureToDecendants(context)
-	}
-	
-	@discardableResult
-	public func dynamicallyCall(withArguments args: [(B)->Void]) -> Link<B, Performer> {
-		precondition(args.count == 1, "Exactly 1 argument is expected")
-		return self.chain(args.first!)
-	}
-	
-	@discardableResult
-	public func dynamicallyCall<R>(withArguments args: [(B)->R]) -> Link<R, Performer> {
-		precondition(args.count == 1, "Exactly 1 argument is expected")
-		return self.chain(args.first!)
 	}
 	
 	public subscript(_ block: @escaping (B)->Void) -> Link<B, Performer> {
@@ -204,13 +188,8 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
             let function = self.chain(keyPath)
             return function.chain { (triple: TripleArgFunction<X,Y,Z,R>, completion: @escaping (Result<R, Error>)->Void) in
                 dropped.document(with: triple)
-                let root = dropped.handlingErrors { (context) in
-                    completion(.failure(context.error))
-                }
-                
-                triple.ground(root)(x)(y)(z).chain { r in
-                    completion(.success(r))
-                }
+
+                triple.ground(dropped)(x)(y)(z).result(completion)
             }
         }
     }
@@ -221,13 +200,8 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
             let function = self.chain(keyPath)
             return function.chain { (double: DoubleArgFunction<Y,Z,R>, completion: @escaping (Result<R, Error>)->Void) in
                 dropped.document(with: double)
-                let root = dropped.handlingErrors { (context) in
-                    completion(.failure(context.error))
-                }
-                
-                double.ground(root)(y)(z).chain { r in
-                    completion(.success(r))
-                }
+
+                double.ground(dropped)(y)(z).result(completion)
             }
         }
     }
@@ -238,13 +212,8 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
             let function = self.chain(keyPath)
             return function.chain { (single: SingleArgFunction<Z,R>, completion: @escaping (Result<R, Error>)->Void) in
                 dropped.document(with: single)
-                let root = dropped.handlingErrors { (context) in
-                    completion(.failure(context.error))
-                }
-                
-                single.ground(root)(z).chain { r in
-                    completion(.success(r))
-                }
+
+                single.ground(dropped)(z).result(completion)
             }
         }
     }
@@ -255,13 +224,8 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
             let function = self.chain(keyPath)
             return function.chain { (zero: ZeroArgFunction<R>, completion: @escaping (Result<R, Error>)->Void) in
                 dropped.document(with: zero)
-                let root = dropped.handlingErrors { (context) in
-                    completion(.failure(context.error))
-                }
                 
-                zero.ground(root).chain { (r:R) -> Void in
-                        completion(.success(r))
-                }
+                zero.ground(dropped).result(completion)
             }
         }
     }
@@ -272,13 +236,8 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
             let function = self.chain(keyPath)
             return function.chain { (triple: BoundTripleArgFunction<X,Y,Z,R, Performer>, completion: @escaping (Result<R, Error>)->Void) in
                 dropped.document(with: triple.triple)
-                let root = dropped.handlingErrors { (context) in
-                    completion(.failure(context.error))
-                }
 
-                triple.ground(root)(x)(y)(z).chain { r in
-                    completion(.success(r))
-                }
+                triple.ground(dropped)(x)(y)(z).result(completion)
             }
         }
     }
@@ -289,13 +248,8 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
             let function = self.chain(keyPath)
             return function.chain { (double: BoundDoubleArgFunction<Y,Z,R, Performer>, completion: @escaping (Result<R, Error>)->Void) in
                 dropped.document(with: double.double)
-                let root = dropped.handlingErrors { (context) in
-                    completion(.failure(context.error))
-                }
 
-                double.ground(root)(y)(z).chain { r in
-                    completion(.success(r))
-                }
+                double.ground(dropped)(y)(z).result(completion)
             }
         }
     }
@@ -306,13 +260,8 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
             let function = self.chain(keyPath)
             return function.chain { (single: BoundSingleArgFunction<Z,R, Performer>, completion: @escaping (Result<R, Error>)->Void) in
                 dropped.document(with: single.single)
-                let root = dropped.handlingErrors { (context) in
-                    completion(.failure(context.error))
-                }
 
-                single.ground(root)(z).chain { r in
-                    completion(.success(r))
-                }
+                single.ground(dropped)(z).result(completion)
             }
         }
     }
@@ -323,13 +272,8 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
             let function = self.chain(keyPath)
             return function.chain { (zero: BoundZeroArgFunction<R, Performer>, completion: @escaping (Result<R, Error>)->Void) in
                 dropped.document(with: zero.zero)
-                let root = dropped.handlingErrors { (context) in
-                    completion(.failure(context.error))
-                }
 
-                zero.ground(root).chain { (r:R) -> Void in
-                        completion(.success(r))
-                }
+                zero.ground(dropped).result(completion)
             }
         }
     }
@@ -360,7 +304,7 @@ extension Link {
 	private func processError(_ error: Error, with argument: Any, completion: @escaping ()->Void) {
 		self.blockPerformer.asyncPerform {
 			let errorContext = ErrorContext(subject: argument, error: error, trace: self.trace)
-			self.errorHandler(errorContext)
+
 			// why not execute finally link here? Finally links are registered on `self`.
 			// If self errors, there is no downward chain to finally back from.
 			self.propagateFailureToDecendants(errorContext)
@@ -427,22 +371,43 @@ extension Link {
 }
 
 extension Link {
-    // Result special link
-    public func result(file: StaticString = #file,  line: UInt = #line, completion: @escaping  (Result<B, ErrorContext>) -> Void) {
+    // Result special form
+    @discardableResult
+    public func result(file: StaticString = #file,  line: UInt = #line, _ completion: @escaping  (Result<B, ErrorContext>) -> Void) -> Link<B, Performer> {
         self.chain { (b: B) -> Void in
             completion(.success(b))
         }
         self.ancestorFailureBox.yieldValue(file: file, line: line) { context in
             completion(.failure(context))
         }
+        return self
     }
-    public func result(file: StaticString = #file, line: UInt = #line, completion: @escaping  (Result<B, Error>) -> Void) {
+
+    @discardableResult
+    public func result(file: StaticString = #file, line: UInt = #line, _ completion: @escaping  (Result<B, Error>) -> Void) -> Link<B, Performer> {
         self.chain { (b: B) -> Void in
             completion(.success(b))
         }
         self.ancestorFailureBox.yieldValue(file: file, line: line) { context in
             completion(.failure(context.error))
         }
+        return self
+    }
+
+    @discardableResult
+    public func error(file: StaticString = #file, line: UInt = #line, _ completion: @escaping (ErrorContext) -> Void) -> Link<B, Performer> {
+        self.ancestorFailureBox.yieldValue(file: file, line: line) { context in
+            completion(context)
+        }
+        return self
+    }
+
+    @discardableResult
+    public func error(file: StaticString = #file, line: UInt = #line, _ completion: @escaping (Error) -> Void) -> Link<B, Performer> {
+        self.ancestorFailureBox.yieldValue(file: file, line: line) { context in
+            completion(context.error)
+        }
+        return self
     }
 }
 
@@ -656,37 +621,6 @@ public func >><PerformerB: AsyncBlockPerformer, PerformerC: AsyncBlockPerformer>
 
 public func >><B, PerformerC: AsyncBlockPerformer>(lhs: @autoclosure @escaping () -> B, rhs: Link<Void, PerformerC>) -> Link<B, PerformerC> {
     rhs.chain(lhs)
-}
-
-extension Link : ErrorHandling {
-	public typealias B = B
-	public typealias Performer = Performer
-	
-	/// Establishes a new error handler for this link and all descendant links.
-	///
-	/// - Parameter errorHandler: a function which takes an `ErrorContext` object. The context contains all available debug information on the erroring function, including the error itself.
-	/// - Returns: A `Link` which has `errorHandler` installed
-	@available(swift, obsoleted: 5.0, renamed: "handlingErrors(with:)")
-	public func setErrorHandler(file: StaticString = #file, line: UInt = #line, _ errorHandler: @escaping (ErrorContext) -> Void ) -> Link<B, Performer> {
-		return self.handlingErrors(file: file, line: line, with: errorHandler)
-	}
-	
-	public func handlingErrors(file: StaticString = #file, line: UInt = #line, with errorHandler: @escaping (ErrorContext) -> Void) -> Link<B, Performer> {
-		let wrapperFunction = {(a: Any, callback: @escaping (Result<B, Error>) -> Void) -> Void in
-			guard let b = a as? B else {
-				let message = "a is not of type B"
-				HoneyBee.internalFailureResponse.evaluate(false, message)
-				return
-			}
-			callback(.success(b))
-		}
-		let link = Link<B,Performer>(function: wrapperFunction,
-										  errorHandler: errorHandler,
-										  blockPerformer: self.blockPerformer,
-										  trace: self.trace)
-		self.createdLinks.push(link)
-		return link
-	}
 }
 
 extension Link : ErroringChainable {
@@ -988,7 +922,6 @@ extension Link {
 		var trace = self.trace
 		trace.append(.init(action: "switch to \(String(describing: OtherPerformer.self))", file: file, line: line))
 		let link = Link<B,OtherPerformer>(function: wrapperFunction,
-										  errorHandler: self.errorHandler,
 										  blockPerformer: otherPerformer,
 										  trace: trace)
 		self.createdLinks.push(link)
@@ -1028,12 +961,11 @@ extension Link where B : Collection {
 			let integrationSerialQueue = DispatchQueue(label: "HoneyBee-Map-IntegrationQueue")
 			
 			for (index, element) in collection.enumerated() {
-				let elemLink = rootLink.insert(element)
-							transform(elemLink)
-								.move(to: integrationSerialQueue)
-								.chain { (result:C) -> Void in
-									results[index] = result
-								}
+                transform(element >> rootLink)
+                    .move(to: integrationSerialQueue)
+                    .chain { (result:C) -> Void in
+                        results[index] = result
+                    }
 			
 			}
 		}
@@ -1332,9 +1264,6 @@ extension Link {
 					
 						let recorededError = AtomicValue<Error?>(value: nil)
 						let passThroughLink = this.chain { return $0 }
-												  .handlingErrors(with: { (error) in
-														recorededError.access { $0 = error }
-												   })
 					
 						let _ = passThroughLink.finally { link in
 							link.chain { (_:B) -> Void in
@@ -1360,7 +1289,7 @@ extension Link {
 					
 						defineBlock(passThroughLink).chain { (r: R) -> Void in
 							result = r
-						}
+                        }.error(recorededError.set(value:))
 				} else {
 					let message = "Lost self reference in retry"
 					HoneyBee.internalFailureResponse.evaluate(false, message)

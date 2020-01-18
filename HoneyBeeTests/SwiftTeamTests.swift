@@ -60,34 +60,29 @@ class SwiftTeamTests: XCTestCase {
         let expect1 = expectation(description: "Chain 1 should complete")
         let expect2 = expectation(description: "Chain 2 should complete")
         
-        func handleError(_ context: ErrorContext) {
-            fail(on: context.error)
-        }
+        let hb = HoneyBee.start()
         
-        let hb = HoneyBee.start().handlingErrors(with: handleError)
+        let user = User() >> hb
         
-        let user = hb.insert(User())
+        user.reset(5)
         
-        user.reset(5)({
-            print($0)
-        })
-        
-        User.login(hb)("Fred")(17)({ _ in
-            expect1.fulfill()
-        })
+        User.login(hb)("Fred")(17)
+            .drop.chain(expect1.fulfill)
         
         addTogether(hb)(one: 1)(two: 3.5)
         
         let r1 = increment(hb)(3)
         let r2 = increment(val: r1)
-        let r3 = increment(val: r2)({
-            $0/2
-        })
+        let r3 = increment(val: r2)
         
-        let b = increment(fox: r3)({
-            XCTAssertEqual($0, 4)
-        })
-        b({ _ in expect2.fulfill() })
+        let b = increment(fox: r3).chain {
+            XCTAssertEqual($0, 7)
+        }
+        b.drop.chain(expect2.fulfill)
+
+        b.result { result in
+            failIfError(result)
+        }
         
         waitForExpectations(timeout: 3) { error in
             if let error = error {

@@ -12,7 +12,7 @@ import HoneyBee
 struct PrettyExamples {
 	
 	func example1() {
-		func handleError(_ error: Error) {}
+		func handleError(_ error: Result<Void, Error>) {}
 		func fetchNewMovieTitle(completion: (String?, Error?) -> Void) {}
 		func fetchReviews(for movieTitle: String, completion: (Result<[String], Error>) -> Void) {}
 		func averageReviews(_ reviews: [String]) throws -> Int { return reviews.count }
@@ -21,7 +21,6 @@ struct PrettyExamples {
 		func updateUI(withAverageReview: Int, commentsCount: Int) {}
 		
 		HoneyBee.start()
-				.handlingErrors(with: handleError)
 				.chain(fetchNewMovieTitle)
 				.branch { stem in
 					stem.chain(fetchReviews)
@@ -32,17 +31,17 @@ struct PrettyExamples {
 				}
 				.move(to: DispatchQueue.main)
 				.chain(updateUI)
+                .result(handleError)
 	}
 	
 	func example2() {
-		func handleError(_ error: Error) {}
+		func handleError(_ error: Result<Void, Error>) {}
 		func fetchNewMovieTitle(completion: (String?, Error?) -> Void) {}
 		func fetchReviews(for movieTitle: String, completion: (Result<[String], Error>) -> Void) {}
 		func isNonTrivial(_ int: Int, completion: (Bool) -> Void) {}
 		func updateUI(withTotalWordsInNonTrivialReviews: Int) {}
 		
 		HoneyBee.start(on: DispatchQueue.main)
-				.handlingErrors(with:handleError)
 				.chain(fetchNewMovieTitle)
 				.chain(fetchReviews)
 				.map { elem in // parallel map
@@ -55,6 +54,7 @@ struct PrettyExamples {
 					pair.chain(+) // operator acess
 				}
 				.chain(updateUI)
+                .result(handleError)
 	}
 	
 
@@ -72,7 +72,6 @@ struct PrettyExamples {
 	func processImageData(completionBlock: @escaping (Image?, Error?) -> Void) {
 
 		let a = HoneyBee.start()
-				.handlingErrors { completionBlock(nil, $0) }
 
 		let b = a.branch { stem -> Link<(Data,Data), DefaultDispatchQueue> in
                     stem.chain(loadWebResource(named: completion:) =<< "dataprofile.txt")
@@ -80,9 +79,18 @@ struct PrettyExamples {
                     stem.chain(loadWebResource(named: completion:) =<< "imagedata.dat")
 				}
 
-				b.chain(decodeImage)
+		let c = b.chain(decodeImage)
 				.chain(dewarpAndCleanupImage)
-				.chain{ completionBlock($0, nil) }
+
+        c.result { (result: Result<Image, Error>) in
+            switch(result) {
+            case let .success(image):
+                completionBlock(image,nil)
+            case let .failure(error):
+                completionBlock(nil, error)
+            }
+        }
+
 	}
 	
 	func processImageDataCurried(completion: @escaping (Result<Image, ErrorContext>) -> Void) {
@@ -98,10 +106,7 @@ struct PrettyExamples {
 	}
 
     func processImageDataCurried2(completion: @escaping (Result<Image, ErrorContext>) -> Void) {
-        let errorHandler = { completion(.failure($0)) }
-        let success = async1(){ completion(.success($0)) }
-
-        let hb = HoneyBee.start().handlingErrors(with: errorHandler)
+        let hb = HoneyBee.start()
 
         let dataProfile = loadWebResource(named: "dataprofile.txt" >> hb)
         let imageData = loadWebResource(namd: "imagedata.dat" >> hb)
@@ -109,7 +114,7 @@ struct PrettyExamples {
         let image = decodeImage(dataProfile: dataProfile)(image: imageData)
         let cleanedImage = dewarpAndCleanupImage(image)
 
-        success(cleanedImage)
+        cleanedImage.result(completion)
     }
 }
 

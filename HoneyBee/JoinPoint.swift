@@ -14,13 +14,11 @@ final class JoinPoint<A, Performer: AsyncBlockPerformer> : Executable {
     private let executionBox = ConcurrentBox<ExecutionResult>()
 
 	private let blockPerformer: Performer
-	private let errorHandler: ((ErrorContext) -> Void)
 	var trace: AsyncTrace
 	
-	init(blockPerformer: Performer, trace: AsyncTrace, errorHandler: @escaping ((ErrorContext) -> Void)) {
+	init(blockPerformer: Performer, trace: AsyncTrace) {
 		self.blockPerformer = blockPerformer
 		self.trace = trace
-		self.errorHandler = errorHandler
 	}
 	
 	private func yieldResult(_ callback: @escaping (ExecutionResult) -> Void) {
@@ -53,7 +51,7 @@ final class JoinPoint<A, Performer: AsyncBlockPerformer> : Executable {
         var newTrace = self.trace.join(other.trace)
 		let link = Link<(A,B), Performer>(function: { _, callback in
 			callback(.success(tuple!))
-		}, errorHandler: self.errorHandler,
+		}, 
 		   blockPerformer: self.blockPerformer,
 		   trace: newTrace)
 		

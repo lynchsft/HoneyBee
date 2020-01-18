@@ -76,7 +76,7 @@ class CodeCoverageTests: XCTestCase {
     func testRemoteObjectExample() {
         let completion = self.expectation(description: "Chain should complete")
         
-        let hb = HoneyBee.start().handlingErrors(with: fail)
+        let hb = HoneyBee.start()
 
         let remote = RemoteObject() >> hb
         
@@ -86,7 +86,9 @@ class CodeCoverageTests: XCTestCase {
         let injested = remote.injest(data: data)(time: time)
 
         let finished = (injested +> remote).deleteSelf()
-        
+
+        finished.error(fail)
+
         completion.fulfill(finished)
         
         self.waitForExpectations(timeout: 3)
@@ -95,7 +97,7 @@ class CodeCoverageTests: XCTestCase {
     func testRemoteObjectExample2() {
         let completion = self.expectation(description: "Chain should complete")
 
-        let hb = HoneyBee.start().handlingErrors(with: fail)
+        let hb = HoneyBee.start()
 
         let r = RemoteObject()
         let remote = r >> hb
@@ -119,6 +121,7 @@ class CodeCoverageTests: XCTestCase {
         let finished = (injested +> remote).deleteSelf()
 
         completion.fulfill(finished)
+        finished.error(fail)
 
         self.waitForExpectations(timeout: 3)
     }
@@ -126,7 +129,7 @@ class CodeCoverageTests: XCTestCase {
     func testRemoteObjectExample3() {
         let completion = self.expectation(description: "Chain should complete")
 
-        let hb = HoneyBee.start().handlingErrors(with: fail)
+        let hb = HoneyBee.start()
         let utility = hb >> UtilityDispatchQueue()
 
         let r1 = RemoteObject()
@@ -148,6 +151,7 @@ class CodeCoverageTests: XCTestCase {
                     <+ RemoteObject.devide(name: "example" >> hb)(a: actionedRemote1)(b: remote2)
 
         completion.fulfill(finished)
+        finished.error(fail)
 
         self.waitForExpectations(timeout: 3)
     }

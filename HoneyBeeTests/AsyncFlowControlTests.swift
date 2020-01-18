@@ -22,7 +22,7 @@ class AsyncFlowControlTests: XCTestCase {
 
     func testSimpleControlFlow() {
         func testValue(_ value: Int) {
-            let hb = HoneyBee.start(on: MainDispatchQueue()).handlingErrors(with: fail)
+            let hb = HoneyBee.start(on: MainDispatchQueue())
             let int = value >> hb
             if_ (int == 0) {
                 XCTAssert(value == 0, "\(value) is not zero")
@@ -48,7 +48,7 @@ class AsyncFlowControlTests: XCTestCase {
 
     func testNonEvaluation() {
         func testValue(_ value: Int) {
-            let hb = HoneyBee.start(on: MainDispatchQueue()).handlingErrors(with: fail)
+            let hb = HoneyBee.start(on: MainDispatchQueue())
             let int = value >> hb
 
             if_ (int == 0) {
@@ -79,7 +79,7 @@ class AsyncFlowControlTests: XCTestCase {
         let two = self.expectation(description: "two")
 
         func testValue(_ value: String) {
-            let hb = HoneyBee.start(on: MainDispatchQueue()).handlingErrors(with: fail)
+            let hb = HoneyBee.start(on: MainDispatchQueue())
             let string = value >> hb
 
             if_ (string.count == 0) {

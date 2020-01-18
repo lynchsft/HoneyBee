@@ -213,7 +213,6 @@ class UploadPipeline: XCTestCase {
     func testHoneyBee2() {
 
         let a = HoneyBee.start(on: DispatchQueue.main)
-                        .handlingErrors(with: self.errorHandler)
                         .insert(mediaReferences)
 
         let b = a.move(to: DispatchQueue.global())
@@ -234,8 +233,12 @@ class UploadPipeline: XCTestCase {
                     .move(to: DispatchQueue.global())
             }.drop
 
-            b.move(to: DispatchQueue.main)
-            .chain(totalProcessSuccess)
+        let c = b.move(to: DispatchQueue.main)
+                 .chain(totalProcessSuccess)
+
+        c.result { result in
+            failIfError(result)
+        }
 
         self.waitForExpectations(timeout: 15)
     }
@@ -244,7 +247,6 @@ class UploadPipeline: XCTestCase {
     func testHoneyBee3() {
 
         let mainQ = HoneyBee.start(on: MainDispatchQueue())
-                            .handlingErrors(with: self.errorHandler)
 
         let exportQ = mainQ >> UtilityDispatchQueue()
 
@@ -269,7 +271,8 @@ class UploadPipeline: XCTestCase {
             self.singleUploadSuccess(uploaded >> mainQ)
         }.drop
 
-        self.totalProcessSuccessA(uploadComplete >> mainQ)
+        let finished = self.totalProcessSuccessA(uploadComplete >> mainQ)
+        finished.error(self.errorHandler)
 
         self.waitForExpectations(timeout: 15)
     }
