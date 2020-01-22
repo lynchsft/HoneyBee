@@ -172,7 +172,7 @@ extension HoneyBee {
 	where Performer: AsyncBlockPerformer {
 		
 		let context = self.start(on: blockPerformer, file: file, line: line)
-        defineBlock(context).result(completion)
+        defineBlock(context).onResult(completion)
 	}
 	
 	public static func async<R, Performer>(on blockPerformer: Performer,
@@ -183,7 +183,7 @@ extension HoneyBee {
 		where Performer: AsyncBlockPerformer {
 			
 			let context = self.start(on: blockPerformer, file: file, line: line)
-            defineBlock(context).result(completion)
+            defineBlock(context).onResult(completion)
 	}
 	
 	public static func async<R>(callback: @escaping (R) -> Void,

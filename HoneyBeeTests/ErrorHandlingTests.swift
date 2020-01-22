@@ -39,7 +39,7 @@ class ErrorHandlingTests: XCTestCase {
 				.chain(self.funcContainer.explode)
 				.chain(self.funcContainer.multiplyInt).drop
 				.chain(failIfReached)
-                .error { _ in expect.fulfill() }
+                .onError { _ in expect.fulfill() }
 		
 		waitForExpectations(timeout: 1) { error in
 			if let error = error {
@@ -66,7 +66,7 @@ class ErrorHandlingTests: XCTestCase {
 						.chain(self.funcContainer.explode)
 						.chain(self.funcContainer.multiplyInt)
 				}
-                .error {_ in finalErrorExpectation.fulfill()}
+                .onError {_ in finalErrorExpectation.fulfill()}
 		
 		waitForExpectations(timeout: 1) { error in
 			if let error = error {
@@ -103,7 +103,7 @@ class ErrorHandlingTests: XCTestCase {
 				.chain(self.funcContainer.multiplyInt)
 				.chain(assertEquals =<< 32).drop
 				.chain(finishExpectation.fulfill)
-                .error(fail)
+                .onError(fail)
 		
 		waitForExpectations(timeout: 1) { error in
 			if let error = error {
@@ -131,7 +131,7 @@ class ErrorHandlingTests: XCTestCase {
 						.chain(self.funcContainer.multiplyInt)
 				}
 				.chain(self.funcContainer.multiplyInt)
-                .error { _ in finalErrorExpectation.fulfill() }
+                .onError { _ in finalErrorExpectation.fulfill() }
 		
 		waitForExpectations(timeout: 1) { error in
 			if let error = error {
@@ -168,7 +168,7 @@ class ErrorHandlingTests: XCTestCase {
 				.chain{(string:String) -> String in expectedFile = #file; expectedLine = #line; return string}.chain(self.funcContainer.stringToInt)
 				.chain(self.funcContainer.multiplyInt).drop
 				.chain(failIfReached)
-                .error(errorHanlderWithContext)
+                .onError(errorHanlderWithContext)
 		
 		waitForExpectations(timeout: 2) { error in
 			if let error = error {
@@ -204,11 +204,11 @@ class ErrorHandlingTests: XCTestCase {
 				.each(limit: 5) { elem in
 					elem.chain(asynchronouslyHoldLock)
 						.chain(self.funcContainer.explode)
-                        .error  { _ in errorExpectation.fulfill()}
+                        .onError  { _ in errorExpectation.fulfill()}
 				}
 				.drop
 				.chain(finishExpectation.fulfill)
-                .error  { _ in finalErrorExepectation.fulfill()}
+                .onError  { _ in finalErrorExepectation.fulfill()}
 		
 		waitForExpectations(timeout: TimeInterval(Double(source.count) * sleepSeconds + 1.0))
 	}
@@ -243,7 +243,7 @@ class ErrorHandlingTests: XCTestCase {
                         }
                     }
 
-                    a.error { (_:Error) in failureExpectation.fulfill() }
+                    a.onError { (_:Error) in failureExpectation.fulfill() }
                     return a
                 }.drop
                 .chain(finalExpectation.fulfill)
@@ -304,7 +304,7 @@ class ErrorHandlingTests: XCTestCase {
 						
 						let _ = joinedLink.drop
 								.conjoin(downstreamLink)
-                                .error(errorHandler)
+                                .onError(errorHandler)
                     }
 
 		}
@@ -362,7 +362,7 @@ class ErrorHandlingTests: XCTestCase {
 					
 					(result1 + result2)
 						.chain(self.funcContainer.stringLengthEquals)
-                        .error(errorHandler)
+                        .onError(errorHandler)
                 }
 
 		
@@ -423,7 +423,7 @@ class ErrorHandlingTests: XCTestCase {
 								link.chain { (string: String) -> Void in
 									intsToExpectations[Int(string)!]!.fulfill()
 								}
-							}.error(errorHandler)
+							}.onError(errorHandler)
 					}
 					.chain { (strings: [String]) -> Void in
 						let expected = ["0","1","2","3","4","5","6","7","8","9"]
@@ -431,7 +431,7 @@ class ErrorHandlingTests: XCTestCase {
 					}
 					.drop
 					.chain(finishExpectation.fulfill)
-                    .error(errorHandler)
+                    .onError(errorHandler)
 			
 			waitForExpectations(timeout: 0.33333) { error in
 				if let error = error {
@@ -469,7 +469,7 @@ class ErrorHandlingTests: XCTestCase {
 						}
 					}
 					.chain(self.funcContainer.isEven)
-                    .error(errorHandlder)
+                    .onError(errorHandlder)
 				}
 				.chain{ XCTAssert($0 == result, "Filter failed. expected: \(result). Received: \($0).") }
 				.chain(finishExpectation.fulfill)
@@ -507,7 +507,7 @@ class ErrorHandlingTests: XCTestCase {
 							}
 						}
 						.chain(+)
-                        .error(errorHandler)
+                        .onError(errorHandler)
 					}
 					.chain{ (int: Int)-> Void in
 						XCTAssert(int == result, "Reduce failed. Expected: \(result). Received: \(int).")
@@ -556,10 +556,10 @@ class ErrorHandlingTests: XCTestCase {
 						}
 					}
 					.chain(+)
-                    .error(errorHandler) //†
+                    .onError(errorHandler) //†
 				}
 				.chain{ (_:Int) -> Void in /* unreachable */ }
-                .error(errorHandler) //†
+                .onError(errorHandler) //†
 
         // † Because this reduce has zero acceptable failure (the default)
         // the error handler, when applied both inside the reduce and outside the reduce
@@ -596,7 +596,7 @@ class ErrorHandlingTests: XCTestCase {
         let d = b.chain(self.funcContainer.explode)
                     .chain(assertEquals =<< 8)
 
-        (c+d).error(errorHandler)
+        (c+d).onError(errorHandler)
 		
 		waitForExpectations(timeout: 3) { error in
 			if let error = error {
@@ -615,14 +615,14 @@ class ErrorHandlingTests: XCTestCase {
                 .chain(FibonaciGenerator.ready)
                 .chain(assertEquals =<< true)
                 .chain(expect1.fulfill)
-                .error(fail)
+                .onError(fail)
 		
 		HoneyBee.start()
 				.insert(generator)
 				.chain(FibonaciGenerator.next)
 				.chain(assertEquals =<< 1)
 				.chain(expect2.fulfill)
-                .error(fail)
+                .onError(fail)
 		
 		waitForExpectations(timeout: 1) { error in
 			if let error = error {

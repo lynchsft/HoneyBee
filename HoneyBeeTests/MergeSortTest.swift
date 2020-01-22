@@ -98,7 +98,7 @@ class MergeSortTest: XCTestCase {
 
         let mergedArray = merge(leftPile: leftArray)(rightPile: rightArray)       // 5
 
-        async1(completion)(mergedArray).error(fail)
+        async1(completion)(mergedArray).onError(fail)
     }
 
     private lazy var merge = async2(self.merge)

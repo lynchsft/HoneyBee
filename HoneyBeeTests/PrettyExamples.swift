@@ -31,7 +31,7 @@ struct PrettyExamples {
 				}
 				.move(to: DispatchQueue.main)
 				.chain(updateUI)
-                .result(handleError)
+                .onResult(handleError)
 	}
 	
 	func example2() {
@@ -54,7 +54,7 @@ struct PrettyExamples {
 					pair.chain(+) // operator acess
 				}
 				.chain(updateUI)
-                .result(handleError)
+                .onResult(handleError)
 	}
 	
 
@@ -82,7 +82,7 @@ struct PrettyExamples {
 		let c = b.chain(decodeImage)
 				.chain(dewarpAndCleanupImage)
 
-        c.result { (result: Result<Image, Error>) in
+        c.onResult { (result: Result<Image, Error>) in
             switch(result) {
             case let .success(image):
                 completionBlock(image,nil)
@@ -114,7 +114,7 @@ struct PrettyExamples {
         let image = decodeImage(dataProfile: dataProfile)(image: imageData)
         let cleanedImage = dewarpAndCleanupImage(image)
 
-        cleanedImage.result(completion)
+        cleanedImage.onResult(completion)
     }
 }
 

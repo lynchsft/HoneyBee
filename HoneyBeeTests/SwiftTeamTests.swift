@@ -80,7 +80,7 @@ class SwiftTeamTests: XCTestCase {
         }
         b.drop.chain(expect2.fulfill)
 
-        b.result { result in
+        b.onResult { result in
             failIfError(result)
         }
         

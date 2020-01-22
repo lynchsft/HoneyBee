@@ -62,7 +62,7 @@ class AsyncCurryTests: XCTestCase {
         let r4 = increment(fox: r3).chain {
 			XCTAssertEqual($0, 7)
         }
-        r4.result { (result: Result<Int, Error>) in
+        r4.onResult { (result: Result<Int, Error>) in
             switch result {
             case .success(_):
                 successfulResult.fulfill()
@@ -71,7 +71,7 @@ class AsyncCurryTests: XCTestCase {
             }
         }
         let error = TestingFunctions().explode(r4.drop)
-        error.result { (result: Result<Int, ErrorContext>) in
+        error.onResult { (result: Result<Int, ErrorContext>) in
             switch result {
             case .success(_):
                 XCTFail()
@@ -125,10 +125,10 @@ class AsyncCurryTests: XCTestCase {
 						.chain(increment)
 						.insert(TestingFunctions()).explode()
 
-                    value.error(longError)
+                    value.onError(longError)
                     return value
 				}
-            sum.error(shortError)
+            sum.onError(shortError)
 			sum.drop.chain(fail) // shouldn't run
 		}
 		
@@ -163,7 +163,7 @@ class AsyncCurryTests: XCTestCase {
         increment(val: sum).chain {
 			XCTAssertEqual($0, 10)
 		}.chain(TestingFunctions().explode)
-            .error(handleError)
+            .onError(handleError)
 		
 		waitForExpectations(timeout: 3) { error in
 			if let error = error {
@@ -206,12 +206,12 @@ class AsyncCurryTests: XCTestCase {
                     let bigger = increment(int)
 
                     let explode = TestingFunctions().explode(bigger.drop)
-                    explode.error(longError)
+                    explode.onError(longError)
                     return explode
 			}
 			
 			mapping.drop.chain(fail) // shouldn't run
-            mapping.error(shortError)
+            mapping.onError(shortError)
 		}
 		
 		waitForExpectations(timeout: 3) { error in

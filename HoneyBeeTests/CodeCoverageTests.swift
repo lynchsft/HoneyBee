@@ -87,7 +87,7 @@ class CodeCoverageTests: XCTestCase {
 
         let finished = (injested +> remote).deleteSelf()
 
-        finished.error(fail)
+        finished.onError(fail)
 
         completion.fulfill(finished)
         
@@ -121,7 +121,7 @@ class CodeCoverageTests: XCTestCase {
         let finished = (injested +> remote).deleteSelf()
 
         completion.fulfill(finished)
-        finished.error(fail)
+        finished.onError(fail)
 
         self.waitForExpectations(timeout: 3)
     }
@@ -151,7 +151,7 @@ class CodeCoverageTests: XCTestCase {
                     <+ RemoteObject.devide(name: "example" >> hb)(a: actionedRemote1)(b: remote2)
 
         completion.fulfill(finished)
-        finished.error(fail)
+        finished.onError(fail)
 
         self.waitForExpectations(timeout: 3)
     }

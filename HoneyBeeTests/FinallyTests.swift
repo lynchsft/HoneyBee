@@ -51,7 +51,7 @@ class FinallyTests: XCTestCase {
 						.chain(incrementCounter)
 				}
 				.chain(incrementCounter)
-                .error(fail)
+                .onError(fail)
 		
 		waitForExpectations(timeout: 3) { error in
 			if let error = error {
@@ -78,7 +78,7 @@ class FinallyTests: XCTestCase {
 							link.drop
 								.chain(unreachableExpectation.fulfill)
 						}
-                        .error { _ in errorExpectation.fulfill() }
+                        .onError { _ in errorExpectation.fulfill() }
 			//^^ The "let _" suppresses the warning that you get when discarding finally's result
 		}
 		
@@ -106,7 +106,7 @@ class FinallyTests: XCTestCase {
 				.chain(incrementCounter)
 				.chain({ throw NSError(domain: "An expected error", code: -1, userInfo: nil) })
 				.chain(incrementCounter)
-                .error(handleError)
+                .onError(handleError)
 
 		
 		waitForExpectations(timeout: 3) { error in
@@ -131,7 +131,7 @@ class FinallyTests: XCTestCase {
 				}
 				.chain(self.funcContainer.multiplyInt).drop
 				.chain(finishExpectation.fulfill)
-                .error(fail)
+                .onError(fail)
 		
 		waitForExpectations(timeout: 141) { error in
 			if let error = error {

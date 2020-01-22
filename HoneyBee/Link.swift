@@ -189,7 +189,7 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
             return function.chain { (triple: TripleArgFunction<X,Y,Z,R>, completion: @escaping (Result<R, Error>)->Void) in
                 dropped.document(with: triple)
 
-                triple.ground(dropped)(x)(y)(z).result(completion)
+                triple.ground(dropped)(x)(y)(z).onResult(completion)
             }
         }
     }
@@ -201,7 +201,7 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
             return function.chain { (double: DoubleArgFunction<Y,Z,R>, completion: @escaping (Result<R, Error>)->Void) in
                 dropped.document(with: double)
 
-                double.ground(dropped)(y)(z).result(completion)
+                double.ground(dropped)(y)(z).onResult(completion)
             }
         }
     }
@@ -213,7 +213,7 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
             return function.chain { (single: SingleArgFunction<Z,R>, completion: @escaping (Result<R, Error>)->Void) in
                 dropped.document(with: single)
 
-                single.ground(dropped)(z).result(completion)
+                single.ground(dropped)(z).onResult(completion)
             }
         }
     }
@@ -225,7 +225,7 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
             return function.chain { (zero: ZeroArgFunction<R>, completion: @escaping (Result<R, Error>)->Void) in
                 dropped.document(with: zero)
                 
-                zero.ground(dropped).result(completion)
+                zero.ground(dropped).onResult(completion)
             }
         }
     }
@@ -237,7 +237,7 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
             return function.chain { (triple: BoundTripleArgFunction<X,Y,Z,R, Performer>, completion: @escaping (Result<R, Error>)->Void) in
                 dropped.document(with: triple.triple)
 
-                triple.ground(dropped)(x)(y)(z).result(completion)
+                triple.ground(dropped)(x)(y)(z).onResult(completion)
             }
         }
     }
@@ -249,7 +249,7 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
             return function.chain { (double: BoundDoubleArgFunction<Y,Z,R, Performer>, completion: @escaping (Result<R, Error>)->Void) in
                 dropped.document(with: double.double)
 
-                double.ground(dropped)(y)(z).result(completion)
+                double.ground(dropped)(y)(z).onResult(completion)
             }
         }
     }
@@ -261,7 +261,7 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
             return function.chain { (single: BoundSingleArgFunction<Z,R, Performer>, completion: @escaping (Result<R, Error>)->Void) in
                 dropped.document(with: single.single)
 
-                single.ground(dropped)(z).result(completion)
+                single.ground(dropped)(z).onResult(completion)
             }
         }
     }
@@ -273,7 +273,7 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
             return function.chain { (zero: BoundZeroArgFunction<R, Performer>, completion: @escaping (Result<R, Error>)->Void) in
                 dropped.document(with: zero.zero)
 
-                zero.ground(dropped).result(completion)
+                zero.ground(dropped).onResult(completion)
             }
         }
     }
@@ -373,7 +373,7 @@ extension Link {
 extension Link {
     // Result special form
     @discardableResult
-    public func result(file: StaticString = #file,  line: UInt = #line, _ completion: @escaping  (Result<B, ErrorContext>) -> Void) -> Link<B, Performer> {
+    public func onResult(file: StaticString = #file,  line: UInt = #line, _ completion: @escaping  (Result<B, ErrorContext>) -> Void) -> Link<B, Performer> {
         self.chain { (b: B) -> Void in
             completion(.success(b))
         }
@@ -384,7 +384,7 @@ extension Link {
     }
 
     @discardableResult
-    public func result(file: StaticString = #file, line: UInt = #line, _ completion: @escaping  (Result<B, Error>) -> Void) -> Link<B, Performer> {
+    public func onResult(file: StaticString = #file, line: UInt = #line, _ completion: @escaping  (Result<B, Error>) -> Void) -> Link<B, Performer> {
         self.chain { (b: B) -> Void in
             completion(.success(b))
         }
@@ -395,7 +395,10 @@ extension Link {
     }
 
     @discardableResult
-    public func error(file: StaticString = #file, line: UInt = #line, _ completion: @escaping (ErrorContext) -> Void) -> Link<B, Performer> {
+    public func onCompletion(file: StaticString = #file,  line: UInt = #line, _ completion: @escaping  (ErrorContext?) -> Void) -> Link<B, Performer> {
+        self.chain { (_: B) -> Void in
+            completion(nil)
+        }
         self.ancestorFailureBox.yieldValue(file: file, line: line) { context in
             completion(context)
         }
@@ -403,7 +406,26 @@ extension Link {
     }
 
     @discardableResult
-    public func error(file: StaticString = #file, line: UInt = #line, _ completion: @escaping (Error) -> Void) -> Link<B, Performer> {
+    public func onCompletion(file: StaticString = #file, line: UInt = #line, _ completion: @escaping  (Error?) -> Void) -> Link<B, Performer> {
+        self.chain { (_: B) -> Void in
+            completion(nil)
+        }
+        self.ancestorFailureBox.yieldValue(file: file, line: line) { context in
+            completion(context.error)
+        }
+        return self
+    }
+
+    @discardableResult
+    public func onError(file: StaticString = #file, line: UInt = #line, _ completion: @escaping (ErrorContext) -> Void) -> Link<B, Performer> {
+        self.ancestorFailureBox.yieldValue(file: file, line: line) { context in
+            completion(context)
+        }
+        return self
+    }
+
+    @discardableResult
+    public func onError(file: StaticString = #file, line: UInt = #line, _ completion: @escaping (Error) -> Void) -> Link<B, Performer> {
         self.ancestorFailureBox.yieldValue(file: file, line: line) { context in
             completion(context.error)
         }
@@ -1289,7 +1311,7 @@ extension Link {
 					
 						defineBlock(passThroughLink).chain { (r: R) -> Void in
 							result = r
-                        }.error(recorededError.set(value:))
+                        }.onError(recorededError.set(value:))
 				} else {
 					let message = "Lost self reference in retry"
 					HoneyBee.internalFailureResponse.evaluate(false, message)

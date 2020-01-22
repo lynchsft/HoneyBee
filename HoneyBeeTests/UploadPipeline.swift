@@ -236,7 +236,7 @@ class UploadPipeline: XCTestCase {
         let c = b.move(to: DispatchQueue.main)
                  .chain(totalProcessSuccess)
 
-        c.result { result in
+        c.onResult { result in
             failIfError(result)
         }
 
@@ -272,7 +272,7 @@ class UploadPipeline: XCTestCase {
         }.drop
 
         let finished = self.totalProcessSuccessA(uploadComplete >> mainQ)
-        finished.error(self.errorHandler)
+        finished.onError(self.errorHandler)
 
         self.waitForExpectations(timeout: 15)
     }

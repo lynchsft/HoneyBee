@@ -46,7 +46,7 @@ class SinglePathTests: XCTestCase {
 				.chain(self.funcContainer.stringToInt)
 				.chain(self.funcContainer.multiplyInt)
 				.chain(assertEquals =<< 8)
-                .result(completionHandler)
+                .onResult(completionHandler)
 		
 		let expect2 = expectation(description: "Simple chain 2 should complete")
 		
@@ -66,7 +66,7 @@ class SinglePathTests: XCTestCase {
 				.chain(TestingFunctions.noop)
 				.chain(TestingFunctions.voidFunc)
                 .chain(assertEquals =<< self.funcContainer)
-                .result(completionHandler2)
+                .onResult(completionHandler2)
 
 		waitForExpectations(timeout: 3)
 	}
@@ -132,12 +132,10 @@ class SinglePathTests: XCTestCase {
 				}
 				.chain(assertEquals =<< 1)
 				.chain(finishExpectation.fulfill)
-                .error(fail)
+                .onError(fail)
 		
-		waitForExpectations(timeout: 3) { error in
-			if let error = error {
-				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
-			}
+		waitForExpectations(timeout: 3) { _ in
+            HoneyBee.functionOvercallResponse = .fail
 		}
 	}
 	
