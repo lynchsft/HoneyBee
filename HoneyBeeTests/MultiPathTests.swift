@@ -10,8 +10,8 @@ import XCTest
 @testable import HoneyBee
 
 fileprivate extension Link {
-    func wait(seconds: UInt32) -> Link<B, Performer> {
-        self.tunnel { (link: Link<B, Performer>) in
+    func wait(seconds: UInt32) -> Link<B, P> {
+        self.tunnel { (link: Link<B, P>) in
             link.drop.chain(sleep =<< seconds)
         }
     }

@@ -74,7 +74,7 @@ def generate_chainable()
 		
 		declarations = include_error_handler ? erroring_chain_declarations : safe_chain_declarations
 		declarations << documentation
-		declarations << "@discardableResult\nfunc chain#{extra_generic_parameter}(file: StaticString, line: UInt, functionDescription: String?, _ function: @escaping #{function_signature} ) -> #{include_error_handler ? "":"Safe"}Link<#{transform_result_type}, Performer>"
+		declarations << "@discardableResult\nfunc chain#{extra_generic_parameter}(file: StaticString, line: UInt, functionDescription: String?, _ function: @escaping #{function_signature} ) -> #{include_error_handler ? "":"Safe"}Link<#{transform_result_type}, P>"
 		declarations << ""
 	}
 
@@ -83,7 +83,7 @@ def generate_chainable()
 /// Generated protocol declaring safe chain functions.
 protocol SafeChainable {
 	associatedtype B
-	associatedtype Performer: AsyncBlockPerformer
+	associatedtype P: AsyncBlockPerformer
 
 #{safe_chain_declarations.join("\n")}
 }
@@ -91,7 +91,7 @@ protocol SafeChainable {
 /// Generated protocol declaring erroring chain functions.
 protocol ErroringChainable  {
 	associatedtype B
-	associatedtype Performer: AsyncBlockPerformer
+	associatedtype P: AsyncBlockPerformer
 
 #{erroring_chain_declarations.join("\n")}
 }
@@ -350,7 +350,7 @@ def generate_await()
 		returnType = "ReplaceMe"
 		returnTypeParameters = generic_parameters
 		returnTypeParameters << "Void" if transform_result_type == "Void"
-		returnTypeParameterization = "<#{returnTypeParameters.join(", ")}, Performer>"
+		returnTypeParameterization = "<#{returnTypeParameters.join(", ")}, P>"
 		case returnTypeParameters.count
 		when 1
 			returnType = "#{include_error_handler ? "":"Safe"}Link#{returnTypeParameterization}"
@@ -372,14 +372,14 @@ def generate_await()
 	chainable_protocol_string = %[
 /// Generated protocol declaring safe chain functions.
 protocol SafeAwaitable {
-	associatedtype Performer: AsyncBlockPerformer
+	associatedtype P: AsyncBlockPerformer
 
 	#{safe_await_declarations.join("\n")}
 }
 	
 /// Generated protocol declaring erroring chain functions.
 protocol ErroringAwaitable  {
-	associatedtype Performer: AsyncBlockPerformer
+	associatedtype P: AsyncBlockPerformer
 
 	#{erroring_await_declarations.join("\n")}
 }

@@ -8,15 +8,15 @@
 
 import Foundation
 
-final class JoinPoint<A, Performer: AsyncBlockPerformer> : Executable {
+final class JoinPoint<A, P: AsyncBlockPerformer> : Executable {
 	typealias ExecutionResult = (Result<A, ErrorContext>, () -> Void)
 	
     private let executionBox = ConcurrentBox<ExecutionResult>()
 
-	private let blockPerformer: Performer
+	private let blockPerformer: P
 	var trace: AsyncTrace
 	
-	init(blockPerformer: Performer, trace: AsyncTrace) {
+	init(blockPerformer: P, trace: AsyncTrace) {
 		self.blockPerformer = blockPerformer
 		self.trace = trace
 	}
@@ -43,13 +43,13 @@ final class JoinPoint<A, Performer: AsyncBlockPerformer> : Executable {
         self.handleAncestorResult(.failure(context), completion: { /* no op */ })
 	}
 	
-	func conjoin<B>(_ other: JoinPoint<B, Performer>) -> Link<(A,B), Performer> {
+	func conjoin<B>(_ other: JoinPoint<B, P>) -> Link<(A,B), P> {
 		HoneyBee.mismatchedConjoinResponse.evaluate(self.blockPerformer == other.blockPerformer,
 												 "conjoin detected between Links with different AsyncBlockPerformers. This can lead to unexpected results.")
 		var tuple: (A,B)? = nil
 		
         var newTrace = self.trace.join(other.trace)
-		let link = Link<(A,B), Performer>(function: { _, callback in
+		let link = Link<(A,B), P>(function: { _, callback in
 			callback(.success(tuple!))
 		}, 
 		   blockPerformer: self.blockPerformer,

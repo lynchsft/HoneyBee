@@ -28,11 +28,11 @@ A single link's execution process is as follows:
 */
 
 @dynamicMemberLookup
-final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
+final public class Link<B, P: AsyncBlockPerformer> : Executable  {
 	
 	fileprivate var createdLinks = ConcurrentQueue<Executable>()
 	fileprivate var createdLinksAsyncSemaphore: DispatchSemaphore?
-	fileprivate let finalLinkBox = AtomicValue<Link<B, Performer>?>(value: nil)
+	fileprivate let finalLinkBox = AtomicValue<Link<B, P>?>(value: nil)
 	let activeLinkCounter: AtomicInt = 0
 	
 	fileprivate let function: (Any, @escaping (Result<B, Error>) -> Void) -> Void
@@ -41,7 +41,7 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
     fileprivate var ancestorFailureBox = ConcurrentBox<ErrorContext>()
     
 	/// The queue which is passed on to sub chains
-	fileprivate let blockPerformer: Performer
+	fileprivate let blockPerformer: P
 	
 	// Debug info
 	
@@ -54,7 +54,7 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
         self.trace.last.line
     }
 	
-	init(function:  @escaping (Any, @escaping (Result<B, Error>) -> Void) -> Void, blockPerformer: Performer, trace: AsyncTrace) {
+	init(function:  @escaping (Any, @escaping (Result<B, Error>) -> Void) -> Void, blockPerformer: P, trace: AsyncTrace) {
 		self.function = function
 		self.blockPerformer = blockPerformer
 		self.trace = trace
@@ -79,7 +79,7 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
 	/// - Parameter function: will be executed as a child link of this `Link`. Receives `B` (the result of this `Link` and generates `C`.
 	/// - Returns: The child link which has been added to this `Link`'s child list. Children are executed in parallel. See `Link`'s description.
 	@discardableResult
-	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B, @escaping (Result<C, Error>) -> Void) -> Void) -> Link<C, Performer> {
+	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B, @escaping (Result<C, Error>) -> Void) -> Void) -> Link<C, P> {
 		let wrapperFunction = {(a: Any, callback: @escaping (Result<C, Error>) -> Void) -> Void in
 			guard let b = a as? B else {
 				let message = "a is not of type B"
@@ -96,7 +96,7 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
 		} else {
 			trace.append(.init(action: (functionDescription ?? tname(function)), file: file, line: line))
 		}
-		let link = Link<C, Performer>(function: wrapperFunction,
+		let link = Link<C, P>(function: wrapperFunction,
 		                             blockPerformer: self.blockPerformer,
 		                             trace: trace)
 
@@ -132,7 +132,7 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
 	 - Returns: a `Link` with the same execution context as self, but with a finally chain registered.
 	*/
     @discardableResult
-	public func finally(file: StaticString = #file, line: UInt = #line, _ defineBlock: (Link<B, Performer>) -> Void ) -> Link<B, Performer> {
+	public func finally(file: StaticString = #file, line: UInt = #line, _ defineBlock: (Link<B, P>) -> Void ) -> Link<B, P> {
 		if let oldFinalLink = self.finalLinkBox.get() {
 			let _ = oldFinalLink.finally(file: file, line: line, defineBlock)
 		} else {
@@ -140,7 +140,7 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
 			
 			var trace = self.trace
 			trace.append(.init(action: "finally", file: file, line: line))
-			let newFinalLink = Link<B, Performer>(function: { (_: Any, completion: (Result<B, Error>)->Void) in
+			let newFinalLink = Link<B, P>(function: { (_: Any, completion: (Result<B, Error>)->Void) in
 				completion(.success(bb!))
 			},
 			   blockPerformer: self.blockPerformer,
@@ -156,8 +156,8 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
 		return self
 	}
 	
-	fileprivate func joinPoint() -> JoinPoint<B, Performer> {
-		let link = JoinPoint<B, Performer>(blockPerformer: self.blockPerformer,
+	fileprivate func joinPoint() -> JoinPoint<B, P> {
+		let link = JoinPoint<B, P>(blockPerformer: self.blockPerformer,
 								trace: self.trace)
 		self.createdLinks.push(link)
 		return link
@@ -173,18 +173,18 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
 		self.propagateFailureToDecendants(context)
 	}
 	
-	public subscript(_ block: @escaping (B)->Void) -> Link<B, Performer> {
+	public subscript(_ block: @escaping (B)->Void) -> Link<B, P> {
 		return self.chain(block)
 	}
 	
-	public subscript<R>(_ block: @escaping (B)->R) -> Link<R, Performer> {
+	public subscript<R>(_ block: @escaping (B)->R) -> Link<R, P> {
 		return self.chain(block)
 	}
     
     
-    public subscript<X,Y,Z,R>(dynamicMember keyPath: KeyPath<B, TripleArgFunction<X,Y,Z,R>>) -> AsyncTripleArgFunction<X,Y,Z,R, Performer> {
+    public subscript<X,Y,Z,R>(dynamicMember keyPath: KeyPath<B, TripleArgFunction<X,Y,Z,R>>) -> AsyncTripleArgFunction<X,Y,Z,R, P> {
         let dropped = self.drop
-        return AsyncTripleArgFunction(link: dropped) { (x: Link<X, Performer>, y: Link<Y, Performer>, z: Link<Z, Performer>) -> Link<R, Performer> in
+        return AsyncTripleArgFunction(link: dropped) { (x: Link<X, P>, y: Link<Y, P>, z: Link<Z, P>) -> Link<R, P> in
             let function = self.chain(keyPath)
             return function.chain { (triple: TripleArgFunction<X,Y,Z,R>, completion: @escaping (Result<R, Error>)->Void) in
                 dropped.document(with: triple)
@@ -194,9 +194,9 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
         }
     }
 
-    public subscript<Y,Z,R>(dynamicMember keyPath: KeyPath<B, DoubleArgFunction<Y,Z,R>>) -> AsyncDoubleArgFunction<Y,Z,R, Performer> {
+    public subscript<Y,Z,R>(dynamicMember keyPath: KeyPath<B, DoubleArgFunction<Y,Z,R>>) -> AsyncDoubleArgFunction<Y,Z,R, P> {
         let dropped = self.drop
-        return AsyncDoubleArgFunction(link: dropped) { (y: Link<Y, Performer>, z: Link<Z, Performer>) -> Link<R, Performer> in
+        return AsyncDoubleArgFunction(link: dropped) { (y: Link<Y, P>, z: Link<Z, P>) -> Link<R, P> in
             let function = self.chain(keyPath)
             return function.chain { (double: DoubleArgFunction<Y,Z,R>, completion: @escaping (Result<R, Error>)->Void) in
                 dropped.document(with: double)
@@ -206,9 +206,9 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
         }
     }
 
-    public subscript<Z,R>(dynamicMember keyPath: KeyPath<B, SingleArgFunction<Z,R>>) -> AsyncSingleArgFunction<Z,R, Performer> {
+    public subscript<Z,R>(dynamicMember keyPath: KeyPath<B, SingleArgFunction<Z,R>>) -> AsyncSingleArgFunction<Z,R, P> {
         let dropped = self.drop
-        return AsyncSingleArgFunction(link: dropped) { (z: Link<Z, Performer>) -> Link<R, Performer> in
+        return AsyncSingleArgFunction(link: dropped) { (z: Link<Z, P>) -> Link<R, P> in
             let function = self.chain(keyPath)
             return function.chain { (single: SingleArgFunction<Z,R>, completion: @escaping (Result<R, Error>)->Void) in
                 dropped.document(with: single)
@@ -218,9 +218,9 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
         }
     }
     
-    public subscript<R>(dynamicMember keyPath: KeyPath<B, ZeroArgFunction<R>>) -> AsyncZeroArgFunction<R, Performer> {
+    public subscript<R>(dynamicMember keyPath: KeyPath<B, ZeroArgFunction<R>>) -> AsyncZeroArgFunction<R, P> {
         let dropped = self.drop
-        return AsyncZeroArgFunction(link: dropped) { () -> Link<R, Performer> in
+        return AsyncZeroArgFunction(link: dropped) { () -> Link<R, P> in
             let function = self.chain(keyPath)
             return function.chain { (zero: ZeroArgFunction<R>, completion: @escaping (Result<R, Error>)->Void) in
                 dropped.document(with: zero)
@@ -230,11 +230,11 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
         }
     }
 
-    public subscript<X,Y,Z,R>(dynamicMember keyPath: KeyPath<B, BoundTripleArgFunction<X,Y,Z,R, Performer>>) -> AsyncTripleArgFunction<X,Y,Z,R, Performer> {
+    public subscript<X,Y,Z,R>(dynamicMember keyPath: KeyPath<B, BoundTripleArgFunction<X,Y,Z,R, P>>) -> AsyncTripleArgFunction<X,Y,Z,R, P> {
         let dropped = self.drop
-        return AsyncTripleArgFunction(link: dropped) { (x: Link<X, Performer>, y: Link<Y, Performer>, z: Link<Z, Performer>) -> Link<R, Performer> in
+        return AsyncTripleArgFunction(link: dropped) { (x: Link<X, P>, y: Link<Y, P>, z: Link<Z, P>) -> Link<R, P> in
             let function = self.chain(keyPath)
-            return function.chain { (triple: BoundTripleArgFunction<X,Y,Z,R, Performer>, completion: @escaping (Result<R, Error>)->Void) in
+            return function.chain { (triple: BoundTripleArgFunction<X,Y,Z,R, P>, completion: @escaping (Result<R, Error>)->Void) in
                 dropped.document(with: triple.triple)
 
                 triple.ground(dropped)(x)(y)(z).onResult(completion)
@@ -242,11 +242,11 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
         }
     }
 
-    public subscript<Y,Z,R>(dynamicMember keyPath: KeyPath<B, BoundDoubleArgFunction<Y,Z,R, Performer>>) -> AsyncDoubleArgFunction<Y,Z,R, Performer> {
+    public subscript<Y,Z,R>(dynamicMember keyPath: KeyPath<B, BoundDoubleArgFunction<Y,Z,R, P>>) -> AsyncDoubleArgFunction<Y,Z,R, P> {
         let dropped = self.drop
-        return AsyncDoubleArgFunction(link: dropped) { (y: Link<Y, Performer>, z: Link<Z, Performer>) -> Link<R, Performer> in
+        return AsyncDoubleArgFunction(link: dropped) { (y: Link<Y, P>, z: Link<Z, P>) -> Link<R, P> in
             let function = self.chain(keyPath)
-            return function.chain { (double: BoundDoubleArgFunction<Y,Z,R, Performer>, completion: @escaping (Result<R, Error>)->Void) in
+            return function.chain { (double: BoundDoubleArgFunction<Y,Z,R, P>, completion: @escaping (Result<R, Error>)->Void) in
                 dropped.document(with: double.double)
 
                 double.ground(dropped)(y)(z).onResult(completion)
@@ -254,11 +254,11 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
         }
     }
 
-    public subscript<Z,R>(dynamicMember keyPath: KeyPath<B, BoundSingleArgFunction<Z,R, Performer>>) -> AsyncSingleArgFunction<Z,R, Performer> {
+    public subscript<Z,R>(dynamicMember keyPath: KeyPath<B, BoundSingleArgFunction<Z,R, P>>) -> AsyncSingleArgFunction<Z,R, P> {
         let dropped = self.drop
-        return AsyncSingleArgFunction(link: dropped) { (z: Link<Z, Performer>) -> Link<R, Performer> in
+        return AsyncSingleArgFunction(link: dropped) { (z: Link<Z, P>) -> Link<R, P> in
             let function = self.chain(keyPath)
-            return function.chain { (single: BoundSingleArgFunction<Z,R, Performer>, completion: @escaping (Result<R, Error>)->Void) in
+            return function.chain { (single: BoundSingleArgFunction<Z,R, P>, completion: @escaping (Result<R, Error>)->Void) in
                 dropped.document(with: single.single)
 
                 single.ground(dropped)(z).onResult(completion)
@@ -266,11 +266,11 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
         }
     }
 
-    public subscript<R>(dynamicMember keyPath: KeyPath<B, BoundZeroArgFunction<R, Performer>>) -> AsyncZeroArgFunction<R, Performer> {
+    public subscript<R>(dynamicMember keyPath: KeyPath<B, BoundZeroArgFunction<R, P>>) -> AsyncZeroArgFunction<R, P> {
         let dropped = self.drop
-        return AsyncZeroArgFunction(link: dropped) { () -> Link<R, Performer> in
+        return AsyncZeroArgFunction(link: dropped) { () -> Link<R, P> in
             let function = self.chain(keyPath)
-            return function.chain { (zero: BoundZeroArgFunction<R, Performer>, completion: @escaping (Result<R, Error>)->Void) in
+            return function.chain { (zero: BoundZeroArgFunction<R, P>, completion: @escaping (Result<R, Error>)->Void) in
                 dropped.document(with: zero.zero)
 
                 zero.ground(dropped).onResult(completion)
@@ -278,7 +278,7 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
         }
     }
 
-    public subscript<R>(dynamicMember keyPath: KeyPath<B, R>) -> Link<R, Performer> {
+    public subscript<R>(dynamicMember keyPath: KeyPath<B, R>) -> Link<R, P> {
         self.chain(keyPath)
     }
     
@@ -293,7 +293,7 @@ final public class Link<B, Performer: AsyncBlockPerformer> : Executable  {
 
 extension Link {
 	
-	static func exectute(finally: Link<B, Performer>?, completion: @escaping () -> Void) {
+	static func exectute(finally: Link<B, P>?, completion: @escaping () -> Void) {
 		if let finalLink = finally {
 			finalLink.execute(argument: (), completion: completion)
 		} else {
@@ -373,7 +373,7 @@ extension Link {
 extension Link {
     // Result special form
     @discardableResult
-    public func onResult(file: StaticString = #file,  line: UInt = #line, _ completion: @escaping  (Result<B, ErrorContext>) -> Void) -> Link<B, Performer> {
+    public func onResult(file: StaticString = #file,  line: UInt = #line, _ completion: @escaping  (Result<B, ErrorContext>) -> Void) -> Link<B, P> {
         self.chain { (b: B) -> Void in
             completion(.success(b))
         }
@@ -384,7 +384,7 @@ extension Link {
     }
 
     @discardableResult
-    public func onResult(file: StaticString = #file, line: UInt = #line, _ completion: @escaping  (Result<B, Error>) -> Void) -> Link<B, Performer> {
+    public func onResult(file: StaticString = #file, line: UInt = #line, _ completion: @escaping  (Result<B, Error>) -> Void) -> Link<B, P> {
         self.chain { (b: B) -> Void in
             completion(.success(b))
         }
@@ -395,7 +395,7 @@ extension Link {
     }
 
     @discardableResult
-    public func onCompletion(file: StaticString = #file,  line: UInt = #line, _ completion: @escaping  (ErrorContext?) -> Void) -> Link<B, Performer> {
+    public func onCompletion(file: StaticString = #file,  line: UInt = #line, _ completion: @escaping  (ErrorContext?) -> Void) -> Link<B, P> {
         self.chain { (_: B) -> Void in
             completion(nil)
         }
@@ -406,7 +406,7 @@ extension Link {
     }
 
     @discardableResult
-    public func onCompletion(file: StaticString = #file, line: UInt = #line, _ completion: @escaping  (Error?) -> Void) -> Link<B, Performer> {
+    public func onCompletion(file: StaticString = #file, line: UInt = #line, _ completion: @escaping  (Error?) -> Void) -> Link<B, P> {
         self.chain { (_: B) -> Void in
             completion(nil)
         }
@@ -417,7 +417,7 @@ extension Link {
     }
 
     @discardableResult
-    public func onError(file: StaticString = #file, line: UInt = #line, _ completion: @escaping (ErrorContext) -> Void) -> Link<B, Performer> {
+    public func onError(file: StaticString = #file, line: UInt = #line, _ completion: @escaping (ErrorContext) -> Void) -> Link<B, P> {
         self.ancestorFailureBox.yieldValue(file: file, line: line) { context in
             completion(context)
         }
@@ -425,7 +425,7 @@ extension Link {
     }
 
     @discardableResult
-    public func onError(file: StaticString = #file, line: UInt = #line, _ completion: @escaping (Error) -> Void) -> Link<B, Performer> {
+    public func onError(file: StaticString = #file, line: UInt = #line, _ completion: @escaping (Error) -> Void) -> Link<B, P> {
         self.ancestorFailureBox.yieldValue(file: file, line: line) { context in
             completion(context.error)
         }
@@ -440,14 +440,14 @@ extension Link {
 	///
 	/// - Parameter c: Any value
 	/// - Returns: a `Link` whose child links will receive `c` as their function argument.
-	public func insert<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ c: C) -> Link<C, Performer> {
+	public func insert<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ c: C) -> Link<C, P> {
 		return self.chain(file: file, line:line, functionDescription: functionDescription ?? "insert") { (_:B, callback: (C) -> Void) in callback(c) }
 	}
 	
 	/// `drop` ignores "drops" the inbound value and returns a `Link` whose value is `Void`
 	///
 	/// - Returns: a `Link` whose child links will receive `Void` as their function argument.
-	public var drop: Link<Void, Performer> {
+	public var drop: Link<Void, P> {
 		return self.insert(Void())
 	}
 	
@@ -466,7 +466,7 @@ extension Link {
 	/// - Parameters:
 	///   - defineBlock: a block which creates a subchain to be limited.
 	/// - Returns: a `Link` whose execution result `R` is discarded.
-	public func tunnel<R, OtherPerformer: AsyncBlockPerformer>(file: StaticString = #file, line: UInt = #line, _ defineBlock: (Link<B, Performer>) -> Link<R, OtherPerformer>) -> Link<B, Performer> {
+	public func tunnel<R, OtherP: AsyncBlockPerformer>(file: StaticString = #file, line: UInt = #line, _ defineBlock: (Link<B, P>) -> Link<R, OtherP>) -> Link<B, P> {
 		var storedB: B? = nil
 		
 		let openingLink = self.chain { (b:B) -> B in
@@ -502,7 +502,7 @@ extension Link {
 	/// `func2` will execute when `func1` is finished. Likewise `func4` will execute when `func3` is finished.
 	///
 	/// - Parameter defineBlock: the block to which this `Link` yields itself.
-	public func branch(_ defineBlock: (Link<B, Performer>) -> Void) {
+	public func branch(_ defineBlock: (Link<B, P>) -> Void) {
 		defineBlock(self)
 	}
 	
@@ -525,7 +525,7 @@ extension Link {
 	/// - Parameter defineBlock: the block to which this `Link` yields itself.
 	/// - Returns: The link which is returned from defineBlock
 	@discardableResult
-	public func branch<C, OtherPerformer: AsyncBlockPerformer>(_ defineBlock: (Link<B, Performer>) -> Link<C, OtherPerformer>) -> Link<C, OtherPerformer> {
+	public func branch<C, OtherP: AsyncBlockPerformer>(_ defineBlock: (Link<B, P>) -> Link<C, OtherP>) -> Link<C, OtherP> {
 		return defineBlock(self)
 	}
 	
@@ -548,7 +548,7 @@ extension Link {
 	/// - Parameter defineBlock: the block to which this `Link` yields itself.
 	/// - Returns: The link which is returned from defineBlock
 	@discardableResult
-	public func branch<C>(_ defineBlock: (Link<B, Performer>) -> Link<C, Performer>) -> Link<C, Performer> {
+	public func branch<C>(_ defineBlock: (Link<B, P>) -> Link<C, P>) -> Link<C, P> {
 		return defineBlock(self)
 	}
 	
@@ -559,7 +559,7 @@ extension Link {
 	///
 	/// - Parameter other: the `Link` to join with
 	/// - Returns: A `Link` which combines the receiver and the arguments results.
-	public func conjoin<C>(_ other: Link<C, Performer>) -> Link<(B,C), Performer> {
+	public func conjoin<C>(_ other: Link<C, P>) -> Link<(B,C), P> {
 		return self.joinPoint().conjoin(other.joinPoint())
 	}
 	
@@ -570,7 +570,7 @@ extension Link {
 	///
 	/// - Parameter other: the `Link` to join with
 	/// - Returns: A `Link` which combines the receiver and the arguments results.
-	public func conjoin<X,Y,C>(other: Link<C, Performer>) -> Link<(X,Y,C), Performer> where B == (X,Y) {
+	public func conjoin<X,Y,C>(other: Link<C, P>) -> Link<(X,Y,C), P> where B == (X,Y) {
 		return self.conjoin(other)
 					.chain { compoundTuple -> (X,Y,C) in
 						return (compoundTuple.0.0, compoundTuple.0.1, compoundTuple.1)
@@ -584,7 +584,7 @@ extension Link {
 	///
 	/// - Parameter other: the `Link` to join with
 	/// - Returns: A `Link` which combines the receiver and the arguments results.
-	public func conjoin<X,Y,Z,C>(other: Link<C, Performer>) -> Link<(X,Y,Z,C), Performer> where B == (X,Y,Z) {
+	public func conjoin<X,Y,Z,C>(other: Link<C, P>) -> Link<(X,Y,Z,C), P> where B == (X,Y,Z) {
 		return self.conjoin(other)
 			.chain { compoundTuple -> (X,Y,Z,C) in
 				return (compoundTuple.0.0, compoundTuple.0.1, compoundTuple.0.2, compoundTuple.1)
@@ -593,17 +593,17 @@ extension Link {
 }
 
 /// operator syntax for `conjoin` function
-public func +<B, C, CommonPerformer: AsyncBlockPerformer>(lhs: Link<B, CommonPerformer>, rhs: Link<C, CommonPerformer>) -> Link<(B,C), CommonPerformer> {
+public func +<B, C, CommonP: AsyncBlockPerformer>(lhs: Link<B, CommonP>, rhs: Link<C, CommonP>) -> Link<(B,C), CommonP> {
 	return lhs.conjoin(rhs)
 }
 
 /// operator syntax for `conjoin` function
-public func +<X,Y,C, CommonPerformer: AsyncBlockPerformer>(lhs: Link<(X,Y), CommonPerformer>, rhs: Link<C, CommonPerformer>) -> Link<(X,Y,C), CommonPerformer> {
+public func +<X,Y,C, CommonP: AsyncBlockPerformer>(lhs: Link<(X,Y), CommonP>, rhs: Link<C, CommonP>) -> Link<(X,Y,C), CommonP> {
 	return lhs.conjoin(other: rhs)
 }
 
 /// operator syntax for `conjoin` function
-public func +<X,Y,Z,C, CommonPerformer: AsyncBlockPerformer>(lhs: Link<(X,Y,Z), CommonPerformer>, rhs: Link<C, CommonPerformer>) -> Link<(X,Y,Z,C), CommonPerformer> {
+public func +<X,Y,Z,C, CommonP: AsyncBlockPerformer>(lhs: Link<(X,Y,Z), CommonP>, rhs: Link<C, CommonP>) -> Link<(X,Y,Z,C), CommonP> {
 	return lhs.conjoin(other: rhs)
 }
 
@@ -613,7 +613,7 @@ public func +<X,Y,Z,C, CommonPerformer: AsyncBlockPerformer>(lhs: Link<(X,Y,Z), 
 ///   - lhs: Link whose value to propagate
 ///   - rhs: Link whose value to drop
 /// - Returns: a Link which contains the value of the left-hand Link
-public func <+<B, C, CommonPerformer: AsyncBlockPerformer>(lhs: Link<B, CommonPerformer>, rhs: Link<C, CommonPerformer>) -> Link<B, CommonPerformer> {
+public func <+<B, C, CommonP: AsyncBlockPerformer>(lhs: Link<B, CommonP>, rhs: Link<C, CommonP>) -> Link<B, CommonP> {
 	return lhs.conjoin(rhs)
 		.chain { $0.0 }
 }
@@ -624,7 +624,7 @@ public func <+<B, C, CommonPerformer: AsyncBlockPerformer>(lhs: Link<B, CommonPe
 ///   - lhs: Link whose value to drop
 ///   - rhs: Link whose value to propagate
 /// - Returns: a Link which contains the value of the left-hand Link
-public func +><B, C, CommonPerformer: AsyncBlockPerformer>(lhs: Link<B, CommonPerformer>, rhs: Link<C, CommonPerformer>) -> Link<C, CommonPerformer> {
+public func +><B, C, CommonP: AsyncBlockPerformer>(lhs: Link<B, CommonP>, rhs: Link<C, CommonP>) -> Link<C, CommonP> {
 	return lhs.conjoin(rhs)
 		.chain { $0.1 }
 }
@@ -648,7 +648,7 @@ public func >><B, PerformerC: AsyncBlockPerformer>(lhs: @autoclosure @escaping (
 extension Link : ErroringChainable {
 	
 	@discardableResult
-	public func chain(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B) -> () throws -> Void) -> Link<B, Performer> {
+	public func chain(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B) -> () throws -> Void) -> Link<B, P> {
 		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b: B, callback: @escaping (B) -> Void) in
 			try function(b)()
 			callback(b)
@@ -656,7 +656,7 @@ extension Link : ErroringChainable {
 	}
 	
 	@discardableResult
-	public func chain(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B) -> ((() -> Void)?) throws -> Void) -> Link<B, Performer> {
+	public func chain(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B) -> ((() -> Void)?) throws -> Void) -> Link<B, P> {
 		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b: B, callback: @escaping (B) -> Void) in
 			try function(b)(){
 				callback(b)
@@ -665,7 +665,7 @@ extension Link : ErroringChainable {
 	}
 	
 	@discardableResult
-	public func chain(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B) -> (@escaping () -> Void) throws -> Void) -> Link<B, Performer> {
+	public func chain(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B) -> (@escaping () -> Void) throws -> Void) -> Link<B, P> {
 		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b: B, callback: @escaping (B) -> Void) in
 			try function(b)(){
 				callback(b)
@@ -674,7 +674,7 @@ extension Link : ErroringChainable {
 	}
 	
 	@discardableResult
-	public func chain(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B) throws -> Void) -> Link<B, Performer> {
+	public func chain(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B) throws -> Void) -> Link<B, P> {
 		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b: B, callback: @escaping (B) -> Void) in
 			try function(b)
 			callback(b)
@@ -682,168 +682,168 @@ extension Link : ErroringChainable {
 	}
 	
 	@discardableResult
-	public func chain(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B, (() -> Void)?) throws -> Void) -> Link<B, Performer> {
+	public func chain(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B, (() -> Void)?) throws -> Void) -> Link<B, P> {
 		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b: B, callback: @escaping (B) -> Void) throws in
 			try function(b,callback =<< b)
 		}
 	}
 	
 	@discardableResult
-	public func chain(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B, @escaping () -> Void) throws -> Void) -> Link<B, Performer> {
+	public func chain(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B, @escaping () -> Void) throws -> Void) -> Link<B, P> {
 		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b: B, callback: @escaping (B) -> Void) throws in
 			try function(b,callback =<< b)
 		}
 	}
 	
 	@discardableResult
-	public func chain(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping ((() -> Void)?) throws -> Void) -> Link<B, Performer> {
+	public func chain(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping ((() -> Void)?) throws -> Void) -> Link<B, P> {
 		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b: B, callback: @escaping (B) -> Void) throws in
 			try function(callback =<< b)
 		}
 	}
 	
 	@discardableResult
-	public func chain(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (@escaping () -> Void) throws -> Void) -> Link<B, Performer> {
+	public func chain(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (@escaping () -> Void) throws -> Void) -> Link<B, P> {
 		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b: B, callback: @escaping (B) -> Void) throws in
 			try function(callback =<< b)
 		}
 	}
 	
 	@discardableResult
-	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function:  @escaping (B) throws -> C ) -> Link<C, Performer> {
+	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function:  @escaping (B) throws -> C ) -> Link<C, P> {
 		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b: B, callback: @escaping (C) -> Void) in
 			try callback(function(b))
 		}
 	}
 
 	@discardableResult
-	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function:  @escaping (B, ((C) -> Void)?) throws -> Void) -> Link<C, Performer> {
+	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function:  @escaping (B, ((C) -> Void)?) throws -> Void) -> Link<C, P> {
 		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b: B, callback: @escaping (C) -> Void) throws in
 			try function(b,callback)
 		}
 	}
 	
 	@discardableResult
-	public func chain(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B) -> (((Error?) -> Void)?) -> Void) -> Link<B, Performer> {
+	public func chain(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B) -> (((Error?) -> Void)?) -> Void) -> Link<B, P> {
 		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b: B, callback: @escaping (Result<B, Error>) -> Void) in
 			elevate(function)(b,callback)
 		}
 	}
 	
 	@discardableResult
-	public func chain(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B) -> (@escaping (Error?) -> Void) -> Void) -> Link<B, Performer> {
+	public func chain(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B) -> (@escaping (Error?) -> Void) -> Void) -> Link<B, P> {
 		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b:B, callback: @escaping (Result<B, Error>) -> Void) in
 			elevate(function)(b,callback)
 		}
 	}
 	
 	@discardableResult
-	public func chain(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B, ((Error?) -> Void)?) -> Void) -> Link<B, Performer> {
+	public func chain(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B, ((Error?) -> Void)?) -> Void) -> Link<B, P> {
 		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b:B, callback: @escaping (Result<B, Error>) -> Void) in
 			elevate(function)(b,callback)
 		}
 	}
 	
 	@discardableResult
-	public func chain(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B, @escaping (Error?) -> Void) -> Void) -> Link<B, Performer> {
+	public func chain(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B, @escaping (Error?) -> Void) -> Void) -> Link<B, P> {
 		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b:B, callback: @escaping (Result<B, Error>) -> Void) in
 			elevate(function)(b,callback)
 		}
 	}
 	
 	@discardableResult
-	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B, ((C?, Error?) -> Void)?) -> Void) -> Link<C, Performer> {
+	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B, ((C?, Error?) -> Void)?) -> Void) -> Link<C, P> {
 		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b:B, callback: @escaping (Result<C, Error>)->Void) in
 			elevate(function)(b, callback)
 		}
 	}
 	
 	@discardableResult
-	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B, @escaping (C?, Error?) -> Void) -> Void) -> Link<C, Performer> {
+	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B, @escaping (C?, Error?) -> Void) -> Void) -> Link<C, P> {
 		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b:B, callback: @escaping (Result<C, Error>)->Void) in
 			elevate(function)(b, callback)
 		}
 	}
 	
 	@discardableResult
-	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B) -> (@escaping (C) -> Void) throws -> Void) -> Link<C, Performer> {
+	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B) -> (@escaping (C) -> Void) throws -> Void) -> Link<C, P> {
 		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b: B, callback: @escaping (C) -> Void) throws -> Void in
 			try function(b)(callback)
 		}
 	}
 
 	@discardableResult
-	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B) -> () throws -> C) -> Link<C, Performer> {
+	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B) -> () throws -> C) -> Link<C, P> {
 		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b: B, callback: @escaping (C) -> Void) in
 			try callback(function(b)())
 		}
 	}
 	
 	@discardableResult
-	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B) -> (@escaping (C?, Error?) -> Void) -> Void) -> Link<C, Performer> {
+	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B) -> (@escaping (C?, Error?) -> Void) -> Void) -> Link<C, P> {
 		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b: B, callback: @escaping (Result<C, Error>) -> Void) in
 			elevate(function)(b, callback)
 		}
 	}
 
 	@discardableResult
-	public func chain(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (@escaping (Error?) -> Void) -> Void) -> Link<B, Performer> {
+	public func chain(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (@escaping (Error?) -> Void) -> Void) -> Link<B, P> {
 		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b:B, callback: @escaping (Result<B, Error>) -> Void) in
 			elevate(function)(b,callback)
 		}
 	}
 	
 	@discardableResult
-	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (@escaping (C) -> Void) throws -> Void) -> Link<C, Performer> {
+	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (@escaping (C) -> Void) throws -> Void) -> Link<C, P> {
 		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b:B, callback: @escaping (C) -> Void) throws -> Void in
 			try function(callback)
 		}
 	}
 
 	@discardableResult
-	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (((C?, Error?) -> Void)?) -> Void) -> Link<C, Performer> {
+	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (((C?, Error?) -> Void)?) -> Void) -> Link<C, P> {
 		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b:B, callback: @escaping (Result<C, Error>)->Void) in
 			elevate(function)(callback)
 		}
 	}
 	
 	@discardableResult
-	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (@escaping (C?, Error?) -> Void) -> Void) -> Link<C, Performer> {
+	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (@escaping (C?, Error?) -> Void) -> Void) -> Link<C, P> {
 		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b:B, callback: @escaping (Result<C, Error>)->Void) in
 			elevate(function)(callback)
 		}
 	}
 	
 	@discardableResult
-	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (((C) -> Void)?) throws -> Void) -> Link<C, Performer> {
+	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (((C) -> Void)?) throws -> Void) -> Link<C, P> {
 		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b:B, callback: @escaping (C) -> Void) throws -> Void in
 			try function(callback)
 		}
 	}
 	
 	@discardableResult
-	public func chain(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (((Error?) -> Void)?) -> Void) -> Link<B, Performer> {
+	public func chain(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (((Error?) -> Void)?) -> Void) -> Link<B, P> {
 		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b:B, callback: @escaping (Result<B, Error>) -> Void) in
 			elevate(function)(b,callback)
 		}
 	}
 	
 	@discardableResult
-	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B) -> (((C?, Error?) -> Void)?) -> Void) -> Link<C, Performer> {
+	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B) -> (((C?, Error?) -> Void)?) -> Void) -> Link<C, P> {
 		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b:B, callback: @escaping (Result<C, Error>)->Void) in
 			elevate(function)(b, callback)
 		}
 	}
 	
 	@discardableResult
-	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B) -> (((C) -> Void)?) throws -> Void) -> Link<C, Performer> {
+	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B) -> (((C) -> Void)?) throws -> Void) -> Link<C, P> {
 		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b:B, callback: @escaping (C) -> Void) throws -> Void in
 			try function(b)(callback)
 		}
 	}
 	
 	@discardableResult
-	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B, @escaping (C) -> Void) throws -> Void) -> Link<C, Performer> {
+	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B, @escaping (C) -> Void) throws -> Void) -> Link<C, P> {
 		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b: B, callback: @escaping (Result<C, Error>) -> Void) in
 			do {
 				try function(b) { (c: C) -> Void in
@@ -859,28 +859,28 @@ extension Link : ErroringChainable {
 extension Link {
 	
 	@discardableResult
-	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B, ((Result<C, Error>) -> Void)?) -> Void) -> Link<C, Performer> {
+	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B, ((Result<C, Error>) -> Void)?) -> Void) -> Link<C, P> {
 		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b: B, callback: @escaping (Result<C, Error>) -> Void) in
 			function(b, callback)
 		}
 	}
 	
 	@discardableResult
-    public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B) -> (@escaping (Result<C, Error>) -> Void) -> Void) -> Link<C, Performer> {
+    public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B) -> (@escaping (Result<C, Error>) -> Void) -> Void) -> Link<C, P> {
 		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b: B, callback: @escaping (Result<C, Error>) -> Void) in
 			function(b)(callback)
 		}
 	}
 	
 	@discardableResult
-	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B) -> (((Result<C, Error>) -> Void)?) -> Void) -> Link<C, Performer> {
+	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B) -> (((Result<C, Error>) -> Void)?) -> Void) -> Link<C, P> {
 		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b: B, callback: @escaping (Result<C, Error>) -> Void) in
 			function(b)(callback)
 		}
 	}
 	
 	@discardableResult
-	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (@escaping (Result<C, Error>) -> Void) -> Void) -> Link<C, Performer> {
+	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (@escaping (Result<C, Error>) -> Void) -> Void) -> Link<C, P> {
 		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b: B, callback: @escaping (Result<C, Error>) -> Void) in
 			function(callback)
 		}
@@ -889,7 +889,7 @@ extension Link {
 
 extension Link {
 	///Creates a new Link which accesses a keypath starting at B and ending at type C and appends the link to the execution list of this Link
-	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ keyPath: KeyPath<B,C>) -> Link<C, Performer> {
+	public func chain<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ keyPath: KeyPath<B,C>) -> Link<C, P> {
 		return self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(keyPath)) { (b: B) -> C in
 			return b[keyPath: keyPath]
 		}
@@ -914,7 +914,7 @@ extension Link {
 	/// - Parameter queue: the new `DispatchQueue` for child links
 	/// - Returns: the receiver
 	@available(swift, obsoleted: 5.0, renamed: "move(to:)")
-	public func setBlockPerformer<OtherPerformer: AsyncBlockPerformer>(file: StaticString = #file, line: UInt = #line, _ otherPerformer: OtherPerformer) -> Link<B, OtherPerformer> {
+	public func setBlockPerformer<OtherP: AsyncBlockPerformer>(file: StaticString = #file, line: UInt = #line, _ otherPerformer: OtherP) -> Link<B, OtherP> {
 		return self.move(to: otherPerformer, file: file, line: line)
 	}
 	
@@ -932,7 +932,7 @@ extension Link {
 	///
 	/// - Parameter otherPerformer: the new `AsyncBlockPerformer` for child link
 	/// - Returns: the receiver
-	public func move<OtherPerformer: AsyncBlockPerformer>(to otherPerformer: OtherPerformer, file: StaticString = #file, line: UInt = #line) -> Link<B, OtherPerformer> {
+	public func move<OtherP: AsyncBlockPerformer>(to otherPerformer: OtherP, file: StaticString = #file, line: UInt = #line) -> Link<B, OtherP> {
 		let wrapperFunction = {(a: Any, callback: @escaping (Result<B, Error>) -> Void) -> Void in
 			guard let b = a as? B else {
 				let message = "a is not of type B"
@@ -942,8 +942,8 @@ extension Link {
 			callback(.success(b))
 		}
 		var trace = self.trace
-		trace.append(.init(action: "switch to \(String(describing: OtherPerformer.self))", file: file, line: line))
-		let link = Link<B,OtherPerformer>(function: wrapperFunction,
+		trace.append(.init(action: "switch to \(String(describing: OtherP.self))", file: file, line: line))
+		let link = Link<B,OtherP>(function: wrapperFunction,
 										  blockPerformer: otherPerformer,
 										  trace: trace)
 		self.createdLinks.push(link)
@@ -957,7 +957,7 @@ extension Link where B : Collection {
 	///
 	/// - Parameter transform: the transformation subchain defining block which converts `B.Iterator.Element` to `C`
 	/// - Returns: a `Link` which will yield an array of `C`s to it's child links.
-	public func map<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, limit: Int? = nil, acceptableFailure: FailureRate = .none, _ transform: @escaping (Link<B.Iterator.Element, Performer>) -> Link<C, Performer>) -> Link<[C], Performer> {
+	public func map<C>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, limit: Int? = nil, acceptableFailure: FailureRate = .none, _ transform: @escaping (Link<B.Iterator.Element, P>) -> Link<C, P>) -> Link<[C], P> {
 	
 		return self.chain(file: file, line: line, functionDescription: functionDescription ?? "map") { (collection: B, callback: @escaping (Result<[C], Error>) -> Void) -> Void in
 			var results:[C?] = Array(repeating: .none, count: collection.count)
@@ -997,8 +997,8 @@ extension Link where B : Collection {
 	///
 	/// - Parameter filter: the filter subchain which produces a Bool
 	/// - Returns: a `Link` which will yield to it's child links an array containing those `B.Iterator.Element`s which `filter` approved.
-	public func filter(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, limit: Int? = nil, acceptableFailure: FailureRate = .none, _ filter: @escaping (Link<B.Iterator.Element, Performer>) -> Link<Bool, Performer>) -> Link<[B.Iterator.Element], Performer> {
-		return self.map(file: file, line: line, functionDescription: functionDescription ?? "filter", limit: limit, acceptableFailure: acceptableFailure, { elem -> Link<B.Element?, Performer> in
+	public func filter(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, limit: Int? = nil, acceptableFailure: FailureRate = .none, _ filter: @escaping (Link<B.Iterator.Element, P>) -> Link<Bool, P>) -> Link<[B.Iterator.Element], P> {
+		return self.map(file: file, line: line, functionDescription: functionDescription ?? "filter", limit: limit, acceptableFailure: acceptableFailure, { elem -> Link<B.Element?, P> in
 			elem.branch { stem in
 				return (stem + filter(stem))
 						.chain { (elem: B.Element, include: Bool) -> B.Element? in
@@ -1017,9 +1017,9 @@ extension Link where B : Collection {
 	/// - Parameter defineBlock: a block which creates a subchain for each element of the Collection
     /// - Returns: a Link which will pass the collection `B` to its child links
     @discardableResult
-    public func each(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, limit: Int? = nil, acceptableFailure: FailureRate = .none, _ defineBlock: @escaping (Link<B.Element, Performer>) -> Void) -> Link<B, Performer> {
+    public func each(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, limit: Int? = nil, acceptableFailure: FailureRate = .none, _ defineBlock: @escaping (Link<B.Element, P>) -> Void) -> Link<B, P> {
         return self.tunnel { collection in
-            self.map(file: file, line: line, functionDescription: functionDescription ?? "each", limit: limit, acceptableFailure: acceptableFailure) { elem -> Link<B.Element, Performer> in
+            self.map(file: file, line: line, functionDescription: functionDescription ?? "each", limit: limit, acceptableFailure: acceptableFailure) { elem -> Link<B.Element, P> in
                 defineBlock(elem)
                 return elem // hack
             }
@@ -1033,7 +1033,7 @@ extension Link where B : Collection {
 	/// - Parameter defineBlock: a block which creates a subchain for each element of the Collection
 	/// - Returns: a Link which will pass an Array of the nonfailing elements of `B` to its child links
 	@discardableResult
-	public func each<R, OtherPerformer: AsyncBlockPerformer>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, limit: Int? = nil, acceptableFailure: FailureRate = .none, _ defineBlock: @escaping (Link<B.Element, Performer>) -> Link<R, OtherPerformer>) -> Link<[B.Element], Performer> {
+	public func each<R, OtherP: AsyncBlockPerformer>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, limit: Int? = nil, acceptableFailure: FailureRate = .none, _ defineBlock: @escaping (Link<B.Element, P>) -> Link<R, OtherP>) -> Link<[B.Element], P> {
 		return self.map(file: file, line: line, functionDescription: functionDescription ?? "each", limit: limit, acceptableFailure: acceptableFailure) { elem in
 			elem.tunnel { link in
 				defineBlock(link)
@@ -1052,10 +1052,10 @@ extension Link where B : Collection {
 	///   - acceptableFailure: the acceptable failure rate
 	///   - defineBlock: a block which creates a subchain for each element of the Collection
 	/// - Returns: a Link which will pass the result of the reduce to its child links.
-	public func reduce<T>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, with t: T, acceptableFailure: FailureRate = .none, _ defineBlock: @escaping (Link<(T,B.Element), Performer>) -> Link<T, Performer>) -> Link<T, Performer> {
+	public func reduce<T>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, with t: T, acceptableFailure: FailureRate = .none, _ defineBlock: @escaping (Link<(T,B.Element), P>) -> Link<T, P>) -> Link<T, P> {
         let atomicT = AtomicValue(value: t)
 		
-		return self.each(file: file, line: line, functionDescription: functionDescription ?? "reduce", limit: 1, acceptableFailure: acceptableFailure) { (elem: Link<B.Element, Performer>) in
+		return self.each(file: file, line: line, functionDescription: functionDescription ?? "reduce", limit: 1, acceptableFailure: acceptableFailure) { (elem: Link<B.Element, P>) in
             defineBlock(elem.drop.chain(atomicT.get) + elem)
 				.chain { (newT: T) throws -> Void in
                     atomicT.set(value: newT)
@@ -1074,9 +1074,9 @@ extension Link where B : Collection {
 	///
 	/// - Parameter defineBlock: a block which creates a subchain to combined two elements of the Collection
 	/// - Returns: a Link which will pass the final combined result of the reduce to its child links.
-	public func reduce(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ defineBlock: @escaping (Link<(B.Element,B.Element), Performer>) -> Link<B.Element, Performer>) -> Link<B.Element, Performer> {
+	public func reduce(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ defineBlock: @escaping (Link<(B.Element,B.Element), P>) -> Link<B.Element, P>) -> Link<B.Element, P> {
 		
-		var elemLinks = Array<Link<B.Element, Performer>>()
+		var elemLinks = Array<Link<B.Element, P>>()
 		
 		return self.chain(file: file, line: line, functionDescription: functionDescription ?? "reduce") { (b:B) -> Void in
 			for elem in b {
@@ -1086,7 +1086,7 @@ extension Link where B : Collection {
 		.chain { (_:B, completion: @escaping (Result<B.Element, Error>) -> Void) in
 			let reportedFailure: AtomicBool = false
 			let reportedSuccess: AtomicBool = false
-			func applyFinally(to link: Link<B.Element, Performer>) {
+			func applyFinally(to link: Link<B.Element, P>) {
 				if link.finalLinkBox.get() == nil {
 					let _ = link.finally { link in
 						link.chain { (_:B.Element) -> Void in
@@ -1143,7 +1143,7 @@ extension Link where B : OptionalProtocol {
 	/// - Parameter defineBlock: a block which creates a subchain to run if B is non-nil
 	/// - Returns: a `Link<B>`
 	@discardableResult
-	public func optionally<X, OtherPerformer: AsyncBlockPerformer>(_ defineBlock: @escaping (Link<B.WrappedType, Performer>) -> Link<X, OtherPerformer>) -> Link<B, Performer> {
+	public func optionally<X, OtherP: AsyncBlockPerformer>(_ defineBlock: @escaping (Link<B.WrappedType, P>) -> Link<X, OtherP>) -> Link<B, P> {
         let dropped = self.drop
 		return self.chain { (b: B, completion: @escaping () -> Void)->Void in
 			if let unwrapped = b.getWrapped() {
@@ -1160,7 +1160,7 @@ extension Link where B : OptionalProtocol {
     /// - Parameter defineBlock: a block which creates a subchain to run if B is non-nil
     /// - Returns: a `Link` with a void value type.
     @discardableResult
-    public func map<X, OtherPerformer: AsyncBlockPerformer>(_ defineBlock: @escaping (Link<B.WrappedType, Performer>) -> Link<X, OtherPerformer>) -> Link<X?, Performer> {
+    public func map<X, OtherP: AsyncBlockPerformer>(_ defineBlock: @escaping (Link<B.WrappedType, P>) -> Link<X, OtherP>) -> Link<X?, P> {
         let dropped = self.drop
         return self.chain { (b: B, completion: @escaping (X?) -> Void)->Void in
             if let unwrapped = b.getWrapped() {
@@ -1201,7 +1201,7 @@ extension Link  {
 	///   - defineBlock: a block which creates a subchain to be limited.
 	/// - Returns: a `Link` whose execution result `J` is the result of the final link of the subchain.
 	@discardableResult
-    public func limit<J, OtherPerformer: AsyncBlockPerformer>(_ maxParallel: Int, _ defineBlock: (Link<B, Performer>) -> Link<J, OtherPerformer>) -> Link<J, OtherPerformer> {
+    public func limit<J, OtherP: AsyncBlockPerformer>(_ maxParallel: Int, _ defineBlock: (Link<B, P>) -> Link<J, OtherP>) -> Link<J, OtherP> {
 		let semaphore = Link.semaphore(for: self, withValue: maxParallel)
 		
 		let openingLink = self.chain { (b:B) -> B in
@@ -1234,7 +1234,7 @@ extension Link  {
 	/// - Parameters:
 	///   - maxParallel:  the maximum number of parallel executions permitted for the subchains defined by `defineBlock`
 	///   - defineBlock: a block which creates a subchain to be limited.
-	public func limit(_ maxParallel: Int, _ defineBlock: (Link<B, Performer>) -> Void) -> Void {
+	public func limit(_ maxParallel: Int, _ defineBlock: (Link<B, P>) -> Void) -> Void {
 		let semaphore = Link.semaphore(for: self, withValue: maxParallel)
 		
 		let openingLink = self.chain { (b:B) -> B in
@@ -1272,7 +1272,7 @@ extension Link {
 	///   - defineBlock: a block which creates a subchain to be retried.
 	/// - Returns: a `Link` whose execution result `R` is the result of the final link of the subchain.
 	@discardableResult
-	public func retry<R>(_ maxTimes: Int, _ defineBlock: @escaping (Link<B, Performer>) -> Link<R, Performer>) -> Link<R, Performer> {
+	public func retry<R>(_ maxTimes: Int, _ defineBlock: @escaping (Link<B, P>) -> Link<R, P>) -> Link<R, P> {
 		precondition(maxTimes > 0, "retry requiers maxTimes > 0")
 		
 		let retryTimes:AtomicInt = 0
@@ -1325,7 +1325,7 @@ extension Link {
 }
 
 extension Link {
-	internal func getBlockPerformer() -> Performer {
+	internal func getBlockPerformer() -> P {
 		return self.blockPerformer
 	}
 }

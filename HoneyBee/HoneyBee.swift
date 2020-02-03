@@ -46,7 +46,7 @@ public struct HoneyBee {
 	///   - file: used for debugging
 	///   - line: used for debugging
 	///   - defineBlock: the define block is where you declare your process chain. The value passed into `defineBlock` is a `SafeLink`.
-	public static func start<Performer: AsyncBlockPerformer>(on blockPerformer: Performer, file: StaticString = #file, line: UInt = #line, _ defineBlock: @escaping (Link<Void, Performer>) -> Void) {
+	public static func start<P: AsyncBlockPerformer>(on blockPerformer: P, file: StaticString = #file, line: UInt = #line, _ defineBlock: @escaping (Link<Void, P>) -> Void) {
 		let safeLink = self.start(on: blockPerformer, file: file, line: line)
 		
 		blockPerformer.asyncPerform {
@@ -87,10 +87,10 @@ public struct HoneyBee {
 	///   - file: used for debugging
 	///   - line: used for debugging
 	/// - Returns: a `SafeLink` to being declaring your recipe.
-	public static func start<Performer: AsyncBlockPerformer>(on blockPerformer: Performer, file: StaticString = #file, line: UInt = #line) -> Link<Void, Performer> {
+	public static func start<P: AsyncBlockPerformer>(on blockPerformer: P, file: StaticString = #file, line: UInt = #line) -> Link<Void, P> {
         let trace = AsyncTrace(first: .init(action: "start", file: file, line: line))
 		
-		let link = Link<Void, Performer>(function: { (_, callback) in
+		let link = Link<Void, P>(function: { (_, callback) in
 			callback(.success(Void()))
 		},
 		   blockPerformer: blockPerformer,
@@ -143,7 +143,7 @@ public struct HoneyBee {
 	/// Utility function to retreive the block performer of a given link.
 	/// This method is useful to implementors of custom link behaviors.
 	/// - Returns: the `AsyncBlockPerformer` of the given link.
-	public static func getBlockPerformer<X, Performer: AsyncBlockPerformer>(of link: Link<X, Performer>) -> Performer {
+	public static func getBlockPerformer<X, P: AsyncBlockPerformer>(of link: Link<X, P>) -> P {
 		return link.getBlockPerformer()
 	}
 	
@@ -151,12 +151,12 @@ public struct HoneyBee {
 
 
 extension HoneyBee {
-	public static func async<R, Performer>(on blockPerformer: Performer,
+	public static func async<R, P>(on blockPerformer: P,
 										   callback: @escaping (R) -> Void,
 										   file: StaticString = #file,
 										   line: UInt = #line,
-										   _ defineBlock: @escaping (Link<Void, Performer>) -> Link<R, Performer>) -> Void
-	where Performer: AsyncBlockPerformer {
+										   _ defineBlock: @escaping (Link<Void, P>) -> Link<R, P>) -> Void
+	where P: AsyncBlockPerformer {
 		
 		self.start(on: blockPerformer, file: file, line: line) { context in
 			let result = defineBlock(context)
@@ -164,23 +164,23 @@ extension HoneyBee {
 		}
 	}
 	
-	public static func async<R, Performer>(on blockPerformer: Performer,
+	public static func async<R, P>(on blockPerformer: P,
 										   completion: @escaping (Result<R, Error>) -> Void,
 										   file: StaticString = #file,
 										   line: UInt = #line,
-										   _ defineBlock: @escaping (Link<Void, Performer>) -> Link<R, Performer>) -> Void
-	where Performer: AsyncBlockPerformer {
+										   _ defineBlock: @escaping (Link<Void, P>) -> Link<R, P>) -> Void
+	where P: AsyncBlockPerformer {
 		
 		let context = self.start(on: blockPerformer, file: file, line: line)
         defineBlock(context).onResult(completion)
 	}
 	
-	public static func async<R, Performer>(on blockPerformer: Performer,
+	public static func async<R, P>(on blockPerformer: P,
 										   completion: @escaping (Result<R, ErrorContext>) -> Void,
 										   file: StaticString = #file,
 										   line: UInt = #line,
-										   _ defineBlock: @escaping (Link<Void, Performer>) -> Link<R, Performer>) -> Void
-		where Performer: AsyncBlockPerformer {
+										   _ defineBlock: @escaping (Link<Void, P>) -> Link<R, P>) -> Void
+		where P: AsyncBlockPerformer {
 			
 			let context = self.start(on: blockPerformer, file: file, line: line)
             defineBlock(context).onResult(completion)

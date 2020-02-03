@@ -23,50 +23,50 @@ public struct SinglePair<A> : ExpressibleByDictionaryLiteral {
 }
 
 @dynamicCallable
-public struct AsyncZeroArgFunction<R, Performer: AsyncBlockPerformer> {
-    let link: Link<Void, Performer>
-    let function: () -> Link<R, Performer>
+public struct AsyncZeroArgFunction<R, P: AsyncBlockPerformer> {
+    let link: Link<Void, P>
+    let function: () -> Link<R, P>
     
     @discardableResult
-    public func dynamicallyCall(withKeywordArguments args: EmptyPair = [:]) -> Link<R, Performer> {
+    public func dynamicallyCall(withKeywordArguments args: EmptyPair = [:]) -> Link<R, P> {
         link+>function()
     }
 }
 
 @dynamicCallable
-public struct AsyncSingleArgFunction<A,R, Performer: AsyncBlockPerformer> {
-	let link: Link<Void, Performer>
-	let function: (Link<A, Performer>) -> Link<R, Performer>
+public struct AsyncSingleArgFunction<A,R, P: AsyncBlockPerformer> {
+	let link: Link<Void, P>
+	let function: (Link<A, P>) -> Link<R, P>
 	
 	@discardableResult
-    public func dynamicallyCall(withKeywordArguments args: SinglePair<A>) -> Link<R, Performer> {
+    public func dynamicallyCall(withKeywordArguments args: SinglePair<A>) -> Link<R, P> {
         return self.function(link.insert(args.value))
 	}
 	
 	@discardableResult
-    public func dynamicallyCall(withKeywordArguments args: SinglePair<Link<A, Performer>>) -> Link<R, Performer> {
+    public func dynamicallyCall(withKeywordArguments args: SinglePair<Link<A, P>>) -> Link<R, P> {
         return self.function(self.link +> args.value)
 	}
 }
 
 @dynamicCallable
-public struct AsyncDoubleArgFunction<A,B,R, Performer: AsyncBlockPerformer> {
-	let link: Link<Void, Performer>
-	let function: (Link<A, Performer>, Link<B, Performer>) -> Link<R, Performer>
+public struct AsyncDoubleArgFunction<A,B,R, P: AsyncBlockPerformer> {
+	let link: Link<Void, P>
+	let function: (Link<A, P>, Link<B, P>) -> Link<R, P>
 	
-	public func dynamicallyCall(withKeywordArguments args: SinglePair<A>) -> AsyncSingleArgFunction<B, R, Performer> {
+	public func dynamicallyCall(withKeywordArguments args: SinglePair<A>) -> AsyncSingleArgFunction<B, R, P> {
         let a = self.link.insert(args.value)
 		let functionReference = self.function
-		let wrapped = { (b: Link<B, Performer>) -> Link<R, Performer> in
+		let wrapped = { (b: Link<B, P>) -> Link<R, P> in
 			return functionReference(a, b)
 		}
 		return AsyncSingleArgFunction(link: self.link, function: wrapped)
 	}
 	
-	public func dynamicallyCall(withKeywordArguments args: SinglePair<Link<A, Performer>>) -> AsyncSingleArgFunction<B, R, Performer> {
+	public func dynamicallyCall(withKeywordArguments args: SinglePair<Link<A, P>>) -> AsyncSingleArgFunction<B, R, P> {
         let a = self.link +> args.value
 		let functionReference = self.function
-		let wrapped = { (b: Link<B, Performer>) -> Link<R, Performer> in
+		let wrapped = { (b: Link<B, P>) -> Link<R, P> in
 			return functionReference(a, b)
 		}
 		return AsyncSingleArgFunction(link: self.link, function: wrapped)
@@ -74,23 +74,23 @@ public struct AsyncDoubleArgFunction<A,B,R, Performer: AsyncBlockPerformer> {
 }
 
 @dynamicCallable
-public struct AsyncTripleArgFunction<A,B,C,R, Performer: AsyncBlockPerformer> {
-	let link: Link<Void, Performer>
-	let function: (Link<A, Performer>, Link<B, Performer>, Link<C, Performer>) -> Link<R, Performer>
+public struct AsyncTripleArgFunction<A,B,C,R, P: AsyncBlockPerformer> {
+	let link: Link<Void, P>
+	let function: (Link<A, P>, Link<B, P>, Link<C, P>) -> Link<R, P>
 	
-	public func dynamicallyCall(withKeywordArguments args: SinglePair<A>) -> AsyncDoubleArgFunction<B, C, R, Performer> {
+	public func dynamicallyCall(withKeywordArguments args: SinglePair<A>) -> AsyncDoubleArgFunction<B, C, R, P> {
         let a = self.link.insert(args.value)
 		let functionReference = self.function
-		let wrapped = { (b: Link<B, Performer>, c: Link<C, Performer>) -> Link<R, Performer> in
+		let wrapped = { (b: Link<B, P>, c: Link<C, P>) -> Link<R, P> in
 			return functionReference(a, b, c)
 		}
 		return AsyncDoubleArgFunction(link: self.link, function: wrapped)
 	}
 	
-	public func dynamicallyCall(withKeywordArguments args: SinglePair<Link<A, Performer>>) -> AsyncDoubleArgFunction<B, C, R, Performer> {
+	public func dynamicallyCall(withKeywordArguments args: SinglePair<Link<A, P>>) -> AsyncDoubleArgFunction<B, C, R, P> {
         let a = self.link +> args.value
 		let functionReference = self.function
-		let wrapped = { (b: Link<B, Performer>, c: Link<C, Performer>) -> Link<R, Performer> in
+		let wrapped = { (b: Link<B, P>, c: Link<C, P>) -> Link<R, P> in
 			return functionReference(a, b, c)
 		}
 		return AsyncDoubleArgFunction(link: self.link, function: wrapped)
@@ -106,16 +106,16 @@ public struct ZeroArgFunction<R> {
     let line: UInt
     let function: (@escaping FunctionWrapperCompletion<R>) -> Void
     
-    func ground<Performer: AsyncBlockPerformer>(_ link: Link<Void, Performer>) -> Link<R, Performer> {
+    func ground<P: AsyncBlockPerformer>(_ link: Link<Void, P>) -> Link<R, P> {
         link.chain(file: self.file, line: self.line, functionDescription: self.action, self.function)
     }
     
     @discardableResult
-    public func dynamicallyCall<Performer: AsyncBlockPerformer>(withKeywordArguments args: SinglePair<Link<Void, Performer>>) -> Link<R, Performer> {
+    public func dynamicallyCall<P: AsyncBlockPerformer>(withKeywordArguments args: SinglePair<Link<Void, P>>) -> Link<R, P> {
         self.ground(args.value)
     }
 
-    public func on<Performer: AsyncBlockPerformer>(_ perfomer: Performer.Type) -> BoundZeroArgFunction<R,Performer> {
+    public func on<P: AsyncBlockPerformer>(_ perfomer: P.Type) -> BoundZeroArgFunction<R,P> {
         BoundZeroArgFunction(zero: self)
     }
 }
@@ -127,13 +127,13 @@ public struct SingleArgFunction<A,R> {
     let line: UInt
     let function: (A, @escaping FunctionWrapperCompletion<R>) -> Void
     
-    func ground<Performer: AsyncBlockPerformer>(_ link: Link<Void, Performer>) -> AsyncSingleArgFunction<A,R, Performer> {
-        AsyncSingleArgFunction(link: link) { (link: Link<A, Performer>) -> Link<R, Performer> in
+    func ground<P: AsyncBlockPerformer>(_ link: Link<Void, P>) -> AsyncSingleArgFunction<A,R, P> {
+        AsyncSingleArgFunction(link: link) { (link: Link<A, P>) -> Link<R, P> in
             link.chain(file: self.file, line: self.line, functionDescription: self.action, self.function)
         }
     }
 
-    public func dynamicallyCall<Performer: AsyncBlockPerformer>(withKeywordArguments args: SinglePair<Link<Void, Performer>>) -> AsyncSingleArgFunction<A, R, Performer> {
+    public func dynamicallyCall<P: AsyncBlockPerformer>(withKeywordArguments args: SinglePair<Link<Void, P>>) -> AsyncSingleArgFunction<A, R, P> {
         self.ground(args.value)
     }
 
@@ -145,11 +145,11 @@ public struct SingleArgFunction<A,R> {
     }
     
     @discardableResult
-    public func dynamicallyCall<Performer: AsyncBlockPerformer>(withKeywordArguments args: SinglePair<Link<A, Performer>>) -> Link<R, Performer> {
+    public func dynamicallyCall<P: AsyncBlockPerformer>(withKeywordArguments args: SinglePair<Link<A, P>>) -> Link<R, P> {
         args.value.chain(file: self.file, line: self.line, functionDescription: self.action, self.function)
     }
 
-    public func on<Performer: AsyncBlockPerformer>(_ perfomer: Performer.Type) -> BoundSingleArgFunction<A,R,Performer> {
+    public func on<P: AsyncBlockPerformer>(_ perfomer: P.Type) -> BoundSingleArgFunction<A,R,P> {
         BoundSingleArgFunction(single: self)
     }
 }
@@ -161,15 +161,15 @@ public struct DoubleArgFunction<A,B,R> {
     let line: UInt
     let function: (A, B, @escaping FunctionWrapperCompletion<R>) -> Void
     
-    func ground<Performer: AsyncBlockPerformer>(_ link: Link<Void, Performer>) -> AsyncDoubleArgFunction<A,B,R, Performer> {
-        AsyncDoubleArgFunction(link: link) { (a: Link<A, Performer>, b: Link<B, Performer>) -> Link<R, Performer> in
+    func ground<P: AsyncBlockPerformer>(_ link: Link<Void, P>) -> AsyncDoubleArgFunction<A,B,R, P> {
+        AsyncDoubleArgFunction(link: link) { (a: Link<A, P>, b: Link<B, P>) -> Link<R, P> in
             (a+b).chain(file: self.file, line: self.line, functionDescription: self.action) { (a_b: (A, B), completion: @escaping FunctionWrapperCompletion<R>) in
                 self.function(a_b.0, a_b.1, completion)
             }
         }
     }
 
-    public func dynamicallyCall<Performer: AsyncBlockPerformer>(withKeywordArguments args: SinglePair<Link<Void, Performer>>) -> AsyncDoubleArgFunction<A, B, R, Performer> {
+    public func dynamicallyCall<P: AsyncBlockPerformer>(withKeywordArguments args: SinglePair<Link<Void, P>>) -> AsyncDoubleArgFunction<A, B, R, P> {
         self.ground(args.value)
     }
     
@@ -180,16 +180,16 @@ public struct DoubleArgFunction<A,B,R> {
         }
     }
     
-    public func dynamicallyCall<Performer: AsyncBlockPerformer>(withKeywordArguments args: SinglePair<Link<A, Performer>>) -> AsyncSingleArgFunction<B, R, Performer> {
+    public func dynamicallyCall<P: AsyncBlockPerformer>(withKeywordArguments args: SinglePair<Link<A, P>>) -> AsyncSingleArgFunction<B, R, P> {
         let a = args.value
-        return AsyncSingleArgFunction(link: a.drop) { (b: Link<B, Performer>) -> Link<R, Performer> in
+        return AsyncSingleArgFunction(link: a.drop) { (b: Link<B, P>) -> Link<R, P> in
             (a+b).chain(file: self.file, line: self.line, functionDescription: self.action) { (a_b: (A, B), completion: @escaping FunctionWrapperCompletion<R>) in
                 self.function(a_b.0, a_b.1, completion)
             }
         }
     }
 
-    public func on<Performer: AsyncBlockPerformer>(_ perfomer: Performer.Type) -> BoundDoubleArgFunction<A,B,R,Performer> {
+    public func on<P: AsyncBlockPerformer>(_ perfomer: P.Type) -> BoundDoubleArgFunction<A,B,R,P> {
         BoundDoubleArgFunction(double: self)
     }
 }
@@ -201,15 +201,15 @@ public struct TripleArgFunction<A,B,C,R> {
     let line: UInt
     let function: (A, B, C, @escaping FunctionWrapperCompletion<R>) -> Void
     
-    func ground<Performer: AsyncBlockPerformer>(_ link: Link<Void, Performer>) -> AsyncTripleArgFunction<A,B,C,R, Performer> {
-        AsyncTripleArgFunction(link: link) { (a: Link<A, Performer>, b: Link<B, Performer>, c: Link<C, Performer>) -> Link<R, Performer> in
+    func ground<P: AsyncBlockPerformer>(_ link: Link<Void, P>) -> AsyncTripleArgFunction<A,B,C,R, P> {
+        AsyncTripleArgFunction(link: link) { (a: Link<A, P>, b: Link<B, P>, c: Link<C, P>) -> Link<R, P> in
             (a+b+c).chain(file: self.file, line: self.line, functionDescription: self.action) { (a_b_c: (A, B, C), completion: @escaping FunctionWrapperCompletion<R>) in
                 self.function(a_b_c.0, a_b_c.1, a_b_c.2, completion)
             }
         }
     }
 
-    public func dynamicallyCall<Performer: AsyncBlockPerformer>(withKeywordArguments args: SinglePair<Link<Void, Performer>>) -> AsyncTripleArgFunction<A, B, C, R, Performer> {
+    public func dynamicallyCall<P: AsyncBlockPerformer>(withKeywordArguments args: SinglePair<Link<Void, P>>) -> AsyncTripleArgFunction<A, B, C, R, P> {
         self.ground(args.value)
     }
     
@@ -220,16 +220,16 @@ public struct TripleArgFunction<A,B,C,R> {
         }
     }
     
-    public func dynamicallyCall<Performer: AsyncBlockPerformer>(withKeywordArguments args: SinglePair<Link<A, Performer>>) -> AsyncDoubleArgFunction<B, C, R, Performer> {
+    public func dynamicallyCall<P: AsyncBlockPerformer>(withKeywordArguments args: SinglePair<Link<A, P>>) -> AsyncDoubleArgFunction<B, C, R, P> {
         let a = args.value
-        return AsyncDoubleArgFunction(link: a.drop) { (b: Link<B, Performer>, c: Link<C, Performer>) -> Link<R, Performer> in
+        return AsyncDoubleArgFunction(link: a.drop) { (b: Link<B, P>, c: Link<C, P>) -> Link<R, P> in
             (a+b+c).chain(file: self.file, line: self.line, functionDescription: self.action) { (a_b_c: (A, B, C), completion: @escaping FunctionWrapperCompletion<R>) in
                 self.function(a_b_c.0, a_b_c.1, a_b_c.2, completion)
             }
         }
     }
 
-    public func on<Performer: AsyncBlockPerformer>(_ perfomer: Performer.Type) -> BoundTripleArgFunction<A,B,C,R,Performer> {
+    public func on<P: AsyncBlockPerformer>(_ perfomer: P.Type) -> BoundTripleArgFunction<A,B,C,R,P> {
         BoundTripleArgFunction(triple: self)
     }
 }
@@ -246,34 +246,34 @@ extension DoubleArgFunction : DocumentationBearing {}
 extension TripleArgFunction : DocumentationBearing {}
 
 @dynamicCallable
-public struct BoundZeroArgFunction<R,Performer: AsyncBlockPerformer> {
+public struct BoundZeroArgFunction<R,P: AsyncBlockPerformer> {
     let zero: ZeroArgFunction<R>
     init(zero: ZeroArgFunction<R>) {
         self.zero = zero
     }
 
-    func ground(_ link: Link<Void, Performer>) -> Link<R, Performer> {
+    func ground(_ link: Link<Void, P>) -> Link<R, P> {
         self.zero.ground(link)
     }
 
     @discardableResult
-    public func dynamicallyCall(withKeywordArguments args: SinglePair<Link<Void, Performer>>) -> Link<R, Performer> {
+    public func dynamicallyCall(withKeywordArguments args: SinglePair<Link<Void, P>>) -> Link<R, P> {
         self.zero.dynamicallyCall(withKeywordArguments: args)
     }
 }
 
 @dynamicCallable
-public struct BoundSingleArgFunction<A,R,Performer: AsyncBlockPerformer> {
+public struct BoundSingleArgFunction<A,R,P: AsyncBlockPerformer> {
     let single: SingleArgFunction<A,R>
     init(single: SingleArgFunction<A, R>) {
         self.single = single
     }
 
-    func ground(_ link: Link<Void, Performer>) -> AsyncSingleArgFunction<A,R, Performer> {
+    func ground(_ link: Link<Void, P>) -> AsyncSingleArgFunction<A,R, P> {
         self.single.ground(link)
     }
 
-    public func dynamicallyCall(withKeywordArguments args: SinglePair<Link<Void, Performer>>) -> AsyncSingleArgFunction<A, R, Performer> {
+    public func dynamicallyCall(withKeywordArguments args: SinglePair<Link<Void, P>>) -> AsyncSingleArgFunction<A, R, P> {
         self.single.dynamicallyCall(withKeywordArguments: args)
     }
 
@@ -282,23 +282,23 @@ public struct BoundSingleArgFunction<A,R,Performer: AsyncBlockPerformer> {
     }
 
     @discardableResult
-    public func dynamicallyCall(withKeywordArguments args: SinglePair<Link<A, Performer>>) -> Link<R, Performer> {
+    public func dynamicallyCall(withKeywordArguments args: SinglePair<Link<A, P>>) -> Link<R, P> {
         self.single.dynamicallyCall(withKeywordArguments: args)
     }
 }
 
 @dynamicCallable
-public struct BoundDoubleArgFunction<A,B,R,Performer: AsyncBlockPerformer> {
+public struct BoundDoubleArgFunction<A,B,R,P: AsyncBlockPerformer> {
     let double: DoubleArgFunction<A,B,R>
     init(double: DoubleArgFunction<A,B,R>) {
         self.double = double
     }
 
-    func ground(_ link: Link<Void, Performer>) -> AsyncDoubleArgFunction<A,B,R,Performer> {
+    func ground(_ link: Link<Void, P>) -> AsyncDoubleArgFunction<A,B,R,P> {
         self.double.ground(link)
     }
 
-    public func dynamicallyCall(withKeywordArguments args: SinglePair<Link<Void, Performer>>) -> AsyncDoubleArgFunction<A,B,R,Performer> {
+    public func dynamicallyCall(withKeywordArguments args: SinglePair<Link<Void, P>>) -> AsyncDoubleArgFunction<A,B,R,P> {
         self.double.dynamicallyCall(withKeywordArguments: args)
     }
 
@@ -306,23 +306,23 @@ public struct BoundDoubleArgFunction<A,B,R,Performer: AsyncBlockPerformer> {
         self.double.dynamicallyCall(withKeywordArguments: args)
     }
 
-    public func dynamicallyCall(withKeywordArguments args: SinglePair<Link<A, Performer>>) -> AsyncSingleArgFunction<B,R,Performer> {
+    public func dynamicallyCall(withKeywordArguments args: SinglePair<Link<A, P>>) -> AsyncSingleArgFunction<B,R,P> {
         self.double.dynamicallyCall(withKeywordArguments: args)
     }
 }
 
 @dynamicCallable
-public struct BoundTripleArgFunction<A,B,C,R,Performer: AsyncBlockPerformer> {
+public struct BoundTripleArgFunction<A,B,C,R,P: AsyncBlockPerformer> {
     let triple: TripleArgFunction<A,B,C,R>
     init(triple: TripleArgFunction<A,B,C,R>) {
         self.triple = triple
     }
 
-    func ground(_ link: Link<Void, Performer>) -> AsyncTripleArgFunction<A,B,C,R,Performer> {
+    func ground(_ link: Link<Void, P>) -> AsyncTripleArgFunction<A,B,C,R,P> {
         self.triple.ground(link)
     }
 
-    public func dynamicallyCall(withKeywordArguments args: SinglePair<Link<Void, Performer>>) -> AsyncTripleArgFunction<A,B,C,R,Performer> {
+    public func dynamicallyCall(withKeywordArguments args: SinglePair<Link<Void, P>>) -> AsyncTripleArgFunction<A,B,C,R,P> {
         self.triple.dynamicallyCall(withKeywordArguments: args)
     }
 
@@ -330,7 +330,7 @@ public struct BoundTripleArgFunction<A,B,C,R,Performer: AsyncBlockPerformer> {
         self.triple.dynamicallyCall(withKeywordArguments: args)
     }
 
-    public func dynamicallyCall(withKeywordArguments args: SinglePair<Link<A, Performer>>) -> AsyncDoubleArgFunction<B,C,R,Performer> {
+    public func dynamicallyCall(withKeywordArguments args: SinglePair<Link<A, P>>) -> AsyncDoubleArgFunction<B,C,R,P> {
         self.triple.dynamicallyCall(withKeywordArguments: args)
     }
 }
