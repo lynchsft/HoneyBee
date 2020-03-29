@@ -96,7 +96,7 @@ class MergeSortTest: XCTestCase {
 
         let rightArray = mergeSort3(Array(array[middleIndex..<array.count]) >> hb)  // 4
 
-        let mergedArray = merge(leftPile: leftArray)(rightPile: rightArray)       // 5
+        let mergedArray = merge(leftArray)(rightArray)       // 5
 
         async1(completion)(mergedArray).onError(fail)
     }

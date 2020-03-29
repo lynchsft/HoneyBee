@@ -80,10 +80,10 @@ class CodeCoverageTests: XCTestCase {
 
         let remote = RemoteObject() >> hb
         
-        let data = remote.fetchData(ref: "fooId3")
+        let data = remote.fetchData("fooId3")
         let time = remote.synchronize()
         
-        let injested = remote.injest(data: data)(time: time)
+        let injested = remote.injest(data)(time)
 
         let finished = (injested +> remote).deleteSelf()
 
@@ -102,21 +102,21 @@ class CodeCoverageTests: XCTestCase {
         let r = RemoteObject()
         let remote = r >> hb
 
-        let data = remote.syncFetchData(ref: "fooId3")
-                    <+ remote.syncFetchData(ref: "fooId3" >> hb)
-                    <+ r.syncFetchData(hb)(ref: "fooId3")
-                    <+ r.syncFetchData(hb)(ref: "fooId3" >> hb)
-                    <+ r.syncFetchData(ref: "fooId3")(hb)
+        let data = remote.syncFetchData("fooId3")
+                    <+ remote.syncFetchData("fooId3" >> hb)
+                    <+ r.syncFetchData(hb)("fooId3")
+                    <+ r.syncFetchData(hb)("fooId3" >> hb)
+                    <+ r.syncFetchData("fooId3")(hb)
 
         let time = remote.synchronize()
                     <+ r.synchronize(hb)
 
-        let injested = remote.syncInjest(data: data)(time: time)
-                        <+ r.syncInjest(hb)(data: data)(time: time)
-                        <+ r.syncInjest(hb)(data: Data())(time: Date())
-                        <+ r.syncInjest(data: data)(time: time)
-                        <+ r.syncInjest(data: Data())(time: Date())(hb)
-                        <+ remote.syncInjest(data: Data())(time: time)
+        let injested = remote.syncInjest(data)(time)
+                        <+ r.syncInjest(hb)(data)(time)
+                        <+ r.syncInjest(hb)(Data())(Date())
+                        <+ r.syncInjest(data)(time)
+                        <+ r.syncInjest(Data())(Date())(hb)
+                        <+ remote.syncInjest(Data())(time)
 
         let finished = (injested +> remote).deleteSelf()
 
@@ -136,9 +136,9 @@ class CodeCoverageTests: XCTestCase {
         let remote1 = r1 >> hb
         let remote2 = RemoteObject() >> hb
 
-        let united = RemoteObject.unite(a: remote1)(b: remote2)(name: "example")
-                     <+ RemoteObject.unite(hb)(a: remote1)(b: remote2)(name: "example")
-                     <+ RemoteObject.unite(a: r1)(b: remote2)(name: "example")
+        let united = RemoteObject.unite(remote1)(remote2)("example")
+                     <+ RemoteObject.unite(hb)(remote1)(remote2)("example")
+                     <+ RemoteObject.unite(r1)(remote2)("example")
 
 
         let actioned = (united >> utility).complexAction(3)("bar")(false)
@@ -146,9 +146,9 @@ class CodeCoverageTests: XCTestCase {
 
         let actionedRemote1 = actioned >> hb +> remote1 
 
-        let finished = RemoteObject.devide(name: "example")(a: actionedRemote1)(b: remote2)
-                    <+ RemoteObject.devide(hb)(name: "example")(a: actionedRemote1)(b: remote2)
-                    <+ RemoteObject.devide(name: "example" >> hb)(a: actionedRemote1)(b: remote2)
+        let finished = RemoteObject.devide("example")(actionedRemote1)(remote2)
+                    <+ RemoteObject.devide(hb)("example")(actionedRemote1)(remote2)
+                    <+ RemoteObject.devide("example" >> hb)(actionedRemote1)(remote2)
 
         completion.fulfill(finished)
         finished.onError(fail)

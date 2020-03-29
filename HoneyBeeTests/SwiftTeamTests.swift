@@ -40,10 +40,10 @@ class SwiftTeamTests: XCTestCase {
         
         HoneyBee.async(completion: completion) { async in
         
-            let dataProfile = loadWebResource(async)(named: "dataprofile.txt")
-            let imageData = loadWebResource(async)(named: "imagedata.dat")
+            let dataProfile = loadWebResource(async)("dataprofile.txt")
+            let imageData = loadWebResource("imagedata.dat" >> async)
             
-            let image = decodeImage(dataProfile: dataProfile)(image: imageData)
+            let image = decodeImage(dataProfile)(imageData)
             let cleanedImage = dewarpAndCleanupImage(image)
             
             return cleanedImage
@@ -69,13 +69,13 @@ class SwiftTeamTests: XCTestCase {
         User.login(hb)("Fred")(17)
             .drop.chain(expect1.fulfill)
         
-        addTogether(hb)(one: 1)(two: 3.5)
+        addTogether(hb)(1)(3.5)
         
         let r1 = increment(hb)(3)
-        let r2 = increment(val: r1)
-        let r3 = increment(val: r2)
+        let r2 = increment(r1)
+        let r3 = increment(r2)
         
-        let b = increment(fox: r3).chain {
+        let b = increment(r3).chain {
             XCTAssertEqual($0, 7)
         }
         b.drop.chain(expect2.fulfill)

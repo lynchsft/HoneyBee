@@ -189,7 +189,7 @@ final public class Link<B, P: AsyncBlockPerformer> : Executable  {
             return function.chain { (triple: TripleArgFunction<X,Y,Z,R>, completion: @escaping (Result<R, Error>)->Void) in
                 dropped.document(with: triple)
 
-                triple.ground(dropped)(x)(y)(z).onResult(completion)
+                triple(dropped)(x)(y)(z).onResult(completion)
             }
         }
     }
@@ -201,7 +201,7 @@ final public class Link<B, P: AsyncBlockPerformer> : Executable  {
             return function.chain { (double: DoubleArgFunction<Y,Z,R>, completion: @escaping (Result<R, Error>)->Void) in
                 dropped.document(with: double)
 
-                double.ground(dropped)(y)(z).onResult(completion)
+                double(dropped)(y)(z).onResult(completion)
             }
         }
     }
@@ -213,7 +213,7 @@ final public class Link<B, P: AsyncBlockPerformer> : Executable  {
             return function.chain { (single: SingleArgFunction<Z,R>, completion: @escaping (Result<R, Error>)->Void) in
                 dropped.document(with: single)
 
-                single.ground(dropped)(z).onResult(completion)
+                single(dropped)(z).onResult(completion)
             }
         }
     }
@@ -225,7 +225,7 @@ final public class Link<B, P: AsyncBlockPerformer> : Executable  {
             return function.chain { (zero: ZeroArgFunction<R>, completion: @escaping (Result<R, Error>)->Void) in
                 dropped.document(with: zero)
                 
-                zero.ground(dropped).onResult(completion)
+                zero(dropped).onResult(completion)
             }
         }
     }
@@ -237,7 +237,7 @@ final public class Link<B, P: AsyncBlockPerformer> : Executable  {
             return function.chain { (triple: BoundTripleArgFunction<X,Y,Z,R, P>, completion: @escaping (Result<R, Error>)->Void) in
                 dropped.document(with: triple.triple)
 
-                triple.ground(dropped)(x)(y)(z).onResult(completion)
+                triple(dropped)(x)(y)(z).onResult(completion)
             }
         }
     }
@@ -249,7 +249,7 @@ final public class Link<B, P: AsyncBlockPerformer> : Executable  {
             return function.chain { (double: BoundDoubleArgFunction<Y,Z,R, P>, completion: @escaping (Result<R, Error>)->Void) in
                 dropped.document(with: double.double)
 
-                double.ground(dropped)(y)(z).onResult(completion)
+                double(dropped)(y)(z).onResult(completion)
             }
         }
     }
@@ -261,7 +261,7 @@ final public class Link<B, P: AsyncBlockPerformer> : Executable  {
             return function.chain { (single: BoundSingleArgFunction<Z,R, P>, completion: @escaping (Result<R, Error>)->Void) in
                 dropped.document(with: single.single)
 
-                single.ground(dropped)(z).onResult(completion)
+                single(dropped)(z).onResult(completion)
             }
         }
     }
@@ -273,7 +273,7 @@ final public class Link<B, P: AsyncBlockPerformer> : Executable  {
             return function.chain { (zero: BoundZeroArgFunction<R, P>, completion: @escaping (Result<R, Error>)->Void) in
                 dropped.document(with: zero.zero)
 
-                zero.ground(dropped).onResult(completion)
+                zero(dropped).onResult(completion)
             }
         }
     }

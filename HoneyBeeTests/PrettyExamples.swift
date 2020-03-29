@@ -95,10 +95,10 @@ struct PrettyExamples {
 	
 	func processImageDataCurried(completion: @escaping (Result<Image, ErrorContext>) -> Void) {
 		HoneyBee.async(completion: completion) { hb in
-            let dataProfile = self.loadWebResource(named: "dataprofile.txt")(hb)
-            let imageData = self.loadWebResource(named: "imagedata.dat")(hb)
+            let dataProfile = self.loadWebResource("dataprofile.txt")(hb)
+            let imageData = self.loadWebResource("imagedata.dat")(hb)
 			
-            let image = self.decodeImage(dataProfile: dataProfile)(image: imageData)
+            let image = self.decodeImage(dataProfile)(imageData)
             let cleanedImage = self.dewarpAndCleanupImage(image)
 			
 			return cleanedImage
@@ -108,10 +108,10 @@ struct PrettyExamples {
     func processImageDataCurried2(completion: @escaping (Result<Image, ErrorContext>) -> Void) {
         let hb = HoneyBee.start()
 
-        let dataProfile = loadWebResource(named: "dataprofile.txt" >> hb)
-        let imageData = loadWebResource(namd: "imagedata.dat" >> hb)
+        let dataProfile = loadWebResource("dataprofile.txt" >> hb)
+        let imageData = loadWebResource("imagedata.dat" >> hb)
 
-        let image = decodeImage(dataProfile: dataProfile)(image: imageData)
+        let image = decodeImage(dataProfile)(imageData)
         let cleanedImage = dewarpAndCleanupImage(image)
 
         cleanedImage.onResult(completion)

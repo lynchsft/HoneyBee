@@ -48,7 +48,7 @@ final class JoinPoint<A, P: AsyncBlockPerformer> : Executable {
 												 "conjoin detected between Links with different AsyncBlockPerformers. This can lead to unexpected results.")
 		var tuple: (A,B)? = nil
 		
-        var newTrace = self.trace.join(other.trace)
+        let newTrace = self.trace.join(other.trace)
 		let link = Link<(A,B), P>(function: { _, callback in
 			callback(.success(tuple!))
 		}, 

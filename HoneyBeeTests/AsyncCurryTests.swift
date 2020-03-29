@@ -56,10 +56,10 @@ class AsyncCurryTests: XCTestCase {
 		
 		let hb = HoneyBee.start()
         
-        let r1 = increment(3)(hb)
-        let r2 = increment(val: r1)
-        let r3 = increment(val: r2)
-        let r4 = increment(fox: r3).chain {
+        let r1 = increment(3 >> hb) 
+        let r2 = increment(r1)
+        let r3 = increment(r2)
+        let r4 = increment(r3).chain {
 			XCTAssertEqual($0, 7)
         }
         r4.onResult { (result: Result<Int, Error>) in
@@ -70,7 +70,7 @@ class AsyncCurryTests: XCTestCase {
                 XCTFail()
             }
         }
-        let error = TestingFunctions().explode(r4.drop)
+        let error = TestingFunctions().explode(r4)
         error.onResult { (result: Result<Int, ErrorContext>) in
             switch result {
             case .success(_):
@@ -155,12 +155,12 @@ class AsyncCurryTests: XCTestCase {
 		let source = [1, 2, 3]
 		let sum = a.insert(source)
 			.map {
-                increment(val: $0)
+                increment($0)
 			}.reduce(with: 0) {
 				$0.chain(+)
 			}
 		
-        increment(val: sum).chain {
+        increment(sum).chain {
 			XCTAssertEqual($0, 10)
 		}.chain(TestingFunctions().explode)
             .onError(handleError)
@@ -205,7 +205,7 @@ class AsyncCurryTests: XCTestCase {
                 .map { (int: Link<Int, DefaultDispatchQueue>) -> Link<Int, DefaultDispatchQueue> in
                     let bigger = increment(int)
 
-                    let explode = TestingFunctions().explode(bigger.drop)
+                    let explode = TestingFunctions().explode(bigger)
                     explode.onError(longError)
                     return explode
 			}

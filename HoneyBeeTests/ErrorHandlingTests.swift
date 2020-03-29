@@ -184,8 +184,10 @@ class ErrorHandlingTests: XCTestCase {
 		let lock = NSLock()
 		
 		func asynchronouslyHoldLock(iteration: Int, completion: @escaping (Int)->Void) {
+            lock.lock()
 			DispatchQueue.global(qos: .background).async {
 				sleep(UInt32(sleepSeconds))
+                lock.unlock()
 				completion(iteration)
 			}
 		}

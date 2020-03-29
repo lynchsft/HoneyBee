@@ -45,11 +45,11 @@ class MultiPathTests: XCTestCase {
         let string = self.funcContainer.intToString(async)(10)
         let int = self.funcContainer.stringToInt(string)
         
-        let eq1 = assertEquals(t1: int)(t2: 10)
-        expect1.fulfill(eq1.drop)
+        let eq1 = assertEquals(int)(10)
+        expect1.fulfill(eq1)
             
         let doubleInt = self.funcContainer.multiplyInt(int)
-        let eq2 = assertEquals(t1: doubleInt)(t2: 20)
+        let eq2 = assertEquals(doubleInt)(20)
         expect2.fulfill(eq2)
 
         eq2.onError(fail)
@@ -73,12 +73,12 @@ class MultiPathTests: XCTestCase {
         let string = asynFuncs.intToString(10)
         let int = asynFuncs.stringToInt(string)
         
-        let eq1 = assertEquals(t1: int)(t2: 10)
-        expect1.fulfill(eq1.drop)
+        let eq1 = assertEquals(int)(10)
+        expect1.fulfill(eq1)
             
         let doubleInt = asynFuncs.multiplyInt(int)
-        let eq2 = assertEquals(t1: doubleInt)(t2: 20)
-        expect2.fulfill(eq2.drop)
+        let eq2 = assertEquals(doubleInt)(20)
+        expect2.fulfill(eq2)
 
         eq2.onError(fail)
         
@@ -135,10 +135,11 @@ class MultiPathTests: XCTestCase {
             let wait = asyncFuncs.wait(seconds: sleepTime)
             let string = wait.constantString()
             
-            let multipled = asyncFuncs.multiplyString(string)(by: int)
+            let multipled = asyncFuncs.multiplyString(string)(int)
             let catted = asyncFuncs.stringCat(multipled)
-            
-            assertEquals()(t1: catted)(t2: "lamblamblamblamblamblamblamblambcat")
+
+            #warning("Watch this")
+            assertEquals()(catted)("lamblamblamblamblamblamblamblambcat")
                 .chain(expectA.fulfill)
                 .onError(fail)
         }
