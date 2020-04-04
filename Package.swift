@@ -3,12 +3,11 @@ import PackageDescription
 
 let package = Package(
 	name: "HoneyBee",
+	products: [
+		.library(name: "HoneyBee", targets: ["HoneyBee"])
+	],
 	targets: [
-		.target(name: "HoneyBee",
-				dependencies: [],
-				path: "HoneyBee/"),
-		.testTarget(name: "HoneyBeeTests",
-					dependencies: ["HoneyBee"],
-					path: "HoneyBeeTests/"),
-		]
+		.target(name: "HoneyBee"),
+		.testTarget(name: "HoneyBeeTests", dependencies: ["HoneyBee"])
+	]
 )

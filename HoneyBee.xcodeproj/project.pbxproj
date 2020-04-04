@@ -48,8 +48,8 @@
 
 /* Begin PBXFileReference section */
 		FA1A841A1FD2E0470093D11A /* FinallyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinallyTests.swift; sourceTree = "<group>"; };
-		FA202E5020F5C67700B2489D /* SafeLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafeLink.swift; sourceTree = "<group>"; };
-		FA2081DA1FD1C0A4003145FB /* FaultResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaultResponse.swift; sourceTree = "<group>"; };
+		FA202E5020F5C67700B2489D /* SafeLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SafeLink.swift; path = ../Sources/HoneyBee/SafeLink.swift; sourceTree = "<group>"; };
+		FA2081DA1FD1C0A4003145FB /* FaultResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = FaultResponse.swift; path = ../Sources/HoneyBee/FaultResponse.swift; sourceTree = "<group>"; };
 		FA25B0141F9D0885006F8DEE /* TestingFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestingFunctions.swift; sourceTree = "<group>"; };
 		FA25B0161F9D0931006F8DEE /* MultiPathTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiPathTests.swift; sourceTree = "<group>"; };
 		FA2D12561FA01D8A004C491E /* ErrorHandlingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorHandlingTests.swift; sourceTree = "<group>"; };
@@ -58,28 +58,28 @@
 		FA41097A1E9CFBC4002A6BA6 /* SinglePathTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SinglePathTests.swift; sourceTree = "<group>"; };
 		FA41097C1E9CFBC4002A6BA6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FA473BB81E352CB1007E4D61 /* HoneyBee.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = HoneyBee.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		FA473BBC1E352CB1007E4D61 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = HoneyBee/Info.plist; sourceTree = "<group>"; };
-		FA4E8D3A1E874EB600D751B3 /* Generate.rb */ = {isa = PBXFileReference; lastKnownFileType = text.script.ruby; name = Generate.rb; path = HoneyBee/Generate.rb; sourceTree = "<group>"; };
+		FA473BBC1E352CB1007E4D61 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = Sources/HoneyBee/Info.plist; sourceTree = "<group>"; };
+		FA4E8D3A1E874EB600D751B3 /* Generate.rb */ = {isa = PBXFileReference; lastKnownFileType = text.script.ruby; name = Generate.rb; path = Sources/HoneyBee/Generate.rb; sourceTree = "<group>"; };
 		FA575F8A20024A630075C89C /* PrettyExamples.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrettyExamples.swift; sourceTree = "<group>"; };
 		FA5FA32C1E70DE4B00625996 /* CommonCrypto.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = CommonCrypto.framework; sourceTree = "<group>"; };
-		FA62A2981FC9FBC000385D22 /* FailureRate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FailureRate.swift; sourceTree = "<group>"; };
-		FA62A2991FC9FBC000385D22 /* Executable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Executable.swift; sourceTree = "<group>"; };
-		FA62A29A1FC9FBC100385D22 /* ErrorContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ErrorContext.swift; sourceTree = "<group>"; };
-		FA62A29B1FC9FBC100385D22 /* BindOperator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BindOperator.swift; sourceTree = "<group>"; };
-		FA62A29C1FC9FBC100385D22 /* FailableResult.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FailableResult.swift; sourceTree = "<group>"; };
-		FA62A29D1FC9FBC100385D22 /* JoinPoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JoinPoint.swift; sourceTree = "<group>"; };
-		FA62A29E1FC9FBC100385D22 /* Link.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Link.swift; sourceTree = "<group>"; };
-		FA62A29F1FC9FBC100385D22 /* Bind.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bind.swift; sourceTree = "<group>"; };
-		FA62A2A01FC9FBC100385D22 /* HoneyBee.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HoneyBee.swift; sourceTree = "<group>"; };
-		FA62A2A11FC9FBC100385D22 /* Chainable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Chainable.swift; sourceTree = "<group>"; };
-		FA62A2A21FC9FBC100385D22 /* PathDescribing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PathDescribing.swift; sourceTree = "<group>"; };
-		FA62A2A41FC9FBC100385D22 /* ErrorHandling.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ErrorHandling.swift; sourceTree = "<group>"; };
-		FA62A2A51FC9FBC100385D22 /* AsyncBlockPerformer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AsyncBlockPerformer.swift; sourceTree = "<group>"; };
-		FA62A2A61FC9FBC100385D22 /* ChainableFailable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChainableFailable.swift; sourceTree = "<group>"; };
-		FA62A2B61FC9FBCA00385D22 /* ConcurentQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConcurentQueue.swift; sourceTree = "<group>"; };
-		FA62A2B71FC9FBCA00385D22 /* AtomicValue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AtomicValue.swift; sourceTree = "<group>"; };
-		FAF0C3051FD1AD6B00D1F177 /* ConcurrentFunctionTools.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConcurrentFunctionTools.swift; sourceTree = "<group>"; };
-		FAF5828020FE0E0B00E135CB /* LinkCommon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkCommon.swift; sourceTree = "<group>"; };
+		FA62A2981FC9FBC000385D22 /* FailureRate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FailureRate.swift; path = ../Sources/HoneyBee/FailureRate.swift; sourceTree = "<group>"; };
+		FA62A2991FC9FBC000385D22 /* Executable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Executable.swift; path = ../Sources/HoneyBee/Executable.swift; sourceTree = "<group>"; };
+		FA62A29A1FC9FBC100385D22 /* ErrorContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ErrorContext.swift; path = ../Sources/HoneyBee/ErrorContext.swift; sourceTree = "<group>"; };
+		FA62A29B1FC9FBC100385D22 /* BindOperator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BindOperator.swift; path = ../Sources/HoneyBee/BindOperator.swift; sourceTree = "<group>"; };
+		FA62A29C1FC9FBC100385D22 /* FailableResult.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FailableResult.swift; path = ../Sources/HoneyBee/FailableResult.swift; sourceTree = "<group>"; };
+		FA62A29D1FC9FBC100385D22 /* JoinPoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = JoinPoint.swift; path = ../Sources/HoneyBee/JoinPoint.swift; sourceTree = "<group>"; };
+		FA62A29E1FC9FBC100385D22 /* Link.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Link.swift; path = ../Sources/HoneyBee/Link.swift; sourceTree = "<group>"; };
+		FA62A29F1FC9FBC100385D22 /* Bind.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Bind.swift; path = ../Sources/HoneyBee/Bind.swift; sourceTree = "<group>"; };
+		FA62A2A01FC9FBC100385D22 /* HoneyBee.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HoneyBee.swift; path = ../Sources/HoneyBee/HoneyBee.swift; sourceTree = "<group>"; };
+		FA62A2A11FC9FBC100385D22 /* Chainable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Chainable.swift; path = ../Sources/HoneyBee/Chainable.swift; sourceTree = "<group>"; };
+		FA62A2A21FC9FBC100385D22 /* PathDescribing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PathDescribing.swift; path = ../Sources/HoneyBee/PathDescribing.swift; sourceTree = "<group>"; };
+		FA62A2A41FC9FBC100385D22 /* ErrorHandling.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ErrorHandling.swift; path = ../Sources/HoneyBee/ErrorHandling.swift; sourceTree = "<group>"; };
+		FA62A2A51FC9FBC100385D22 /* AsyncBlockPerformer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AsyncBlockPerformer.swift; path = ../Sources/HoneyBee/AsyncBlockPerformer.swift; sourceTree = "<group>"; };
+		FA62A2A61FC9FBC100385D22 /* ChainableFailable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ChainableFailable.swift; path = ../Sources/HoneyBee/ChainableFailable.swift; sourceTree = "<group>"; };
+		FA62A2B61FC9FBCA00385D22 /* ConcurentQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ConcurentQueue.swift; path = ../Sources/HoneyBee/ConcurentQueue.swift; sourceTree = "<group>"; };
+		FA62A2B71FC9FBCA00385D22 /* AtomicValue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AtomicValue.swift; path = ../Sources/HoneyBee/AtomicValue.swift; sourceTree = "<group>"; };
+		FAF0C3051FD1AD6B00D1F177 /* ConcurrentFunctionTools.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ConcurrentFunctionTools.swift; path = ../Sources/HoneyBee/ConcurrentFunctionTools.swift; sourceTree = "<group>"; };
+		FAF5828020FE0E0B00E135CB /* LinkCommon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = LinkCommon.swift; path = ../Sources/HoneyBee/LinkCommon.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -112,7 +112,8 @@
 				FA25B0141F9D0885006F8DEE /* TestingFunctions.swift */,
 				FA575F8A20024A630075C89C /* PrettyExamples.swift */,
 			);
-			path = HoneyBeeTests;
+			name = HoneyBeeTests;
+			path = ../Sources/HoneyBeeTests;
 			sourceTree = "<group>";
 		};
 		FA473BAE1E352CB1007E4D61 = {
@@ -380,7 +381,7 @@
 			buildSettings = {
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				DEVELOPMENT_TEAM = A4Q9SQ9LHR;
-				INFOPLIST_FILE = HoneyBee/HoneyBeeTests/Info.plist;
+				INFOPLIST_FILE = Sources/HoneyBeeTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.iamapps.HoneyBeeTests;
@@ -394,7 +395,7 @@
 			buildSettings = {
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				DEVELOPMENT_TEAM = A4Q9SQ9LHR;
-				INFOPLIST_FILE = HoneyBee/HoneyBeeTests/Info.plist;
+				INFOPLIST_FILE = Sources/HoneyBeeTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.iamapps.HoneyBeeTests;
@@ -534,7 +535,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 				);
-				INFOPLIST_FILE = HoneyBee/Info.plist;
+				INFOPLIST_FILE = Sources/HoneyBee/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -562,7 +563,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 				);
-				INFOPLIST_FILE = HoneyBee/Info.plist;
+				INFOPLIST_FILE = Sources/HoneyBee/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
