@@ -1,4 +1,3 @@
-
 Pod::Spec.new do |s|
   s.name         = "HoneyBee"
   s.version      = "2.8.2"
@@ -18,5 +17,5 @@ Pod::Spec.new do |s|
 
   s.source       = { :git => "https://github.com/lynchsft/HoneyBee.git", :tag=>"v2.8.2"}
 
-  s.source_files = "HoneyBee/*.swift"
-end	
+  s.source_files = "Sources/HoneyBee/*.swift"
+end
