@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		8F2EE4822495367B00ABC79B /* AsyncFlowControlTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FC3375823B54D4E00E9208F /* AsyncFlowControlTests.swift */; };
+		8F2EE4832495381100ABC79B /* MergeSortTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F48C13A23B2932F00957E59 /* MergeSortTest.swift */; };
 		8F7EBDB323CF8812007C9EDB /* ConcurrentBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F7EBDB223CF8812007C9EDB /* ConcurrentBox.swift */; };
 		8F8CF4CD24945B6C005C3F07 /* AsyncCurryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAA722B8226F2D5500A8CB7B /* AsyncCurryTests.swift */; };
 		8FC3271C23A47B8000E25281 /* FunctionTransformations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FC3271B23A47B8000E25281 /* FunctionTransformations.swift */; };
@@ -356,6 +357,7 @@
 			files = (
 				8F2EE4822495367B00ABC79B /* AsyncFlowControlTests.swift in Sources */,
 				8FCB321E241D4EDA006E0498 /* TestingFunctions.swift in Sources */,
+				8F2EE4832495381100ABC79B /* MergeSortTest.swift in Sources */,
 				8FCB321D241D4E5E006E0498 /* SwiftTeamTests.swift in Sources */,
 				8F8CF4CD24945B6C005C3F07 /* AsyncCurryTests.swift in Sources */,
 			);

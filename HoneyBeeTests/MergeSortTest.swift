@@ -80,7 +80,7 @@ class MergeSortTest: XCTestCase {
         XCTAssertEqual(sorted.count, MergeSortTest.randomInts.count)
     }
 
-    private lazy var mergeSort3 = async1(self.mergeSort3) as SingleArgFunction<[Int],[Int]>
+    private lazy var mergeSort3 = async1(self.mergeSort3) as SingleArgFunction<[Int],[Int], Never>
     ///https://github.com/raywenderlich/swift-algorithm-club/tree/master/Merge%20Sort
     func mergeSort3(_ array: [Int], completion: @escaping ([Int])->Void) {
         guard array.count > 200 else {
