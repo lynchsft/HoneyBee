@@ -11,8 +11,8 @@ import Foundation
 /// Wraps an asynchronous function taking 3 parameters
 /// - Parameters:
 ///   - function: the function to wrap
-public func async3<A, B, C, R>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (A, B, C, ((R?, Error?) -> Void)?) -> Void) -> TripleArgFunction<A, B, C, R> {
-    TripleArgFunction(action: tname(function), file: file, line: line) { (a: A, b: B, c: C, completion: @escaping FunctionWrapperCompletion<R>) -> Void  in
+public func async3<A, B, C, R, E: Error>(_ function: @escaping (A, B, C, ((R?, E?) -> Void)?) -> Void) -> TripleArgFunction<A, B, C, R, E> {
+    TripleArgFunction(action: tname(function)) { (a: A, b: B, c: C, completion: @escaping FunctionWrapperCompletion<R, E>) -> Void  in
         let boundFunction = function =<< a =<< b =<< c
         elevate(boundFunction)(completion)
     }
@@ -21,8 +21,8 @@ public func async3<A, B, C, R>(file: StaticString = #file, line: UInt = #line, _
 /// Wraps an asynchronous function taking two parameters
 /// - Parameters:
 ///   - function: the function to wrap
-public func async2<A, B, R>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (A, B, ((R?, Error?) -> Void)?) -> Void) -> DoubleArgFunction<A, B, R> {
-    DoubleArgFunction(action: tname(function), file: file, line: line) { (a: A, b: B, completion: @escaping FunctionWrapperCompletion<R>) -> Void in
+public func async2<A, B, R, E: Error>(_ function: @escaping (A, B, ((R?, E?) -> Void)?) -> Void) -> DoubleArgFunction<A, B, R, E> {
+    DoubleArgFunction(action: tname(function)) { (a: A, b: B, completion: @escaping FunctionWrapperCompletion<R, E>) -> Void in
         let boundFunction = function =<< a =<< b
         elevate(boundFunction)(completion)
     }
@@ -31,8 +31,8 @@ public func async2<A, B, R>(file: StaticString = #file, line: UInt = #line, _ fu
 /// Wraps an asynchronous function taking a single parameter
 /// - Parameters:
 ///   - function: the function to wrap
-public func async1<A, R>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (A, ((R?, Error?) -> Void)?) -> Void) -> SingleArgFunction<A, R> {
-    SingleArgFunction(action: tname(function), file: file, line: line) { (a: A, completion: @escaping FunctionWrapperCompletion<R>) ->Void in
+public func async1<A, R, E: Error>(_ function: @escaping (A, ((R?, E?) -> Void)?) -> Void) -> SingleArgFunction<A, R, E> {
+    SingleArgFunction(action: tname(function)) { (a: A, completion: @escaping FunctionWrapperCompletion<R, E>) ->Void in
         let boundFunction = function =<< a
         elevate(boundFunction)(completion)
     }
@@ -41,8 +41,8 @@ public func async1<A, R>(file: StaticString = #file, line: UInt = #line, _ funct
 /// Wraps an asynchronous function taking zero parameters
 /// - Parameters:
 ///   - function: the function to wrap
-public func async0<R>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (((R?, Error?) -> Void)?) -> Void) -> ZeroArgFunction<R> {
-    ZeroArgFunction(action: tname(function), file: file, line: line) { (completion: @escaping FunctionWrapperCompletion<R>) ->Void in
+public func async0<R, E: Error>(_ function: @escaping (((R?, E?) -> Void)?) -> Void) -> ZeroArgFunction<R, E> {
+    ZeroArgFunction(action: tname(function)) { (completion: @escaping FunctionWrapperCompletion<R, E>) ->Void in
         elevate(function)(completion)
     }
 }
@@ -50,8 +50,8 @@ public func async0<R>(file: StaticString = #file, line: UInt = #line, _ function
 /// Wraps an asynchronous function taking 3 parameters
 /// - Parameters:
 ///   - function: the function to wrap
-public func async3<A, B, C>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (A, B, C, ((Error?) -> Void)?) -> Void) -> TripleArgFunction<A, B, C, Void> {
-    TripleArgFunction(action: tname(function), file: file, line: line) { (a: A, b: B, c: C, completion: @escaping FunctionWrapperCompletion<Void>) -> Void in
+public func async3<A, B, C, E: Error>(_ function: @escaping (A, B, C, ((E?) -> Void)?) -> Void) -> TripleArgFunction<A, B, C, Void, E> {
+    TripleArgFunction(action: tname(function)) { (a: A, b: B, c: C, completion: @escaping FunctionWrapperCompletion<Void, E>) -> Void in
         let boundFunction = function =<< a =<< b =<< c
         elevate(boundFunction)(completion)
     }
@@ -60,8 +60,8 @@ public func async3<A, B, C>(file: StaticString = #file, line: UInt = #line, _ fu
 /// Wraps an asynchronous function taking a single parameter
 /// - Parameters:
 ///   - function: the function to wrap
-public func async1<A>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (A, ((Error?) -> Void)?) -> Void) -> SingleArgFunction<A, Void> {
-    SingleArgFunction(action: tname(function), file: file, line: line) { (a: A, completion: @escaping FunctionWrapperCompletion<Void>) ->Void in
+public func async1<A, E: Error>(_ function: @escaping (A, ((E?) -> Void)?) -> Void) -> SingleArgFunction<A, Void, E> {
+    SingleArgFunction(action: tname(function)) { (a: A, completion: @escaping FunctionWrapperCompletion<Void, E>) ->Void in
         let boundFunction = function =<< a
         elevate(boundFunction)(completion)
     }
@@ -70,8 +70,8 @@ public func async1<A>(file: StaticString = #file, line: UInt = #line, _ function
 /// Wraps an asynchronous function taking 3 parameters
 /// - Parameters:
 ///   - function: the function to wrap
-public func async3<A, B, C, R>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (A, B, C, ((R) -> Void)?) throws -> Void) -> TripleArgFunction<A, B, C, R> {
-    TripleArgFunction(action: tname(function), file: file, line: line) { (a: A, b: B, c: C, completion: @escaping FunctionWrapperCompletion<R>)
+public func async3<A, B, C, R>(_ function: @escaping (A, B, C, ((R) -> Void)?) -> Void) -> TripleArgFunction<A, B, C, R, Never> {
+    TripleArgFunction(action: tname(function)) { (a: A, b: B, c: C, completion: @escaping FunctionWrapperCompletion<R, Never>)
         -> Void in
         let boundFunction = function =<< a =<< b =<< c
         elevate(boundFunction)(completion)
@@ -81,8 +81,8 @@ public func async3<A, B, C, R>(file: StaticString = #file, line: UInt = #line, _
 /// Wraps an asynchronous function taking 3 parameters
 /// - Parameters:
 ///   - function: the function to wrap
-public func async3<A, B, C, R>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (A, B, C, @escaping (R) -> Void) throws -> Void) -> TripleArgFunction<A, B, C, R> {
-    TripleArgFunction(action: tname(function), file: file, line: line) { (a: A, b: B, c: C, completion: @escaping FunctionWrapperCompletion<R>) -> Void in
+public func async3<A, B, C, R>(_ function: @escaping (A, B, C, @escaping (R) -> Void) -> Void) -> TripleArgFunction<A, B, C, R, Never> {
+    TripleArgFunction(action: tname(function)) { (a: A, b: B, c: C, completion: @escaping FunctionWrapperCompletion<R, Never>) -> Void in
         let boundFunction = function =<< a =<< b =<< c
         elevate(boundFunction)(completion)
     }
@@ -91,8 +91,8 @@ public func async3<A, B, C, R>(file: StaticString = #file, line: UInt = #line, _
 /// Wraps an asynchronous function taking two parameters
 /// - Parameters:
 ///   - function: the function to wrap
-public func async2<A, B, R>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (A, B, ((R) -> Void)?) throws -> Void) -> DoubleArgFunction<A, B, R> {
-    DoubleArgFunction(action: tname(function), file: file, line: line) { (a: A, b: B, completion: @escaping FunctionWrapperCompletion<R>) -> Void in
+public func async2<A, B, R>(_ function: @escaping (A, B, ((R) -> Void)?) -> Void) -> DoubleArgFunction<A, B, R, Never> {
+    DoubleArgFunction(action: tname(function)) { (a: A, b: B, completion: @escaping FunctionWrapperCompletion<R, Never>) -> Void in
         let boundFunction = function =<< a =<< b
         elevate(boundFunction)(completion)
     }
@@ -101,8 +101,8 @@ public func async2<A, B, R>(file: StaticString = #file, line: UInt = #line, _ fu
 /// Wraps an asynchronous function taking two parameters
 /// - Parameters:
 ///   - function: the function to wrap
-public func async2<A, B, R>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (A, B, @escaping (R) -> Void) throws -> Void) ->  DoubleArgFunction<A, B, R> {
-    DoubleArgFunction(action: tname(function), file: file, line: line) { (a: A, b: B, completion: @escaping FunctionWrapperCompletion<R>) -> Void in
+public func async2<A, B, R>(_ function: @escaping (A, B, @escaping (R) -> Void) -> Void) ->  DoubleArgFunction<A, B, R, Never> {
+    DoubleArgFunction(action: tname(function)) { (a: A, b: B, completion: @escaping FunctionWrapperCompletion<R, Never>) -> Void in
         let boundFunction = function =<< a =<< b
         elevate(boundFunction)(completion)
     }
@@ -111,8 +111,8 @@ public func async2<A, B, R>(file: StaticString = #file, line: UInt = #line, _ fu
 /// Wraps an asynchronous function taking a single parameter
 /// - Parameters:
 ///   - function: the function to wrap
-public func async1<A, R>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (A, ((R) -> Void)?) throws -> Void) -> SingleArgFunction<A, R> {
-    SingleArgFunction(action: tname(function), file: file, line: line) { (a: A, completion: @escaping FunctionWrapperCompletion<R>) ->Void in
+public func async1<A, R>(_ function: @escaping (A, ((R) -> Void)?) -> Void) -> SingleArgFunction<A, R, Never> {
+    SingleArgFunction(action: tname(function)) { (a: A, completion: @escaping FunctionWrapperCompletion<R, Never>) ->Void in
         let boundFunction = function =<< a
         elevate(boundFunction)(completion)
     }
@@ -121,8 +121,8 @@ public func async1<A, R>(file: StaticString = #file, line: UInt = #line, _ funct
 /// Wraps an asynchronous function taking a single parameter
 /// - Parameters:
 ///   - function: the function to wrap
-public func async1<A, R>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (A, @escaping (R) -> Void) throws -> Void) -> SingleArgFunction<A, R> {
-    SingleArgFunction(action: tname(function), file: file, line: line) { (a: A, completion: @escaping FunctionWrapperCompletion<R>) ->Void in
+public func async1<A, R>(_ function: @escaping (A, @escaping (R) -> Void) -> Void) -> SingleArgFunction<A, R, Never> {
+    SingleArgFunction(action: tname(function)) { (a: A, completion: @escaping FunctionWrapperCompletion<R, Never>) ->Void in
         let boundFunction = function =<< a
         elevate(boundFunction)(completion)
     }
@@ -131,8 +131,8 @@ public func async1<A, R>(file: StaticString = #file, line: UInt = #line, _ funct
 /// Wraps an asynchronous function taking zero parameters
 /// - Parameters:
 ///   - function: the function to wrap
-public func async0<R>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (@escaping (R) -> Void) throws -> Void) -> ZeroArgFunction<R> {
-    ZeroArgFunction(action: tname(function), file: file, line: line) { (completion: @escaping FunctionWrapperCompletion<R>) ->Void in
+public func async0<R>(_ function: @escaping (@escaping (R) -> Void) -> Void) -> ZeroArgFunction<R, Never> {
+    ZeroArgFunction(action: tname(function)) { (completion: @escaping FunctionWrapperCompletion<R, Never>) ->Void in
         elevate(function)(completion)
     }
 }
@@ -140,8 +140,8 @@ public func async0<R>(file: StaticString = #file, line: UInt = #line, _ function
 /// Wraps an asynchronous function taking 3 parameters
 /// - Parameters:
 ///   - function: the function to wrap
-public func async3<A, B, C>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (A, B, C, (() -> Void)?) throws -> Void) -> TripleArgFunction<A, B, C, Void> {
-    TripleArgFunction(action: tname(function), file: file, line: line) { (a: A, b: B, c: C, completion: @escaping FunctionWrapperCompletion<Void>) -> Void in
+public func async3<A, B, C>(_ function: @escaping (A, B, C, (() -> Void)?) -> Void) -> TripleArgFunction<A, B, C, Void, Never> {
+    TripleArgFunction(action: tname(function)) { (a: A, b: B, c: C, completion: @escaping FunctionWrapperCompletion<Void, Never>) -> Void in
         let boundFunction = function =<< a =<< b =<< c
         elevate(boundFunction)(completion)
     }
@@ -150,8 +150,8 @@ public func async3<A, B, C>(file: StaticString = #file, line: UInt = #line, _ fu
 /// Wraps an asynchronous function taking 3 parameters
 /// - Parameters:
 ///   - function: the function to wrap
-public func async3<A, B, C>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (A, B, C, @escaping () -> Void) throws -> Void) -> TripleArgFunction<A, B, C, Void> {
-    TripleArgFunction(action: tname(function), file: file, line: line) { (a: A, b: B, c: C, completion: @escaping FunctionWrapperCompletion<Void>) -> Void in
+public func async3<A, B, C>(_ function: @escaping (A, B, C, @escaping () -> Void) -> Void) -> TripleArgFunction<A, B, C, Void, Never> {
+    TripleArgFunction(action: tname(function)) { (a: A, b: B, c: C, completion: @escaping FunctionWrapperCompletion<Void, Never>) -> Void in
         let boundFunction = function =<< a =<< b =<< c
         elevate(boundFunction)(completion)
     }
@@ -160,8 +160,8 @@ public func async3<A, B, C>(file: StaticString = #file, line: UInt = #line, _ fu
 /// Wraps an asynchronous function taking two parameters
 /// - Parameters:
 ///   - function: the function to wrap
-public func async2<A, B>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (A, B, (() -> Void)?) throws -> Void) -> DoubleArgFunction<A, B, Void> {
-    DoubleArgFunction(action: tname(function), file: file, line: line) { (a: A, b: B, completion: @escaping FunctionWrapperCompletion<Void>) -> Void in
+public func async2<A, B>(_ function: @escaping (A, B, (() -> Void)?) -> Void) -> DoubleArgFunction<A, B, Void, Never> {
+    DoubleArgFunction(action: tname(function)) { (a: A, b: B, completion: @escaping FunctionWrapperCompletion<Void, Never>) -> Void in
         let boundFunction = function =<< a =<< b
         elevate(boundFunction)(completion)
     }
@@ -170,8 +170,8 @@ public func async2<A, B>(file: StaticString = #file, line: UInt = #line, _ funct
 /// Wraps an asynchronous function taking two parameters
 /// - Parameters:
 ///   - function: the function to wrap
-public func async2<A, B>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (A, B, @escaping () -> Void) throws -> Void) -> DoubleArgFunction<A, B, Void> {
-    DoubleArgFunction(action: tname(function), file: file, line: line) { (a: A, b: B, completion: @escaping FunctionWrapperCompletion<Void>) -> Void in
+public func async2<A, B>(_ function: @escaping (A, B, @escaping () -> Void) -> Void) -> DoubleArgFunction<A, B, Void, Never> {
+    DoubleArgFunction(action: tname(function)) { (a: A, b: B, completion: @escaping FunctionWrapperCompletion<Void, Never>) -> Void in
         let boundFunction = function =<< a =<< b
         elevate(boundFunction)(completion)
     }
@@ -180,8 +180,8 @@ public func async2<A, B>(file: StaticString = #file, line: UInt = #line, _ funct
 /// Wraps an asynchronous function taking a single parameter
 /// - Parameters:
 ///   - function: the function to wrap
-public func async1<A>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (A, (() -> Void)?) throws -> Void) -> SingleArgFunction<A, Void> {
-    SingleArgFunction(action: tname(function), file: file, line: line)  { (a: A, completion: @escaping FunctionWrapperCompletion<Void>) ->Void in
+public func async1<A>(_ function: @escaping (A, (() -> Void)?) -> Void) -> SingleArgFunction<A, Void, Never> {
+    SingleArgFunction(action: tname(function))  { (a: A, completion: @escaping FunctionWrapperCompletion<Void, Never>) ->Void in
         let boundFunction = function =<< a
         elevate(boundFunction)(completion)
     }
@@ -190,8 +190,8 @@ public func async1<A>(file: StaticString = #file, line: UInt = #line, _ function
 /// Wraps an asynchronous function taking a single parameter
 /// - Parameters:
 ///   - function: the function to wrap
-public func async1<A>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (A, @escaping () -> Void) throws -> Void) -> SingleArgFunction<A, Void> {
-    SingleArgFunction(action: tname(function), file: file, line: line) { (a: A, completion: @escaping FunctionWrapperCompletion<Void>) ->Void in
+public func async1<A>(_ function: @escaping (A, @escaping () -> Void) -> Void) -> SingleArgFunction<A, Void, Never> {
+    SingleArgFunction(action: tname(function)) { (a: A, completion: @escaping FunctionWrapperCompletion<Void, Never>) ->Void in
         let boundFunction = function =<< a
         elevate(boundFunction)(completion)
     }
@@ -200,8 +200,8 @@ public func async1<A>(file: StaticString = #file, line: UInt = #line, _ function
 /// Wraps an asynchronous function taking zero parameters
 /// - Parameters:
 ///   - function: the function to wrap
-public func async0(file: StaticString = #file, line: UInt = #line, _ function: @escaping ((() -> Void)?) throws -> Void) -> ZeroArgFunction<Void> {
-    ZeroArgFunction(action: tname(function), file: file, line: line) { (completion: @escaping FunctionWrapperCompletion<Void>) ->Void in
+public func async0(_ function: @escaping ((() -> Void)?) -> Void) -> ZeroArgFunction<Void, Never> {
+    ZeroArgFunction(action: tname(function)) { (completion: @escaping FunctionWrapperCompletion<Void, Never>) ->Void in
         elevate(function)(completion)
     }
 }
@@ -209,8 +209,8 @@ public func async0(file: StaticString = #file, line: UInt = #line, _ function: @
 /// Wraps an asynchronous function taking zero parameters
 /// - Parameters:
 ///   - function: the function to wrap
-public func async0(file: StaticString = #file, line: UInt = #line, _ function: @escaping (@escaping () -> Void) throws -> Void) -> ZeroArgFunction<Void> {
-    ZeroArgFunction(action: tname(function), file: file, line: line) { (completion: @escaping FunctionWrapperCompletion<Void>) ->Void in
+public func async0(_ function: @escaping (@escaping () -> Void) -> Void) -> ZeroArgFunction<Void, Never> {
+    ZeroArgFunction(action: tname(function)) { (completion: @escaping FunctionWrapperCompletion<Void, Never>) ->Void in
         elevate(function)(completion)
     }
 }
@@ -218,8 +218,8 @@ public func async0(file: StaticString = #file, line: UInt = #line, _ function: @
 /// Wraps an asynchronous function taking zero parameters
 /// - Parameters:
 ///   - function: the function to wrap
-public func async0<R>(file: StaticString = #file, line: UInt = #line, _ function: @escaping () throws -> R) -> ZeroArgFunction<R>  {
-    ZeroArgFunction(action: tname(function), file: file, line: line) { (completion: @escaping FunctionWrapperCompletion<R>) ->Void in
+public func async0<R>(_ function: @escaping () throws -> R) -> ZeroArgFunction<R, Error>  {
+    ZeroArgFunction(action: tname(function)) { (completion: @escaping FunctionWrapperCompletion<R, Error>) ->Void in
         elevate(function)(completion)
     }
 }
@@ -227,8 +227,8 @@ public func async0<R>(file: StaticString = #file, line: UInt = #line, _ function
 /// Wraps an asynchronous function taking a single parameter
 /// - Parameters:
 ///   - function: the function to wrap
-public func async1<A, R>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (A) throws -> R) -> SingleArgFunction<A, R> {
-    SingleArgFunction(action: tname(function), file: file, line: line) { (a: A, completion: @escaping FunctionWrapperCompletion<R>) ->Void in
+public func async1<A, R>(_ function: @escaping (A) throws -> R) -> SingleArgFunction<A, R, Error> {
+    SingleArgFunction(action: tname(function)) { (a: A, completion: @escaping FunctionWrapperCompletion<R, Error>) ->Void in
         let boundFunction = function =<< a
         elevate(boundFunction)(completion)
     }
@@ -237,47 +237,8 @@ public func async1<A, R>(file: StaticString = #file, line: UInt = #line, _ funct
 /// Wraps an asynchronous function taking two parameters
 /// - Parameters:
 ///   - function: the function to wrap
-public func async2<A, B, R>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (A,B) throws -> R) -> DoubleArgFunction<A, B, R> {
-    DoubleArgFunction(action: tname(function), file: file, line: line) { (a: A, b: B, completion: @escaping FunctionWrapperCompletion<R>) -> Void in
-        let boundFunction = function =<< a =<< b
-        elevate(boundFunction)(completion)
-    }
-}
-
-/// Wraps an asynchronous function taking 3 parameters
-/// - Parameters:
-///   - function: the function to wrap
-public func async3<A, B, C, R>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (A,B,C) throws -> R) -> TripleArgFunction<A, B, C, R> {
-    TripleArgFunction(action: tname(function), file: file, line: line) { (a: A, b: B, c: C, completion: @escaping FunctionWrapperCompletion<R>) -> Void in
-        let boundFunction = function =<< a =<< b =<< c
-        elevate(boundFunction)(completion)
-    }
-}
-
-/// Wraps an asynchronous function taking zero parameters
-/// - Parameters:
-///   - function: the function to wrap
-public func async0<R>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (@escaping (R?, Error?) -> Void) -> Void) -> ZeroArgFunction<R> {
-    ZeroArgFunction(action: tname(function), file: file, line: line) { (completion: @escaping FunctionWrapperCompletion<R>) ->Void in
-        elevate(function)(completion)
-    }
-}
-
-/// Wraps an asynchronous function taking a single parameter
-/// - Parameters:
-///   - function: the function to wrap
-public func async1<A, R, E: Error>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (A, @escaping (R?, E?) -> Void) -> Void) -> SingleArgFunction<A, R> {
-    SingleArgFunction(action: tname(function), file: file, line: line) { (a: A, completion: @escaping FunctionWrapperCompletion<R>) ->Void in
-        let boundFunction = function =<< a
-        elevate(boundFunction)(completion)
-    }
-}
-
-/// Wraps an asynchronous function taking two parameters
-/// - Parameters:
-///   - function: the function to wrap
-public func async2<A, B, R>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (A,B, @escaping (R?, Error?) -> Void) -> Void) -> DoubleArgFunction<A, B, R> {
-    DoubleArgFunction(action: tname(function), file: file, line: line) { (a: A, b: B, completion: @escaping FunctionWrapperCompletion<R>) -> Void in
+public func async2<A, B, R>(_ function: @escaping (A,B) throws -> R) -> DoubleArgFunction<A, B, R, Error> {
+    DoubleArgFunction(action: tname(function)) { (a: A, b: B, completion: @escaping FunctionWrapperCompletion<R, Error>) -> Void in
         let boundFunction = function =<< a =<< b
         elevate(boundFunction)(completion)
     }
@@ -286,8 +247,8 @@ public func async2<A, B, R>(file: StaticString = #file, line: UInt = #line, _ fu
 /// Wraps an asynchronous function taking 3 parameters
 /// - Parameters:
 ///   - function: the function to wrap
-public func async3<A, B, C, R>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (A,B,C, @escaping (R?, Error?) -> Void) -> Void) -> TripleArgFunction<A, B, C, R> {
-    TripleArgFunction(action: tname(function), file: file, line: line) { (a: A, b: B, c: C, completion: @escaping FunctionWrapperCompletion<R>) -> Void in
+public func async3<A, B, C, R>(_ function: @escaping (A,B,C) throws -> R) -> TripleArgFunction<A, B, C, R, Error> {
+    TripleArgFunction(action: tname(function)) { (a: A, b: B, c: C, completion: @escaping FunctionWrapperCompletion<R, Error>) -> Void in
         let boundFunction = function =<< a =<< b =<< c
         elevate(boundFunction)(completion)
     }
@@ -296,8 +257,8 @@ public func async3<A, B, C, R>(file: StaticString = #file, line: UInt = #line, _
 /// Wraps an asynchronous function taking zero parameters
 /// - Parameters:
 ///   - function: the function to wrap
-public func async0<R>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (@escaping (Error?, R?) -> Void) -> Void) -> ZeroArgFunction<R> {
-    ZeroArgFunction(action: tname(function), file: file, line: line) { (completion: @escaping FunctionWrapperCompletion<R>) ->Void in
+public func async0<R>(_ function: @escaping () -> R) -> ZeroArgFunction<R, Never>  {
+    ZeroArgFunction(action: tname(function)) { (completion: @escaping FunctionWrapperCompletion<R, Never>) ->Void in
         elevate(function)(completion)
     }
 }
@@ -305,8 +266,8 @@ public func async0<R>(file: StaticString = #file, line: UInt = #line, _ function
 /// Wraps an asynchronous function taking a single parameter
 /// - Parameters:
 ///   - function: the function to wrap
-public func async1<A, R>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (A, @escaping (Error?, R?) -> Void) -> Void) -> SingleArgFunction<A, R> {
-    SingleArgFunction(action: tname(function), file: file, line: line) { (a: A, completion: @escaping FunctionWrapperCompletion<R>) ->Void in
+public func async1<A, R>(_ function: @escaping (A) -> R) -> SingleArgFunction<A, R, Never> {
+    SingleArgFunction(action: tname(function)) { (a: A, completion: @escaping FunctionWrapperCompletion<R, Never>) ->Void in
         let boundFunction = function =<< a
         elevate(boundFunction)(completion)
     }
@@ -315,8 +276,8 @@ public func async1<A, R>(file: StaticString = #file, line: UInt = #line, _ funct
 /// Wraps an asynchronous function taking two parameters
 /// - Parameters:
 ///   - function: the function to wrap
-public func async2<A, B, R>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (A,B, @escaping (Error?, R?) -> Void) -> Void) -> DoubleArgFunction<A, B, R> {
-    DoubleArgFunction(action: tname(function), file: file, line: line) { (a: A, b: B, completion: @escaping FunctionWrapperCompletion<R>) -> Void in
+public func async2<A, B, R>(_ function: @escaping (A,B) -> R) -> DoubleArgFunction<A, B, R, Never> {
+    DoubleArgFunction(action: tname(function)) { (a: A, b: B, completion: @escaping FunctionWrapperCompletion<R, Never>) -> Void in
         let boundFunction = function =<< a =<< b
         elevate(boundFunction)(completion)
     }
@@ -325,8 +286,8 @@ public func async2<A, B, R>(file: StaticString = #file, line: UInt = #line, _ fu
 /// Wraps an asynchronous function taking 3 parameters
 /// - Parameters:
 ///   - function: the function to wrap
-public func async3<A, B, C, R>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (A,B,C, @escaping (Error?, R?) -> Void) -> Void) -> TripleArgFunction<A, B, C, R> {
-    TripleArgFunction(action: tname(function), file: file, line: line) { (a: A, b: B, c: C, completion: @escaping FunctionWrapperCompletion<R>) -> Void in
+public func async3<A, B, C, R>(_ function: @escaping (A,B,C) -> R) -> TripleArgFunction<A, B, C, R, Never> {
+    TripleArgFunction(action: tname(function)) { (a: A, b: B, c: C, completion: @escaping FunctionWrapperCompletion<R, Never>) -> Void in
         let boundFunction = function =<< a =<< b =<< c
         elevate(boundFunction)(completion)
     }
@@ -335,17 +296,8 @@ public func async3<A, B, C, R>(file: StaticString = #file, line: UInt = #line, _
 /// Wraps an asynchronous function taking zero parameters
 /// - Parameters:
 ///   - function: the function to wrap
-public func async0(file: StaticString = #file, line: UInt = #line, _ function: @escaping (((Error?) -> Void)?) -> Void) -> ZeroArgFunction<Void> {
-    ZeroArgFunction(action: tname(function), file: file, line: line) { (completion: @escaping FunctionWrapperCompletion<Void>) ->Void in
-        elevate(function)(completion)
-    }
-}
-
-/// Wraps an asynchronous function taking zero parameters
-/// - Parameters:
-///   - function: the function to wrap
-public func async0(file: StaticString = #file, line: UInt = #line, _ function: @escaping (@escaping (Error?) -> Void) -> Void) -> ZeroArgFunction<Void> {
-    ZeroArgFunction(action: tname(function), file: file, line: line) { (completion: @escaping FunctionWrapperCompletion<Void>) ->Void in
+public func async0<R, E: Error>(_ function: @escaping (@escaping (R?, E?) -> Void) -> Void) -> ZeroArgFunction<R, E> {
+    ZeroArgFunction(action: tname(function)) { (completion: @escaping FunctionWrapperCompletion<R, E>) ->Void in
         elevate(function)(completion)
     }
 }
@@ -353,8 +305,8 @@ public func async0(file: StaticString = #file, line: UInt = #line, _ function: @
 /// Wraps an asynchronous function taking a single parameter
 /// - Parameters:
 ///   - function: the function to wrap
-public func async1<A>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (A, @escaping (Error?) -> Void) -> Void) -> SingleArgFunction<A,Void> {
-    SingleArgFunction(action: tname(function), file: file, line: line) { (a: A, completion: @escaping FunctionWrapperCompletion<Void>) ->Void in
+public func async1<A, R, E: Error>(_ function: @escaping (A, @escaping (R?, E?) -> Void) -> Void) -> SingleArgFunction<A, R, E> {
+    SingleArgFunction(action: tname(function)) { (a: A, completion: @escaping FunctionWrapperCompletion<R, E>) ->Void in
         let boundFunction = function =<< a
         elevate(boundFunction)(completion)
     }
@@ -363,8 +315,8 @@ public func async1<A>(file: StaticString = #file, line: UInt = #line, _ function
 /// Wraps an asynchronous function taking two parameters
 /// - Parameters:
 ///   - function: the function to wrap
-public func async2<A, B>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (A,B, @escaping (Error?) -> Void) -> Void) -> DoubleArgFunction<A,B,Void> {
-    DoubleArgFunction(action: tname(function), file: file, line: line) { (a: A, b: B, completion: @escaping FunctionWrapperCompletion<Void>) -> Void in
+public func async2<A, B, R, E: Error>(_ function: @escaping (A,B, @escaping (R?, E?) -> Void) -> Void) -> DoubleArgFunction<A, B, R, E> {
+    DoubleArgFunction(action: tname(function)) { (a: A, b: B, completion: @escaping FunctionWrapperCompletion<R, E>) -> Void in
         let boundFunction = function =<< a =<< b
         elevate(boundFunction)(completion)
     }
@@ -373,8 +325,95 @@ public func async2<A, B>(file: StaticString = #file, line: UInt = #line, _ funct
 /// Wraps an asynchronous function taking 3 parameters
 /// - Parameters:
 ///   - function: the function to wrap
-public func async3<A, B, C>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (A,B,C, @escaping (Error?) -> Void) -> Void) -> TripleArgFunction<A,B,C,Void> {
-    TripleArgFunction(action: tname(function), file: file, line: line) { (a: A, b: B, c: C, completion: @escaping FunctionWrapperCompletion<Void>) -> Void in
+public func async3<A, B, C, R, E: Error>(_ function: @escaping (A,B,C, @escaping (R?, E?) -> Void) -> Void) -> TripleArgFunction<A, B, C, R, E> {
+    TripleArgFunction(action: tname(function)) { (a: A, b: B, c: C, completion: @escaping FunctionWrapperCompletion<R, E>) -> Void in
+        let boundFunction = function =<< a =<< b =<< c
+        elevate(boundFunction)(completion)
+    }
+}
+
+/// Wraps an asynchronous function taking zero parameters
+/// - Parameters:
+///   - function: the function to wrap
+public func async0<R, E: Error>(_ function: @escaping (@escaping (E?, R?) -> Void) -> Void) -> ZeroArgFunction<R, E> {
+    ZeroArgFunction(action: tname(function)) { (completion: @escaping FunctionWrapperCompletion<R, E>) ->Void in
+        elevate(function)(completion)
+    }
+}
+
+/// Wraps an asynchronous function taking a single parameter
+/// - Parameters:
+///   - function: the function to wrap
+public func async1<A, R, E: Error>(_ function: @escaping (A, @escaping (E?, R?) -> Void) -> Void) -> SingleArgFunction<A, R, E> {
+    SingleArgFunction(action: tname(function)) { (a: A, completion: @escaping FunctionWrapperCompletion<R, E>) ->Void in
+        let boundFunction = function =<< a
+        elevate(boundFunction)(completion)
+    }
+}
+
+/// Wraps an asynchronous function taking two parameters
+/// - Parameters:
+///   - function: the function to wrap
+public func async2<A, B, R, E: Error>(_ function: @escaping (A,B, @escaping (E?, R?) -> Void) -> Void) -> DoubleArgFunction<A, B, R, E> {
+    DoubleArgFunction(action: tname(function)) { (a: A, b: B, completion: @escaping FunctionWrapperCompletion<R, E>) -> Void in
+        let boundFunction = function =<< a =<< b
+        elevate(boundFunction)(completion)
+    }
+}
+
+/// Wraps an asynchronous function taking 3 parameters
+/// - Parameters:
+///   - function: the function to wrap
+public func async3<A, B, C, R, E: Error>(_ function: @escaping (A,B,C, @escaping (E?, R?) -> Void) -> Void) -> TripleArgFunction<A, B, C, R, E> {
+    TripleArgFunction(action: tname(function)) { (a: A, b: B, c: C, completion: @escaping FunctionWrapperCompletion<R, E>) -> Void in
+        let boundFunction = function =<< a =<< b =<< c
+        elevate(boundFunction)(completion)
+    }
+}
+
+/// Wraps an asynchronous function taking zero parameters
+/// - Parameters:
+///   - function: the function to wrap
+public func async0<E: Error>(_ function: @escaping (((E?) -> Void)?) -> Void) -> ZeroArgFunction<Void, E> {
+    ZeroArgFunction(action: tname(function)) { (completion: @escaping FunctionWrapperCompletion<Void, E>) ->Void in
+        elevate(function)(completion)
+    }
+}
+
+/// Wraps an asynchronous function taking zero parameters
+/// - Parameters:
+///   - function: the function to wrap
+public func async0<E: Error>(_ function: @escaping (@escaping (E?) -> Void) -> Void) -> ZeroArgFunction<Void, E> {
+    ZeroArgFunction(action: tname(function)) { (completion: @escaping FunctionWrapperCompletion<Void, E>) ->Void in
+        elevate(function)(completion)
+    }
+}
+
+/// Wraps an asynchronous function taking a single parameter
+/// - Parameters:
+///   - function: the function to wrap
+public func async1<A, E: Error>(_ function: @escaping (A, @escaping (E?) -> Void) -> Void) -> SingleArgFunction<A, Void, E> {
+    SingleArgFunction(action: tname(function)) { (a: A, completion: @escaping FunctionWrapperCompletion<Void, E>) ->Void in
+        let boundFunction = function =<< a
+        elevate(boundFunction)(completion)
+    }
+}
+
+/// Wraps an asynchronous function taking two parameters
+/// - Parameters:
+///   - function: the function to wrap
+public func async2<A, B, E: Error>(_ function: @escaping (A,B, @escaping (E?) -> Void) -> Void) -> DoubleArgFunction<A, B, Void, E> {
+    DoubleArgFunction(action: tname(function)) { (a: A, b: B, completion: @escaping FunctionWrapperCompletion<Void, E>) -> Void in
+        let boundFunction = function =<< a =<< b
+        elevate(boundFunction)(completion)
+    }
+}
+
+/// Wraps an asynchronous function taking 3 parameters
+/// - Parameters:
+///   - function: the function to wrap
+public func async3<A, B, C, E: Error>(_ function: @escaping (A,B,C, @escaping (E?) -> Void) -> Void) -> TripleArgFunction<A, B, C, Void, E> {
+    TripleArgFunction(action: tname(function)) { (a: A, b: B, c: C, completion: @escaping FunctionWrapperCompletion<Void, E>) -> Void in
         let boundFunction = function =<< a =<< b =<< c
         elevate(boundFunction)(completion)
     }
@@ -383,8 +422,8 @@ public func async3<A, B, C>(file: StaticString = #file, line: UInt = #line, _ fu
 /// Wraps an asynchronous function taking two parameters
 /// - Parameters:
 ///   - function: the function to wrap
-public func async2<A,B,E: Error>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (A,B, ((E?) -> Void)?) -> Void) -> DoubleArgFunction<A,B,Void> {
-    DoubleArgFunction(action: tname(function), file: file, line: line) { (a: A, b: B, completion: @escaping FunctionWrapperCompletion<Void>) -> Void in
+public func async2<A,B,E: Error>(_ function: @escaping (A,B, ((E?) -> Void)?) -> Void) -> DoubleArgFunction<A, B, Void, E> {
+    DoubleArgFunction(action: tname(function)) { (a: A, b: B, completion: @escaping FunctionWrapperCompletion<Void, E>) -> Void in
         let boundFunction = function =<< a =<< b
         elevate(boundFunction)(completion)
     }
@@ -393,15 +432,15 @@ public func async2<A,B,E: Error>(file: StaticString = #file, line: UInt = #line,
 /// Wraps an asynchronous function taking zero parameters
 /// - Parameters:
 ///   - function: the function to wrap
-public func async0<R>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (@escaping (Result<R, Error>) -> Void) -> Void) -> ZeroArgFunction<R> {
-    ZeroArgFunction(action: tname(function), file: file, line: line, function: function)
+public func async0<R, E: Error>(_ function: @escaping (@escaping (Result<R, E>) -> Void) -> Void) -> ZeroArgFunction<R, E> {
+    ZeroArgFunction(action: tname(function), function: function)
 }
 
 /// Wraps an asynchronous function taking a single parameter
 /// - Parameters:
 ///   - function: the function to wrap
-public func async1<A,R>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (A, @escaping (Result<R, Error>) -> Void) -> Void) -> SingleArgFunction<A, R> {
-    SingleArgFunction(action: tname(function), file: file, line: line) { (a: A, completion: @escaping FunctionWrapperCompletion<R>) ->Void in
+public func async1<A, R, E: Error>(_ function: @escaping (A, @escaping (Result<R, E>) -> Void) -> Void) -> SingleArgFunction<A, R, E> {
+    SingleArgFunction(action: tname(function)) { (a: A, completion: @escaping FunctionWrapperCompletion<R, E>) ->Void in
         let boundFunction = function =<< a
         boundFunction(completion)
     }
@@ -410,8 +449,8 @@ public func async1<A,R>(file: StaticString = #file, line: UInt = #line, _ functi
 /// Wraps an asynchronous function taking two parameters
 /// - Parameters:
 ///   - function: the function to wrap
-public func async2<A,B,R>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (A,B, @escaping (Result<R, Error>) -> Void) -> Void) -> DoubleArgFunction<A, B, R> {
-    DoubleArgFunction(action: tname(function), file: file, line: line) { (a: A, b: B, completion: @escaping FunctionWrapperCompletion<R>) -> Void in
+public func async2<A, B, R, E: Error>(_ function: @escaping (A,B, @escaping (Result<R, E>) -> Void) -> Void) -> DoubleArgFunction<A, B, R, E> {
+    DoubleArgFunction(action: tname(function)) { (a: A, b: B, completion: @escaping FunctionWrapperCompletion<R, E>) -> Void in
         let boundFunction = function =<< a =<< b
         boundFunction(completion)
     }
@@ -420,8 +459,8 @@ public func async2<A,B,R>(file: StaticString = #file, line: UInt = #line, _ func
 /// Wraps an asynchronous function taking 3 parameters
 /// - Parameters:
 ///   - function: the function to wrap
-public func async3<A,B,C,R>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (A,B,C, @escaping (Result<R, Error>) -> Void) -> Void) -> TripleArgFunction<A, B, C, R> {
-    TripleArgFunction(action: tname(function), file: file, line: line) { (a: A, b: B, c: C, completion: @escaping FunctionWrapperCompletion<R>) in
+public func async3<A, B, C, R, E: Error>(_ function: @escaping (A,B,C, @escaping (Result<R, E>) -> Void) -> Void) -> TripleArgFunction<A, B, C, R, E> {
+    TripleArgFunction(action: tname(function)) { (a: A, b: B, c: C, completion: @escaping FunctionWrapperCompletion<R, E>) in
         let boundFunction = function =<< a =<< b =<< c
         boundFunction(completion)
     }
@@ -430,47 +469,8 @@ public func async3<A,B,C,R>(file: StaticString = #file, line: UInt = #line, _ fu
 /// Wraps an asynchronous function taking zero parameters
 /// - Parameters:
 ///   - function: the function to wrap
-public func async0<R>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (((R) -> Void)?) throws -> Void) -> ZeroArgFunction<R> {
-    ZeroArgFunction(action: tname(function), file: file, line: line) { (completion: @escaping FunctionWrapperCompletion<R>) ->Void in
+public func async0<R>(_ function: @escaping (((R) -> Void)?) -> Void) -> ZeroArgFunction<R, Never> {
+    ZeroArgFunction(action: tname(function)) { (completion: @escaping FunctionWrapperCompletion<R, Never>) ->Void in
         elevate(function)(completion)
-    }
-}
-
-/// Wraps an asynchronous function taking zero parameters
-/// - Parameters:
-///   - function: the function to wrap
-public func async0<R>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (@escaping (R) -> Void) -> Void) -> ZeroArgFunction<R> {
-    ZeroArgFunction(action: tname(function), file: file, line: line) { (completion: @escaping FunctionWrapperCompletion<R>) ->Void in
-        elevate(function)(completion)
-    }
-}
-
-/// Wraps an asynchronous function taking a single parameter
-/// - Parameters:
-///   - function: the function to wrap
-public func async1<A, R>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (A, @escaping (R) -> Void) -> Void) -> SingleArgFunction<A, R> {
-    SingleArgFunction(action: tname(function), file: file, line: line) { (a: A, completion: @escaping FunctionWrapperCompletion<R>) ->Void in
-        let boundFunction = function =<< a
-        elevate(boundFunction)(completion)
-    }
-}
-
-/// Wraps an asynchronous function taking two parameters
-/// - Parameters:
-///   - function: the function to wrap
-public func async2<A, B, R>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (A,B, @escaping (R) -> Void) -> Void) -> DoubleArgFunction<A, B, R> {
-    DoubleArgFunction(action: tname(function), file: file, line: line) { (a: A, b: B, completion: @escaping FunctionWrapperCompletion<R>) in
-        let boundFunction = function =<< a =<< b
-        elevate(boundFunction)(completion)
-    }
-}
-
-/// Wraps an asynchronous function taking 3 parameters
-/// - Parameters:
-///   - function: the function to wrap
-public func async3<A, B, C, R>(file: StaticString = #file, line: UInt = #line, _ function: @escaping (A,B,C, @escaping (R) -> Void) -> Void) -> TripleArgFunction<A, B, C, R> {
-    TripleArgFunction(action: tname(function), file: file, line: line) { (a: A, b: B, c: C, completion: @escaping FunctionWrapperCompletion<R>) in
-        let boundFunction = function =<< a =<< b =<< c
-        elevate(boundFunction)(completion)
     }
 }

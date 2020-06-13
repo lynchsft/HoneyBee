@@ -37,9 +37,9 @@ class TestingFunctions : Equatable {
 		callback("\(string)cat",nil)
 	}
 	
-    lazy private(set) var stringToInt = async1(self.stringToInt) as SingleArgFunction<String, Int>
+    lazy private(set) var stringToInt = async1(self.stringToInt) as SingleArgFunction<String, Int, NSError>
 	#if swift(>=5.0)
-	func stringToInt(string: String, callback: ((Result<Int, Error>) -> Void)?) {
+	func stringToInt(string: String, callback: ((Result<Int, NSError>) -> Void)?) {
 		if let int = Int(string) {
 			callback?(.success(int))
 		} else {
@@ -117,11 +117,11 @@ class TestingFunctions : Equatable {
 	}
 	
     lazy private(set) var explode = async0(self.explode)
-	func explode(callback: ((Int) -> Void)?) throws -> Void {
-		throw NSError(domain: "intentional", code: -1, userInfo: nil)
+	func explode(callback: ((Int?, NSError?) -> Void)?) -> Void {
+		callback?(nil, NSError(domain: "intentional", code: -1, userInfo: nil))
 	}
 }
-func failIfError<T>(_ result: Result<T,Error>) {
+func failIfError<T,E:Error>(_ result: Result<T,E>) {
     switch result {
     case .success(_):
         break
@@ -161,4 +161,33 @@ func increment(val: Int) -> Int {
 let addTogether = async2(addTogether(one: two:))
 func addTogether(one: Int, two: Double) throws -> Double {
 	return Double(one) + two
+}
+
+struct User {
+
+    var reset: SingleArgFunction<Int, Void, Never> { async1(self.reset) }
+    func reset(in seconds: Int) {
+
+    }
+
+    static let login = async2(User.login)
+    static func login(username: String, age: Int, completion: ((Error?) -> Void)?) {
+        DispatchQueue.global().async {
+            sleep(1)
+            //completion?(NSError(domain: "Foo", code: -1, userInfo: nil))
+            completion?(nil)
+        }
+    }
+}
+
+extension XCTestExpectation {
+    var fulfill: ZeroArgFunction<Void, Never> { async0(self.fulfill) }
+}
+
+@discardableResult
+func XCTAssertEqual<S: Equatable, E: Error, P: AsyncBlockPerformer>(_ one: Link<S, E, P>, _ two: Link<S, E, P>) -> Link<Void, E, P> {
+    (one+two).chain { (e: (S, S), completion: @escaping (Result<Void, Never>) -> Void) in
+        XCTAssertEqual(e.0, e.1)
+        completion(.success(Void()))
+    }
 }

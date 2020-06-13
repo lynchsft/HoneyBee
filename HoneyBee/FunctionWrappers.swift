@@ -8,266 +8,347 @@
 
 import Foundation
 
-public struct AsyncZeroArgFunction<R, P: AsyncBlockPerformer> {
-    let link: Link<Void, P>
-    let function: () -> Link<R, P>
+
+public struct AsyncZeroArgFunction<R, E: Error, P: AsyncBlockPerformer> {
+    let link: Link<Void, E, P>
+    let function: () -> Link<R, E, P>
     
     @discardableResult
-    public func callAsFunction() -> Link<R, P> {
+    public func callAsFunction(_ link: Link<Void, E, P>) -> Link<R, E, P> {
         link+>function()
     }
 }
 
-public struct AsyncSingleArgFunction<A,R, P: AsyncBlockPerformer> {
-	let link: Link<Void, P>
-	let function: (Link<A, P>) -> Link<R, P>
+
+public struct AsyncSingleArgFunction<A, R, E: Error, P: AsyncBlockPerformer> {
+	let link: Link<Void, E, P>
+	let function: (Link<A, E, P>) -> Link<R, E, P>
 	
 	@discardableResult
-    public func callAsFunction(_ a: A) -> Link<R, P> {
+    public func callAsFunction(_ a: A) -> Link<R, E, P> {
         return self.function(link.insert(a))
 	}
 	
 	@discardableResult
-    public func callAsFunction(_ link: Link<A, P>) -> Link<R, P> {
+    public func callAsFunction(_ link: Link<A, E, P>) -> Link<R, E, P> {
         return self.function(self.link +> link)
 	}
 }
 
-public struct AsyncDoubleArgFunction<A,B,R, P: AsyncBlockPerformer> {
-	let link: Link<Void, P>
-	let function: (Link<A, P>, Link<B, P>) -> Link<R, P>
+
+public struct AsyncDoubleArgFunction<A,B,R, E: Error, P: AsyncBlockPerformer> {
+	let link: Link<Void, E, P>
+	let function: (Link<A, E, P>, Link<B, E, P>) -> Link<R, E, P>
 	
-	public func callAsFunction(_ a: A) -> AsyncSingleArgFunction<B, R, P> {
+	public func callAsFunction(_ a: A) -> AsyncSingleArgFunction<B,R,E,P> {
         let a = self.link.insert(a)
 		let functionReference = self.function
-		let wrapped = { (b: Link<B, P>) -> Link<R, P> in
+		let wrapped = { (b: Link<B, E, P>) -> Link<R, E, P> in
 			return functionReference(a, b)
 		}
 		return AsyncSingleArgFunction(link: self.link, function: wrapped)
 	}
 	
-    public func callAsFunction(_ link: Link<A, P>) -> AsyncSingleArgFunction<B, R, P> {
+	public func callAsFunction(_ link: Link<A, E, P>) -> AsyncSingleArgFunction<B,R,E,P> {
         let a = self.link +> link
 		let functionReference = self.function
-		let wrapped = { (b: Link<B, P>) -> Link<R, P> in
+		let wrapped = { (b: Link<B, E, P>) -> Link<R, E, P> in
 			return functionReference(a, b)
 		}
 		return AsyncSingleArgFunction(link: self.link, function: wrapped)
 	}
 }
 
-public struct AsyncTripleArgFunction<A,B,C,R, P: AsyncBlockPerformer> {
-	let link: Link<Void, P>
-	let function: (Link<A, P>, Link<B, P>, Link<C, P>) -> Link<R, P>
+
+public struct AsyncTripleArgFunction<A,B,C,R, E: Error, P: AsyncBlockPerformer> {
+	let link: Link<Void, E, P>
+	let function: (Link<A, E, P>, Link<B, E, P>, Link<C, E, P>) -> Link<R, E, P>
 	
-    public func callAsFunction(_ a: A) -> AsyncDoubleArgFunction<B, C, R, P> {
+	public func callAsFunction(_ a: A) -> AsyncDoubleArgFunction<B,C,R,E,P> {
         let a = self.link.insert(a)
 		let functionReference = self.function
-		let wrapped = { (b: Link<B, P>, c: Link<C, P>) -> Link<R, P> in
+		let wrapped = { (b: Link<B, E, P>, c: Link<C, E, P>) -> Link<R, E, P> in
 			return functionReference(a, b, c)
 		}
 		return AsyncDoubleArgFunction(link: self.link, function: wrapped)
 	}
 	
-	public func callAsFunction(_ link: Link<A, P>) -> AsyncDoubleArgFunction<B, C, R, P> {
+	public func callAsFunction(_ link: Link<A, E, P>) -> AsyncDoubleArgFunction<B,C,R,E,P> {
         let a = self.link +> link
 		let functionReference = self.function
-		let wrapped = { (b: Link<B, P>, c: Link<C, P>) -> Link<R, P> in
+		let wrapped = { (b: Link<B, E, P>, c: Link<C, E, P>) -> Link<R, E, P> in
 			return functionReference(a, b, c)
 		}
 		return AsyncDoubleArgFunction(link: self.link, function: wrapped)
 	}
 }
 
-typealias FunctionWrapperCompletion<R> = (Result<R, Error>)->Void
+typealias FunctionWrapperCompletion<R, E: Error> = (Result<R, E>)->Void
 
-public struct ZeroArgFunction<R> {
+
+public struct ZeroArgFunction<R, E: Error> {
     let action: String
-    let file: StaticString
-    let line: UInt
-    let function: (@escaping FunctionWrapperCompletion<R>) -> Void
-
+    let function: (@escaping FunctionWrapperCompletion<R, E>) -> Void
+    
     @discardableResult
-    public func callAsFunction<X, P: AsyncBlockPerformer>(_ link: Link<X, P>) ->  Link<R, P>{
-        link.chain(file: self.file, line: self.line, functionDescription: self.action, self.function)
+    public func callAsFunction<P: AsyncBlockPerformer>(_ link: Link<Void, E, P>, file: StaticString = #file, line: UInt = #line) -> Link<R, E, P> {
+        link.chain(file: file, line: line, functionDescription: self.action) { (_: Void, completion: @escaping FunctionWrapperCompletion<R,E>) in
+            self.function(completion)
+        }
     }
 
-    public func on<P: AsyncBlockPerformer>(_ perfomer: P.Type) -> BoundZeroArgFunction<R,P> {
+    @discardableResult
+    public func callAsFunction<P: AsyncBlockPerformer>(_ link: Link<Void, Never, P>, file: StaticString = #file, line: UInt = #line) -> Link<R, E, P> {
+        link.chain(file: file, line: line, functionDescription: self.action) { (_: Void, completion: @escaping FunctionWrapperCompletion<R,E>) in
+            self.function(completion)
+        }
+    }
+
+    public func on<P: AsyncBlockPerformer>(_ perfomer: P.Type) -> BoundZeroArgFunction<R,E,P> {
         BoundZeroArgFunction(zero: self)
     }
 }
 
-public struct SingleArgFunction<A,R> {
-    let action: String
-    let file: StaticString
-    let line: UInt
-    let function: (A, @escaping FunctionWrapperCompletion<R>) -> Void
-
-    public func callAsFunction<P: AsyncBlockPerformer>(_ link: Link<Void, P>) -> AsyncSingleArgFunction<A, R, P> {
-        AsyncSingleArgFunction(link: link) { (link: Link<A, P>) -> Link<R, P> in
-            link.chain(file: self.file, line: self.line, functionDescription: self.action, self.function)
+extension ZeroArgFunction where E == Never {
+    @discardableResult
+    public func callAsFunction<P: AsyncBlockPerformer>(_ link: Link<Void, Never, P>, file: StaticString = #file, line: UInt = #line) -> Link<R, E, P> {
+        link.chain(file: file, line: line, functionDescription: self.action) { (_: Void, completion: @escaping FunctionWrapperCompletion<R,Never>) in
+            self.function(completion)
         }
     }
 
-    public func callAsFunction(_ a: A) -> ZeroArgFunction<R> {
-        ZeroArgFunction<R>(action: action, file: file, line: line) { (completion: @escaping FunctionWrapperCompletion<R>) in
+    @discardableResult
+    public func callAsFunction<OtherE: Error, P: AsyncBlockPerformer>(_ link: Link<Void, OtherE, P>, file: StaticString = #file, line: UInt = #line) -> Link<R, OtherE, P> {
+        link.chain(file: file, line: line) { (_:Void, completion: @escaping (Result<R, OtherE>) -> Void) in
+            self.function { result in
+                switch result {
+                case .success(let r):
+                    completion(.success(r))
+                case .failure(_): // Never
+                    preconditionFailure()
+                }
+            }
+        }
+    }
+}
+
+
+public struct SingleArgFunction<A,R, E: Error> {
+    let action: String
+    let function: (A, @escaping FunctionWrapperCompletion<R, E>) -> Void
+    
+
+    public func callAsFunction<P: AsyncBlockPerformer>(_ link: Link<Void, E, P>, file: StaticString = #file, line: UInt = #line) -> AsyncSingleArgFunction<A,R,E,P> {
+        AsyncSingleArgFunction(link: link) { (link: Link<A, E, P>) -> Link<R, E, P> in
+            link.chain(file: file, line: line, functionDescription: self.action, self.function)
+        }
+    }
+
+    public func callAsFunction<OtherE: Error, P: AsyncBlockPerformer>(_ link: Link<Void, OtherE, P>, file: StaticString = #file, line: UInt = #line) -> AsyncSingleArgFunction<A,R,OtherE,P> where E == Never {
+        let errorLifting = link.chain { (_, completion: @escaping (Result<Void, OtherE>) -> Void) in
+            completion(.success(Void()))
+        }
+        return AsyncSingleArgFunction(link: errorLifting) { (link: Link<A, OtherE, P>) -> Link<R, OtherE, P> in
+            link.chain(file: file, line: line, functionDescription: self.action, self.function)
+        }
+    }
+
+    public func callAsFunction<P: AsyncBlockPerformer>(_ link: Link<Void, Never, P>, file: StaticString = #file, line: UInt = #line) -> AsyncSingleArgFunction<A,R,E,P> {
+        let errorLifting = link.chain { (_, completion: @escaping (Result<Void, E>) -> Void) in
+            completion(.success(Void()))
+        }
+        return AsyncSingleArgFunction(link: errorLifting) { (link: Link<A, E, P>) -> Link<R, E, P> in
+            link.chain(file: file, line: line, functionDescription: self.action, self.function)
+        }
+    }
+
+    public func callAsFunction(_ a: A) -> ZeroArgFunction<R, E> {
+        return ZeroArgFunction<R, E>(action: action) { (completion: @escaping FunctionWrapperCompletion<R, E>) in
             self.function(a, completion)
         }
     }
     
     @discardableResult
-    public func callAsFunction<P: AsyncBlockPerformer>(_ link: Link<A, P>) -> Link<R, P> {
-        link.chain(file: self.file, line: self.line, functionDescription: self.action, self.function)
+    public func callAsFunction<P: AsyncBlockPerformer>(_ link: Link<A, E, P>, file: StaticString = #file, line: UInt = #line) -> Link<R, E, P> {
+        link.chain(file: file, line: line, functionDescription: self.action, self.function)
     }
 
-    public func on<P: AsyncBlockPerformer>(_ perfomer: P.Type) -> BoundSingleArgFunction<A,R,P> {
+    @discardableResult
+    public func callAsFunction<P: AsyncBlockPerformer>(_ link: Link<A, Never, P>, file: StaticString = #file, line: UInt = #line) -> Link<R, E, P> {
+        link.chain(file: file, line: line, functionDescription: self.action, self.function)
+    }
+
+    @discardableResult
+    public func callAsFunction<P: AsyncBlockPerformer>(_ link: Link<A, Never, P>, file: StaticString = #file, line: UInt = #line) -> Link<R, E, P> where E == Never{
+        link.chain(file: file, line: line, functionDescription: self.action, self.function)
+    }
+
+    public func callAsFunction<OtherE: Error, P: AsyncBlockPerformer>(_ link: Link<A, OtherE, P>, file: StaticString = #file, line: UInt = #line) -> Link<R, OtherE, P> where E == Never {
+        link.chain(file: file, line: line, functionDescription: self.action, self.function)
+    }
+
+    public func on<P: AsyncBlockPerformer>(_ perfomer: P.Type) -> BoundSingleArgFunction<A,R,E,P> {
         BoundSingleArgFunction(single: self)
     }
 }
 
-public struct DoubleArgFunction<A,B,R> {
-    let action: String
-    let file: StaticString
-    let line: UInt
-    let function: (A, B, @escaping FunctionWrapperCompletion<R>) -> Void
 
-    public func callAsFunction<P: AsyncBlockPerformer>(_ link: Link<Void, P>) -> AsyncDoubleArgFunction<A, B, R, P> {
-        AsyncDoubleArgFunction(link: link) { (a: Link<A, P>, b: Link<B, P>) -> Link<R, P> in
-            (a+b).chain(file: self.file, line: self.line, functionDescription: self.action) { (a_b: (A, B), completion: @escaping FunctionWrapperCompletion<R>) in
+public struct DoubleArgFunction<A,B,R, E: Error> {
+    let action: String
+    let function: (A, B, @escaping FunctionWrapperCompletion<R, E>) -> Void
+
+    public func callAsFunction<P: AsyncBlockPerformer>(_ link: Link<Void, E, P>, file: StaticString = #file, line: UInt = #line) -> AsyncDoubleArgFunction<A,B,R,E,P> {
+        AsyncDoubleArgFunction(link: link) { (a: Link<A, E, P>, b: Link<B, E, P>) -> Link<R, E, P> in
+            (a+b).chain(file: file, line: line, functionDescription: self.action) { (a_b: (A, B), completion: @escaping FunctionWrapperCompletion<R, E>) in
+                self.function(a_b.0, a_b.1, completion)
+            }
+        }
+    }
+
+    public func callAsFunction<P: AsyncBlockPerformer>(_ link: Link<Void, Never, P>, file: StaticString = #file, line: UInt = #line) -> AsyncDoubleArgFunction<A,B,R,E,P> {
+        let errorLifting = link.chain { (_, completion: @escaping (Result<Void, E>) -> Void) in
+            completion(.success(Void()))
+        }
+        return AsyncDoubleArgFunction(link: errorLifting) { (a: Link<A, E, P>, b: Link<B, E, P>) -> Link<R, E, P> in
+            (a+b).chain(file: file, line: line, functionDescription: self.action) { (a_b: (A, B), completion: @escaping FunctionWrapperCompletion<R, E>) in
                 self.function(a_b.0, a_b.1, completion)
             }
         }
     }
     
-    public func callAsFunction(_ a: A) -> SingleArgFunction<B, R> {
-        SingleArgFunction<B, R>(action: action, file: file, line: line) { (b: B, completion: @escaping FunctionWrapperCompletion<R>)  in
+    public func callAsFunction(_ a: A) -> SingleArgFunction<B,R,E> {
+        SingleArgFunction<B,R,E>(action: action) { (b: B, completion: @escaping FunctionWrapperCompletion<R, E>)  in
             self.function(a, b, completion)
         }
     }
     
-    public func callAsFunction<P: AsyncBlockPerformer>(_ a: Link<A, P>) -> AsyncSingleArgFunction<B, R, P> {
-        AsyncSingleArgFunction(link: a.drop) { (b: Link<B, P>) -> Link<R, P> in
-            (a+b).chain(file: self.file, line: self.line, functionDescription: self.action) { (a_b: (A, B), completion: @escaping FunctionWrapperCompletion<R>) in
+    public func callAsFunction<P: AsyncBlockPerformer>(_ link: Link<A, E, P>, file: StaticString = #file, line: UInt = #line) -> AsyncSingleArgFunction<B,R,E,P> {
+        let a = link
+        return AsyncSingleArgFunction(link: a.drop) { (b: Link<B, E, P>) -> Link<R, E, P> in
+            (a+b).chain(file: file, line: line, functionDescription: self.action) { (a_b: (A, B), completion: @escaping FunctionWrapperCompletion<R, E>) in
                 self.function(a_b.0, a_b.1, completion)
             }
         }
     }
 
-    public func on<P: AsyncBlockPerformer>(_ perfomer: P.Type) -> BoundDoubleArgFunction<A,B,R,P> {
+    public func on<P: AsyncBlockPerformer>(_ perfomer: P.Type) -> BoundDoubleArgFunction<A,B,R,E,P> {
         BoundDoubleArgFunction(double: self)
     }
 }
 
-public struct TripleArgFunction<A,B,C,R> {
-    let action: String
-    let file: StaticString
-    let line: UInt
-    let function: (A, B, C, @escaping FunctionWrapperCompletion<R>) -> Void
 
-    public func callAsFunction<P: AsyncBlockPerformer>(_ link: Link<Void, P>) -> AsyncTripleArgFunction<A, B, C, R, P> {
-        AsyncTripleArgFunction(link: link) { (a: Link<A, P>, b: Link<B, P>, c: Link<C, P>) -> Link<R, P> in
-            (a+b+c).chain(file: self.file, line: self.line, functionDescription: self.action) { (a_b_c: (A, B, C), completion: @escaping FunctionWrapperCompletion<R>) in
+public struct TripleArgFunction<A,B,C,R, E: Error> {
+    let action: String
+    let function: (A, B, C, @escaping FunctionWrapperCompletion<R, E>) -> Void
+
+    public func callAsFunction<P: AsyncBlockPerformer>(_ link: Link<Void, E, P>, file: StaticString = #file, line: UInt = #line) -> AsyncTripleArgFunction<A,B,C,R,E,P> {
+        AsyncTripleArgFunction(link: link) { (a: Link<A, E, P>, b: Link<B, E, P>, c: Link<C, E, P>) -> Link<R, E, P> in
+            (a+b+c).chain(file: file, line: line, functionDescription: self.action) { (a_b_c: (A, B, C), completion: @escaping FunctionWrapperCompletion<R, E>) in
+                self.function(a_b_c.0, a_b_c.1, a_b_c.2, completion)
+            }
+        }
+    }
+
+    public func callAsFunction<P: AsyncBlockPerformer>(_ link: Link<Void, Never, P>, file: StaticString = #file, line: UInt = #line) -> AsyncTripleArgFunction<A,B,C,R,E,P> {
+        let errorLifting = link.chain { (_, completion: @escaping (Result<Void, E>) -> Void) in
+            completion(.success(Void()))
+        }
+        return AsyncTripleArgFunction(link: errorLifting) { (a: Link<A, E, P>, b: Link<B, E, P>, c: Link<C, E, P>) -> Link<R, E, P> in
+            (a+b+c).chain(file: file, line: line, functionDescription: self.action) { (a_b_c: (A, B, C), completion: @escaping FunctionWrapperCompletion<R, E>) in
                 self.function(a_b_c.0, a_b_c.1, a_b_c.2, completion)
             }
         }
     }
     
-    public func callAsFunction(_ a: A) -> DoubleArgFunction<B, C, R> {
-        DoubleArgFunction<B, C, R>(action: action, file: file, line: line) { (b: B, c: C, completion: @escaping FunctionWrapperCompletion<R>) -> Void in
+    public func callAsFunction(_ a: A) -> DoubleArgFunction<B,C,R,E> {
+        DoubleArgFunction<B,C,R,E>(action: action) { (b: B, c: C, completion: @escaping FunctionWrapperCompletion<R, E>) -> Void in
             self.function(a, b, c, completion)
         }
     }
     
-    public func callAsFunction<P: AsyncBlockPerformer>(_ a: Link<A, P>) -> AsyncDoubleArgFunction<B, C, R, P> {
-        AsyncDoubleArgFunction(link: a.drop) { (b: Link<B, P>, c: Link<C, P>) -> Link<R, P> in
-            (a+b+c).chain(file: self.file, line: self.line, functionDescription: self.action) { (a_b_c: (A, B, C), completion: @escaping FunctionWrapperCompletion<R>) in
+    public func callAsFunction<P: AsyncBlockPerformer>(_ link: Link<A, E, P>, file: StaticString = #file, line: UInt = #line) -> AsyncDoubleArgFunction<B,C,R,E,P> {
+        let a = link
+        return AsyncDoubleArgFunction(link: a.drop) { (b: Link<B, E, P>, c: Link<C, E, P>) -> Link<R, E, P> in
+            (a+b+c).chain(file: file, line: line, functionDescription: self.action) { (a_b_c: (A, B, C), completion: @escaping FunctionWrapperCompletion<R, E>) in
                 self.function(a_b_c.0, a_b_c.1, a_b_c.2, completion)
             }
         }
     }
 
-    public func on<P: AsyncBlockPerformer>(_ perfomer: P.Type) -> BoundTripleArgFunction<A,B,C,R,P> {
+    public func on<P: AsyncBlockPerformer>(_ perfomer: P.Type) -> BoundTripleArgFunction<A,B,C,R,E,P> {
         BoundTripleArgFunction(triple: self)
     }
 }
 
-protocol DocumentationBearing {
-    var action: String { get }
-    var file: StaticString { get }
-    var line: UInt { get }
-}
-
-extension ZeroArgFunction : DocumentationBearing {}
-extension SingleArgFunction : DocumentationBearing {}
-extension DoubleArgFunction : DocumentationBearing {}
-extension TripleArgFunction : DocumentationBearing {}
-
-public struct BoundZeroArgFunction<R,P: AsyncBlockPerformer> {
-    let zero: ZeroArgFunction<R>
-    init(zero: ZeroArgFunction<R>) {
+public struct BoundZeroArgFunction<R, E: Error,P: AsyncBlockPerformer> {
+    let zero: ZeroArgFunction<R, E>
+    init(zero: ZeroArgFunction<R, E>) {
         self.zero = zero
     }
 
     @discardableResult
-    public func callAsFunction<X, P: AsyncBlockPerformer>(_ link: Link<X, P>) ->  Link<R, P>{
-        zero(link)
+    public func callAsFunction(_ link: Link<Void, E, P>) -> Link<R, E, P> {
+        self.zero(link)
     }
 }
 
-public struct BoundSingleArgFunction<A,R,P: AsyncBlockPerformer> {
-    let single: SingleArgFunction<A,R>
-    init(single: SingleArgFunction<A, R>) {
+
+public struct BoundSingleArgFunction<A,R, E: Error,P: AsyncBlockPerformer> {
+    let single: SingleArgFunction<A,R,E>
+    init(single: SingleArgFunction<A,R,E>) {
         self.single = single
     }
 
-    public func callAsFunction(_ link: Link<Void, P>) -> AsyncSingleArgFunction<A, R, P> {
+    public func callAsFunction(_ link: Link<Void, E, P>) -> AsyncSingleArgFunction<A,R,E,P> {
         self.single(link)
     }
 
-    public func callAsFunction(_ a: A) -> ZeroArgFunction<R> {
+    public func callAsFunction(_ a: A) -> ZeroArgFunction<R, E> {
         self.single(a)
     }
 
     @discardableResult
-    public func callAsFunction(_ link: Link<A, P>) -> Link<R, P> {
+    public func callAsFunction(_ link: Link<A, E, P>) -> Link<R, E, P> {
         self.single(link)
     }
 }
 
-public struct BoundDoubleArgFunction<A,B,R,P: AsyncBlockPerformer> {
-    let double: DoubleArgFunction<A,B,R>
-    init(double: DoubleArgFunction<A,B,R>) {
+
+public struct BoundDoubleArgFunction<A,B,R, E: Error,P: AsyncBlockPerformer> {
+    let double: DoubleArgFunction<A,B,R,E>
+    init(double: DoubleArgFunction<A,B,R,E>) {
         self.double = double
     }
 
-    public func callAsFunction(_ link: Link<Void, P>) -> AsyncDoubleArgFunction<A,B,R,P> {
+    public func callAsFunction(_ link: Link<Void, E, P>) -> AsyncDoubleArgFunction<A,B,R,E,P> {
         self.double(link)
     }
 
-    public func callAsFunction(_ a: A) -> SingleArgFunction<B,R> {
+    public func callAsFunction(_ a: A) -> SingleArgFunction<B,R,E> {
         self.double(a)
     }
 
-    public func callAsFunction(_ link: Link<A, P>) -> AsyncSingleArgFunction<B,R,P> {
+    public func callAsFunction(_ link: Link<A, E, P>) -> AsyncSingleArgFunction<B,R,E,P> {
         self.double(link)
     }
 }
 
-public struct BoundTripleArgFunction<A,B,C,R,P: AsyncBlockPerformer> {
-    let triple: TripleArgFunction<A,B,C,R>
-    init(triple: TripleArgFunction<A,B,C,R>) {
+
+public struct BoundTripleArgFunction<A,B,C,R, E: Error,P: AsyncBlockPerformer> {
+    let triple: TripleArgFunction<A,B,C,R,E>
+    init(triple: TripleArgFunction<A,B,C,R,E>) {
         self.triple = triple
     }
 
-    public func callAsFunction(_ link: Link<Void, P>) -> AsyncTripleArgFunction<A,B,C,R,P> {
+    public func callAsFunction(_ link: Link<Void, E, P>) -> AsyncTripleArgFunction<A,B,C,R,E,P> {
         self.triple(link)
     }
 
-    public func callAsFunction(_ a: A) -> DoubleArgFunction<B,C,R> {
+    public func callAsFunction(_ a: A) -> DoubleArgFunction<B,C,R,E> {
         self.triple(a)
     }
 
-    public func callAsFunction(_ link: Link<A, P>) -> AsyncDoubleArgFunction<B,C,R,P> {
+    public func callAsFunction(_ link: Link<A, E, P>) -> AsyncDoubleArgFunction<B,C,R,E,P> {
         self.triple(link)
     }
 }

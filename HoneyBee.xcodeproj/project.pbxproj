@@ -7,22 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		8F48C13B23B2932F00957E59 /* MergeSortTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F48C13A23B2932F00957E59 /* MergeSortTest.swift */; };
-		8F616FC123B19A28008F7E1E /* UploadPipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F616FC023B19A28008F7E1E /* UploadPipeline.swift */; };
 		8F7EBDB323CF8812007C9EDB /* ConcurrentBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F7EBDB223CF8812007C9EDB /* ConcurrentBox.swift */; };
+		8F8CF4CD24945B6C005C3F07 /* AsyncCurryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAA722B8226F2D5500A8CB7B /* AsyncCurryTests.swift */; };
 		8FC3271C23A47B8000E25281 /* FunctionTransformations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FC3271B23A47B8000E25281 /* FunctionTransformations.swift */; };
 		8FC3374E23B300D500E9208F /* AsyncFlowControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FC3374D23B300D500E9208F /* AsyncFlowControl.swift */; };
-		8FC3375923B54D4F00E9208F /* AsyncFlowControlTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FC3375823B54D4E00E9208F /* AsyncFlowControlTests.swift */; };
-		8FD08E3623A825EC00CB3EAF /* CodeCoverageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FD08E3523A825EC00CB3EAF /* CodeCoverageTests.swift */; };
-		FA036D05229B79B9008DC738 /* SwiftTeamTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA036D04229B79B9008DC738 /* SwiftTeamTests.swift */; };
-		FA1A841B1FD2E0470093D11A /* FinallyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA1A841A1FD2E0470093D11A /* FinallyTests.swift */; };
+		8FCB321D241D4E5E006E0498 /* SwiftTeamTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA036D04229B79B9008DC738 /* SwiftTeamTests.swift */; };
+		8FCB321E241D4EDA006E0498 /* TestingFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA25B0141F9D0885006F8DEE /* TestingFunctions.swift */; };
 		FA2081DB1FD1C0A4003145FB /* FaultResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA2081DA1FD1C0A4003145FB /* FaultResponse.swift */; };
-		FA25B0151F9D0885006F8DEE /* TestingFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA25B0141F9D0885006F8DEE /* TestingFunctions.swift */; };
-		FA25B0171F9D0931006F8DEE /* MultiPathTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA25B0161F9D0931006F8DEE /* MultiPathTests.swift */; };
-		FA2D12571FA01D8A004C491E /* ErrorHandlingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA2D12561FA01D8A004C491E /* ErrorHandlingTests.swift */; };
-		FA41097B1E9CFBC4002A6BA6 /* SinglePathTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA41097A1E9CFBC4002A6BA6 /* SinglePathTests.swift */; };
 		FA41097D1E9CFBC4002A6BA6 /* HoneyBee.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA473BB81E352CB1007E4D61 /* HoneyBee.framework */; };
-		FA575F8B20024A630075C89C /* PrettyExamples.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA575F8A20024A630075C89C /* PrettyExamples.swift */; };
 		FA62A2A71FC9FBC100385D22 /* FailureRate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A2981FC9FBC000385D22 /* FailureRate.swift */; };
 		FA62A2A81FC9FBC100385D22 /* Executable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A2991FC9FBC000385D22 /* Executable.swift */; };
 		FA62A2A91FC9FBC100385D22 /* ErrorContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A29A1FC9FBC100385D22 /* ErrorContext.swift */; };
@@ -37,7 +29,6 @@
 		FA62A2B81FC9FBCA00385D22 /* ConcurentQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A2B61FC9FBCA00385D22 /* ConcurentQueue.swift */; };
 		FA62A2B91FC9FBCA00385D22 /* AtomicValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A2B71FC9FBCA00385D22 /* AtomicValue.swift */; };
 		FAA722B7226F2D2100A8CB7B /* AsyncCurry.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAA722B6226F2D2100A8CB7B /* AsyncCurry.swift */; };
-		FAA722B9226F2D5500A8CB7B /* AsyncCurryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAA722B8226F2D5500A8CB7B /* AsyncCurryTests.swift */; };
 		FAA722BB226F4DBD00A8CB7B /* FunctionWrappers.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAA722BA226F4DBD00A8CB7B /* FunctionWrappers.swift */; };
 		FAABABAC228BA09800605626 /* AsyncTrace.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAABABAB228BA09800605626 /* AsyncTrace.swift */; };
 		FAF0C3061FD1AD6B00D1F177 /* ConcurrentFunctionTools.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAF0C3051FD1AD6B00D1F177 /* ConcurrentFunctionTools.swift */; };
@@ -362,18 +353,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FA575F8B20024A630075C89C /* PrettyExamples.swift in Sources */,
-				FA25B0151F9D0885006F8DEE /* TestingFunctions.swift in Sources */,
-				8F48C13B23B2932F00957E59 /* MergeSortTest.swift in Sources */,
-				8FD08E3623A825EC00CB3EAF /* CodeCoverageTests.swift in Sources */,
-				FAA722B9226F2D5500A8CB7B /* AsyncCurryTests.swift in Sources */,
-				8F616FC123B19A28008F7E1E /* UploadPipeline.swift in Sources */,
-				FA1A841B1FD2E0470093D11A /* FinallyTests.swift in Sources */,
-				FA2D12571FA01D8A004C491E /* ErrorHandlingTests.swift in Sources */,
-				8FC3375923B54D4F00E9208F /* AsyncFlowControlTests.swift in Sources */,
-				FA41097B1E9CFBC4002A6BA6 /* SinglePathTests.swift in Sources */,
-				FA036D05229B79B9008DC738 /* SwiftTeamTests.swift in Sources */,
-				FA25B0171F9D0931006F8DEE /* MultiPathTests.swift in Sources */,
+				8FCB321E241D4EDA006E0498 /* TestingFunctions.swift in Sources */,
+				8FCB321D241D4E5E006E0498 /* SwiftTeamTests.swift in Sources */,
+				8F8CF4CD24945B6C005C3F07 /* AsyncCurryTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

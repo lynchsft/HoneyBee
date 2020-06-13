@@ -12,15 +12,18 @@ import Foundation
 /// - Parameters:
 ///   - lhs: a link containing an equatable
 ///   - rhs: a link containing an equatable
-public func ==<E: Equatable, P: AsyncBlockPerformer>(lhs: Link<E,P>, rhs: Link<E,P>) -> Link<Bool, P> {
-    (lhs+rhs).chain(==)
+public func ==<Eq: Equatable, E: Error, P: AsyncBlockPerformer>(lhs: Link<Eq, E, P>, rhs: Link<Eq, E, P>) -> Link<Bool, E, P> {
+    (lhs+rhs).chain { (l_r, completion: @escaping FunctionWrapperCompletion<Bool,E>) in
+        let bound = (==) =<< l_r.0 =<< l_r.1
+        elevate(bound)(completion)
+    }
 }
 
 /// Returns a link containing a bool which is the result of evaluating the equatable result of a link and a raw equatable
 /// - Parameters:
 ///   - lhs: a link containing an equatable
 ///   - rhs: an equatable
-public func ==<E: Equatable, P: AsyncBlockPerformer>(lhs: Link<E,P>, rhs: E) -> Link<Bool, P> {
+public func ==<Eq: Equatable, E: Error, P: AsyncBlockPerformer>(lhs: Link<Eq, E, P>, rhs: Eq) -> Link<Bool, E, P> {
     lhs == lhs.insert(rhs)
 }
 
@@ -28,7 +31,7 @@ public func ==<E: Equatable, P: AsyncBlockPerformer>(lhs: Link<E,P>, rhs: E) -> 
 /// - Parameters:
 ///   - lhs: an equatable
 ///   - rhs: a link containing an equatable
-public func ==<E: Equatable, P: AsyncBlockPerformer>(lhs: E, rhs: Link<E,P>) -> Link<Bool, P> {
+public func ==<Eq: Equatable, E: Error, P: AsyncBlockPerformer>(lhs: Eq, rhs: Link<Eq, E, P>) -> Link<Bool, E, P> {
     rhs.insert(lhs) == rhs
 }
 
@@ -37,15 +40,18 @@ public func ==<E: Equatable, P: AsyncBlockPerformer>(lhs: E, rhs: Link<E,P>) -> 
 /// - Parameters:
 ///   - lhs: a link containing a comparable
 ///   - rhs: a link containing a comparable
-public func <<C: Comparable, P: AsyncBlockPerformer>(lhs: Link<C,P>, rhs: Link<C,P>) -> Link<Bool, P> {
-    (lhs+rhs).chain(<)
+public func <<Cp: Comparable, E: Error, P: AsyncBlockPerformer>(lhs: Link<Cp, E, P>, rhs: Link<Cp, E, P>) -> Link<Bool, E, P> {
+    (lhs+rhs).chain { (l_r, completion: @escaping FunctionWrapperCompletion<Bool,E>) in
+        let bound = (<) =<< l_r.0 =<< l_r.1
+        elevate(bound)(completion)
+    }
 }
 
 /// Returns a link containing a bool which is the result of compairing the comparable result of a link and a comparable
 /// - Parameters:
 ///   - lhs: a link containing a comparable
 ///   - rhs: a comparable
-public func <<C: Comparable, P: AsyncBlockPerformer>(lhs: Link<C,P>, rhs: C) -> Link<Bool, P> {
+public func <<Cp: Comparable, E: Error, P: AsyncBlockPerformer>(lhs: Link<Cp, E, P>, rhs: Cp) -> Link<Bool, E, P> {
     lhs < lhs.insert(rhs)
 }
 
@@ -53,7 +59,7 @@ public func <<C: Comparable, P: AsyncBlockPerformer>(lhs: Link<C,P>, rhs: C) -> 
 /// - Parameters:
 ///   - lhs: a comparable
 ///   - rhs: a link containing a comparable
-public func <<C: Comparable, P: AsyncBlockPerformer>(lhs: C, rhs: Link<C,P>) -> Link<Bool, P> {
+public func <<Cp: Comparable, E: Error, P: AsyncBlockPerformer>(lhs: Cp, rhs: Link<Cp, E, P>) -> Link<Bool, E, P> {
     rhs.insert(lhs) < rhs
 }
 
@@ -61,15 +67,18 @@ public func <<C: Comparable, P: AsyncBlockPerformer>(lhs: C, rhs: Link<C,P>) -> 
 /// - Parameters:
 ///   - lhs: a link containing a comparable
 ///   - rhs: a link containing a comparable
-public func ><C: Comparable, P: AsyncBlockPerformer>(lhs: Link<C,P>, rhs: Link<C,P>) -> Link<Bool, P> {
-    (lhs+rhs).chain(>)
+public func ><Cp: Comparable, E: Error, P: AsyncBlockPerformer>(lhs: Link<Cp, E, P>, rhs: Link<Cp, E, P>) -> Link<Bool, E, P> {
+    (lhs+rhs).chain { (l_r, completion: @escaping FunctionWrapperCompletion<Bool,E>) in
+        let bound = (>) =<< l_r.0 =<< l_r.1
+        elevate(bound)(completion)
+    }
 }
 
 /// Returns a link containing a bool which is the result of compairing the comparable result of a link and a comparable
 /// - Parameters:
 ///   - lhs: a link containing a comparable
 ///   - rhs: a comparable
-public func ><C: Comparable, P: AsyncBlockPerformer>(lhs: Link<C,P>, rhs: C) -> Link<Bool, P> {
+public func ><Cp: Comparable, E: Error, P: AsyncBlockPerformer>(lhs: Link<Cp, E, P>, rhs: Cp) -> Link<Bool, E, P> {
     lhs > lhs.insert(rhs)
 }
 
@@ -77,7 +86,7 @@ public func ><C: Comparable, P: AsyncBlockPerformer>(lhs: Link<C,P>, rhs: C) -> 
 /// - Parameters:
 ///   - lhs: a comparable
 ///   - rhs: a link containing a comparable
-public func ><C: Comparable, P: AsyncBlockPerformer>(lhs: C, rhs: Link<C,P>) -> Link<Bool, P> {
+public func ><Cp: Comparable, E: Error, P: AsyncBlockPerformer>(lhs: Cp, rhs: Link<Cp, E, P>) -> Link<Bool, E, P> {
     rhs.insert(lhs) > rhs
 }
 
@@ -85,15 +94,18 @@ public func ><C: Comparable, P: AsyncBlockPerformer>(lhs: C, rhs: Link<C,P>) -> 
 /// - Parameters:
 ///   - lhs: a link containing a comparable
 ///   - rhs: a link containing a comparable
-public func <=<C: Comparable, P: AsyncBlockPerformer>(lhs: Link<C,P>, rhs: Link<C,P>) -> Link<Bool, P> {
-    (lhs+rhs).chain(<=)
+public func <=<Cp: Comparable, E: Error, P: AsyncBlockPerformer>(lhs: Link<Cp, E, P>, rhs: Link<Cp, E, P>) -> Link<Bool, E, P> {
+    (lhs+rhs).chain { (l_r, completion: @escaping FunctionWrapperCompletion<Bool,E>) in
+        let bound = (<=) =<< l_r.0 =<< l_r.1
+        elevate(bound)(completion)
+    }
 }
 
 /// Returns a link containing a bool which is the result of compairing the comparable result of a link and a comparable
 /// - Parameters:
 ///   - lhs: a link containing a comparable
 ///   - rhs: a comparable
-public func <=<C: Comparable, P: AsyncBlockPerformer>(lhs: Link<C,P>, rhs: C) -> Link<Bool, P> {
+public func <=<Cp: Comparable, E: Error, P: AsyncBlockPerformer>(lhs: Link<Cp, E, P>, rhs: Cp) -> Link<Bool, E, P> {
     lhs <= lhs.insert(rhs)
 }
 
@@ -101,7 +113,7 @@ public func <=<C: Comparable, P: AsyncBlockPerformer>(lhs: Link<C,P>, rhs: C) ->
 /// - Parameters:
 ///   - lhs: a comparable
 ///   - rhs: a link containing a comparable
-public func <=<C: Comparable, P: AsyncBlockPerformer>(lhs: C, rhs: Link<C,P>) -> Link<Bool, P> {
+public func <=<Cp: Comparable, E: Error, P: AsyncBlockPerformer>(lhs: Cp, rhs: Link<Cp, E, P>) -> Link<Bool, E, P> {
     rhs.insert(lhs) <= rhs
 }
 
@@ -109,15 +121,18 @@ public func <=<C: Comparable, P: AsyncBlockPerformer>(lhs: C, rhs: Link<C,P>) ->
 /// - Parameters:
 ///   - lhs: a link containing a comparable
 ///   - rhs: a link containing a comparable
-public func >=<C: Comparable, P: AsyncBlockPerformer>(lhs: Link<C,P>, rhs: Link<C,P>) -> Link<Bool, P> {
-    (lhs+rhs).chain(>=)
+public func >=<Cp: Comparable, E: Error, P: AsyncBlockPerformer>(lhs: Link<Cp, E, P>, rhs: Link<Cp, E, P>) -> Link<Bool, E, P> {
+    (lhs+rhs).chain { (l_r, completion: @escaping FunctionWrapperCompletion<Bool,E>) in
+        let bound = (>=) =<< l_r.0 =<< l_r.1
+        elevate(bound)(completion)
+    }
 }
 
 /// Returns a link containing a bool which is the result of compairing the comparable result of a link and a comparable
 /// - Parameters:
 ///   - lhs: a link containing a comparable
 ///   - rhs: a comparable
-public func >=<C: Comparable, P: AsyncBlockPerformer>(lhs: Link<C,P>, rhs: C) -> Link<Bool, P> {
+public func >=<Cp: Comparable, E: Error, P: AsyncBlockPerformer>(lhs: Link<Cp, E, P>, rhs: Cp) -> Link<Bool, E, P> {
     lhs <= lhs.insert(rhs)
 }
 
@@ -125,36 +140,36 @@ public func >=<C: Comparable, P: AsyncBlockPerformer>(lhs: Link<C,P>, rhs: C) ->
 /// - Parameters:
 ///   - lhs: a comparable
 ///   - rhs: a link containing a comparable
-public func >=<C: Comparable, P: AsyncBlockPerformer>(lhs: C, rhs: Link<C,P>) -> Link<Bool, P> {
+public func >=<Cp: Comparable, E: Error, P: AsyncBlockPerformer>(lhs: Cp, rhs: Link<Cp, E, P>) -> Link<Bool, E, P> {
     rhs.insert(lhs) <= rhs
 }
 
 fileprivate extension Link where B == Bool {
     func `if`(_ block: @escaping ()->Void) {
-        self.chain { (bool:Bool)->Void in
+        self.chain { (bool: Bool, completion: @escaping FunctionWrapperCompletion<Void,E>) in
             if bool {
-                block()
+                elevate(block)(completion)
             }
         }
     }
 
     func unless(_ block: @escaping ()->Void) {
-        self.chain { (bool:Bool)->Void in
+        self.chain { (bool: Bool, completion: @escaping FunctionWrapperCompletion<Void,E>) in
             if !bool {
-                block()
+                elevate(block)(completion)
             }
         }
     }
 }
 
 /// A construct to build if/else-if/else statements predicated on a Link containing bool
-public class If<P: AsyncBlockPerformer> {
-    private let condition: Link<Bool,P>
+public class If<E: Error, P: AsyncBlockPerformer> {
+    private let condition: Link<Bool, E, P>
 
-    private var nextElseContext = AtomicValue<ElseContext<P>?>(value: nil)
-    private var nextElseCallback: Optional<(ElseContext<P>?)->Void> = nil
+    private var nextElseContext = AtomicValue<ElseContext<E, P>?>(value: nil)
+    private var nextElseCallback: Optional<(ElseContext<E, P>?)->Void> = nil
 
-    fileprivate init(condition: Link<Bool,P>, action: @escaping () -> Void) {
+    fileprivate init(condition: Link<Bool, E, P>, action: @escaping () -> Void) {
         self.condition = condition
 
         self.condition.if {
@@ -206,8 +221,8 @@ public class If<P: AsyncBlockPerformer> {
     ///     someAsyncRemediationFunc(hb)
     /// }
     @discardableResult
-    public func else_if(_ condition: @escaping @autoclosure () -> Link<Bool,P>, _ action: @escaping () -> Void) -> ElseContext<P> {
-        let next = ElseContext<P>(trueCondition: self.condition.insert(true),
+    public func else_if(_ condition: @escaping @autoclosure () -> Link<Bool, E, P>, _ action: @escaping () -> Void) -> ElseContext<E, P> {
+        let next = ElseContext<E, P>(trueCondition: self.condition.insert(true),
                                   conditionGenerator: condition,
                                   action: action)
         self.nextElseContext.access { elseContext in
@@ -219,17 +234,17 @@ public class If<P: AsyncBlockPerformer> {
 }
 
 /// A construct to build if/else-if/else statements predicated on a Link containing bool
-public class ElseContext<P: AsyncBlockPerformer>  {
-    private let trueCondition: Link<Bool, P>
-    private let conditionGenerator: ()->Link<Bool,P>
-    private var storedCondition = AtomicValue<Link<Bool,P>?>(value: nil)
+public class ElseContext<E: Error, P: AsyncBlockPerformer>  {
+    private let trueCondition: Link<Bool, E, P>
+    private let conditionGenerator: ()->Link<Bool, E, P>
+    private var storedCondition = AtomicValue<Link<Bool, E, P>?>(value: nil)
 
     private let action: () -> Void
 
-    private var nextElseContext = AtomicValue<ElseContext<P>?>(value: nil)
-    private var nextElseCallback: Optional<(ElseContext<P>?)->Void> = nil
+    private var nextElseContext = AtomicValue<ElseContext<E, P>?>(value: nil)
+    private var nextElseCallback: Optional<(ElseContext<E, P>?)->Void> = nil
 
-    fileprivate init(trueCondition: Link<Bool, P>, conditionGenerator: @escaping ()->Link<Bool,P>, action: @escaping () -> Void) {
+    fileprivate init(trueCondition: Link<Bool, E, P>, conditionGenerator: @escaping ()->Link<Bool, E, P>, action: @escaping () -> Void) {
         self.trueCondition = trueCondition
         self.conditionGenerator = conditionGenerator
         self.action = action
@@ -268,8 +283,8 @@ public class ElseContext<P: AsyncBlockPerformer>  {
     ///     someAsyncRemediationFunc(hb)
     /// }
     @discardableResult
-    public func else_if(_ condition: @escaping @autoclosure () -> Link<Bool,P>, _ action: @escaping () -> Void) -> ElseContext<P> {
-        let next = ElseContext<P>(trueCondition: self.trueCondition, conditionGenerator: condition, action: action)
+    public func else_if(_ condition: @escaping @autoclosure () -> Link<Bool, E, P>, _ action: @escaping () -> Void) -> ElseContext<E, P> {
+        let next = ElseContext<E, P>(trueCondition: self.trueCondition, conditionGenerator: condition, action: action)
         self.nextElseContext.access { elseContext in
             elseContext = next
             self.nextElseCallback?(next)
@@ -310,6 +325,6 @@ public class ElseContext<P: AsyncBlockPerformer>  {
 ///     someAsyncRemediationFunc(hb)
 /// }
 @discardableResult
-public func if_<P: AsyncBlockPerformer>(_ condition: Link<Bool,P>, _ action: @escaping () -> Void) -> If<P> {
+public func if_<E: Error, P: AsyncBlockPerformer>(_ condition: Link<Bool, E, P>, _ action: @escaping () -> Void) -> If<E, P> {
     return If(condition: condition, action: action)
 }

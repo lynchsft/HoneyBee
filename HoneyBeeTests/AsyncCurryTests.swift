@@ -10,23 +10,6 @@ import XCTest
 import Foundation
 import HoneyBee
 
-struct User {
-    
-    var reset: SingleArgFunction<Int, Void> { async1(self.reset) }
-	func reset(in seconds: Int) {
-		
-	}
-	
-    static let login = async2(User.login)
-	static func login(username: String, age: Int, completion: ((Error?) -> Void)?) {
-		DispatchQueue.global().async {
-			sleep(1)
-			//completion?(NSError(domain: "Foo", code: -1, userInfo: nil))
-			completion?(nil)
-		}
-	}
-}
-
 class AsyncCurryTests: XCTestCase {
 	
 	private var filename: String {
@@ -46,23 +29,22 @@ class AsyncCurryTests: XCTestCase {
         let successfulResult = expectation(description: "Successful result")
         let unsuccessfulResult = expectation(description: "Unsuccessful result")
 		
-		func handleError(_ context: ErrorContext) {
-			print(context.trace.toString())
-			let traceString = context.trace.toString()
-			let chains = traceString.components(separatedBy: "\n")
-			XCTAssertEqual(chains.count, 7 + 1 /*for the trailing return*/)
+		func handleError(_ context: ErrorContext<NSError>) {
+//			print(context.trace.toString())
+            XCTAssertEqual(context.trace.componentCount, 6)
 			explode.fulfill()
 		}
 		
-		let hb = HoneyBee.start()
+		let hb = HoneyBee.start() // 1
         
-        let r1 = increment(3 >> hb) 
-        let r2 = increment(r1)
-        let r3 = increment(r2)
-        let r4 = increment(r3).chain {
-			XCTAssertEqual($0, 7)
-        }
-        r4.onResult { (result: Result<Int, Error>) in
+        let r1 = increment(3 >> hb) // 2
+        let r2 = increment(r1) // 3
+        let r3 = increment(r2) // 4
+        let r4 = increment(r3) // 5
+
+        XCTAssertEqual(r4, 7 >> hb)
+
+        r4.onResult { (result: Result<Int, Never>) in
             switch result {
             case .success(_):
                 successfulResult.fulfill()
@@ -70,8 +52,8 @@ class AsyncCurryTests: XCTestCase {
                 XCTFail()
             }
         }
-        let error = TestingFunctions().explode(r4)
-        error.onResult { (result: Result<Int, ErrorContext>) in
+        let error = TestingFunctions().explode(r4.drop) // 6
+        error.onResult { (result: Result<Int, ErrorContext<NSError>>) in
             switch result {
             case .success(_):
                 XCTFail()
@@ -81,11 +63,7 @@ class AsyncCurryTests: XCTestCase {
             }
         }
 		
-		waitForExpectations(timeout: 3) { error in
-			if let error = error {
-				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
-			}
-		}
+		waitForExpectations(timeout: 3)
 	}
 	
 	func testErrorContext2() {
@@ -96,80 +74,69 @@ class AsyncCurryTests: XCTestCase {
 		
 		let finalExpect = expectation(description: "Chain should finalize")
 		
-		func shortError(_ context: ErrorContext) { // this one handles the error thrown by reduce(map) itself
+		func shortError(_ context: ErrorContext<NSError>) { // this one handles the error thrown by reduce(map) itself
 //			print(context.trace.toString())
-			let traceString = context.trace.toString()
-			let chains = traceString.components(separatedBy: self.filename)
-			XCTAssertEqual(chains.count, 5) //"commands" + 1
+            XCTAssertEqual(context.trace.componentCount, 4)
 			expect.fulfill()
 		}
 		
-		func longError(_ context: ErrorContext) { // this one handles the errors thrown by `explode`.
+		func longError(_ context: ErrorContext<NSError>) { // this one handles the errors thrown by `explode`.
 //			print(context.trace.toString())
-			let traceString = context.trace.toString()
-			let chains = traceString.components(separatedBy: "\n")
-			XCTAssertEqual(chains.count, 9) //"commands" + 1 for the "+" (conjoin) and + 1 for the final newline
+            XCTAssertEqual(context.trace.componentCount, 7)
 			expect.fulfill()
 		}
 		
 		do {
-			let a = HoneyBee.start().finally {
-				$0.chain(finalExpect.fulfill)
+			let hb = HoneyBee.start().finally { // 1
+				finalExpect.fulfill($0)
 			}
-			
-			let sum = a.insert(source)
-				.map {
-                    increment($0)
-                }.reduce(with: 0) {
-                    let value = $0.chain(+)
-						.chain(increment)
-						.insert(TestingFunctions()).explode()
 
-                    value.onError(longError)
-                    return value
+            let source = source >> hb // not documented
+			
+            let sum = source.map { // 2
+                    increment($0)
+                }
+                .expect(NSError.self) // 3
+                .reduce(with: 0) { // 4
+                    let value = $0.chain(+) // 5
+                    let plus1 = increment(value) // 6
+                    let error = TestingFunctions().explode(plus1.drop) +> plus1 // 7
+
+                    error.onError(longError)
+                    return error
 				}
             sum.onError(shortError)
-			sum.drop.chain(fail) // shouldn't run
+            sum.drop.chain(fail) // shouldn't run so no index
 		}
 		
-		waitForExpectations(timeout: 6) { error in
-			if let error = error {
-				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
-			}
-		}
+		waitForExpectations(timeout: 6)
 	}
 	
 	func testErrorContext3() {
 		let expect = expectation(description: "Chainshould complete")
 		
-		func handleError(_ context: ErrorContext) {
-			print(context.trace.toString())
-			let traceString = context.trace.toString()
-			let chains = traceString.components(separatedBy: "\n")
-			XCTAssertEqual(chains.count, 8) // "commands" + 1
+		func handleError(_ context: ErrorContext<NSError>) {
+//			print(context.trace.toString())
+            XCTAssertEqual(context.trace.componentCount, 6)
 			expect.fulfill()
 		}
 		
-		let a = HoneyBee.start()
+		let hb = HoneyBee.start() // 1
 		
 		let source = [1, 2, 3]
-		let sum = a.insert(source)
-			.map {
+		let sum = hb.insert(source) // 2
+			.map { // 3
                 increment($0)
-			}.reduce(with: 0) {
+			}.reduce(with: 0) { // 4
 				$0.chain(+)
 			}
 		
-        increment(sum).chain {
-			XCTAssertEqual($0, 10)
-		}.chain(TestingFunctions().explode)
+        let plus1 = increment(sum) // 5
+        XCTAssertEqual(plus1, 10 >> hb)
+        TestingFunctions().explode(plus1.drop)  // 6
             .onError(handleError)
 		
-		waitForExpectations(timeout: 3) { error in
-			if let error = error {
-				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
-			}
-		}
+		waitForExpectations(timeout: 3)
 	}
 	
 	func testErrorContext4() {
@@ -180,44 +147,38 @@ class AsyncCurryTests: XCTestCase {
 		
 		let finalExpect = expectation(description: "Chain should finalize")
 		
-		func shortError(_ context: ErrorContext) { // this one handles the error thrown by map itsself
+		func shortError(_ context: ErrorContext<NSError>) { // this one handles the error thrown by map itsself
 //			print(context.trace.toString())
-			let traceString = context.trace.toString()
-			let chains = traceString.components(separatedBy: "\n")
-			XCTAssertEqual(chains.count, 4) //"commands" + 1
+            XCTAssertEqual(context.trace.componentCount, 3)
 			expect.fulfill()
 		}
 		
-		func longError(_ context: ErrorContext) { // this one handles the errors thrown by `explode`.
+		func longError(_ context: ErrorContext<NSError>) { // this one handles the errors thrown by `explode`.
 //			print(context.trace.toString())
-			let traceString = context.trace.toString()
-			let chains = traceString.components(separatedBy: "\n")
-			XCTAssertEqual(chains.count, 6) //"commands" + 1
+            XCTAssertEqual(context.trace.componentCount, 5)
 			expect.fulfill()
 		}
 		
 		do {
-			let a = HoneyBee.start().finally {
-				$0.chain(finalExpect.fulfill)
+			let hb = HoneyBee.start().finally { // 1
+				finalExpect.fulfill($0)
 			}
-		
-			let mapping = a.insert(source)
-                .map { (int: Link<Int, DefaultDispatchQueue>) -> Link<Int, DefaultDispatchQueue> in
-                    let bigger = increment(int)
 
-                    let explode = TestingFunctions().explode(bigger)
+            let source = source >> hb
+            let errorExpectingSource = source.expect(NSError.self) // 2
+			let mapping = errorExpectingSource
+                .map { (int: Link<Int, NSError, DefaultDispatchQueue>) -> Link<Int, NSError, DefaultDispatchQueue> in // 3
+                    let bigger = increment(int) // 4
+
+                    let explode = TestingFunctions().explode(bigger.drop) +> bigger // 5
                     explode.onError(longError)
                     return explode
 			}
-			
-			mapping.drop.chain(fail) // shouldn't run
+
+            mapping.drop.chain(fail) // shouldn't run, so no index
             mapping.onError(shortError)
 		}
 		
-		waitForExpectations(timeout: 3) { error in
-			if let error = error {
-				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
-			}
-		}
+		waitForExpectations(timeout: 3)
 	}
 }

@@ -62,6 +62,10 @@ public struct AsyncTrace: CustomDebugStringConvertible {
     public var lastLine: UInt {
         self.last.line
     }
+
+    public var componentCount: Int {
+        self.trace.count
+    }
 	
 	public var debugDescription: String {
 		return self.toString()

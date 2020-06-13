@@ -16,8 +16,8 @@ fileprivate class RemoteObject {
         
     }
 
-    lazy private(set) var injest = async2(self.injest)
-    func injest(data: Data, time: Date, completion: @escaping (Error?) -> Void ) {
+    lazy private(set) var ingest = async2(self.ingest)
+    func ingest(data: Data, time: Date, completion: @escaping (Error?) -> Void ) {
         completion(nil)
     }
     
@@ -59,10 +59,6 @@ fileprivate class RemoteObject {
     }
 }
 
-extension XCTestExpectation {
-    var fulfill: ZeroArgFunction<Void> { async0(self.fulfill) }
-}
-
 class CodeCoverageTests: XCTestCase {
 
     override func setUp() {
@@ -83,9 +79,9 @@ class CodeCoverageTests: XCTestCase {
         let data = remote.fetchData("fooId3")
         let time = remote.synchronize()
         
-        let injested = remote.injest(data)(time)
+        let injested = remote.ingest(data)(time)
 
-        let finished = (injested +> remote).deleteSelf()
+        let finished = (ingested +> remote).deleteSelf()
 
         finished.onError(fail)
 
@@ -118,7 +114,7 @@ class CodeCoverageTests: XCTestCase {
                         <+ r.syncInjest(Data())(Date())(hb)
                         <+ remote.syncInjest(Data())(time)
 
-        let finished = (injested +> remote).deleteSelf()
+        let finished = (ingested +> remote).deleteSelf()
 
         completion.fulfill(finished)
         finished.onError(fail)

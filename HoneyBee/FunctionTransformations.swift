@@ -8,8 +8,8 @@
 
 import Foundation
 
-func elevate(_ function: @escaping (@escaping (Error?)->Void ) -> Void) -> (@escaping (Result<Void, Error>) -> Void) -> Void {
-    return {(callback: @escaping ((Result<Void, Error>) -> Void)) in
+func elevate<E>(_ function: @escaping (@escaping (E?)->Void ) -> Void) -> (@escaping (Result<Void, E>) -> Void) -> Void {
+    return {(callback: @escaping ((Result<Void, E>) -> Void)) in
         function { error in
             if let error = error {
                 callback(.failure(error))
@@ -20,72 +20,48 @@ func elevate(_ function: @escaping (@escaping (Error?)->Void ) -> Void) -> (@esc
     }
 }
 
-func elevate<C>(_ function: @escaping (@escaping (C?, Error?)->Void ) -> Void) -> (@escaping (Result<C, Error>) -> Void) -> Void {
-    return {(callback: @escaping ((Result<C, Error>) -> Void)) in
+func elevate<C,E>(_ function: @escaping (@escaping (C?, E?)->Void ) -> Void) -> (@escaping (Result<C, E>) -> Void) -> Void {
+    return {(callback: @escaping ((Result<C, E>) -> Void)) in
         function { c, error in
             if let error = error {
                 callback(.failure(error))
             } else if let c = c {
                 callback(.success(c))
             } else {
-                callback(.failure(NSError(domain: "Completion called with two nil values.", code: -99, userInfo: nil)))
+                HoneyBee.internalFailureResponse.evaluate(true, "Completion called with two nil values.")
             }
         }
     }
 }
 
-func populateVoid<T>(failableResult: Result<Void, Error>, with t: T) -> Result<T, Error> {
-    switch failableResult {
-    case let .failure(error):
-        return .failure(error)
-    case .success():
-        return .success(t)
-    }
+func populateVoid<T,E>(result: Result<Void, E>, with t: T) -> Result<T, E> {
+    result.map { t }
 }
 
-func elevate<C>(_ function: @escaping (@escaping (Error?, C?)->Void ) -> Void) -> (@escaping (Result<C, Error>) -> Void) -> Void {
-    elevate { (callback: @escaping (C?, Error?) -> Void) in
+func elevate<C,E>(_ function: @escaping (@escaping (E?, C?)->Void ) -> Void) -> (@escaping (Result<C, E>) -> Void) -> Void {
+    elevate { (callback: @escaping (C?, E?) -> Void) in
         function { (error, c) in
             callback(c, error)
         }
     }
 }
 
-func elevate<T>(_ function: @escaping (T) -> (@escaping (Error?) -> Void) -> Void) -> (T, @escaping (Result<T, Error>) -> Void) -> Void {
-    return { (t: T, callback: @escaping (Result<T, Error>) -> Void) -> Void in
-        elevate(function(t))({ result in
-            callback(populateVoid(failableResult: result, with: t))
-        })
-    }
-}
-
-func elevate<T>(_ function: @escaping (T, @escaping (Error?) -> Void) -> Void) -> (T, @escaping (Result<T, Error>) -> Void) -> Void {
-    return { (t: T, callback: @escaping (Result<T, Error>) -> Void) -> Void in
-        elevate(function =<< t)({ result in
-            callback(populateVoid(failableResult: result, with: t))
-        })
-    }
-}
-
-func elevate<T>(_ function: @escaping (@escaping (Error?) -> Void) -> Void) -> (T, @escaping (Result<T, Error>) -> Void) -> Void {
-    return { (t: T, callback: @escaping (Result<T, Error>) -> Void) -> Void in
-        elevate(function)({ result in
-            callback(populateVoid(failableResult: result, with: t))
-        })
-    }
-}
-
-func elevate(_ function: @escaping (@escaping () -> Void) throws -> Void) -> (@escaping (Result<Void, Error>) -> Void) -> Void {
-    return { (callback: @escaping (Result<Void, Error>) -> Void) -> Void in
-        do {
-            try function {
-                callback(.success(Void()))
-            }
-        } catch {
-            callback(.failure(error))
+func elevate<E>(_ function: @escaping (@escaping () -> Void) -> Void) -> (@escaping (Result<Void, E>) -> Void) -> Void {
+    return { (callback: @escaping (Result<Void, E>) -> Void) -> Void in
+        function {
+            callback(.success(Void()))
         }
     }
 }
+
+func elevate<E>(_ function: @escaping ((() -> Void)?) -> Void) -> (@escaping (Result<Void, E>) -> Void) -> Void {
+    return { (callback: @escaping (Result<Void, E>) -> Void) -> Void in
+        function {
+            callback(.success(Void()))
+        }
+    }
+}
+
 
 func elevate<C>(_ function: @escaping () throws -> C) -> (@escaping (Result<C, Error>) -> Void) -> Void {
     return { (callback: @escaping (Result<C, Error>) -> Void) -> Void in
@@ -97,27 +73,34 @@ func elevate<C>(_ function: @escaping () throws -> C) -> (@escaping (Result<C, E
     }
 }
 
-
-func elevate<T, C>(_ function: @escaping (T, @escaping (C?, Error?) -> Void) -> Void) -> (T, @escaping (Result<C, Error>) -> Void) -> Void {
-    return { (t: T, callback: @escaping (Result<C, Error>) -> Void) -> Void in
-        elevate(bind(function, t))(callback)
-    }
-}
-
-func elevate<C>(_ function: @escaping (@escaping (C) -> Void) throws -> Void) -> (@escaping (Result<C, Error>) -> Void) -> Void {
-    return { (callback: @escaping (Result<C, Error>) -> Void) -> Void in
+func elevate(_ function: @escaping () throws -> Void) -> (@escaping (Result<Void, Error>) -> Void) -> Void {
+    return { (callback: @escaping (Result<Void, Error>) -> Void) -> Void in
         do {
-            try function { result in
-                callback(.success(result))
-            }
+            try function()
+            callback(.success(Void()))
         } catch {
             callback(.failure(error))
         }
     }
 }
 
-func elevate<T, C>(_ function: @escaping (T) -> (@escaping (C?, Error?) -> Void) -> Void) -> (T, @escaping (Result<C, Error>) -> Void) -> Void {
-    return { (t: T, callback: @escaping (Result<C, Error>) -> Void) -> Void in
-        elevate(function(t))(callback)
+func elevate<C,E>(_ function: @escaping () -> C) -> (@escaping (Result<C, E>) -> Void) -> Void {
+    return { (callback: @escaping (Result<C, E>) -> Void) -> Void in
+        callback(.success(function()))
+    }
+}
+
+func elevate<E>(_ function: @escaping () -> Void) -> (@escaping (Result<Void, E>) -> Void) -> Void {
+    return { (callback: @escaping (Result<Void, E>) -> Void) -> Void in
+        function()
+        callback(.success(Void()))
+    }
+}
+
+func elevate<C, E>(_ function: @escaping (@escaping (C) -> Void) -> Void) -> (@escaping (Result<C, E>) -> Void) -> Void {
+    return { (callback: @escaping (Result<C, E>) -> Void) -> Void in
+        function { result in
+            callback(.success(result))
+        }
     }
 }

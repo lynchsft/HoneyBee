@@ -29,65 +29,59 @@ class SwiftTeamTests: XCTestCase {
         
         let expect1 = expectation(description: "Async process should complete")
         
-        func completion(_ result: Result<Image, ErrorContext>) {
+        func completion(_ result: Result<Image, Error>) {
             switch result {
-            case .failure(let context):
-                fail(on: context.error)
+            case .failure(let error):
+                fail(on: error)
             case .success(_):
                 expect1.fulfill()
             }
         }
-        
-        HoneyBee.async(completion: completion) { async in
-        
+
+
+        HoneyBee.async(completion: completion) { (async: Link<Void, Never, DefaultDispatchQueue>) in
+
             let dataProfile = loadWebResource(async)("dataprofile.txt")
             let imageData = loadWebResource("imagedata.dat" >> async)
-            
+
             let image = decodeImage(dataProfile)(imageData)
             let cleanedImage = dewarpAndCleanupImage(image)
-            
+
             return cleanedImage
         }
         
-        waitForExpectations(timeout: 3) { error in
-            if let error = error {
-                XCTFail("waitForExpectationsWithTimeout errored: \(error)")
-            }
-        }
+        waitForExpectations(timeout: 3)
     }
     
     func testAwaitCurry() {
         let expect1 = expectation(description: "Chain 1 should complete")
         let expect2 = expectation(description: "Chain 2 should complete")
-        
+
         let hb = HoneyBee.start()
-        
+
         let user = User() >> hb
-        
-        user.reset(5)
-        
-        User.login(hb)("Fred")(17)
-            .drop.chain(expect1.fulfill)
-        
+
+        user.reset(5 >> hb)
+
+        let result1 = User.login(hb)("Fred")(17)
+        expect1.fulfill(result1)
+
         addTogether(hb)(1)(3.5)
-        
-        let r1 = increment(hb)(3)
+
+        let r1 = increment(3 >> hb)
         let r2 = increment(r1)
         let r3 = increment(r2)
-        
-        let b = increment(r3).chain {
-            XCTAssertEqual($0, 7)
-        }
-        b.drop.chain(expect2.fulfill)
 
-        b.onResult { result in
+        let b = increment(r3)[{
+            XCTAssertEqual($0, 7)
+        }]
+        let c = expect2.fulfill(b)
+
+
+        c.onResult { (result: Result<Void, Never>) in
             failIfError(result)
         }
-        
-        waitForExpectations(timeout: 3) { error in
-            if let error = error {
-                XCTFail("waitForExpectationsWithTimeout errored: \(error)")
-            }
-        }
+
+        waitForExpectations(timeout: 3)
     }
 }

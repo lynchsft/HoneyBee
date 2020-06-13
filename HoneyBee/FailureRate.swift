@@ -8,9 +8,22 @@
 
 import Foundation
 
-enum FailureRateError : Error {
-	case failureRateExceeded(FailureRate)
+public protocol FailureRateAwareError: Error {
+    static func failureRateExceeded(_ failureRate: FailureRate) -> Self
 }
+
+extension Never: FailureRateAwareError {
+    public static func failureRateExceeded(_: FailureRate) -> Never {
+        preconditionFailure()
+    }
+}
+
+extension NSError: FailureRateAwareError {
+    public static func failureRateExceeded(_ failureRate: FailureRate) -> Self {
+        Self(domain: "Failure rate exceeded", code: -1037, userInfo: ["FailureRate": failureRate])
+    }
+}
+
 
 /**
 * Enum representing the amount of failure which is acceptable in a SIMD parallel behavior (such as map and filter).
@@ -28,7 +41,7 @@ public enum FailureRate {
 	/// Convenience property expresssing that total failure is acceptable.
 	public static let full = FailureRate.ratio(1.0)
 	
-	func checkExceeded(byFailures failures: Int, `in` total: Int) throws -> Void {
+    func checkExceeded<E: FailureRateAwareError>(byFailures failures: Int, `in` total: Int) -> E? {
 		guard failures >= 0 else {
 			preconditionFailure("failures must be non-negative")
 		}
@@ -48,15 +61,17 @@ public enum FailureRate {
 			}
 			let failureRate = Double(failures)/Double(total)
 			if failureRate > ratio {
-				throw FailureRateError.failureRateExceeded(self)
+                return E.failureRateExceeded(self)
 			}
 		case .count(let count):
 			guard count >= 0 else {
 				preconditionFailure("count must be >= 0")
 			}
 			if failures > count {
-				throw FailureRateError.failureRateExceeded(self)
+				return E.failureRateExceeded(self)
 			}
 		}
+
+        return nil
 	}
 }
