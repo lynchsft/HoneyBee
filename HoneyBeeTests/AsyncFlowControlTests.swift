@@ -107,5 +107,5 @@ class AsyncFlowControlTests: XCTestCase {
 }
 
 extension String {
-    var lowercased: ZeroArgFunction<String> { async0(self.lowercased) }
+    var lowercased: ZeroArgFunction<String, Never> { async0(self.lowercased) }
 }

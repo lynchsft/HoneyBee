@@ -14,7 +14,7 @@ public struct AsyncZeroArgFunction<R, E: Error, P: AsyncBlockPerformer> {
     let function: () -> Link<R, E, P>
     
     @discardableResult
-    public func callAsFunction(_ link: Link<Void, E, P>) -> Link<R, E, P> {
+    public func callAsFunction() -> Link<R, E, P> {
         link+>function()
     }
 }

@@ -149,6 +149,8 @@ fileprivate extension Link where B == Bool {
         self.chain { (bool: Bool, completion: @escaping FunctionWrapperCompletion<Void,E>) in
             if bool {
                 elevate(block)(completion)
+            } else {
+                completion(.success(()))
             }
         }
     }
@@ -157,6 +159,8 @@ fileprivate extension Link where B == Bool {
         self.chain { (bool: Bool, completion: @escaping FunctionWrapperCompletion<Void,E>) in
             if !bool {
                 elevate(block)(completion)
+            } else {
+                completion(.success(()))
             }
         }
     }
