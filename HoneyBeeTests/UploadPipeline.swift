@@ -57,7 +57,7 @@ class UploadPipeline: XCTestCase {
     }
 
 
-    private lazy var export = (async1(self.export) as SingleArgFunction<String, Media>).on(UtilityDispatchQueue.self)
+    private lazy var export = (async1(self.export) as SingleArgFunction<String, Media, Error>).on(UtilityDispatchQueue.self)
     private func export(_ mediaRef: String, completion: @escaping (Media?, Error?) -> Void) {
         XCTAssert(concurrentExportCounter.increment() < exportLimit+1)
         DispatchQueue.global().async {
@@ -68,7 +68,7 @@ class UploadPipeline: XCTestCase {
     }
 
 
-    private lazy var upload = (async1(self.upload) as SingleArgFunction<Media, Void>).on(BackgroundDispatchQueue.self)
+    private lazy var upload = (async1(self.upload) as SingleArgFunction<Media, Void, Error>).on(BackgroundDispatchQueue.self)
     private func upload(_ media: Media, completion: @escaping (Error?) -> Void) {
         XCTAssert(concurrentUploadCounter.increment() < uploadLimit+1)
         DispatchQueue.global().async {
@@ -217,28 +217,52 @@ class UploadPipeline: XCTestCase {
 
         let b = a.move(to: DispatchQueue.global())
                 .each(limit: uploadLimit, acceptableFailure: .ratio(self.acceptableFailureRate)) { elem in
-                    elem.finally { link in
+                    let a2 = elem.finally { link in
                         link.move(to: DispatchQueue.main)
                             .chain(self.singleUploadCompletion)
                     }
-                    .limit(self.exportLimit) { link in
-                        link.chain(self.export)
+
+                    let b2 = a2.limit(self.exportLimit) { link in
+                        link.move(to: UtilityDispatchQueue())
+                            .chain { (ref: String, completion: @escaping (Result<Media, Error>) -> Void) in
+                                self.export(ref) { (media: Media?, error: Error?) in
+                                    if let error = error {
+                                        completion(.failure(error))
+                                    } else if let media = media {
+                                        completion(.success(media))
+                                    } else {
+                                        preconditionFailure()
+                                    }
+                                }
+                            }
                     }
-                    .move(to: self.managedObjectContext)
-                    .retry(self.uploadRetries) { link in
-                        link.chain(self.upload) // subject to transient failure
+
+                    let c2 = b2.move(to: self.managedObjectContext)
+                        .retry(self.uploadRetries) { link in
+                            link.move(to: BackgroundDispatchQueue())
+                                .chain { (media: Media, completion: @escaping (Result<Media, Error>) -> Void) in
+                                    self.upload(media) { error in // subject to transient failure
+                                        if let error = error {
+                                            completion(.failure(error))
+                                        } else {
+                                            completion(.success(media))
+                                        }
+                                    }
+                            }
                     }
-                    .move(to: DispatchQueue.main)
-                    .chain(self.singleUploadSuccess)
-                    .move(to: DispatchQueue.global())
+
+                    let d2 = c2.move(to: DispatchQueue.main)
+                        .chain { (media: Media, completion: @escaping (Result<Media, Error>) -> Void) in
+                            self.singleUploadSuccess(media)
+                            completion(.success(media))
+                        }
+                    d2.onResult { result in
+                        failIfError(result)
+                    }
             }.drop
 
-        let c = b.move(to: DispatchQueue.main)
-                 .chain(totalProcessSuccess)
-
-        c.onResult { result in
-            failIfError(result)
-        }
+        b.move(to: DispatchQueue.main)
+         .chain(totalProcessSuccess)
 
         self.waitForExpectations(timeout: 15)
     }
@@ -263,16 +287,16 @@ class UploadPipeline: XCTestCase {
                 // the export is compute bound so limit it further
             }
 
-            let uploaded = media.retry(self.uploadRetries) { media in
+            let uploaded:Link<Media, Error, BackgroundDispatchQueue> = media.retry(self.uploadRetries) { media in
                 self.upload(media) +> media
                 // the upload is subject to transient failure so retry it
             }
 
             self.singleUploadSuccess(uploaded >> mainQ)
+                    .onError(self.errorHandler)
         }.drop
 
-        let finished = self.totalProcessSuccessA(uploadComplete >> mainQ)
-        finished.onError(self.errorHandler)
+        self.totalProcessSuccessA(uploadComplete >> mainQ)
 
         self.waitForExpectations(timeout: 15)
     }

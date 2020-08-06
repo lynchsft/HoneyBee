@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8F19143324DBB28F000A1F28 /* UploadPipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F616FC023B19A28008F7E1E /* UploadPipeline.swift */; };
 		8F2EE4822495367B00ABC79B /* AsyncFlowControlTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FC3375823B54D4E00E9208F /* AsyncFlowControlTests.swift */; };
 		8F2EE4832495381100ABC79B /* MergeSortTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F48C13A23B2932F00957E59 /* MergeSortTest.swift */; };
 		8F2EE4842495387C00ABC79B /* PrettyExamples.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA575F8A20024A630075C89C /* PrettyExamples.swift */; };
@@ -359,6 +360,7 @@
 			files = (
 				8F2EE4842495387C00ABC79B /* PrettyExamples.swift in Sources */,
 				8F8291D424957816008AE992 /* SinglePathTests.swift in Sources */,
+				8F19143324DBB28F000A1F28 /* UploadPipeline.swift in Sources */,
 				8F2EE4822495367B00ABC79B /* AsyncFlowControlTests.swift in Sources */,
 				8FCB321E241D4EDA006E0498 /* TestingFunctions.swift in Sources */,
 				8F2EE4832495381100ABC79B /* MergeSortTest.swift in Sources */,

@@ -8,15 +8,6 @@
       }
     },
     {
-      "id" : "13EBB384-BC32-4F83-B30E-9211BB02AD8F",
-      "name" : "Memory Logging",
-      "options" : {
-        "mallocStackLoggingOptions" : {
-          "loggingType" : "allAllocations"
-        }
-      }
-    },
-    {
       "id" : "8F4F1A6E-7E68-451B-B503-F9FCBC3A7BD1",
       "name" : "Zombies",
       "options" : {
@@ -25,14 +16,14 @@
     },
     {
       "id" : "5B493D61-FB7F-4703-A635-77BEC592A2BE",
-      "name" : "Run 4",
+      "name" : "Run 3",
       "options" : {
 
       }
     },
     {
       "id" : "BB95E413-815E-4A1D-9678-1DEC69CDB2F4",
-      "name" : "Run 5",
+      "name" : "Run 4",
       "options" : {
 
       }

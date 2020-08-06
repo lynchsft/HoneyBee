@@ -388,6 +388,7 @@ public struct BoundZeroArgFunction<R, E: Error,P: AsyncBlockPerformer> {
 }
 
 extension BoundZeroArgFunction where E == Never {
+    @discardableResult
     public func callAsFunction(_ link: Link<Void, Never, P>, file: StaticString = #file, line: UInt = #line) -> Link<R, Never, P> {
         self.zero(link, file: file, line: line)
     }

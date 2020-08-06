@@ -298,7 +298,7 @@ final public class Link<B, E: Error, P: AsyncBlockPerformer> : Executable<E>  {
         if let existingFailure = self.ancestorFailureBox.getValue() {
             newLink.ancestorFailed(existingFailure as! ErrorContext<Error>)
         } else {
-            self.createdLinks.push(newLink as! Self)
+            self.createdLinks.push(newLink as! Executable<E>)
         }
         return newLink
     }
@@ -916,6 +916,15 @@ public func >><B, CommonE: Error, PerformerB: AsyncBlockPerformer, PerformerC: A
     lhs.move(to: rhs.getBlockPerformer()) <+ rhs
 }
 
+public func >><B, OtherE: Error, PerformerB: AsyncBlockPerformer, PerformerC: AsyncBlockPerformer>(lhs: Link<B, OtherE, PerformerB>, rhs: Link<Void, Never, PerformerC>) -> Link<B, OtherE, PerformerC> {
+    lhs.move(to: rhs.getBlockPerformer()) <+ rhs.expect(OtherE.self)
+}
+
+public func >><B, PerformerB: AsyncBlockPerformer, PerformerC: AsyncBlockPerformer>(lhs: Link<B, Never, PerformerB>, rhs: Link<Void, Never, PerformerC>) -> Link<B, Never, PerformerC> {
+    lhs.move(to: rhs.getBlockPerformer()) <+ rhs
+}
+
+
 public func >><B, E: Error, PerformerB: AsyncBlockPerformer, PerformerC: AsyncBlockPerformer>(lhs: Link<B, E, PerformerB>, rhs: PerformerC) -> Link<B, E, PerformerC> {
     lhs.move(to: rhs)
 }
@@ -923,6 +932,7 @@ public func >><B, E: Error, PerformerB: AsyncBlockPerformer, PerformerC: AsyncBl
 public func >><E: Error, PerformerB: AsyncBlockPerformer, PerformerC: AsyncBlockPerformer>(lhs: Link<Void, E, PerformerB>, rhs: PerformerC) -> Link<Void, E, PerformerC> {
     lhs.move(to: rhs)
 }
+
 
 public func >><B, E: Error, PerformerC: AsyncBlockPerformer>(lhs: @autoclosure @escaping () -> B, rhs: Link<Void, E, PerformerC>) -> Link<B, E, PerformerC> {
     rhs.chain { (_, completion: @escaping (Result<B,E>)->Void) in
