@@ -52,7 +52,9 @@ class AsyncCurryTests: XCTestCase {
                 XCTFail()
             }
         }
-        let error = TestingFunctions().explode(r4.drop) // 6
+
+        let testingFunctions = TestingFunctions() >> r4.drop
+        let error = testingFunctions.explodeA() // 6
         error.onResult { (result: Result<Int, ErrorContext<NSError>>) in
             switch result {
             case .success(_):
@@ -100,7 +102,8 @@ class AsyncCurryTests: XCTestCase {
                 .reduce(with: 0) { // 4
                     let value = $0.chain(+) // 5
                     let plus1 = increment(value) // 6
-                    let error = TestingFunctions().explode(plus1.drop) +> plus1 // 7
+                    let testingFuncs = TestingFunctions() >> plus1.drop
+                    let error = testingFuncs.explodeA() +> plus1 // 7
 
                     error.onError(longError)
                     return error
@@ -118,6 +121,7 @@ class AsyncCurryTests: XCTestCase {
 		func handleError(_ context: ErrorContext<NSError>) {
 //			print(context.trace.toString())
             XCTAssertEqual(context.trace.componentCount, 6)
+            XCTAssertFalse(context.trace.toString().contains("unknown"))
 			expect.fulfill()
 		}
 		
@@ -133,7 +137,8 @@ class AsyncCurryTests: XCTestCase {
 		
         let plus1 = increment(sum) // 5
         XCTAssertEqual(plus1, 10 >> hb)
-        TestingFunctions().explode(plus1.drop)  // 6
+        let testingFuncs = TestingFunctions() >> plus1.drop
+        testingFuncs.explodeA()  // 6
             .onError(handleError)
 		
 		waitForExpectations(timeout: 3)
@@ -170,7 +175,8 @@ class AsyncCurryTests: XCTestCase {
                 .map { (int: Link<Int, NSError, DefaultDispatchQueue>) -> Link<Int, NSError, DefaultDispatchQueue> in // 3
                     let bigger = increment(int) // 4
 
-                    let explode = TestingFunctions().explode(bigger.drop) +> bigger // 5
+                    let testingFuncs = TestingFunctions() >> bigger.drop
+                    let explode = testingFuncs.explodeA() +> bigger // 5
                     explode.onError(longError)
                     return explode
 			}

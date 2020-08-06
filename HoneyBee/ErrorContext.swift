@@ -20,3 +20,11 @@ public struct ErrorContext<E: Error> {
 	/// A represention of the path of `Links` which result in the erroring `Link`.
 	public let trace: AsyncTrace
 }
+
+extension ErrorContext {
+    func extend(with asyncTrace: AsyncTrace) -> Self {
+        let newContext = ErrorContext(subject: subject, error: error, trace: trace.join(asyncTrace))
+        assert(!newContext.trace.trace.contains(.join), "newContext's trace should be a pure extension")
+        return newContext
+    }
+}

@@ -41,7 +41,13 @@ public struct AsyncTrace: CustomDebugStringConvertible {
 				break
 			}
 		}
-		newTrace.trace = self.trace + [.join] + other.trace[matchingBeginingsCount...]
+        if matchingBeginingsCount == other.trace.count {
+            newTrace.trace = self.trace
+        } else if matchingBeginingsCount == self.trace.count {
+            newTrace.trace = other.trace
+        } else {
+            newTrace.trace = self.trace + [.join] + other.trace[matchingBeginingsCount...]
+        }
 		return newTrace
 	}
 	
@@ -70,10 +76,6 @@ public struct AsyncTrace: CustomDebugStringConvertible {
 	public var debugDescription: String {
 		return self.toString()
 	}
-    
-    mutating func redocumentLast(action: String, file: StaticString, line: UInt) {
-        self.last.redocument(action: action, file: file, line: line)
-    }
 }
 
 // REFERENCE SEMANTICS are imporant for this type
@@ -84,9 +86,9 @@ public class AsyncTraceComponent: CustomStringConvertible, CustomDebugStringConv
 		lhs.line == rhs.line
 	}
 	
-    var action: String
-    var file: StaticString
-	var line: UInt
+    let action: String
+    let file: StaticString
+	let line: UInt
     
     init(action: String, file: StaticString, line: UInt) {
         self.action = action
@@ -94,13 +96,7 @@ public class AsyncTraceComponent: CustomStringConvertible, CustomDebugStringConv
         self.line = line
     }
 	
-	fileprivate static let join = AsyncTraceComponent(action: "", file: "", line: UInt.max)
-	
-    func redocument(action: String, file: StaticString, line: UInt) {
-        self.action = action
-        self.file = file
-        self.line = line
-    }
+	static let join = AsyncTraceComponent(action: "", file: "", line: UInt.max)
     
 	public var description: String {
 		if line == AsyncTraceComponent.join.line {

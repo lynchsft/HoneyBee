@@ -92,7 +92,7 @@ class AsyncFlowControlTests: XCTestCase {
                 one.fulfill()
             }
 
-            if_ (string.lowercased().capitalized.count == 2) {
+            if_ (string.lowercasedA().capitalized.count == 2) {
                 XCTAssert(value.lowercased().capitalized.count == 2)
                 two.fulfill()
             }
@@ -107,5 +107,5 @@ class AsyncFlowControlTests: XCTestCase {
 }
 
 extension String {
-    var lowercased: ZeroArgFunction<String, Never> { async0(self.lowercased) }
+    var lowercasedA: ZeroArgFunction<String, Never> { async0(self.lowercased) }
 }

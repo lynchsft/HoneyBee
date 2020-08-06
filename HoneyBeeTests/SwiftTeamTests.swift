@@ -41,7 +41,7 @@ class SwiftTeamTests: XCTestCase {
 
         HoneyBee.async(completion: completion) { (async: Link<Void, Never, DefaultDispatchQueue>) in
 
-            let dataProfile = loadWebResource(async)("dataprofile.txt")
+            let dataProfile = loadWebResource("dataprofile.txt")(async)
             let imageData = loadWebResource("imagedata.dat" >> async)
 
             let image = decodeImage(dataProfile)(imageData)
@@ -63,10 +63,10 @@ class SwiftTeamTests: XCTestCase {
 
         user.reset(5 >> hb)
 
-        let result1 = User.login(hb)("Fred")(17)
+        let result1 = User.login("Fred")(17)(hb)
         expect1.fulfill(result1)
 
-        addTogether(hb)(1)(3.5)
+        addTogether(1)(3.5)(hb)
 
         let r1 = increment(3 >> hb)
         let r2 = increment(r1)

@@ -23,21 +23,33 @@ enum SimpleError : Error {
 }
 
 class TestingFunctions : Equatable {
+    
+    lazy private(set) var explodeA = async0(self.explode)
+    lazy private(set) var constantInt = async0(self.constantInt)
+    lazy private(set) var constantString = async0(self.constantString)
+
+
+    lazy private(set) var multiplyIntA = async1(self.multiplyInt)
+    lazy private(set) var stringCat = async1(self.stringCat) as SingleArgFunction<String, String, Error>
+    lazy private(set) var stringToIntA = async1(self.stringToInt) as SingleArgFunction<String, Int, NSError>
+    lazy private(set) var intToStringA = async1(self.intToString) as SingleArgFunction<Int, String, Never>
+
+    lazy private(set) var multiplyString = async2(self.multiplyString)
+    lazy private(set) var stringLengthEquals = async2(self.stringLengthEquals)
+
+
 	static func == (lhs: TestingFunctions, rhs: TestingFunctions) -> Bool {
 		return true // just a type check since we have no state
 	}
-	
-    lazy private(set) var multiplyInt = async1(self.multiplyInt)
+
 	func multiplyInt(int: Int) -> Int {
 		return int * 2
 	}
-	
-    lazy private(set) var stringCat = async1(self.stringCat)
-	func stringCat(string: String, callback: (String?, Error?) -> Void) -> Void {
+
+	func stringCat(string: String, callback: @escaping (String?, Error?) -> Void) -> Void {
 		callback("\(string)cat",nil)
 	}
-	
-    lazy private(set) var stringToInt = async1(self.stringToInt) as SingleArgFunction<String, Int, NSError>
+
 	#if swift(>=5.0)
 	func stringToInt(string: String, callback: ((Result<Int, NSError>) -> Void)?) {
 		if let int = Int(string) {
@@ -48,7 +60,7 @@ class TestingFunctions : Equatable {
 		}
 	}
 	#else
-	func stringToInt(string: String, callback: ((Result<Int, Error>) -> Void)?) {
+	func stringToInt(string: String, callback: @escaping ((Result<Int, Error>) -> Void)?) {
 		if let int = Int(string) {
 			callback?(.success(int))
 		} else {
@@ -57,39 +69,37 @@ class TestingFunctions : Equatable {
 		}
 	}
 	#endif
-	
-    lazy private(set) var intToString = async1(self.intToString)
-	func intToString(int: Int, callback: (String) -> Void) {
-		return callback("\(int)")
+
+	func intToString(int: Int, callback: @escaping (String) -> Void) {
+		callback("\(int)")
 	}
-	
-    lazy private(set) var constantInt = async0(self.constantInt)
-	func constantInt(callback:(Result<Int, Error>)->Void) {
+
+	func constantInt(callback: @escaping (Result<Int, Error>)->Void) {
 		callback(.success(8))
 	}
-	
-    lazy private(set) var constantString = async0(self.constantString)
+
 	func constantString(callback: ((String?, Error?) -> Void)? ) -> Void {
 		callback?("lamb", nil)
 	}
 	
-	func randomInt(callback: ((Result<Int, Error>) -> Void)) -> Void {
+	func randomInt(callback: @escaping ((Result<Int, Error>) -> Void)) -> Void {
 		callback(.success(Int(arc4random())))
 	}
 	
-	func isEven(int: Int, callback:(Bool)->Void) -> Void {
+	func isEven(int: Int, callback: @escaping (Bool)->Void) -> Void {
 		callback(int%2 == 0)
 	}
-	
+
+    lazy private(set) var noopA = async0(self.noop)
 	func noop(callback: @escaping () -> Void) {
 		callback()
 	}
-	
+
+    lazy private(set) var voidFuncA = async0(self.voidFunc)
 	func voidFunc(callback: @escaping (Error?) -> Void) -> Void {
 		callback(nil)
 	}
-	
-    lazy private(set) var multiplyString = async2(self.multiplyString)
+
 	func multiplyString(string: String, count: Int) -> String {
 		var acc = ""
 		for _ in 0..<count {
@@ -97,13 +107,12 @@ class TestingFunctions : Equatable {
 		}
 		return acc
 	}
-	
-    lazy private(set) var stringLengthEquals = async2(self.stringLengthEquals)
+
 	func stringLengthEquals(length: Int, string: String) -> Bool {
 		return string.count == length
 	}
 	
-	func decompose(string: String, callback:(String,String)->Void) {
+	func decompose(string: String, callback: @escaping (String,String)->Void) {
 		let comps = string.components(separatedBy: ",")
 		callback(comps[0],comps[1])
 	}
@@ -116,9 +125,8 @@ class TestingFunctions : Equatable {
 		}
 	}
 	
-    lazy private(set) var explode = async0(self.explode)
-	func explode(callback: ((Int?, NSError?) -> Void)?) -> Void {
-		callback?(nil, NSError(domain: "intentional", code: -1, userInfo: nil))
+	func explode(callback: @escaping (Int?, NSError?) -> Void) -> Void {
+		callback(nil, NSError(domain: "intentional", code: -1, userInfo: nil))
 	}
 }
 func failIfError<T,E:Error>(_ result: Result<T,E>) {
@@ -141,7 +149,7 @@ class FibonaciGenerator {
 	private var a = 0
 	private var b = 1
 	
-	func ready(completion: ((Result<Bool, Error>) -> Void)) {
+	func ready(completion: @escaping ((Result<Bool, Error>) -> Void)) {
 		completion(.success(true))
 	}
 	
