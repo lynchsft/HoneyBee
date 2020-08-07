@@ -26,7 +26,6 @@ class TestingFunctions : Equatable {
     
     lazy private(set) var explodeA = async0(self.explode)
     lazy private(set) var constantInt = async0(self.constantInt)
-    lazy private(set) var constantString = async0(self.constantString)
 
 
     lazy private(set) var multiplyIntA = async1(self.multiplyInt)
@@ -78,6 +77,7 @@ class TestingFunctions : Equatable {
 		callback(.success(8))
 	}
 
+    lazy private(set) var constantString = async0(self.constantString)
 	func constantString(callback: ((String?, Error?) -> Void)? ) -> Void {
 		callback?("lamb", nil)
 	}

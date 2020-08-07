@@ -55,7 +55,7 @@ private class ErrorIgnoringExecutableWrapper<E: Error>: Executable<E> {
     }
 
     override func ancestorFailed(_ context: ErrorContext<E>) {
-        /* no op */
+        assertionFailure("I'm supposed to ignore this error, right?")
     }
 }
 
@@ -78,13 +78,7 @@ extension Link where E == Never {
             function(b, callback)
         }
         var trace = self.trace
-        let fileString = String(describing: file)
-        if fileString.contains("HoneyBee/Link.swift") ||
-           fileString.contains("HoneyBee/FunctionWrappers.swift") {
-            // omit
-        } else {
-            trace.append(.init(action: (functionDescription ?? tname(function)), file: file, line: line))
-        }
+        trace.append(.init(action: (functionDescription ?? tname(function)), file: file, line: line))
         let newLink = Link<C, OtherE, P>(function: wrapperFunction,
                                      blockPerformer: self.blockPerformer,
                                      trace: trace)
@@ -111,13 +105,7 @@ extension Link where E == Never {
            function(b, callback)
        }
        var trace = self.trace
-       let fileString = String(describing: file)
-       if fileString.contains("HoneyBee/Link.swift") ||
-          fileString.contains("HoneyBee/FunctionWrappers.swift") {
-           // omit
-       } else {
-           trace.append(.init(action: (functionDescription ?? tname(function)), file: file, line: line))
-       }
+       trace.append(.init(action: (functionDescription ?? tname(function)), file: file, line: line))
        let newLink = Link<C, E, P>(function: wrapperFunction,
                                     blockPerformer: self.blockPerformer,
                                     trace: trace)
@@ -196,13 +184,7 @@ final public class Link<B, E: Error, P: AsyncBlockPerformer> : Executable<E>  {
             function(b, callback)
         }
         var trace = self.trace
-        let fileString = String(describing: file)
-        if fileString.contains("HoneyBee/Link.swift") ||
-           fileString.contains("HoneyBee/FunctionWrappers.swift") {
-            // omit
-        } else {
-            trace.append(.init(action: (functionDescription ?? tname(function)), file: file, line: line))
-        }
+        trace.append(.init(action: (functionDescription ?? tname(function)), file: file, line: line))
         let newLink = Link<C, E, P>(function: wrapperFunction,
                                      blockPerformer: self.blockPerformer,
                                      trace: trace)
@@ -240,13 +222,7 @@ final public class Link<B, E: Error, P: AsyncBlockPerformer> : Executable<E>  {
             }
         }
         var trace = self.trace
-        let fileString = String(describing: file)
-        if fileString.contains("HoneyBee/Link.swift") ||
-           fileString.contains("HoneyBee/FunctionWrappers.swift") {
-            // omit
-        } else {
-            trace.append(.init(action: (functionDescription ?? tname(function)), file: file, line: line))
-        }
+        trace.append(.init(action: (functionDescription ?? tname(function)), file: file, line: line))
         let newLink = Link<C, E, P>(function: wrapperFunction,
                                      blockPerformer: self.blockPerformer,
                                      trace: trace)
@@ -278,19 +254,13 @@ final public class Link<B, E: Error, P: AsyncBlockPerformer> : Executable<E>  {
                 switch result {
                 case .success(let c):
                     callback(.success(c))
-                case .failure(_): // Never
-                    preconditionFailure()
+                case .failure(let error):
+                    callback(.failure(error))
                 }
             }
         }
         var trace = self.trace
-        let fileString = String(describing: file)
-        if fileString.contains("HoneyBee/Link.swift") ||
-           fileString.contains("HoneyBee/FunctionWrappers.swift") {
-            // omit
-        } else {
-            trace.append(.init(action: (functionDescription ?? tname(function)), file: file, line: line))
-        }
+        trace.append(.init(action: (functionDescription ?? tname(function)), file: file, line: line))
         let newLink = Link<C, Error, P>(function: wrapperFunction,
                                      blockPerformer: self.blockPerformer,
                                      trace: trace)
@@ -298,7 +268,11 @@ final public class Link<B, E: Error, P: AsyncBlockPerformer> : Executable<E>  {
         if let existingFailure = self.ancestorFailureBox.getValue() {
             newLink.ancestorFailed(existingFailure as! ErrorContext<Error>)
         } else {
-            self.createdLinks.push(newLink as! Executable<E>)
+            if let neverSelf = self as? Link<B,Never,P> {
+                neverSelf.createdLinks.push(NonErroringExecutableWrapper(executable: newLink))
+            } else {
+                self.createdLinks.push(newLink as! Executable<E>)
+            }
         }
         return newLink
     }
@@ -385,140 +359,6 @@ final public class Link<B, E: Error, P: AsyncBlockPerformer> : Executable<E>  {
             completion(.success(b[keyPath: keyPath]))
         }
     }
-
-}
-
-extension Link {
-
-    public subscript<X,Y,Z,R>(dynamicMember keyPath: KeyPath<B, TripleArgFunction<X,Y,Z,R,E>>) -> AsyncTripleArgFunction<X,Y,Z,R,E,P> {
-        AsyncTripleArgFunction(action: nil, root: self.drop) { (x: Link<X, E, P>, y: Link<Y, E, P>, z: Link<Z, E, P>) -> Link<R, E, P> in
-            self[dynamicMember: keyPath].chain { (triple: TripleArgFunction<X,Y,Z,R,E>, completion: @escaping FunctionWrapperCompletion<R,E>) in
-                triple(x)(y)(self +> z).onResult(completion)
-            }
-        }
-    }
-
-    public subscript<Y,Z,R>(dynamicMember keyPath: KeyPath<B, DoubleArgFunction<Y,Z,R,E>>) -> AsyncDoubleArgFunction<Y,Z,R,E,P> {
-        AsyncDoubleArgFunction(action: nil, root: self.drop) { (y: Link<Y, E, P>, z: Link<Z, E, P>) -> Link<R, E, P> in
-            self[dynamicMember: keyPath].chain { (double: DoubleArgFunction<Y,Z,R,E>, completion: @escaping FunctionWrapperCompletion<R,E>) in
-                double(y)(self +> z).onResult(completion)
-            }
-        }
-    }
-
-    public subscript<Z,R>(dynamicMember keyPath: KeyPath<B, SingleArgFunction<Z,R,E>>) -> AsyncSingleArgFunction<Z,R,E,P> {
-        AsyncSingleArgFunction(action: nil, root: self.drop) { (z: Link<Z, E, P>) -> Link<R, E, P> in
-            self[dynamicMember: keyPath].chain { (single: SingleArgFunction<Z,R,E>, completion: @escaping FunctionWrapperCompletion<R,E>) in
-                single(self +> z).onResult(completion)
-            }
-        }
-    }
-
-    public subscript<R>(dynamicMember keyPath: KeyPath<B, ZeroArgFunction<R, E>>) -> AsyncZeroArgFunction<R,E,P> {
-        AsyncZeroArgFunction(action: nil, root: self.drop) { () -> Link<R, E, P> in
-            self[dynamicMember: keyPath].chain { (zero: ZeroArgFunction<R, E>, completion: @escaping FunctionWrapperCompletion<R,E>) in
-                zero(self.drop).onResult(completion)
-            }
-        }
-    }
-
-    public subscript<X,Y,Z,R>(dynamicMember keyPath: KeyPath<B, BoundTripleArgFunction<X,Y,Z,R,E,P>>) -> AsyncTripleArgFunction<X,Y,Z,R,E,P> {
-        AsyncTripleArgFunction(action: nil, root: self.drop) { (x: Link<X, E, P>, y: Link<Y, E, P>, z: Link<Z, E, P>) -> Link<R, E, P> in
-            self[dynamicMember: keyPath].chain { (triple: BoundTripleArgFunction<X,Y,Z,R,E,P>, completion: @escaping FunctionWrapperCompletion<R,E>) in
-                triple(x)(y)(self +> z).onResult(completion)
-            }
-        }
-    }
-
-    public subscript<Y,Z,R>(dynamicMember keyPath: KeyPath<B, BoundDoubleArgFunction<Y,Z,R,E,P>>) -> AsyncDoubleArgFunction<Y,Z,R,E,P> {
-        AsyncDoubleArgFunction(action: nil, root: self.drop) { (y: Link<Y, E, P>, z: Link<Z, E, P>) -> Link<R, E, P> in
-            self[dynamicMember: keyPath].chain { (double: BoundDoubleArgFunction<Y,Z,R,E,P>, completion: @escaping FunctionWrapperCompletion<R,E>) in
-                double(y)(self +> z).onResult(completion)
-            }
-        }
-    }
-
-    public subscript<Z,R>(dynamicMember keyPath: KeyPath<B, BoundSingleArgFunction<Z,R,E,P>>) -> AsyncSingleArgFunction<Z,R,E,P> {
-        AsyncSingleArgFunction(action: nil, root: self.drop) { (z: Link<Z, E, P>) -> Link<R, E, P> in
-            self[dynamicMember: keyPath].chain { (single: BoundSingleArgFunction<Z,R,E,P>, completion: @escaping FunctionWrapperCompletion<R,E>) in
-                single(self +> z).onResult(completion)
-            }
-        }
-    }
-
-    public subscript<R>(dynamicMember keyPath: KeyPath<B, BoundZeroArgFunction<R,E,P>>) -> AsyncZeroArgFunction<R,E,P> {
-        AsyncZeroArgFunction(action: nil, root: self.drop) { () -> Link<R, E, P> in
-            self[dynamicMember: keyPath].chain { (zero: BoundZeroArgFunction<R,E,P>, completion: @escaping FunctionWrapperCompletion<R,E>) in
-                zero(self.drop).onResult(completion)
-            }
-        }
-    }
-}
-
-extension Link {
-    public subscript<X,Y,Z,R>(dynamicMember keyPath: KeyPath<B, TripleArgFunction<X,Y,Z,R,Never>>) -> AsyncTripleArgFunction<X,Y,Z,R,E,P> {
-        AsyncTripleArgFunction(action: nil, root: self.drop) { (x: Link<X, E, P>, y: Link<Y, E, P>, z: Link<Z, E, P>) -> Link<R, E, P> in
-            self[dynamicMember: keyPath].chain { (triple: TripleArgFunction<X,Y,Z,R,Never>, completion: @escaping FunctionWrapperCompletion<R,E>) in
-                triple(x)(y)(self +> z).onResult(completion)
-            }
-        }
-    }
-
-    public subscript<Y,Z,R>(dynamicMember keyPath: KeyPath<B, DoubleArgFunction<Y,Z,R,Never>>) -> AsyncDoubleArgFunction<Y,Z,R,E,P> {
-        AsyncDoubleArgFunction(action: nil, root: self.drop) { (y: Link<Y, E, P>, z: Link<Z, E, P>) -> Link<R, E, P> in
-            self[dynamicMember: keyPath].chain { (double: DoubleArgFunction<Y,Z,R,Never>, completion: @escaping FunctionWrapperCompletion<R,E>) in
-                double(y)(self +> z).onResult(completion)
-            }
-        }
-    }
-
-    public subscript<Z,R>(dynamicMember keyPath: KeyPath<B, SingleArgFunction<Z,R,Never>>) -> AsyncSingleArgFunction<Z,R,E,P> {
-        AsyncSingleArgFunction(action: nil, root: self.drop) { (z: Link<Z, E, P>) -> Link<R, E, P> in
-            self[dynamicMember: keyPath].chain { (single: SingleArgFunction<Z,R,Never>, completion: @escaping FunctionWrapperCompletion<R,E>) in
-                single(self +> z).onResult(completion)
-            }
-        }
-    }
-
-    public subscript<R>(dynamicMember keyPath: KeyPath<B, ZeroArgFunction<R, Never>>) -> AsyncZeroArgFunction<R,E,P> {
-        AsyncZeroArgFunction(action: nil, root: self.drop) { () -> Link<R, E, P> in
-            self[dynamicMember: keyPath].chain { (zero: ZeroArgFunction<R, Never>, completion: @escaping FunctionWrapperCompletion<R,E>) in
-                zero(self.drop).onResult(completion)
-            }
-        }
-    }
-
-    public subscript<X,Y,Z,R>(dynamicMember keyPath: KeyPath<B, BoundTripleArgFunction<X,Y,Z,R,Never,P>>) -> AsyncTripleArgFunction<X,Y,Z,R,E,P> {
-        AsyncTripleArgFunction(action: nil, root: self.drop) { (x: Link<X, E, P>, y: Link<Y, E, P>, z: Link<Z, E, P>) -> Link<R, E, P> in
-            self[dynamicMember: keyPath].chain { (triple: BoundTripleArgFunction<X,Y,Z,R,Never,P>, completion: @escaping FunctionWrapperCompletion<R,E>) in
-                triple(x)(y)(self +> z).onResult(completion)
-            }
-        }
-    }
-
-    public subscript<Y,Z,R>(dynamicMember keyPath: KeyPath<B, BoundDoubleArgFunction<Y,Z,R,Never,P>>) -> AsyncDoubleArgFunction<Y,Z,R,E,P> {
-        AsyncDoubleArgFunction(action: nil, root: self.drop) { (y: Link<Y, E, P>, z: Link<Z, E, P>) -> Link<R, E, P> in
-            self[dynamicMember: keyPath].chain { (double: BoundDoubleArgFunction<Y,Z,R,Never,P>, completion: @escaping FunctionWrapperCompletion<R,E>) in
-                double(y)(self +> z).onResult(completion)
-            }
-        }
-    }
-
-    public subscript<Z,R>(dynamicMember keyPath: KeyPath<B, BoundSingleArgFunction<Z,R,Never,P>>) -> AsyncSingleArgFunction<Z,R,E,P> {
-        AsyncSingleArgFunction(action: nil, root: self.drop) { (z: Link<Z, E, P>) -> Link<R, E, P> in
-            self[dynamicMember: keyPath].chain { (single: BoundSingleArgFunction<Z,R,Never,P>, completion: @escaping FunctionWrapperCompletion<R,E>) in
-                single(self +> z).onResult(completion)
-            }
-        }
-    }
-
-    public subscript<R>(dynamicMember keyPath: KeyPath<B, BoundZeroArgFunction<R,Never,P>>) -> AsyncZeroArgFunction<R,E,P> {
-        AsyncZeroArgFunction(action: nil, root: self.drop) { () -> Link<R, E, P> in
-            self[dynamicMember: keyPath].chain { (zero: BoundZeroArgFunction<R,Never,P>, completion: @escaping FunctionWrapperCompletion<R,E>) in
-                zero(self.drop).onResult(completion)
-            }
-        }
-    }
 }
 
 extension Link {
@@ -592,11 +432,12 @@ extension Link {
 	}
 	
     fileprivate func propagateFailureToDecendants(_ context: ErrorContext<E>) {
-        self.ancestorFailureBox.setValue(context.extend(with: self.trace))
+        let extendedContext = context.extend(with: self.trace)
+        self.ancestorFailureBox.setValue(extendedContext)
 		self.createdLinks.drain { child in
-            child.ancestorFailed(context)
+            child.ancestorFailed(extendedContext)
 		}
-		self.finalLinkBox.get()?.ancestorFailed(context)
+		self.finalLinkBox.get()?.ancestorFailed(extendedContext)
 	}
 }
 
@@ -710,10 +551,33 @@ extension Link where E == Never {
 extension Link {
 	// special forms
 
+    public func expect<OtherE: Error>(_ other: OtherE.Type, file: StaticString = #file, line: UInt = #line) -> Link<B,OtherE,P> where E == Never {
+        self.chain(file: file, line: line, functionDescription: "expect \(OtherE.self)") { (b, completion) in
+            completion(.success(b))
+        }
+    }
+
+    public func expect<OtherE: Error>(_ other: OtherE.Type, file: StaticString = #file, line: UInt = #line) -> Link<B,Error,P>{
+        self.chain(file: file, line: line, functionDescription: "expect \(OtherE.self)") { (b: B, completion: @escaping (Result<B, Error>) -> Void) in
+            completion(.success(b))
+        }
+    }
+
     @discardableResult
     public func chain<R>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B)->R) -> Link<R,E,P> {
-        self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b, completion: @escaping (Result<R, Never>) -> Void) in
+    self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b, completion: @escaping (Result<R, Never>) -> Void) in
             completion(.success(function(b)))
+        }
+    }
+
+    @discardableResult
+    public func chain<R>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B) throws -> R) -> Link<R,Error,P> {
+        self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b, completion: @escaping (Result<R, Error>) -> Void) in
+            do {
+                completion(.success(try function(b)))
+            } catch {
+                completion(.failure(error))
+            }
         }
     }
 	
@@ -853,7 +717,7 @@ extension Link {
 	///
 	/// - Parameter other: the `Link` to join with
 	/// - Returns: A `Link` which combines the receiver and the arguments results.
-	public func conjoin<X,Y,C>(other: Link<C, E, P>) -> Link<(X,Y,C), E, P> where B == (X,Y) {
+	public func conjoin<X,Y,C>(_ other: Link<C, E, P>) -> Link<(X,Y,C), E, P> where B == (X,Y) {
         self.conjoin(other).chain { (compoundTuple, completion: @escaping FunctionWrapperCompletion<(X,Y,C), E>) in
             completion(.success((compoundTuple.0.0, compoundTuple.0.1, compoundTuple.1)))
         }
@@ -866,51 +730,14 @@ extension Link {
 	///
 	/// - Parameter other: the `Link` to join with
 	/// - Returns: A `Link` which combines the receiver and the arguments results.
-	public func conjoin<X,Y,Z,C>(other: Link<C, E, P>) -> Link<(X,Y,Z,C), E, P> where B == (X,Y,Z) {
+	public func conjoin<X,Y,Z,C>(_ other: Link<C, E, P>) -> Link<(X,Y,Z,C), E, P> where B == (X,Y,Z) {
         self.conjoin(other).chain { (compoundTuple, completion: @escaping FunctionWrapperCompletion<(X,Y,Z,C), E>) in
             completion(.success((compoundTuple.0.0, compoundTuple.0.1, compoundTuple.0.2, compoundTuple.1)))
 		}
 	}
 }
 
-/// operator syntax for `conjoin` function
-public func +<B, C, CommonE: Error, CommonP: AsyncBlockPerformer>(lhs: Link<B, CommonE, CommonP>, rhs: Link<C, CommonE, CommonP>) -> Link<(B,C), CommonE, CommonP> {
-	lhs.conjoin(rhs)
-}
 
-/// operator syntax for `conjoin` function
-public func +<X,Y,C, CommonE: Error, CommonP: AsyncBlockPerformer>(lhs: Link<(X,Y), CommonE, CommonP>, rhs: Link<C, CommonE, CommonP>) -> Link<(X,Y,C), CommonE, CommonP> {
-	lhs.conjoin(other: rhs)
-}
-
-/// operator syntax for `conjoin` function
-public func +<X,Y,Z,C, CommonE: Error, CommonP: AsyncBlockPerformer>(lhs: Link<(X,Y,Z), CommonE, CommonP>, rhs: Link<C, CommonE, CommonP>) -> Link<(X,Y,Z,C), CommonE, CommonP> {
-	lhs.conjoin(other: rhs)
-}
-
-/// operator syntax for `join left` behavior
-///
-/// - Parameters:
-///   - lhs: Link whose value to propagate
-///   - rhs: Link whose value to drop
-/// - Returns: a Link which contains the value of the left-hand Link
-public func <+<B, C, CommonE: Error, CommonP: AsyncBlockPerformer>(lhs: Link<B, CommonE, CommonP>, rhs: Link<C, CommonE, CommonP>) -> Link<B, CommonE, CommonP> {
-    lhs.conjoin(rhs).chain { (b_c, completion: @escaping (Result<B, CommonE>)->Void) in
-        completion(.success(b_c.0))
-    }
-}
-
-/// operator syntax for `join right` behavior
-///
-/// - Parameters:
-///   - lhs: Link whose value to drop
-///   - rhs: Link whose value to propagate
-/// - Returns: a Link which contains the value of the left-hand Link
-public func +><B, C, CommonE: Error, CommonP: AsyncBlockPerformer>(lhs: Link<B, CommonE, CommonP>, rhs: Link<C, CommonE, CommonP>) -> Link<C, CommonE, CommonP> {
-	lhs.conjoin(rhs).chain { (b_c, completion: @escaping (Result<C, CommonE>)->Void) in
-        completion(.success(b_c.1))
-    }
-}
 
 public func >><B, CommonE: Error, PerformerB: AsyncBlockPerformer, PerformerC: AsyncBlockPerformer>(lhs: Link<B, CommonE, PerformerB>, rhs: Link<Void, CommonE, PerformerC>) -> Link<B, CommonE, PerformerC> {
     lhs.move(to: rhs.getBlockPerformer()) <+ rhs
@@ -940,6 +767,9 @@ public func >><B, E: Error, PerformerC: AsyncBlockPerformer>(lhs: @autoclosure @
     }
 }
 
+public func >><X,E: Error, P: AsyncBlockPerformer>(lhs: Link<X,Never,P>, rhs: E.Type) -> Link<X,E,P> {
+    lhs.expect(rhs)
+}
 
 extension Link {
 	// AsyncBlockperformer management
@@ -996,122 +826,11 @@ extension Link {
 	}
 }
 
-extension Link where E == Never {
-    public func expect<OtherE: Error>(_ other: OtherE.Type, file: StaticString = #file, line: UInt = #line) -> Link<B,OtherE,P>{
-        self.chain(file: file, line: line, functionDescription: "expect \(OtherE.self)") { (b, completion) in
-            completion(.success(b))
-        }
-    }
-
-    public subscript<X,Y,Z,R,OtherE: Error>(dynamicMember keyPath: KeyPath<B, TripleArgFunction<X,Y,Z,R,OtherE>>) -> AsyncTripleArgFunction<X,Y,Z,R,OtherE,P> {
-        self.expect(OtherE.self)[dynamicMember: keyPath]
-    }
-
-    public subscript<Y,Z,R,OtherE: Error>(dynamicMember keyPath: KeyPath<B, DoubleArgFunction<Y,Z,R,OtherE>>) -> AsyncDoubleArgFunction<Y,Z,R,OtherE,P> {
-        self.expect(OtherE.self)[dynamicMember: keyPath]
-    }
-
-    public subscript<Z,R,OtherE: Error>(dynamicMember keyPath: KeyPath<B, SingleArgFunction<Z,R,OtherE>>) -> AsyncSingleArgFunction<Z,R,OtherE,P> {
-        self.expect(OtherE.self)[dynamicMember: keyPath]
-    }
-
-    public subscript<R,OtherE: Error>(dynamicMember keyPath: KeyPath<B, ZeroArgFunction<R, OtherE>>) -> AsyncZeroArgFunction<R,OtherE,P> {
-        self.expect(OtherE.self)[dynamicMember: keyPath]
-    }
-
-
-    public subscript<X,Y,Z,R,OtherE: Error>(dynamicMember keyPath: KeyPath<B, BoundTripleArgFunction<X,Y,Z,R,OtherE,P>>) -> AsyncTripleArgFunction<X,Y,Z,R,OtherE,P> {
-        self.expect(OtherE.self)[dynamicMember: keyPath]
-    }
-
-    public subscript<Y,Z,R,OtherE: Error>(dynamicMember keyPath: KeyPath<B, BoundDoubleArgFunction<Y,Z,R,OtherE,P>>) -> AsyncDoubleArgFunction<Y,Z,R,OtherE,P> {
-        self.expect(OtherE.self)[dynamicMember: keyPath]
-    }
-
-    public subscript<Z,R,OtherE: Error>(dynamicMember keyPath: KeyPath<B, BoundSingleArgFunction<Z,R,OtherE,P>>) -> AsyncSingleArgFunction<Z,R,OtherE,P> {
-        self.expect(OtherE.self)[dynamicMember: keyPath]
-    }
-
-    public subscript<R,OtherE: Error>(dynamicMember keyPath: KeyPath<B, BoundZeroArgFunction<R,OtherE,P>>) -> AsyncZeroArgFunction<R,OtherE,P> {
-        self.expect(OtherE.self)[dynamicMember: keyPath]
-    }
-
-
-    public subscript<X,Y,Z,R>(dynamicMember keyPath: KeyPath<B, TripleArgFunction<X,Y,Z,R,Never>>) -> AsyncTripleArgFunction<X,Y,Z,R,Never,P> {
-        AsyncTripleArgFunction(action: nil, root: self.drop) { (x: Link<X, E, P>, y: Link<Y, E, P>, z: Link<Z, E, P>) -> Link<R, E, P> in
-            self[dynamicMember: keyPath].chain { (triple: TripleArgFunction<X,Y,Z,R,Never>, completion: @escaping FunctionWrapperCompletion<R,E>) in
-                triple(x)(y)(z).onResult(completion)
-            }
-        }
-    }
-
-    public subscript<Y,Z,R>(dynamicMember keyPath: KeyPath<B, DoubleArgFunction<Y,Z,R,Never>>) -> AsyncDoubleArgFunction<Y,Z,R,Never,P> {
-        AsyncDoubleArgFunction(action: nil, root: self.drop) { (y: Link<Y, E, P>, z: Link<Z, E, P>) -> Link<R, E, P> in
-            self[dynamicMember: keyPath].chain { (double: DoubleArgFunction<Y,Z,R,Never>, completion: @escaping FunctionWrapperCompletion<R,E>) in
-                double(y)(z).onResult(completion)
-            }
-        }
-    }
-
-    public subscript<Z,R>(dynamicMember keyPath: KeyPath<B, SingleArgFunction<Z,R,Never>>) -> AsyncSingleArgFunction<Z,R,Never,P> {
-        AsyncSingleArgFunction(action: nil, root: self.drop) { (z: Link<Z, E, P>) -> Link<R, E, P> in
-            self[dynamicMember: keyPath].chain { (single: SingleArgFunction<Z,R,Never>, completion: @escaping FunctionWrapperCompletion<R,E>) in
-                single(z).onResult(completion)
-            }
-        }
-    }
-
-    public subscript<R>(dynamicMember keyPath: KeyPath<B, ZeroArgFunction<R, Never>>) -> AsyncZeroArgFunction<R,Never,P> {
-        AsyncZeroArgFunction(action: nil, root: self.drop) { () -> Link<R, E, P> in
-            self[dynamicMember: keyPath].chain { (zero: ZeroArgFunction<R, Never>, completion: @escaping FunctionWrapperCompletion<R,E>) in
-                zero(self.drop).onResult(completion)
-            }
-        }
-    }
-
-
-    public subscript<X,Y,Z,R>(dynamicMember keyPath: KeyPath<B, BoundTripleArgFunction<X,Y,Z,R,Never,P>>) -> AsyncTripleArgFunction<X,Y,Z,R,Never,P> {
-        AsyncTripleArgFunction(action: nil, root: self.drop) { (x: Link<X, E, P>, y: Link<Y, E, P>, z: Link<Z, E, P>) -> Link<R, E, P> in
-            self[dynamicMember: keyPath].chain { (triple: BoundTripleArgFunction<X,Y,Z,R,Never,P>, completion: @escaping FunctionWrapperCompletion<R,E>) in
-                triple(x)(y)(z).onResult(completion)
-            }
-        }
-    }
-
-    public subscript<Y,Z,R>(dynamicMember keyPath: KeyPath<B, BoundDoubleArgFunction<Y,Z,R,Never,P>>) -> AsyncDoubleArgFunction<Y,Z,R,Never,P> {
-        AsyncDoubleArgFunction(action: nil, root: self.drop) { (y: Link<Y, E, P>, z: Link<Z, E, P>) -> Link<R, E, P> in
-            self[dynamicMember: keyPath].chain { (double: BoundDoubleArgFunction<Y,Z,R,Never,P>, completion: @escaping FunctionWrapperCompletion<R,E>) in
-                double(y)(z).onResult(completion)
-            }
-        }
-    }
-
-    public subscript<Z,R>(dynamicMember keyPath: KeyPath<B, BoundSingleArgFunction<Z,R,Never,P>>) -> AsyncSingleArgFunction<Z,R,Never,P> {
-        AsyncSingleArgFunction(action: nil, root: self.drop) { (z: Link<Z, E, P>) -> Link<R, E, P> in
-            self[dynamicMember: keyPath].chain { (single: BoundSingleArgFunction<Z,R,Never,P>, completion: @escaping FunctionWrapperCompletion<R,E>) in
-                single(z).onResult(completion)
-            }
-        }
-    }
-
-    public subscript<R>(dynamicMember keyPath: KeyPath<B, BoundZeroArgFunction<R,Never,P>>) -> AsyncZeroArgFunction<R,Never,P> {
-        AsyncZeroArgFunction(action: nil, root: self.drop) { () -> Link<R, E, P> in
-            self[dynamicMember: keyPath].chain { (zero: BoundZeroArgFunction<R,Never,P>, completion: @escaping FunctionWrapperCompletion<R,E>) in
-                zero(self.drop).onResult(completion)
-            }
-        }
-    }
-}
-
 extension Link {
     func document(action: String, file: StaticString, line: UInt) -> Self {
         self.trace.append(.init(action: action, file: file, line: line))
         return self
     }
-}
-
-public func >><X,E: Error, P: AsyncBlockPerformer>(lhs: Link<X,Never,P>, rhs: E.Type) -> Link<X,E,P> {
-    lhs.expect(rhs)
 }
 
 extension Link where B : Collection, E: FailureRateAwareError {

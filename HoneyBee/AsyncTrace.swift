@@ -16,7 +16,16 @@ public struct AsyncTrace: CustomDebugStringConvertible {
     }
 	
 	mutating func append(_ comp: AsyncTraceComponent) {
-		self.trace.append(comp)
+        let fileString = String(describing: comp.file)
+        if fileString.contains("HoneyBee/Link.swift") ||
+           fileString.contains("HoneyBee/FunctionWrappers.swift") ||
+           fileString.contains("HoneyBee/Link+DynamicMemberSubscripts.swift") ||
+           fileString.contains("HoneyBee/ConjoinOperator.swift")
+            {
+            // omit
+        } else {
+            self.trace.append(comp)
+        }
 	}
 	
 	public func toString() -> String {
@@ -79,7 +88,7 @@ public struct AsyncTrace: CustomDebugStringConvertible {
 }
 
 // REFERENCE SEMANTICS are imporant for this type
-public class AsyncTraceComponent: CustomStringConvertible, CustomDebugStringConvertible, Equatable {
+public struct AsyncTraceComponent: CustomStringConvertible, CustomDebugStringConvertible, Equatable {
 	public static func == (lhs: AsyncTraceComponent, rhs: AsyncTraceComponent) -> Bool {
 		return lhs.action == rhs.action &&
 		String(describing: lhs.file) == String(describing: rhs.file) &&
@@ -89,14 +98,8 @@ public class AsyncTraceComponent: CustomStringConvertible, CustomDebugStringConv
     let action: String
     let file: StaticString
 	let line: UInt
-    
-    init(action: String, file: StaticString, line: UInt) {
-        self.action = action
-        self.file = file
-        self.line = line
-    }
 	
-	static let join = AsyncTraceComponent(action: "", file: "", line: UInt.max)
+	fileprivate static let join = AsyncTraceComponent(action: "", file: "", line: UInt.max)
     
 	public var description: String {
 		if line == AsyncTraceComponent.join.line {

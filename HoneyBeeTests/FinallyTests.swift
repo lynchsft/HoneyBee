@@ -51,13 +51,8 @@ class FinallyTests: XCTestCase {
 						.chain(incrementCounter)
 				}
 				.chain(incrementCounter)
-                .onError(fail)
 		
-		waitForExpectations(timeout: 3) { error in
-			if let error = error {
-				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
-			}
-		}
+		waitForExpectations(timeout: 3)
 	}
 	
 	func testFinallyContent() {
@@ -66,27 +61,29 @@ class FinallyTests: XCTestCase {
 		unreachableExpectation.isInverted = true
 		let reachableExpectation = expectation(description: "Should reach this finally")
 		let errorExpectation = expectation(description: "chain should error")
+
+        do { // finally only runs when the receiver link is deallocated
+            let hb = HoneyBee.start()
+
+            let asynContainer = self.funcContainer >> hb
+
+            let string = asynContainer.constantString()
+                            .finally { link in
+                                link.chain(assertEquals =<< "lamb")
+                                    .chain(reachableExpectation.fulfill)
+                            }
+            let joinedContainer = string +> asynContainer
+            let b = joinedContainer.explodeA()
+
+            let c = b.finally { link in
+                                link.drop
+                                    .chain(unreachableExpectation.fulfill)
+                            }
+
+            c.onError { (_:Error) in errorExpectation.fulfill() }
+        }
 		
-		HoneyBee.start { root in
-			let _ = root.chain(self.funcContainer.constantString)
-						.finally { link in
-							link.chain(assertEquals =<< "lamb")
-								.chain(reachableExpectation.fulfill)
-						}
-						.chain(self.funcContainer.explode)
-						.finally { link in
-							link.drop
-								.chain(unreachableExpectation.fulfill)
-						}
-                        .onError { _ in errorExpectation.fulfill() }
-			//^^ The "let _" suppresses the warning that you get when discarding finally's result
-		}
-		
-		waitForExpectations(timeout: 1) { error in
-			if let error = error {
-				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
-			}
-		}
+		waitForExpectations(timeout: 1)
 	}
 	
 	func testFinallyError() {
@@ -109,11 +106,7 @@ class FinallyTests: XCTestCase {
                 .onError(handleError)
 
 		
-		waitForExpectations(timeout: 3) { error in
-			if let error = error {
-				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
-			}
-		}
+		waitForExpectations(timeout: 3)
 	}
 	
 	func testFinallyWithRetry() {
@@ -121,22 +114,22 @@ class FinallyTests: XCTestCase {
 		let finishExpectation = expectation(description: "Should reach the end of the chain")
 		let finallyExpectation = expectation(description: "Should reach the finally")
 		
+		do { // finally only runs when the receiver link is deallocated
+            let hb = HoneyBee.start(on: DispatchQueue.main)
+
+            let a =	hb.finally { link in
+                        link.chain(finallyExpectation.fulfill)
+            }.expect(Error.self)
+
+            let b = a.retry(1) { link in
+                        self.funcContainer.constantInt(link)
+                    }
+                    .chain(self.funcContainer.multiplyInt).drop
+
+            b.chain(finishExpectation.fulfill)
+                    .onError(fail)
+        }
 		
-		HoneyBee.start(on: DispatchQueue.main)
-				.finally { link in
-					link.chain(finallyExpectation.fulfill)
-				}
-				.retry(1) { link in
-					link.chain(self.funcContainer.constantInt)
-				}
-				.chain(self.funcContainer.multiplyInt).drop
-				.chain(finishExpectation.fulfill)
-                .onError(fail)
-		
-		waitForExpectations(timeout: 141) { error in
-			if let error = error {
-				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
-			}
-		}
+		waitForExpectations(timeout: 2)
 	}
 }

@@ -203,6 +203,15 @@ public struct ZeroArgFunction<R, E: Error> {
         }
     }
 
+    @discardableResult
+    public func callAsFunction<OtherE: Error, P: AsyncBlockPerformer>(_ link: Link<Void, OtherE, P>, file: StaticString = #file, line: UInt = #line) -> Link<R, Error, P> {
+        link.chain(file: file, line: line, functionDescription: self.action) { (_: Void, completion: @escaping FunctionWrapperCompletion<R,Error>) in
+            self.function { result in
+                completion(result.mapError {$0})
+            }
+        }
+    }
+
     public func on<P: AsyncBlockPerformer>(_ perfomer: P.Type) -> BoundZeroArgFunction<R,E,P> {
         BoundZeroArgFunction(zero: self)
     }
@@ -252,6 +261,11 @@ public struct SingleArgFunction<A,R, E: Error> {
         link.chain(file: file, line: line, functionDescription: self.action, self.function)
     }
 
+    @discardableResult
+    public func callAsFunction<OtherE: Error, P: AsyncBlockPerformer>(_ link: Link<A, OtherE, P>, file: StaticString = #file, line: UInt = #line) -> Link<R, Error, P> {
+        link.chain(file: file, line: line, functionDescription: self.action, self.function)
+    }
+
     public func on<P: AsyncBlockPerformer>(_ perfomer: P.Type) -> BoundSingleArgFunction<A,R,E,P> {
         BoundSingleArgFunction(single: self)
     }
@@ -290,6 +304,14 @@ public struct DoubleArgFunction<A,B,R, E: Error> {
 
     public func callAsFunction<P: AsyncBlockPerformer>(_ link: Link<A, Never, P>) -> AsyncSingleArgFunction<B,R,E,P> {
         self(link.expect(E.self))
+    }
+
+    public func callAsFunction<OtherE: Error, P: AsyncBlockPerformer>(_ a: Link<A, OtherE, P>) -> AsyncSingleArgFunction<B,R,Error,P> {
+        AsyncSingleArgFunction(action: action, root: a.drop.expect(Error.self)) { (b: Link<B, Error, P>) -> Link<R, Error, P> in
+            (a+b).chain { (a_b: (A, B), completion: @escaping FunctionWrapperCompletion<R, E>) in
+                self.function(a_b.0, a_b.1, completion)
+            }
+        }
     }
 
     public func on<P: AsyncBlockPerformer>(_ perfomer: P.Type) -> BoundDoubleArgFunction<A,B,R,E,P> {
@@ -345,6 +367,16 @@ public struct TripleArgFunction<A,B,C,R, E: Error> {
         self(link.expect(E.self))
     }
 
+    public func callAsFunction<OtherE: Error, P: AsyncBlockPerformer>(_ a: Link<A, OtherE, P>) -> AsyncDoubleArgFunction<B,C,R,Error,P> {
+        AsyncDoubleArgFunction<B,C,R,Error,P>(action: action, root: a.drop.expect(Error.self)) { (b: Link<B, Error, P>, c: Link<C, Error, P>) -> Link<R, Error, P> in
+            (a+b+c).chain { (a_b_c: (A, B, C), completion: @escaping FunctionWrapperCompletion<R, Error>) in
+                self.function(a_b_c.0, a_b_c.1, a_b_c.2) { result in
+                    completion(result.mapError{$0})
+                }
+            }
+        }
+    }
+
     public func on<P: AsyncBlockPerformer>(_ perfomer: P.Type) -> BoundTripleArgFunction<A,B,C,R,E,P> {
         BoundTripleArgFunction(triple: self)
     }
@@ -385,6 +417,10 @@ public struct BoundZeroArgFunction<R, E: Error,P: AsyncBlockPerformer> {
     public func callAsFunction(_ link: Link<Void, E, P>, file: StaticString = #file, line: UInt = #line) -> Link<R, E, P> {
         self.zero(link, file: file, line: line)
     }
+
+    public func callAsFunction<OtherE: Error>(_ link: Link<Void, OtherE, P>, file: StaticString = #file, line: UInt = #line) -> Link<R, Error, P> {
+        self.zero(link, file: file, line: line)
+    }
 }
 
 extension BoundZeroArgFunction where E == Never {
@@ -419,6 +455,11 @@ public struct BoundSingleArgFunction<A,R, E: Error,P: AsyncBlockPerformer> {
     public func callAsFunction(_ link: Link<A, Never, P>, file: StaticString = #file, line: UInt = #line) -> Link<R, E, P> {
         self.single(link, file: file, line: line)
     }
+
+    @discardableResult
+    public func callAsFunction<OtherE: Error>(_ link: Link<A, OtherE, P>, file: StaticString = #file, line: UInt = #line) -> Link<R, Error, P> {
+        self.single(link, file: file, line: line)
+    }
 }
 
 extension BoundSingleArgFunction where E == Never {
@@ -451,6 +492,10 @@ public struct BoundDoubleArgFunction<A,B,R, E: Error,P: AsyncBlockPerformer> {
     public func callAsFunction(_ link: Link<A, Never, P>) -> AsyncSingleArgFunction<B,R,E,P> {
         self.double(link)
     }
+
+    public func callAsFunction<OtherE: Error>(_ link: Link<A, OtherE, P>) -> AsyncSingleArgFunction<B,R,Error,P> {
+        self.double(link)
+    }
 }
 
 extension BoundDoubleArgFunction where E == Never {
@@ -475,6 +520,10 @@ public struct BoundTripleArgFunction<A,B,C,R, E: Error,P: AsyncBlockPerformer> {
     }
 
     public func callAsFunction(_ link: Link<A, E, P>) -> AsyncDoubleArgFunction<B,C,R,E,P> {
+        self.triple(link)
+    }
+
+    public func callAsFunction<OtherE: Error>(_ link: Link<A, OtherE, P>) -> AsyncDoubleArgFunction<B,C,R,Error,P> {
         self.triple(link)
     }
 }

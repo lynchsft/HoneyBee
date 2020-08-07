@@ -18,6 +18,9 @@
 		8FC3374E23B300D500E9208F /* AsyncFlowControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FC3374D23B300D500E9208F /* AsyncFlowControl.swift */; };
 		8FCB321D241D4E5E006E0498 /* SwiftTeamTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA036D04229B79B9008DC738 /* SwiftTeamTests.swift */; };
 		8FCB321E241D4EDA006E0498 /* TestingFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA25B0141F9D0885006F8DEE /* TestingFunctions.swift */; };
+		8FEBDED624DC7E220007FF6F /* FinallyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA1A841A1FD2E0470093D11A /* FinallyTests.swift */; };
+		8FEBDED824DC835B0007FF6F /* ConjoinOperator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FEBDED724DC835B0007FF6F /* ConjoinOperator.swift */; };
+		8FF41CC724DC86A8000EB966 /* Link+DynamicMemberSubscripts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FF41CC624DC86A8000EB966 /* Link+DynamicMemberSubscripts.swift */; };
 		FA2081DB1FD1C0A4003145FB /* FaultResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA2081DA1FD1C0A4003145FB /* FaultResponse.swift */; };
 		FA41097D1E9CFBC4002A6BA6 /* HoneyBee.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA473BB81E352CB1007E4D61 /* HoneyBee.framework */; };
 		FA62A2A71FC9FBC100385D22 /* FailureRate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA62A2981FC9FBC000385D22 /* FailureRate.swift */; };
@@ -59,6 +62,8 @@
 		8FC3374D23B300D500E9208F /* AsyncFlowControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncFlowControl.swift; sourceTree = "<group>"; };
 		8FC3375823B54D4E00E9208F /* AsyncFlowControlTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncFlowControlTests.swift; sourceTree = "<group>"; };
 		8FD08E3523A825EC00CB3EAF /* CodeCoverageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeCoverageTests.swift; sourceTree = "<group>"; };
+		8FEBDED724DC835B0007FF6F /* ConjoinOperator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConjoinOperator.swift; sourceTree = "<group>"; };
+		8FF41CC624DC86A8000EB966 /* Link+DynamicMemberSubscripts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Link+DynamicMemberSubscripts.swift"; sourceTree = "<group>"; };
 		FA036D04229B79B9008DC738 /* SwiftTeamTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftTeamTests.swift; sourceTree = "<group>"; };
 		FA1A841A1FD2E0470093D11A /* FinallyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinallyTests.swift; sourceTree = "<group>"; };
 		FA2081DA1FD1C0A4003145FB /* FaultResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaultResponse.swift; sourceTree = "<group>"; };
@@ -181,6 +186,7 @@
 				FA62A29F1FC9FBC100385D22 /* Bind.swift */,
 				FA62A29B1FC9FBC100385D22 /* BindOperator.swift */,
 				FA62A2A11FC9FBC100385D22 /* Chainable.swift */,
+				8FEBDED724DC835B0007FF6F /* ConjoinOperator.swift */,
 				FA62A29A1FC9FBC100385D22 /* ErrorContext.swift */,
 				FA62A2991FC9FBC000385D22 /* Executable.swift */,
 				FA62A2981FC9FBC000385D22 /* FailureRate.swift */,
@@ -188,6 +194,7 @@
 				FA62A2A01FC9FBC100385D22 /* HoneyBee.swift */,
 				FA62A29D1FC9FBC100385D22 /* JoinPoint.swift */,
 				FA62A29E1FC9FBC100385D22 /* Link.swift */,
+				8FF41CC624DC86A8000EB966 /* Link+DynamicMemberSubscripts.swift */,
 				FAF5828020FE0E0B00E135CB /* LinkCommon.swift */,
 				FA62A29C1FC9FBC100385D22 /* Result.swift */,
 			);
@@ -361,6 +368,7 @@
 				8F2EE4842495387C00ABC79B /* PrettyExamples.swift in Sources */,
 				8F8291D424957816008AE992 /* SinglePathTests.swift in Sources */,
 				8F19143324DBB28F000A1F28 /* UploadPipeline.swift in Sources */,
+				8FEBDED624DC7E220007FF6F /* FinallyTests.swift in Sources */,
 				8F2EE4822495367B00ABC79B /* AsyncFlowControlTests.swift in Sources */,
 				8FCB321E241D4EDA006E0498 /* TestingFunctions.swift in Sources */,
 				8F2EE4832495381100ABC79B /* MergeSortTest.swift in Sources */,
@@ -382,6 +390,7 @@
 				FAABABAC228BA09800605626 /* AsyncTrace.swift in Sources */,
 				FA62A2AE1FC9FBC100385D22 /* Bind.swift in Sources */,
 				FAA722BB226F4DBD00A8CB7B /* FunctionWrappers.swift in Sources */,
+				8FF41CC724DC86A8000EB966 /* Link+DynamicMemberSubscripts.swift in Sources */,
 				FA2081DB1FD1C0A4003145FB /* FaultResponse.swift in Sources */,
 				FAF0C3061FD1AD6B00D1F177 /* ConcurrentFunctionTools.swift in Sources */,
 				8F7EBDB323CF8812007C9EDB /* ConcurrentBox.swift in Sources */,
@@ -389,6 +398,7 @@
 				FA62A2A81FC9FBC100385D22 /* Executable.swift in Sources */,
 				8FC3271C23A47B8000E25281 /* FunctionTransformations.swift in Sources */,
 				FA62A2AB1FC9FBC100385D22 /* Result.swift in Sources */,
+				8FEBDED824DC835B0007FF6F /* ConjoinOperator.swift in Sources */,
 				FA62A2B41FC9FBC100385D22 /* AsyncBlockPerformer.swift in Sources */,
 				8FC3374E23B300D500E9208F /* AsyncFlowControl.swift in Sources */,
 				FA62A2AC1FC9FBC100385D22 /* JoinPoint.swift in Sources */,
