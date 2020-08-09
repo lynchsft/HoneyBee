@@ -1,5 +1,6 @@
 
 #### [Current]
+ * [e600106](../../commit/e600106) - __(Alex Lynch)__ Mark as v3.0.0.a.3
  * [7c660d0](../../commit/7c660d0) - __(Alex Lynch)__ Mark as v3.0.0.a.2
 
 #### v3.0.0-a.1

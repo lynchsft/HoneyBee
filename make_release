@@ -44,6 +44,9 @@ end
 
 File.open("#{project_name}.podspec",'w') {|f| f.puts spec}
 
+puts "Linting"
+puts `pod lib lint`
+
 puts "Documenting"
 puts `rm -rf docs/*`
 puts `jazzy --xcodebuild-arguments -scheme,#{project_name} --no-hide-documentation-coverage --output ./docs/ --documentation=./*.md `

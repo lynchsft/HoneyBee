@@ -9,6 +9,9 @@ HoneyBee is a Swift promises library to increase the expressiveness of asynchron
 - __Safe By Default.__ HoneyBee enforces proper error handling techniques - while also reducing programmer burden. 
 
 
+## Documentation
+View project documentation __[here.](https://lynchsft.github.io/HoneyBee/index.html)__
+
 ## Quick Examples
 
 ### Example: Show Me.
@@ -34,7 +37,7 @@ In the above recipe, `func1` will be called first. Then the result of `func1` wi
 func func1(completion: ([String]?, Error?) -> Void) {...}
 func func2(string: String) throws -> Int {...}
 func func3(int: Int, completion: (Error?) -> Void) {...}
-func func4(int: Int, completion: (FailableResult<String>) -> Void) {...}
+func func4(int: Int, completion: (Result<String, Error>) -> Void) {...}
 func func5(strings: [String], completion: () -> Void) {...}
 func successFunc(strings: [String]) {...}
 HoneyBee.start { root in
@@ -138,7 +141,7 @@ Diagnosing problems in misbehaving concurrent code is really hard right? Not wit
 func handleError(_ errorContext: ErrorContext) {
     print(errorContext)
 }
-func stringToInt(string: String, callback: (FailableResult<Int>) -> Void) {
+func stringToInt(string: String, callback: (Result<Int, Error>) -> Void) {
     if let int = Int(string) {
         callback(.success(int))
     } else {
