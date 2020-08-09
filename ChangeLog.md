@@ -1,8 +1,62 @@
 
-# Change Log
----
+#### [Current]
+
+
+#### v3.0.0-a.1
+ * [38ba4a3](../../commit/38ba4a3) - __(Alex Lynch)__ Correct SemVer syntax.
+ * [cf55b51](../../commit/cf55b51) - __(Alex Lynch)__ Update podspec with v3.0.0.a1
+ * [1657bd8](../../commit/1657bd8) - __(Alex Lynch)__ Marking v3.0.0.a1
+ * [7e6968b](../../commit/7e6968b) - __(Alex Lynch)__ All test files are compiling. 2 tests disabled. Entering alpha state.
+ * [0441a74](../../commit/0441a74) - __(Alex Lynch)__ Reenabled FinallyTests. Code cleanup.
+ * [6c65cdf](../../commit/6c65cdf) - __(Alex Lynch)__ Restored UploadPipeline test.
+ * [62dd32a](../../commit/62dd32a) - __(Alex Lynch)__ Cleanup and syntax stabilization. Half of the tests are reenabled.
+ * [d431595](../../commit/d431595) - __(Alex Lynch)__ Reenable MergeSortTest.
+ * [d66d13f](../../commit/d66d13f) - __(Alex Lynch)__ Reenable AsyncFlowControlTests.
+ * [7ffe0cb](../../commit/7ffe0cb) - __(Alex Lynch)__ Beta implementation of Error parameterized links.
+ * [0addf8a](../../commit/0addf8a) - __(Alex Lynch)__ Replace @dynamicCallable with Swift 5.2 callAsFunction feature.
+ * [909d311](../../commit/909d311) - __(Alex Lynch)__ Rename AsyncBlockPerformer generic argument to P in preparation for more generic constraints.
+ * [7cd9756](../../commit/7cd9756) - __(Alex Lynch)__ Rename "completion" methods in Link with a reactive-programming convention.
+ * [e3bb2b6](../../commit/e3bb2b6) - __(Alex Lynch)__ Refine downstream `response` and `error` handlers; remove upstream error handlers. Errors no longer flow up HoneyBee chains.
+ * [6eab4f1](../../commit/6eab4f1) - __(Alex Lynch)__ Implement and test `result` async accessor. For the first time in honeybee, errors flow down stream.
+ * [846b7aa](../../commit/846b7aa) - __(Alex Lynch)__ Avoid crashing where possible in response to internal errors.
+ * [6a5aadb](../../commit/6a5aadb) - __(Alex Lynch)__ Abstract ConcurrentBox from JoinPoint.
+ * [1f02e69](../../commit/1f02e69) - __(Alex Lynch)__ Propagate ErrorContext to dependents.
+ * [36da234](../../commit/36da234) - __(Alex Lynch)__ Excise FailableResult and friends.
+ * [1c3a256](../../commit/1c3a256) - __(Alex Lynch)__ Repair the broken and deprecated `each` function.
+ * [f12d318](../../commit/f12d318) - __(Alex Lynch)__ Improve comment coverage.
+ * [b7cd2a2](../../commit/b7cd2a2) - __(Alex Lynch)__ Use more diverse async block performers for code coverage.
+ * [c4acb10](../../commit/c4acb10) - __(Alex Lynch)__ Rename async function wrapper types for consistency.
+ * [75a983a](../../commit/75a983a) - __(Alex Lynch)__ "Move to" operator (>>) evaluates lvals on the rval link's performer.
+ * [6953782](../../commit/6953782) - __(Alex Lynch)__ Improve code coverage.
+ * [49588ba](../../commit/49588ba) - __(Alex Lynch)__ Simplify the AsyncFlowControl code and improve the test.
+ * [6a49d29](../../commit/6a49d29) - __(Alex Lynch)__ Move async family's function argument to the final position to permit trailing closures.
+ * [2d0c73c](../../commit/2d0c73c) - __(Alex Lynch)__ Conditionally import CoreData.
+ * [1409903](../../commit/1409903) - __(Alex Lynch)__ Basic if/else_if/else flow control.
+ * [7c0af84](../../commit/7c0af84) - __(Alex Lynch)__ Implement merge sort test. Mark finally as @discardableResult
+ * [0e466fa](../../commit/0e466fa) - __(Alex Lynch)__ Implement a non-HoneyBee solution to UploadPipleline test.
+ * [fcecf85](../../commit/fcecf85) - __(Alex Lynch)__ Implement AsyncPerformer-bound function wrappers and implement UploadPipeline tests.
+ * [933b98f](../../commit/933b98f) - __(Alex Lynch)__ Introduce some non-topical tests for coverage.
+ * [0273d04](../../commit/0273d04) - __(Alex Lynch)__ Redefine async function family to return a function wrapper that is not defined in terms of Link.
+ * [b281211](../../commit/b281211) - __(Alex Lynch)__ Remove instance-curry forms from async function family.
+ * [2fda2e4](../../commit/2fda2e4) - __(Alex Lynch)__ Rename function wrappers for greater clarity.
+ * [3463652](../../commit/3463652) - __(Alex Lynch)__ Convert some multi-path tests to async curry syntax.
+ * [a82d67b](../../commit/a82d67b) - __(Alex Lynch)__ Beta async curry syntax. Introduce AsyncTrace. Cleanup weaknesses in .reduce and .each identified by new Test Plan.
+ * [dad5f6e](../../commit/dad5f6e) - __(Alex Lynch)__ Mark as v2.8.2
  * [4f24cee](../../commit/4f24cee) - __(Alex Lynch)__ Mark as v2.8.2
  * [580413a](../../commit/580413a) - __(Alex Lynch)__ Compatibility with Swift 5.1
+ * [5ea36ba](../../commit/5ea36ba) - __(Alex Lynch)__ Update generator to handle same-type unfulfilled parameters in bind family.
+ * [22e2b83](../../commit/22e2b83) - __(Alex Lynch)__ Update Generate.rb to generate AAC-form binds and Links with async performer generic params.
+ * [cb85cea](../../commit/cb85cea) - __(Alex Lynch)__ Construct UnitTests for swift team to review compiler segfault.
+ * [1a34d98](../../commit/1a34d98) - __(Alex Lynch)__ Define HoneyBee.async family of start behaviors. Implement Chris Lattner's coroutine example as a unit test.
+ * [aafd767](../../commit/aafd767) - __(Alex Lynch)__ Conform ErrorContext to Error. (!!)
+ * [a733d19](../../commit/a733d19) - __(Alex Lynch)__ Convert drop() to a var and restyle tests.
+ * [0aa7923](../../commit/0aa7923) - __(Alex Lynch)__ Beta all new error tracing behavior.
+ * [417524e](../../commit/417524e) - __(Alex Lynch)__ Rename magic aysnc keyword `await` after common style.
+ * [86cf816](../../commit/86cf816) - __(Alex Lynch)__ Move await behaviors into Link and implement tail closure.
+ * [7acee1f](../../commit/7acee1f) - __(Alex Lynch)__ Rename setBlockPerformer(_:) to move(to:).
+ * [d48c913](../../commit/d48c913) - __(Alex Lynch)__ Implement type-checked AsyncBlockPerformer matching in Link, SafeLink, and JoinPoint. Make Link's public interface immutable and redefine AsyncBlockPerformer changing semantics.
+ * [dc8eaf6](../../commit/dc8eaf6) - __(Alex Lynch)__ R publicize FailableResult as a typealias on Result<T, Error>
+ * [386d9c0](../../commit/386d9c0) - __(Alex Lynch)__ Define types for common GCD dispatch queues as AsyncBlockPerformers.
  * [6f89ac5](../../commit/6f89ac5) - __(Alex Lynch)__ Xcode-suggested project reorganization.
  * [72a6a26](../../commit/72a6a26) - __(Alex Lynch)__ Mark as v2.8.1
  * [142da4e](../../commit/142da4e) - __(Alex Lynch)__ Change project hosting to github.
@@ -58,67 +112,67 @@
  * [ebd28b6](../../commit/ebd28b6) - __(Alex Lynch)__ Improve release automation.
  * [5d96199](../../commit/5d96199) - __(Alex Lynch)__ Mark as v2.2.4
 
-### v2.2.3
+#### v2.2.3
  * [84a7649](../../commit/84a7649) - __(Alex Lynch)__ Mark as v2.2.3 Improve release automation.
 
-### v2.2.2
+#### v2.2.2
  * [023e11d](../../commit/023e11d) - __(Alex Lynch)__ Mark as v2.2.2
 
-### v2.2.1
+#### v2.2.1
  * [5a255cc](../../commit/5a255cc) - __(Alex Lynch)__ Mark as v2.2.1
  * [3f43e2c](../../commit/3f43e2c) - __(Alex Lynch)__ Improve Readme.
  * [6e2774b](../../commit/6e2774b) - __(Alex Lynch)__ Correct author's email address.
 
-### v2.2
+#### v2.2
  * [11f9172](../../commit/11f9172) - __(Alex Lynch)__ Mark as v2.2
  * [5277323](../../commit/5277323) - __(Alex Lynch)__ Implement non-returning limit.
 
-### v2.1.2
+#### v2.1.2
  * [1b99b07](../../commit/1b99b07) - __(Alex Lynch)__ Mark as v2.1.2
  * [1cc73d5](../../commit/1cc73d5) - __(Alex Lynch)__ Introduce instance curry forms of bind()
 
-### v2.1.1
+#### v2.1.1
  * [1b3cc70](../../commit/1b3cc70) - __(Alex Lynch)__ Mark as v2.1.1
 
-### v2.1
+#### v2.1
  * [88c6eef](../../commit/88c6eef) - __(Alex Lynch)__ Mark as v2.1.
  * [2559ef9](../../commit/2559ef9) - __(Alex Lynch)__ Implement setCompletionHandler(:)
  * [9c426b4](../../commit/9c426b4) - __(Alex Lynch)__ Implement setCompletionHandler(:).
  * [1dc3f20](../../commit/1dc3f20) - __(Alex Lynch)__ Remove @discardableResult from chain with KeyPath.
  * [7f272c6](../../commit/7f272c6) - __(Alex Lynch)__ Add Error property to ErrorContext and collapse the two-arg forms of error handler
 
-### v2.0.5
+#### v2.0.5
  * [e02f3c5](../../commit/e02f3c5) - __(Alex Lynch)__ Mark as v2.0.5 (Podspec fix).
 
-### v2.0.4
+#### v2.0.4
  * [a2b6a0d](../../commit/a2b6a0d) - __(Alex Lynch)__ Mark as v2.0.4
  * [de7647a](../../commit/de7647a) - __(Alex Lynch)__ Publicize FaultResponse and provide static hooks in HoneyBee struct for response management.
  * [3ff2723](../../commit/3ff2723) - __(Alex Lynch)__ Standardize positioning of @discardableResult.
 
-### v2.0.3
+#### v2.0.3
  * [fcebb83](../../commit/fcebb83) - __(Alex Lynch)__ Mark as v2.0.3 (documentation bump)
 
-### v2.0.1
+#### v2.0.1
  * [a9b3119](../../commit/a9b3119) - __(Alex Lynch)__ Mark as v2.0.1
  * [673b06f](../../commit/673b06f) - __(Alex Lynch)__ Expand documentation around block performer.
 
-### v2.0
+#### v2.0
  * [7092836](../../commit/7092836) - __(Alex Lynch)__ Mark as v2.0.
  * [b2187e2](../../commit/b2187e2) - __(Alex Lynch)__ Rename parameter "withLimit" to "limit".
  * [7eaa13d](../../commit/7eaa13d) - __(Alex Lynch)__ Rename ProcessLink to Link
 
-### v1.11.2
+#### v1.11.2
  * [2b0a203](../../commit/2b0a203) - __(Alex Lynch)__ Mark as v1.11.2
  * [aeaf7b0](../../commit/aeaf7b0) - __(Alex Lynch)__ Expand documentation.
 
-### v1.11.1
+#### v1.11.1
  * [31241e3](../../commit/31241e3) - __(Alex Lynch)__ Mark as v1.11.1 (documentation release).
 
-### v1.11
+#### v1.11
  * [2ec8982](../../commit/2ec8982) - __(Alex Lynch)__ Mark as v1.11
  * [f39323a](../../commit/f39323a) - __(Alex Lynch)__ Implement parallel reduce.
 
-### v1.10
+#### v1.10
  * [8a60f3d](../../commit/8a60f3d) - __(Alex Lynch)__ Mark as v1.10.0
  * [d14c4e4](../../commit/d14c4e4) - __(Alex Lynch)__ Add documentation fo left and right join, and reduce.
  * [7d3ecbf](../../commit/7d3ecbf) - __(Alex Lynch)__ Implement linear `reduce` behavior. Add thread sanitizer to test target. Fix some threading issues.
@@ -126,38 +180,38 @@
  * [564aba9](../../commit/564aba9) - __(Alex Lynch)__ Mark as v1.9.3. (documentation release)
  * [f8f26cf](../../commit/f8f26cf) - __(Alex Lynch)__ Implement join-left and join-right operators.
 
-### v1.9.2
+#### v1.9.2
  * [f40413c](../../commit/f40413c) - __(Alex Lynch)__ Mark as v1.9.2
  * [3c15566](../../commit/3c15566) - __(Alex Lynch)__ Fix finally-before-retry bug.
 
-### v1.9.1
+#### v1.9.1
  * [cae6d66](../../commit/cae6d66) - __(Alex Lynch)__ Mark as v1.9.1
  * [05b284f](../../commit/05b284f) - __(Alex Lynch)__ Expose FailureRate feature in `each`
 
-### v1.9
+#### v1.9
  * [dd3d4a9](../../commit/dd3d4a9) - __(Alex Lynch)__ Marking as v1.9
  * [d27c21d](../../commit/d27c21d) - __(Alex Lynch)__ Implement retry feature.
  * [4139c3b](../../commit/4139c3b) - __(Alex Lynch)__ Clean up multi-path test semantics with AtomicInt
 
-### v1.8
+#### v1.8
  * [9292a65](../../commit/9292a65) - __(Alex Lynch)__ Mark as v1.8
  * [df18f7e](../../commit/df18f7e) - __(Alex Lynch)__ Restore typed finally blocks!!
 
-### v1.7.3
+#### v1.7.3
  * [6561158](../../commit/6561158) - __(Alex Lynch)__ Quick fix for cocoa pods. v1.7.3
 
-### v1.7.2
+#### v1.7.2
  * [164978d](../../commit/164978d) - __(Alex Lynch)__ Mark as v1.7.2.
  * [8870f8a](../../commit/8870f8a) - __(Alex Lynch)__ Fix bug causing joins to fail. Fix bug causing finalizers to fail and run out of order. Improve logical assertions about concurrency.
 
-### v1.7.1
+#### v1.7.1
  * [88d61b4](../../commit/88d61b4) - __(Alex Lynch)__ Mark as v1.7.
  * [45570e3](../../commit/45570e3) - __(Alex Lynch)__ Simplify `map` error counting.
  * [a1c7077](../../commit/a1c7077) - __(Alex Lynch)__ Links can create sub-links until they are deallocated. Redesign `optionally` with simpler semantics.
  * [4a51e50](../../commit/4a51e50) - __(Alex Lynch)__ Amend commit with project file changes.
  * [81d7417](../../commit/81d7417) - __(Alex Lynch)__ Make space for lib sources.
 
-### v1.6
+#### v1.6
  * [b25cbe6](../../commit/b25cbe6) - __(Alex Lynch)__ Include podspec version bump.
  * [d1ebfea](../../commit/d1ebfea) - __(Alex Lynch)__ Marking as v1.6
  * [32fc00c](../../commit/32fc00c) - __(Alex Lynch)__ Verify error handling behavior when map and join are used together.
@@ -171,31 +225,31 @@
  * [1498fb8](../../commit/1498fb8) - __(Alex Lynch)__ Reorganize testing code for faster compilations.
  * [a940af6](../../commit/a940af6) - __(Alex Lynch)__ Use proper compilation condition for KeyPath form.
 
-### v1.4.5
+#### v1.4.5
  * [c21396f](../../commit/c21396f) - __(Alex Lynch)__ Mark as v1.4.5
  * [87f8ddf](../../commit/87f8ddf) - __(Alex Lynch)__ Remove unnecessary escaping attributes from define blocks.
 
-### v1.4.4
+#### v1.4.4
  * [80fc24c](../../commit/80fc24c) - __(Alex Lynch)__ Mark as v1.4.4
  * [1aedfc9](../../commit/1aedfc9) - __(Alex Lynch)__ Remove poorly conceived execute success parameter and simplify.
  * [a7cd9ad](../../commit/a7cd9ad) - __(Alex Lynch)__ Don't try to compile KeyPath form for less than swift 4.0
 
-### v1.4.3
+#### v1.4.3
  * [c1a8a06](../../commit/c1a8a06) - __(Alex Lynch)__ Mark as v1.4.3
  * [321be79](../../commit/321be79) - __(Alex Lynch)__ More safely enter dispatch group to prevent early notification.
  * [554e7c7](../../commit/554e7c7) - __(Alex Lynch)__ Restore `each(withLimit:)`  form.
 
-### v1.4.2
+#### v1.4.2
  * [ddcf97f](../../commit/ddcf97f) - __(Alex Lynch)__ Mark as v1.4.2.
  * [66307d9](../../commit/66307d9) - __(Alex Lynch)__ Implement KeyPath support.
 
-### v1.4.1
+#### v1.4.1
  * [783161b](../../commit/783161b) - __(Alex Lynch)__ Marking as v1.4.1
  * [751fdac](../../commit/751fdac) - __(Alex Lynch)__ Extend bind support to throwing functions.
  * [b573fa9](../../commit/b573fa9) - __(Alex Lynch)__ Marking as version 1.4 (swift 4 compatible)
  * [5b2a07a](../../commit/5b2a07a) - __(Alex Lynch)__ Swift 4 support + much better code coverage.
 
-### v1.0.2
+#### v1.0.2
  * [7217eed](../../commit/7217eed) - __(Alex Lynch)__ Marking as v1.0.2.
  * [ece3302](../../commit/ece3302) - __(Alex Lynch)__ Improve resilience of `limit` for proper semaphore handing during errors.
  * [ebb6460](../../commit/ebb6460) - __(Alex Lynch)__ Marking as v1.0.1
@@ -236,11 +290,11 @@
  * [86e99b7](../../commit/86e99b7) - __(Alex Lynch)__ Mark v0.5.0
  * [3977a54](../../commit/3977a54) - __(Alex Lynch)__ Simplify error handling expression in HoneyBee process definitions. Remove redundentant chain forms.
 
-### v0.4.1
+#### v0.4.1
  * [92071b5](../../commit/92071b5) - __(Alex Lynch)__ v0.4.1
  * [2d89ef0](../../commit/2d89ef0) - __(Alex Lynch)__ Correct post-limit behavior to not be within semaphore.
 
-### v0.4.0
+#### v0.4.0
  * [2b01f3c](../../commit/2b01f3c) - __(Alex Lynch)__ Mark as v0.4.0
  * [334a79b](../../commit/334a79b) - __(Alex Lynch)__ Slightly reorganize project.
  * [d6b2ac0](../../commit/d6b2ac0) - __(Alex Lynch)__ Remove operator syntax. The number of behaviors is growing and some take parameters. Operator syntax is no longer supportable.
@@ -251,7 +305,7 @@
  * [c4518ad](../../commit/c4518ad) - __(Alex Lynch)__ `each` behavior forwards sequence as result.
  * [c58f68b](../../commit/c58f68b) - __(Alex Lynch)__ Delay evaluation of stored values in failableResultWrapper
 
-### v0.2.0
+#### v0.2.0
  * [fa269ce](../../commit/fa269ce) - __(Alex Lynch)__ 2.0
  * [3842e27](../../commit/3842e27) - __(Alex Lynch)__ More generated forms of chain and splice. Generated bind and bind operator.
  * [20060ac](../../commit/20060ac) - __(Alex Lynch)__ Remove (now) unnecessary dummy testing application. Just test.

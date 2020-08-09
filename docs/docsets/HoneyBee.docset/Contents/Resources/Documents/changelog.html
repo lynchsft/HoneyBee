@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>ChangeLog  Reference</title>
+    <link rel="stylesheet" type="text/css" href="css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="js/jquery.min.js" defer></script>
+    <script src="js/jazzy.js" defer></script>
+    
+    <script src="js/lunr.min.js" defer></script>
+    <script src="js/typeahead.jquery.js" defer></script>
+    <script src="js/jazzy.search.js" defer></script>
+  </head>
+  <body>
+    <a title="ChangeLog  Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="index.html">HoneyBee 3.0.0.a.2 Docs</a> (59% documented)</p>
+        <p class="header-right">
+          <form role="search" action="search.json">
+            <input type="text" placeholder="Search documentation" data-typeahead>
+          </form>
+        </p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="index.html">HoneyBee Reference</a>
+        <img id="carat" src="img/carat.png" />
+        ChangeLog  Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="Guides.html">Guides</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="changelog.html">ChangeLog</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="readme.html">README</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Classes/AsyncTraceComponent.html">AsyncTraceComponent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ElseContext.html">ElseContext</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes.html#/s:8HoneyBee10ExecutableC">Executable</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/If.html">If</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/Link.html">Link</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Enums.html">Enumerations</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Enums/FailureRate.html">FailureRate</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Enums/FaultResponse.html">FaultResponse</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Extensions.html">Extensions</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Extensions/DispatchQueue.html">DispatchQueue</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Extensions/NSError.html">NSError</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Extensions/NSManagedObjectContext.html">NSManagedObjectContext</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Extensions/Never.html">Never</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Extensions/Optional.html">Optional</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Extensions/Result.html">Result</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Functions.html">Functions</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee1poiyAA4LinkCyx_q_q0_q1_tq2_q3_GADyx_q_q0_tq2_q3_G_ADyq1_q2_q3_Gts5ErrorR2_AA19AsyncBlockPerformerR3_r4_lF">+(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee1poiyAA4LinkCyx_q_q0_q1_tq2_q3_GADyx_q_q0_tq2_q3_G_ADyq1_s5NeverOq3_Gts5ErrorR2_AA19AsyncBlockPerformerR3_r4_lF">+(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee1poiyAA4LinkCyx_q_q0_q1_tq2_q3_GADyx_q_q0_ts5NeverOq3_G_ADyq1_q2_q3_Gts5ErrorR2_AA19AsyncBlockPerformerR3_r4_lF">+(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee1poiyAA4LinkCyx_q_q0_q1_ts5Error_pq4_GADyx_q_q0_tq2_q4_G_ADyq1_q3_q4_GtsAER2_sAER3_AA19AsyncBlockPerformerR4_r5_lF">+(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee1poiyAA4LinkCyx_q_q0_q1_ts5NeverOq2_GADyx_q_q0_tAFq2_G_ADyq1_AFq2_GtAA19AsyncBlockPerformerR2_r3_lF">+(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee1poiyAA4LinkCyx_q_q0_tq1_q2_GADyx_q_tq1_q2_G_ADyq0_q1_q2_Gts5ErrorR1_AA19AsyncBlockPerformerR2_r3_lF">+(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee1poiyAA4LinkCyx_q_q0_tq1_q2_GADyx_q_tq1_q2_G_ADyq0_s5NeverOq2_Gts5ErrorR1_AA19AsyncBlockPerformerR2_r3_lF">+(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee1poiyAA4LinkCyx_q_q0_tq1_q2_GADyx_q_ts5NeverOq2_G_ADyq0_q1_q2_Gts5ErrorR1_AA19AsyncBlockPerformerR2_r3_lF">+(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee1poiyAA4LinkCyx_q_q0_ts5Error_pq3_GADyx_q_tq1_q3_G_ADyq0_q2_q3_GtsAER1_sAER2_AA19AsyncBlockPerformerR3_r4_lF">+(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee1poiyAA4LinkCyx_q_q0_ts5NeverOq1_GADyx_q_tAFq1_G_ADyq0_AFq1_GtAA19AsyncBlockPerformerR1_r2_lF">+(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee1poiyAA4LinkCyx_q_tq0_q1_GADyxq0_q1_G_ADyq_q0_q1_Gts5ErrorR0_AA19AsyncBlockPerformerR1_r2_lF">+(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee1poiyAA4LinkCyx_q_tq0_q1_GADyxq0_q1_G_ADyq_s5NeverOq1_Gts5ErrorR0_AA19AsyncBlockPerformerR1_r2_lF">+(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee1poiyAA4LinkCyx_q_tq0_q1_GADyxs5NeverOq1_G_ADyq_q0_q1_Gts5ErrorR0_AA19AsyncBlockPerformerR1_r2_lF">+(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee1poiyAA4LinkCyx_q_ts5Error_pq2_GADyxq0_q2_G_ADyq_q1_q2_GtsAER0_sAER1_AA19AsyncBlockPerformerR2_r3_lF">+(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee1poiyAA4LinkCyx_q_ts5NeverOq0_GADyxAFq0_G_ADyq_AFq0_GtAA19AsyncBlockPerformerR0_r1_lF">+(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee2pgoiyAA4LinkCyq_q0_q1_GADyxq0_q1_G_ADyq_s5NeverOq1_Gts5ErrorR0_AA19AsyncBlockPerformerR1_r2_lF">+&gt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee2pgoiyAA4LinkCyq_q0_q1_GADyxq0_q1_G_AEts5ErrorR0_AA19AsyncBlockPerformerR1_r2_lF">+&gt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee2pgoiyAA4LinkCyq_q0_q1_GADyxs5NeverOq1_G_AEts5ErrorR0_AA19AsyncBlockPerformerR1_r2_lF">+&gt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee2pgoiyAA4LinkCyq_s5Error_pq2_GADyxq0_q2_G_ADyq_q1_q2_GtsAER0_sAER1_AA19AsyncBlockPerformerR2_r3_lF">+&gt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee2pgoiyAA4LinkCyq_s5NeverOq0_GADyxAFq0_G_AGtAA19AsyncBlockPerformerR0_r1_lF">+&gt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee1loiyAA4LinkCySbq_q0_GADyxq_q0_G_AFtSLRzs5ErrorR_AA19AsyncBlockPerformerR0_r1_lF">&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee1loiyAA4LinkCySbq_q0_GADyxq_q0_G_xtSLRzs5ErrorR_AA19AsyncBlockPerformerR0_r1_lF">&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee1loiyAA4LinkCySbq_q0_Gx_ADyxq_q0_GtSLRzs5ErrorR_AA19AsyncBlockPerformerR0_r1_lF">&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee2lpoiyAA4LinkCyxq0_q1_GADyxs5NeverOq1_G_ADyq_q0_q1_Gts5ErrorR0_AA19AsyncBlockPerformerR1_r2_lF">&lt;+(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee2lpoiyAA4LinkCyxq0_q1_GAE_ADyq_q0_q1_Gts5ErrorR0_AA19AsyncBlockPerformerR1_r2_lF">&lt;+(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee2lpoiyAA4LinkCyxq0_q1_GAE_ADyq_s5NeverOq1_Gts5ErrorR0_AA19AsyncBlockPerformerR1_r2_lF">&lt;+(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee2lpoiyAA4LinkCyxs5Error_pq2_GADyxq0_q2_G_ADyq_q1_q2_GtsAER0_sAER1_AA19AsyncBlockPerformerR2_r3_lF">&lt;+(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee2lpoiyAA4LinkCyxs5NeverOq0_GAG_ADyq_AFq0_GtAA19AsyncBlockPerformerR0_r1_lF">&lt;+(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee2leoiyAA4LinkCySbq_q0_GADyxq_q0_G_AFtSLRzs5ErrorR_AA19AsyncBlockPerformerR0_r1_lF">&lt;=(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee2leoiyAA4LinkCySbq_q0_GADyxq_q0_G_xtSLRzs5ErrorR_AA19AsyncBlockPerformerR0_r1_lF">&lt;=(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee2leoiyAA4LinkCySbq_q0_Gx_ADyxq_q0_GtSLRzs5ErrorR_AA19AsyncBlockPerformerR0_r1_lF">&lt;=(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee3elloiyq0_q_Kcq0_x_q_tKc_xtr1_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee3elloiyq0_q_cq0_x_q_tc_xtr1_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee3elloiyq0_xKcq0_q_Kcxc_q_tr1_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee3elloiyq0_xKcq0_x_q_tKc_q_tr1_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee3elloiyq0_x_q_tKcq0_x_xq_tKc_xtr1_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee3elloiyq0_x_q_tcq0_x_xq_tc_xtr1_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee3elloiyq0_x_xtKcq0_x_q_tKcxc_q_tr1_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee3elloiyq0_x_xtKcq0_x_xq_tKc_q_tr1_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee3elloiyq0_x_xtcq0_x_q_tcxc_q_tr1_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee3elloiyq0_x_xtcq0_x_xq_tc_q_tr1_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee3elloiyq0_xcq0_q_cxc_q_tr1_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee3elloiyq0_xcq0_x_q_tc_q_tr1_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee3elloiyq1_q__q0_tKcq1_x_q_q0_tKc_xtr2_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee3elloiyq1_q__q0_tcq1_x_q_q0_tc_xtr2_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee3elloiyq1_x_q0_tKcq1_q__q0_tKcxc_q_tr2_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee3elloiyq1_x_q0_tKcq1_x_q_q0_tKc_q_tr2_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee3elloiyq1_x_q0_tcq1_q__q0_tcxc_q_tr2_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee3elloiyq1_x_q0_tcq1_x_q_q0_tc_q_tr2_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee3elloiyq1_x_q_tKcq1_q__q0_tKcxc_q0_tr2_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee3elloiyq1_x_q_tKcq1_x_q_q0_tKc_q0_tr2_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee3elloiyq1_x_q_tcq1_q__q0_tcxc_q0_tr2_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee3elloiyq1_x_q_tcq1_x_q_q0_tc_q0_tr2_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee3elloiyq2_q__q0_q1_tKcq2_x_q_q0_q1_tKc_xtr3_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee3elloiyq2_q__q0_q1_tcq2_x_q_q0_q1_tc_xtr3_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee3elloiyq2_x_q0_q1_tKcq2_q__q0_q1_tKcxc_q_tr3_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee3elloiyq2_x_q0_q1_tKcq2_x_q_q0_q1_tKc_q_tr3_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee3elloiyq2_x_q0_q1_tcq2_q__q0_q1_tcxc_q_tr3_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee3elloiyq2_x_q0_q1_tcq2_x_q_q0_q1_tc_q_tr3_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee3elloiyq2_x_q_q0_tKcq2_q__q0_q1_tKcxc_q1_tr3_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee3elloiyq2_x_q_q0_tKcq2_x_q_q0_q1_tKc_q1_tr3_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee3elloiyq2_x_q_q0_tcq2_q__q0_q1_tcxc_q1_tr3_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee3elloiyq2_x_q_q0_tcq2_x_q_q0_q1_tc_q1_tr3_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee3elloiyq2_x_q_q1_tKcq2_q__q0_q1_tKcxc_q0_tr3_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee3elloiyq2_x_q_q1_tKcq2_x_q_q0_q1_tKc_q0_tr3_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee3elloiyq2_x_q_q1_tcq2_q__q0_q1_tcxc_q0_tr3_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee3elloiyq2_x_q_q1_tcq2_x_q_q0_q1_tc_q0_tr3_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee3elloiyq_xKcq_x_xtKc_xtr0_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee3elloiyq_xcq_x_xtc_xtr0_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee3elloiyq_yKcq_xKc_xtr0_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee3elloiyq_ycq_xc_xtr0_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee2eeoiyAA4LinkCySbq_q0_GADyxq_q0_G_AFtSQRzs5ErrorR_AA19AsyncBlockPerformerR0_r1_lF">==(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee2eeoiyAA4LinkCySbq_q0_GADyxq_q0_G_xtSQRzs5ErrorR_AA19AsyncBlockPerformerR0_r1_lF">==(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee2eeoiyAA4LinkCySbq_q0_Gx_ADyxq_q0_GtSQRzs5ErrorR_AA19AsyncBlockPerformerR0_r1_lF">==(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee1goiyAA4LinkCySbq_q0_GADyxq_q0_G_AFtSLRzs5ErrorR_AA19AsyncBlockPerformerR0_r1_lF">&gt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee1goiyAA4LinkCySbq_q0_GADyxq_q0_G_xtSLRzs5ErrorR_AA19AsyncBlockPerformerR0_r1_lF">&gt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee1goiyAA4LinkCySbq_q0_Gx_ADyxq_q0_GtSLRzs5ErrorR_AA19AsyncBlockPerformerR0_r1_lF">&gt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee2geoiyAA4LinkCySbq_q0_GADyxq_q0_G_AFtSLRzs5ErrorR_AA19AsyncBlockPerformerR0_r1_lF">&gt;=(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee2geoiyAA4LinkCySbq_q0_GADyxq_q0_G_xtSLRzs5ErrorR_AA19AsyncBlockPerformerR0_r1_lF">&gt;=(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee2geoiyAA4LinkCySbq_q0_Gx_ADyxq_q0_GtSLRzs5ErrorR_AA19AsyncBlockPerformerR0_r1_lF">&gt;=(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee2ggoiyAA4LinkCyxq_q0_GADyxs5NeverOq0_G_q_mts5ErrorR_AA19AsyncBlockPerformerR0_r1_lF">&gt;&gt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee2ggoiyAA4LinkCyxq_q0_GxyXA_ADyytq_q0_Gts5ErrorR_AA19AsyncBlockPerformerR0_r1_lF">&gt;&gt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee2ggoiyAA4LinkCyxq_q1_GADyxq_q0_G_ADyytq_q1_Gts5ErrorR_AA19AsyncBlockPerformerR0_AaIR1_r2_lF">&gt;&gt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee2ggoiyAA4LinkCyxq_q1_GADyxq_q0_G_ADyyts5NeverOq1_Gts5ErrorR_AA19AsyncBlockPerformerR0_AaKR1_r2_lF">&gt;&gt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee2ggoiyAA4LinkCyxq_q1_GADyxq_q0_G_q1_ts5ErrorR_AA19AsyncBlockPerformerR0_AaHR1_r2_lF">&gt;&gt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee2ggoiyAA4LinkCyxs5NeverOq0_GADyxAFq_G_ADyytAFq0_GtAA19AsyncBlockPerformerR_AaJR0_r1_lF">&gt;&gt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee2ggoiyAA4LinkCyytxq0_GADyytxq_G_q0_ts5ErrorRzAA19AsyncBlockPerformerR_AaHR0_r1_lF">&gt;&gt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee6async0yAA15ZeroArgFunctionVyxq_Gyyq_Sg_xSgtcSgcs5ErrorR_r0_lF">async0(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee6async0yAA15ZeroArgFunctionVyxq_Gyyq_Sg_xSgtccs5ErrorR_r0_lF">async0(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee6async0yAA15ZeroArgFunctionVyxq_Gyys6ResultOyxq_Gccs5ErrorR_r0_lF">async0(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee6async0yAA15ZeroArgFunctionVyxq_GyyxSg_q_SgtcSgcs5ErrorR_r0_lF">async0(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee6async0yAA15ZeroArgFunctionVyxq_GyyxSg_q_Sgtccs5ErrorR_r0_lF">async0(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee6async0yAA15ZeroArgFunctionVyxs5Error_pGxyKclF">async0(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee6async0yAA15ZeroArgFunctionVyxs5NeverOGxyclF">async0(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee6async0yAA15ZeroArgFunctionVyxs5NeverOGyyxcSgclF">async0(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee6async0yAA15ZeroArgFunctionVyxs5NeverOGyyxcclF">async0(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee6async0yAA15ZeroArgFunctionVyyts5NeverOGyyycSgcF">async0(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee6async0yAA15ZeroArgFunctionVyyts5NeverOGyyyccF">async0(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee6async0yAA15ZeroArgFunctionVyytxGyyxSgcSgcs5ErrorRzlF">async0(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee6async0yAA15ZeroArgFunctionVyytxGyyxSgccs5ErrorRzlF">async0(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee6async1yAA17SingleArgFunctionVyxq_q0_Gyx_yq0_Sg_q_Sgtctcs5ErrorR0_r1_lF">async1(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee6async1yAA17SingleArgFunctionVyxq_q0_Gyx_yq_Sg_q0_SgtcSgtcs5ErrorR0_r1_lF">async1(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee6async1yAA17SingleArgFunctionVyxq_q0_Gyx_yq_Sg_q0_Sgtctcs5ErrorR0_r1_lF">async1(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee6async1yAA17SingleArgFunctionVyxq_q0_Gyx_ys6ResultOyq_q0_Gctcs5ErrorR0_r1_lF">async1(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee6async1yAA17SingleArgFunctionVyxq_s5Error_pGq_xKcr0_lF">async1(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee6async1yAA17SingleArgFunctionVyxq_s5NeverOGq_xcr0_lF">async1(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee6async1yAA17SingleArgFunctionVyxq_s5NeverOGyx_yq_cSgtcr0_lF">async1(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee6async1yAA17SingleArgFunctionVyxq_s5NeverOGyx_yq_ctcr0_lF">async1(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee6async1yAA17SingleArgFunctionVyxytq_Gyx_yq_SgcSgtcs5ErrorR_r0_lF">async1(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee6async1yAA17SingleArgFunctionVyxytq_Gyx_yq_Sgctcs5ErrorR_r0_lF">async1(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee6async1yAA17SingleArgFunctionVyxyts5NeverOGyx_yycSgtclF">async1(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee6async1yAA17SingleArgFunctionVyxyts5NeverOGyx_yyctclF">async1(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee6async2yAA17DoubleArgFunctionVyxq_q0_q1_Gyx_q_yq0_Sg_q1_SgtcSgtcs5ErrorR1_r2_lF">async2(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee6async2yAA17DoubleArgFunctionVyxq_q0_q1_Gyx_q_yq0_Sg_q1_Sgtctcs5ErrorR1_r2_lF">async2(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee6async2yAA17DoubleArgFunctionVyxq_q0_q1_Gyx_q_yq1_Sg_q0_Sgtctcs5ErrorR1_r2_lF">async2(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee6async2yAA17DoubleArgFunctionVyxq_q0_q1_Gyx_q_ys6ResultOyq0_q1_Gctcs5ErrorR1_r2_lF">async2(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee6async2yAA17DoubleArgFunctionVyxq_q0_s5Error_pGq0_x_q_tKcr1_lF">async2(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee6async2yAA17DoubleArgFunctionVyxq_q0_s5NeverOGq0_x_q_tcr1_lF">async2(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee6async2yAA17DoubleArgFunctionVyxq_q0_s5NeverOGyx_q_yq0_cSgtcr1_lF">async2(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee6async2yAA17DoubleArgFunctionVyxq_q0_s5NeverOGyx_q_yq0_ctcr1_lF">async2(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee6async2yAA17DoubleArgFunctionVyxq_ytq0_Gyx_q_yq0_SgcSgtcs5ErrorR0_r1_lF">async2(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee6async2yAA17DoubleArgFunctionVyxq_ytq0_Gyx_q_yq0_Sgctcs5ErrorR0_r1_lF">async2(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee6async2yAA17DoubleArgFunctionVyxq_yts5NeverOGyx_q_yycSgtcr0_lF">async2(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee6async2yAA17DoubleArgFunctionVyxq_yts5NeverOGyx_q_yyctcr0_lF">async2(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee6async3yAA17TripleArgFunctionVyxq_q0_q1_q2_Gyx_q_q0_yq1_Sg_q2_SgtcSgtcs5ErrorR2_r3_lF">async3(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee6async3yAA17TripleArgFunctionVyxq_q0_q1_q2_Gyx_q_q0_yq1_Sg_q2_Sgtctcs5ErrorR2_r3_lF">async3(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee6async3yAA17TripleArgFunctionVyxq_q0_q1_q2_Gyx_q_q0_yq2_Sg_q1_Sgtctcs5ErrorR2_r3_lF">async3(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee6async3yAA17TripleArgFunctionVyxq_q0_q1_q2_Gyx_q_q0_ys6ResultOyq1_q2_Gctcs5ErrorR2_r3_lF">async3(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee6async3yAA17TripleArgFunctionVyxq_q0_q1_s5Error_pGq1_x_q_q0_tKcr2_lF">async3(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee6async3yAA17TripleArgFunctionVyxq_q0_q1_s5NeverOGq1_x_q_q0_tcr2_lF">async3(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee6async3yAA17TripleArgFunctionVyxq_q0_q1_s5NeverOGyx_q_q0_yq1_cSgtcr2_lF">async3(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee6async3yAA17TripleArgFunctionVyxq_q0_q1_s5NeverOGyx_q_q0_yq1_ctcr2_lF">async3(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee6async3yAA17TripleArgFunctionVyxq_q0_ytq1_Gyx_q_q0_yq1_SgcSgtcs5ErrorR1_r2_lF">async3(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee6async3yAA17TripleArgFunctionVyxq_q0_ytq1_Gyx_q_q0_yq1_Sgctcs5ErrorR1_r2_lF">async3(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee6async3yAA17TripleArgFunctionVyxq_q0_yts5NeverOGyx_q_q0_yycSgtcr1_lF">async3(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee6async3yAA17TripleArgFunctionVyxq_q0_yts5NeverOGyx_q_q0_yyctcr1_lF">async3(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee4bindyq0_q_Kcq0_x_q_tKc_xtr1_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee4bindyq0_q_cq0_x_q_tc_xtr1_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee4bindyq0_xKcq0_q_Kcxc_q_tr1_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee4bindyq0_xKcq0_x_q_tKc_q_tr1_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee4bindyq0_x_q_tKcq0_x_xq_tKc_xtr1_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee4bindyq0_x_q_tcq0_x_xq_tc_xtr1_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee4bindyq0_x_xtKcq0_x_q_tKcxc_q_tr1_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee4bindyq0_x_xtKcq0_x_xq_tKc_q_tr1_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee4bindyq0_x_xtcq0_x_q_tcxc_q_tr1_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee4bindyq0_x_xtcq0_x_xq_tc_q_tr1_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee4bindyq0_xcq0_q_cxc_q_tr1_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee4bindyq0_xcq0_x_q_tc_q_tr1_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee4bindyq1_q__q0_tKcq1_x_q_q0_tKc_xtr2_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee4bindyq1_q__q0_tcq1_x_q_q0_tc_xtr2_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee4bindyq1_x_q0_tKcq1_q__q0_tKcxc_q_tr2_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee4bindyq1_x_q0_tKcq1_x_q_q0_tKc_q_tr2_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee4bindyq1_x_q0_tcq1_q__q0_tcxc_q_tr2_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee4bindyq1_x_q0_tcq1_x_q_q0_tc_q_tr2_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee4bindyq1_x_q_tKcq1_q__q0_tKcxc_q0_tr2_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee4bindyq1_x_q_tKcq1_x_q_q0_tKc_q0_tr2_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee4bindyq1_x_q_tcq1_q__q0_tcxc_q0_tr2_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee4bindyq1_x_q_tcq1_x_q_q0_tc_q0_tr2_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee4bindyq2_q__q0_q1_tKcq2_x_q_q0_q1_tKc_xtr3_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee4bindyq2_q__q0_q1_tcq2_x_q_q0_q1_tc_xtr3_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee4bindyq2_x_q0_q1_tKcq2_q__q0_q1_tKcxc_q_tr3_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee4bindyq2_x_q0_q1_tKcq2_x_q_q0_q1_tKc_q_tr3_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee4bindyq2_x_q0_q1_tcq2_q__q0_q1_tcxc_q_tr3_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee4bindyq2_x_q0_q1_tcq2_x_q_q0_q1_tc_q_tr3_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee4bindyq2_x_q_q0_tKcq2_q__q0_q1_tKcxc_q1_tr3_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee4bindyq2_x_q_q0_tKcq2_x_q_q0_q1_tKc_q1_tr3_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee4bindyq2_x_q_q0_tcq2_q__q0_q1_tcxc_q1_tr3_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee4bindyq2_x_q_q0_tcq2_x_q_q0_q1_tc_q1_tr3_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee4bindyq2_x_q_q1_tKcq2_q__q0_q1_tKcxc_q0_tr3_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee4bindyq2_x_q_q1_tKcq2_x_q_q0_q1_tKc_q0_tr3_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee4bindyq2_x_q_q1_tcq2_q__q0_q1_tcxc_q0_tr3_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee4bindyq2_x_q_q1_tcq2_x_q_q0_q1_tc_q0_tr3_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee4bindyq_xKcq_x_xtKc_xtr0_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee4bindyq_xcq_x_xtc_xtr0_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee4bindyq_yKcq_xKc_xtr0_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee4bindyq_ycq_xc_xtr0_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8HoneyBee3if_yAA2IfCyxq_GAA4LinkCySbxq_G_yycts5ErrorRzAA19AsyncBlockPerformerR_r0_lF">if_(_:_:)</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Protocols.html">Protocols</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Protocols/AsyncBlockPerformer.html">AsyncBlockPerformer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Protocols/FailureRateAwareError.html">FailureRateAwareError</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Protocols/OptionalProtocol.html">OptionalProtocol</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Structs.html">Structures</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Structs/AsyncDoubleArgFunction.html">AsyncDoubleArgFunction</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/AsyncSingleArgFunction.html">AsyncSingleArgFunction</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/AsyncTrace.html">AsyncTrace</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/AsyncTripleArgFunction.html">AsyncTripleArgFunction</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/AsyncZeroArgFunction.html">AsyncZeroArgFunction</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/BackgroundDispatchQueue.html">BackgroundDispatchQueue</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/BoundDoubleArgFunction.html">BoundDoubleArgFunction</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/BoundSingleArgFunction.html">BoundSingleArgFunction</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/BoundTripleArgFunction.html">BoundTripleArgFunction</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/BoundZeroArgFunction.html">BoundZeroArgFunction</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/DefaultDispatchQueue.html">DefaultDispatchQueue</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/DoubleArgFunction.html">DoubleArgFunction</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/ErrorContext.html">ErrorContext</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/HoneyBee.html">HoneyBee</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/MainDispatchQueue.html">MainDispatchQueue</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/SingleArgFunction.html">SingleArgFunction</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/TripleArgFunction.html">TripleArgFunction</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/UserInitiatedDispatchQueue.html">UserInitiatedDispatchQueue</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/UserInteractiveDispatchQueue.html">UserInteractiveDispatchQueue</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/UtilityDispatchQueue.html">UtilityDispatchQueue</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/ZeroArgFunction.html">ZeroArgFunction</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            
+            <h4 id='current' class='heading'>[Current]</h4>
+<h4 id='v3-0-0-a-1' class='heading'>v3.0.0-a.1</h4>
+
+<ul>
+<li><a href="../../commit/38ba4a3">38ba4a3</a> - <strong>(Alex Lynch)</strong> Correct SemVer syntax.</li>
+<li><a href="../../commit/cf55b51">cf55b51</a> - <strong>(Alex Lynch)</strong> Update podspec with v3.0.0.a1</li>
+<li><a href="../../commit/1657bd8">1657bd8</a> - <strong>(Alex Lynch)</strong> Marking v3.0.0.a1</li>
+<li><a href="../../commit/7e6968b">7e6968b</a> - <strong>(Alex Lynch)</strong> All test files are compiling. 2 tests disabled. Entering alpha state.</li>
+<li><a href="../../commit/0441a74">0441a74</a> - <strong>(Alex Lynch)</strong> Reenabled FinallyTests. Code cleanup.</li>
+<li><a href="../../commit/6c65cdf">6c65cdf</a> - <strong>(Alex Lynch)</strong> Restored UploadPipeline test.</li>
+<li><a href="../../commit/62dd32a">62dd32a</a> - <strong>(Alex Lynch)</strong> Cleanup and syntax stabilization. Half of the tests are reenabled.</li>
+<li><a href="../../commit/d431595">d431595</a> - <strong>(Alex Lynch)</strong> Reenable MergeSortTest.</li>
+<li><a href="../../commit/d66d13f">d66d13f</a> - <strong>(Alex Lynch)</strong> Reenable AsyncFlowControlTests.</li>
+<li><a href="../../commit/7ffe0cb">7ffe0cb</a> - <strong>(Alex Lynch)</strong> Beta implementation of Error parameterized links.</li>
+<li><a href="../../commit/0addf8a">0addf8a</a> - <strong>(Alex Lynch)</strong> Replace @dynamicCallable with Swift 5.2 callAsFunction feature.</li>
+<li><a href="../../commit/909d311">909d311</a> - <strong>(Alex Lynch)</strong> Rename AsyncBlockPerformer generic argument to P in preparation for more generic constraints.</li>
+<li><a href="../../commit/7cd9756">7cd9756</a> - <strong>(Alex Lynch)</strong> Rename &ldquo;completion&rdquo; methods in Link with a reactive-programming convention.</li>
+<li><a href="../../commit/e3bb2b6">e3bb2b6</a> - <strong>(Alex Lynch)</strong> Refine downstream <code>response</code> and <code>error</code> handlers; remove upstream error handlers. Errors no longer flow up HoneyBee chains.</li>
+<li><a href="../../commit/6eab4f1">6eab4f1</a> - <strong>(Alex Lynch)</strong> Implement and test <code>result</code> async accessor. For the first time in honeybee, errors flow down stream.</li>
+<li><a href="../../commit/846b7aa">846b7aa</a> - <strong>(Alex Lynch)</strong> Avoid crashing where possible in response to internal errors.</li>
+<li><a href="../../commit/6a5aadb">6a5aadb</a> - <strong>(Alex Lynch)</strong> Abstract ConcurrentBox from JoinPoint.</li>
+<li><a href="../../commit/1f02e69">1f02e69</a> - <strong>(Alex Lynch)</strong> Propagate ErrorContext to dependents.</li>
+<li><a href="../../commit/36da234">36da234</a> - <strong>(Alex Lynch)</strong> Excise FailableResult and friends.</li>
+<li><a href="../../commit/1c3a256">1c3a256</a> - <strong>(Alex Lynch)</strong> Repair the broken and deprecated <code>each</code> function.</li>
+<li><a href="../../commit/f12d318">f12d318</a> - <strong>(Alex Lynch)</strong> Improve comment coverage.</li>
+<li><a href="../../commit/b7cd2a2">b7cd2a2</a> - <strong>(Alex Lynch)</strong> Use more diverse async block performers for code coverage.</li>
+<li><a href="../../commit/c4acb10">c4acb10</a> - <strong>(Alex Lynch)</strong> Rename async function wrapper types for consistency.</li>
+<li><a href="../../commit/75a983a">75a983a</a> - <strong>(Alex Lynch)</strong> &ldquo;Move to&rdquo; operator (&gt;&gt;) evaluates lvals on the rval link&rsquo;s performer.</li>
+<li><a href="../../commit/6953782">6953782</a> - <strong>(Alex Lynch)</strong> Improve code coverage.</li>
+<li><a href="../../commit/49588ba">49588ba</a> - <strong>(Alex Lynch)</strong> Simplify the AsyncFlowControl code and improve the test.</li>
+<li><a href="../../commit/6a49d29">6a49d29</a> - <strong>(Alex Lynch)</strong> Move async family&rsquo;s function argument to the final position to permit trailing closures.</li>
+<li><a href="../../commit/2d0c73c">2d0c73c</a> - <strong>(Alex Lynch)</strong> Conditionally import CoreData.</li>
+<li><a href="../../commit/1409903">1409903</a> - <strong>(Alex Lynch)</strong> Basic if/else_if/else flow control.</li>
+<li><a href="../../commit/7c0af84">7c0af84</a> - <strong>(Alex Lynch)</strong> Implement merge sort test. Mark finally as @discardableResult</li>
+<li><a href="../../commit/0e466fa">0e466fa</a> - <strong>(Alex Lynch)</strong> Implement a non-HoneyBee solution to UploadPipleline test.</li>
+<li><a href="../../commit/fcecf85">fcecf85</a> - <strong>(Alex Lynch)</strong> Implement AsyncPerformer-bound function wrappers and implement UploadPipeline tests.</li>
+<li><a href="../../commit/933b98f">933b98f</a> - <strong>(Alex Lynch)</strong> Introduce some non-topical tests for coverage.</li>
+<li><a href="../../commit/0273d04">0273d04</a> - <strong>(Alex Lynch)</strong> Redefine async function family to return a function wrapper that is not defined in terms of Link.</li>
+<li><a href="../../commit/b281211">b281211</a> - <strong>(Alex Lynch)</strong> Remove instance-curry forms from async function family.</li>
+<li><a href="../../commit/2fda2e4">2fda2e4</a> - <strong>(Alex Lynch)</strong> Rename function wrappers for greater clarity.</li>
+<li><a href="../../commit/3463652">3463652</a> - <strong>(Alex Lynch)</strong> Convert some multi-path tests to async curry syntax.</li>
+<li><a href="../../commit/a82d67b">a82d67b</a> - <strong>(Alex Lynch)</strong> Beta async curry syntax. Introduce AsyncTrace. Cleanup weaknesses in .reduce and .each identified by new Test Plan.</li>
+<li><a href="../../commit/dad5f6e">dad5f6e</a> - <strong>(Alex Lynch)</strong> Mark as v2.8.2</li>
+<li><a href="../../commit/4f24cee">4f24cee</a> - <strong>(Alex Lynch)</strong> Mark as v2.8.2</li>
+<li><a href="../../commit/580413a">580413a</a> - <strong>(Alex Lynch)</strong> Compatibility with Swift 5.1</li>
+<li><a href="../../commit/5ea36ba">5ea36ba</a> - <strong>(Alex Lynch)</strong> Update generator to handle same-type unfulfilled parameters in bind family.</li>
+<li><a href="../../commit/22e2b83">22e2b83</a> - <strong>(Alex Lynch)</strong> Update Generate.rb to generate AAC-form binds and Links with async performer generic params.</li>
+<li><a href="../../commit/cb85cea">cb85cea</a> - <strong>(Alex Lynch)</strong> Construct UnitTests for swift team to review compiler segfault.</li>
+<li><a href="../../commit/1a34d98">1a34d98</a> - <strong>(Alex Lynch)</strong> Define HoneyBee.async family of start behaviors. Implement Chris Lattner&rsquo;s coroutine example as a unit test.</li>
+<li><a href="../../commit/aafd767">aafd767</a> - <strong>(Alex Lynch)</strong> Conform ErrorContext to Error. (!!)</li>
+<li><a href="../../commit/a733d19">a733d19</a> - <strong>(Alex Lynch)</strong> Convert drop() to a var and restyle tests.</li>
+<li><a href="../../commit/0aa7923">0aa7923</a> - <strong>(Alex Lynch)</strong> Beta all new error tracing behavior.</li>
+<li><a href="../../commit/417524e">417524e</a> - <strong>(Alex Lynch)</strong> Rename magic aysnc keyword <code>await</code> after common style.</li>
+<li><a href="../../commit/86cf816">86cf816</a> - <strong>(Alex Lynch)</strong> Move await behaviors into Link and implement tail closure.</li>
+<li><a href="../../commit/7acee1f">7acee1f</a> - <strong>(Alex Lynch)</strong> Rename setBlockPerformer(_:) to move(to:).</li>
+<li><a href="../../commit/d48c913">d48c913</a> - <strong>(Alex Lynch)</strong> Implement type-checked AsyncBlockPerformer matching in Link, SafeLink, and JoinPoint. Make Link&rsquo;s public interface immutable and redefine AsyncBlockPerformer changing semantics.</li>
+<li><a href="../../commit/dc8eaf6">dc8eaf6</a> - <strong>(Alex Lynch)</strong> R publicize FailableResult as a typealias on Result<T, Error></li>
+<li><a href="../../commit/386d9c0">386d9c0</a> - <strong>(Alex Lynch)</strong> Define types for common GCD dispatch queues as AsyncBlockPerformers.</li>
+<li><a href="../../commit/6f89ac5">6f89ac5</a> - <strong>(Alex Lynch)</strong> Xcode-suggested project reorganization.</li>
+<li><a href="../../commit/72a6a26">72a6a26</a> - <strong>(Alex Lynch)</strong> Mark as v2.8.1</li>
+<li><a href="../../commit/142da4e">142da4e</a> - <strong>(Alex Lynch)</strong> Change project hosting to github.</li>
+<li><a href="../../commit/5cf332d">5cf332d</a> - <strong>(Alex Lynch)</strong> Mark as v2.8</li>
+<li><a href="../../commit/46b05c5">46b05c5</a> - <strong>(Alex Lynch)</strong> Implement swift 5.0 support.</li>
+<li><a href="../../commit/c94b9ef">c94b9ef</a> - <strong>(Alex Lynch)</strong> Mark as v2.7.1</li>
+<li><a href="../../commit/430f228">430f228</a> - <strong>(Alex Lynch)</strong> Mark as v2.7.1</li>
+<li><a href="../../commit/ad8c7af">ad8c7af</a> - <strong>(Alex Lynch)</strong> Mark as v2.7.1</li>
+<li><a href="../../commit/62f638b">62f638b</a> - <strong>(Alex Lynch)</strong> Add missing documentation for SafeLink.</li>
+<li><a href="../../commit/e0f5a6d">e0f5a6d</a> - <strong>(Alex Lynch)</strong> Fix mistake in bind documentation.</li>
+<li><a href="../../commit/06e3796">06e3796</a> - <strong>(Alex Lynch)</strong> Mark as v2.7.0</li>
+<li><a href="../../commit/62bb74a">62bb74a</a> - <strong>(Alex Lynch)</strong> Update to swift 4.2.</li>
+<li><a href="../../commit/31c5942">31c5942</a> - <strong>(Alex Lynch)</strong> Add map to FailableResult monad.</li>
+<li><a href="../../commit/d88c5f6">d88c5f6</a> - <strong>(Alex Lynch)</strong> Mark as v2.6.2</li>
+<li><a href="../../commit/ac90178">ac90178</a> - <strong>(Alex Lynch)</strong> Mark as v2.6.2</li>
+<li><a href="../../commit/71fd985">71fd985</a> - <strong>(Alex Lynch)</strong> Implement new bind flavors.</li>
+<li><a href="../../commit/653bcdf">653bcdf</a> - <strong>(Alex Lynch)</strong> Improved error logging for AtomicValue.</li>
+<li><a href="../../commit/a6ab1b4">a6ab1b4</a> - <strong>(Alex Lynch)</strong> Initial implementation of SafeLink strategy.</li>
+<li><a href="../../commit/52090f7">52090f7</a> - <strong>(Alex Lynch)</strong> Mark as v2.6.1</li>
+<li><a href="../../commit/25872b4">25872b4</a> - <strong>(Alex Lynch)</strong> Mark as v2.6.1</li>
+<li><a href="../../commit/c854469">c854469</a> - <strong>(Alex Lynch)</strong> Widen the context switching overhead margin for some multi-path tests.</li>
+<li><a href="../../commit/c118436">c118436</a> - <strong>(Alex Lynch)</strong> Signal all internal errors through the internalFailureResponse handler.</li>
+<li><a href="../../commit/9e71e0d">9e71e0d</a> - <strong>(Alex Lynch)</strong> Publicize FaultResponse.evaluate and improve debugger interaction.</li>
+<li><a href="../../commit/f5fadef">f5fadef</a> - <strong>(Alex Lynch)</strong> Standardize release file.</li>
+<li><a href="../../commit/8accc7b">8accc7b</a> - <strong>(Alex Lynch)</strong> Mark as v2.6.0</li>
+<li><a href="../../commit/20e7794">20e7794</a> - <strong>(Alex Lynch)</strong> Alter behavior of <code>setCompletionHandler</code> to permit only one error.</li>
+<li><a href="../../commit/842aede">842aede</a> - <strong>(Alex Lynch)</strong> Mark as v2.5.2</li>
+<li><a href="../../commit/a583c7e">a583c7e</a> - <strong>(Alex Lynch)</strong> Synchronize access to Honey.*response FaultResponses.</li>
+<li><a href="../../commit/3beab26">3beab26</a> - <strong>(Alex Lynch)</strong> Implement get getBlockPerformer utility method and tests.</li>
+<li><a href="../../commit/e5b3011">e5b3011</a> - <strong>(Alex Lynch)</strong> Mark as v2.5.1</li>
+<li><a href="../../commit/f2021d1">f2021d1</a> - <strong>(Alex Lynch)</strong> Mark as v2.5.1</li>
+<li><a href="../../commit/20f1209">20f1209</a> - <strong>(Alex Lynch)</strong> Inform cocoapods of swift 4.1 support.</li>
+<li><a href="../../commit/c7b3ee4">c7b3ee4</a> - <strong>(Alex Lynch)</strong> Mark as v2.5</li>
+<li><a href="../../commit/1e88930">1e88930</a> - <strong>(Alex Lynch)</strong> Mark as v2.5</li>
+<li><a href="../../commit/a40fafa">a40fafa</a> - <strong>(Alex Lynch)</strong> Mark as v2.5</li>
+<li><a href="../../commit/23363e8">23363e8</a> - <strong>(Alex Lynch)</strong> Updates for Swift 4.1</li>
+<li><a href="../../commit/4c4cb63">4c4cb63</a> - <strong>(Alex Lynch)</strong> Implement sanity check that conjoined link&rsquo;s block performers are equal.</li>
+<li><a href="../../commit/a173424">a173424</a> - <strong>(Alex Lynch)</strong> Mark as v2.4.2</li>
+<li><a href="../../commit/ce2e023">ce2e023</a> - <strong>(Alex Lynch)</strong> Re-write optionally to be contract correct in the face of errors.</li>
+<li><a href="../../commit/82a9818">82a9818</a> - <strong>(Alex Lynch)</strong> Mark as v2.4.1</li>
+<li><a href="../../commit/260a590">260a590</a> - <strong>(Alex Lynch)</strong> Publicize new compound conjoin feature.</li>
+<li><a href="../../commit/7b89845">7b89845</a> - <strong>(Alex Lynch)</strong> Mark as v2.4</li>
+<li><a href="../../commit/ccfdd0b">ccfdd0b</a> - <strong>(Alex Lynch)</strong> Mark as v2.4</li>
+<li><a href="../../commit/ab44a49">ab44a49</a> - <strong>(Alex Lynch)</strong> Add compound conjoin behavior.</li>
+<li><a href="../../commit/d88b61f">d88b61f</a> - <strong>(Alex Lynch)</strong> Mark as v2.3.1</li>
+<li><a href="../../commit/82cd5d9">82cd5d9</a> - <strong>(Alex Lynch)</strong> Publicize the internal failure response.</li>
+<li><a href="../../commit/4e84c8e">4e84c8e</a> - <strong>(Alex Lynch)</strong> Mark as v2.3</li>
+<li><a href="../../commit/57778fe">57778fe</a> - <strong>(Alex Lynch)</strong> Implement &ldquo;blockless&rdquo; HoneyBee.start()</li>
+<li><a href="../../commit/73eeb41">73eeb41</a> - <strong>(Alex Lynch)</strong> Mark as v2.2.6</li>
+<li><a href="../../commit/0be72dd">0be72dd</a> - <strong>(Alex Lynch)</strong> Proper SPM support.</li>
+<li><a href="../../commit/8d0d8be">8d0d8be</a> - <strong>(Alex Lynch)</strong> Mark as v2.2.5</li>
+<li><a href="../../commit/6d04799">6d04799</a> - <strong>(Alex Lynch)</strong> Beta support for SPM.</li>
+<li><a href="../../commit/ebd28b6">ebd28b6</a> - <strong>(Alex Lynch)</strong> Improve release automation.</li>
+<li><a href="../../commit/5d96199">5d96199</a> - <strong>(Alex Lynch)</strong> Mark as v2.2.4</li>
+</ul>
+<h4 id='v2-2-3' class='heading'>v2.2.3</h4>
+
+<ul>
+<li><a href="../../commit/84a7649">84a7649</a> - <strong>(Alex Lynch)</strong> Mark as v2.2.3 Improve release automation.</li>
+</ul>
+<h4 id='v2-2-2' class='heading'>v2.2.2</h4>
+
+<ul>
+<li><a href="../../commit/023e11d">023e11d</a> - <strong>(Alex Lynch)</strong> Mark as v2.2.2</li>
+</ul>
+<h4 id='v2-2-1' class='heading'>v2.2.1</h4>
+
+<ul>
+<li><a href="../../commit/5a255cc">5a255cc</a> - <strong>(Alex Lynch)</strong> Mark as v2.2.1</li>
+<li><a href="../../commit/3f43e2c">3f43e2c</a> - <strong>(Alex Lynch)</strong> Improve Readme.</li>
+<li><a href="../../commit/6e2774b">6e2774b</a> - <strong>(Alex Lynch)</strong> Correct author&rsquo;s email address.</li>
+</ul>
+<h4 id='v2-2' class='heading'>v2.2</h4>
+
+<ul>
+<li><a href="../../commit/11f9172">11f9172</a> - <strong>(Alex Lynch)</strong> Mark as v2.2</li>
+<li><a href="../../commit/5277323">5277323</a> - <strong>(Alex Lynch)</strong> Implement non-returning limit.</li>
+</ul>
+<h4 id='v2-1-2' class='heading'>v2.1.2</h4>
+
+<ul>
+<li><a href="../../commit/1b99b07">1b99b07</a> - <strong>(Alex Lynch)</strong> Mark as v2.1.2</li>
+<li><a href="../../commit/1cc73d5">1cc73d5</a> - <strong>(Alex Lynch)</strong> Introduce instance curry forms of bind()</li>
+</ul>
+<h4 id='v2-1-1' class='heading'>v2.1.1</h4>
+
+<ul>
+<li><a href="../../commit/1b3cc70">1b3cc70</a> - <strong>(Alex Lynch)</strong> Mark as v2.1.1</li>
+</ul>
+<h4 id='v2-1' class='heading'>v2.1</h4>
+
+<ul>
+<li><a href="../../commit/88c6eef">88c6eef</a> - <strong>(Alex Lynch)</strong> Mark as v2.1.</li>
+<li><a href="../../commit/2559ef9">2559ef9</a> - <strong>(Alex Lynch)</strong> Implement setCompletionHandler(:)</li>
+<li><a href="../../commit/9c426b4">9c426b4</a> - <strong>(Alex Lynch)</strong> Implement setCompletionHandler(:).</li>
+<li><a href="../../commit/1dc3f20">1dc3f20</a> - <strong>(Alex Lynch)</strong> Remove @discardableResult from chain with KeyPath.</li>
+<li><a href="../../commit/7f272c6">7f272c6</a> - <strong>(Alex Lynch)</strong> Add Error property to ErrorContext and collapse the two-arg forms of error handler</li>
+</ul>
+<h4 id='v2-0-5' class='heading'>v2.0.5</h4>
+
+<ul>
+<li><a href="../../commit/e02f3c5">e02f3c5</a> - <strong>(Alex Lynch)</strong> Mark as v2.0.5 (Podspec fix).</li>
+</ul>
+<h4 id='v2-0-4' class='heading'>v2.0.4</h4>
+
+<ul>
+<li><a href="../../commit/a2b6a0d">a2b6a0d</a> - <strong>(Alex Lynch)</strong> Mark as v2.0.4</li>
+<li><a href="../../commit/de7647a">de7647a</a> - <strong>(Alex Lynch)</strong> Publicize FaultResponse and provide static hooks in HoneyBee struct for response management.</li>
+<li><a href="../../commit/3ff2723">3ff2723</a> - <strong>(Alex Lynch)</strong> Standardize positioning of @discardableResult.</li>
+</ul>
+<h4 id='v2-0-3' class='heading'>v2.0.3</h4>
+
+<ul>
+<li><a href="../../commit/fcebb83">fcebb83</a> - <strong>(Alex Lynch)</strong> Mark as v2.0.3 (documentation bump)</li>
+</ul>
+<h4 id='v2-0-1' class='heading'>v2.0.1</h4>
+
+<ul>
+<li><a href="../../commit/a9b3119">a9b3119</a> - <strong>(Alex Lynch)</strong> Mark as v2.0.1</li>
+<li><a href="../../commit/673b06f">673b06f</a> - <strong>(Alex Lynch)</strong> Expand documentation around block performer.</li>
+</ul>
+<h4 id='v2-0' class='heading'>v2.0</h4>
+
+<ul>
+<li><a href="../../commit/7092836">7092836</a> - <strong>(Alex Lynch)</strong> Mark as v2.0.</li>
+<li><a href="../../commit/b2187e2">b2187e2</a> - <strong>(Alex Lynch)</strong> Rename parameter &ldquo;withLimit&rdquo; to &ldquo;limit&rdquo;.</li>
+<li><a href="../../commit/7eaa13d">7eaa13d</a> - <strong>(Alex Lynch)</strong> Rename ProcessLink to Link</li>
+</ul>
+<h4 id='v1-11-2' class='heading'>v1.11.2</h4>
+
+<ul>
+<li><a href="../../commit/2b0a203">2b0a203</a> - <strong>(Alex Lynch)</strong> Mark as v1.11.2</li>
+<li><a href="../../commit/aeaf7b0">aeaf7b0</a> - <strong>(Alex Lynch)</strong> Expand documentation.</li>
+</ul>
+<h4 id='v1-11-1' class='heading'>v1.11.1</h4>
+
+<ul>
+<li><a href="../../commit/31241e3">31241e3</a> - <strong>(Alex Lynch)</strong> Mark as v1.11.1 (documentation release).</li>
+</ul>
+<h4 id='v1-11' class='heading'>v1.11</h4>
+
+<ul>
+<li><a href="../../commit/2ec8982">2ec8982</a> - <strong>(Alex Lynch)</strong> Mark as v1.11</li>
+<li><a href="../../commit/f39323a">f39323a</a> - <strong>(Alex Lynch)</strong> Implement parallel reduce.</li>
+</ul>
+<h4 id='v1-10' class='heading'>v1.10</h4>
+
+<ul>
+<li><a href="../../commit/8a60f3d">8a60f3d</a> - <strong>(Alex Lynch)</strong> Mark as v1.10.0</li>
+<li><a href="../../commit/d14c4e4">d14c4e4</a> - <strong>(Alex Lynch)</strong> Add documentation fo left and right join, and reduce.</li>
+<li><a href="../../commit/7d3ecbf">7d3ecbf</a> - <strong>(Alex Lynch)</strong> Implement linear <code>reduce</code> behavior. Add thread sanitizer to test target. Fix some threading issues.</li>
+<li><a href="../../commit/c8c9019">c8c9019</a> - <strong>(Alex Lynch)</strong> Mark as v1.9.4. (documentation version).</li>
+<li><a href="../../commit/564aba9">564aba9</a> - <strong>(Alex Lynch)</strong> Mark as v1.9.3. (documentation release)</li>
+<li><a href="../../commit/f8f26cf">f8f26cf</a> - <strong>(Alex Lynch)</strong> Implement join-left and join-right operators.</li>
+</ul>
+<h4 id='v1-9-2' class='heading'>v1.9.2</h4>
+
+<ul>
+<li><a href="../../commit/f40413c">f40413c</a> - <strong>(Alex Lynch)</strong> Mark as v1.9.2</li>
+<li><a href="../../commit/3c15566">3c15566</a> - <strong>(Alex Lynch)</strong> Fix finally-before-retry bug.</li>
+</ul>
+<h4 id='v1-9-1' class='heading'>v1.9.1</h4>
+
+<ul>
+<li><a href="../../commit/cae6d66">cae6d66</a> - <strong>(Alex Lynch)</strong> Mark as v1.9.1</li>
+<li><a href="../../commit/05b284f">05b284f</a> - <strong>(Alex Lynch)</strong> Expose FailureRate feature in <code>each</code></li>
+</ul>
+<h4 id='v1-9' class='heading'>v1.9</h4>
+
+<ul>
+<li><a href="../../commit/dd3d4a9">dd3d4a9</a> - <strong>(Alex Lynch)</strong> Marking as v1.9</li>
+<li><a href="../../commit/d27c21d">d27c21d</a> - <strong>(Alex Lynch)</strong> Implement retry feature.</li>
+<li><a href="../../commit/4139c3b">4139c3b</a> - <strong>(Alex Lynch)</strong> Clean up multi-path test semantics with AtomicInt</li>
+</ul>
+<h4 id='v1-8' class='heading'>v1.8</h4>
+
+<ul>
+<li><a href="../../commit/9292a65">9292a65</a> - <strong>(Alex Lynch)</strong> Mark as v1.8</li>
+<li><a href="../../commit/df18f7e">df18f7e</a> - <strong>(Alex Lynch)</strong> Restore typed finally blocks!!</li>
+</ul>
+<h4 id='v1-7-3' class='heading'>v1.7.3</h4>
+
+<ul>
+<li><a href="../../commit/6561158">6561158</a> - <strong>(Alex Lynch)</strong> Quick fix for cocoa pods. v1.7.3</li>
+</ul>
+<h4 id='v1-7-2' class='heading'>v1.7.2</h4>
+
+<ul>
+<li><a href="../../commit/164978d">164978d</a> - <strong>(Alex Lynch)</strong> Mark as v1.7.2.</li>
+<li><a href="../../commit/8870f8a">8870f8a</a> - <strong>(Alex Lynch)</strong> Fix bug causing joins to fail. Fix bug causing finalizers to fail and run out of order. Improve logical assertions about concurrency.</li>
+</ul>
+<h4 id='v1-7-1' class='heading'>v1.7.1</h4>
+
+<ul>
+<li><a href="../../commit/88d61b4">88d61b4</a> - <strong>(Alex Lynch)</strong> Mark as v1.7.</li>
+<li><a href="../../commit/45570e3">45570e3</a> - <strong>(Alex Lynch)</strong> Simplify <code>map</code> error counting.</li>
+<li><a href="../../commit/a1c7077">a1c7077</a> - <strong>(Alex Lynch)</strong> Links can create sub-links until they are deallocated. Redesign <code>optionally</code> with simpler semantics.</li>
+<li><a href="../../commit/4a51e50">4a51e50</a> - <strong>(Alex Lynch)</strong> Amend commit with project file changes.</li>
+<li><a href="../../commit/81d7417">81d7417</a> - <strong>(Alex Lynch)</strong> Make space for lib sources.</li>
+</ul>
+<h4 id='v1-6' class='heading'>v1.6</h4>
+
+<ul>
+<li><a href="../../commit/b25cbe6">b25cbe6</a> - <strong>(Alex Lynch)</strong> Include podspec version bump.</li>
+<li><a href="../../commit/d1ebfea">d1ebfea</a> - <strong>(Alex Lynch)</strong> Marking as v1.6</li>
+<li><a href="../../commit/32fc00c">32fc00c</a> - <strong>(Alex Lynch)</strong> Verify error handling behavior when map and join are used together.</li>
+<li><a href="../../commit/1bcd478">1bcd478</a> - <strong>(Alex Lynch)</strong> Proper error handling for map and filter.</li>
+<li><a href="../../commit/2a59fd5">2a59fd5</a> - <strong>(Alex Lynch)</strong> Links downstream of a join receive ancestorFailed() when appropriate.</li>
+<li><a href="../../commit/c345d20">c345d20</a> - <strong>(Alex Lynch)</strong> Joins are now error resilient. (The non-failing path doesn&rsquo;t block forever.)</li>
+<li><a href="../../commit/ee807db">ee807db</a> - <strong>(Alex Lynch)</strong> Append project file changes.</li>
+<li><a href="../../commit/07745ee">07745ee</a> - <strong>(Alex Lynch)</strong> Reorganize test grouping error handling together.</li>
+<li><a href="../../commit/e6b0cb7">e6b0cb7</a> - <strong>(Alex Lynch)</strong> Redefine <code>each</code> and <code>filter</code> in terms of <code>map</code>. Introduce <code>branch</code> with return link.</li>
+<li><a href="../../commit/00973ad">00973ad</a> - <strong>(Alex Lynch)</strong> Introduce parallel limit to each, map and filter.</li>
+<li><a href="../../commit/1498fb8">1498fb8</a> - <strong>(Alex Lynch)</strong> Reorganize testing code for faster compilations.</li>
+<li><a href="../../commit/a940af6">a940af6</a> - <strong>(Alex Lynch)</strong> Use proper compilation condition for KeyPath form.</li>
+</ul>
+<h4 id='v1-4-5' class='heading'>v1.4.5</h4>
+
+<ul>
+<li><a href="../../commit/c21396f">c21396f</a> - <strong>(Alex Lynch)</strong> Mark as v1.4.5</li>
+<li><a href="../../commit/87f8ddf">87f8ddf</a> - <strong>(Alex Lynch)</strong> Remove unnecessary escaping attributes from define blocks.</li>
+</ul>
+<h4 id='v1-4-4' class='heading'>v1.4.4</h4>
+
+<ul>
+<li><a href="../../commit/80fc24c">80fc24c</a> - <strong>(Alex Lynch)</strong> Mark as v1.4.4</li>
+<li><a href="../../commit/1aedfc9">1aedfc9</a> - <strong>(Alex Lynch)</strong> Remove poorly conceived execute success parameter and simplify.</li>
+<li><a href="../../commit/a7cd9ad">a7cd9ad</a> - <strong>(Alex Lynch)</strong> Don&rsquo;t try to compile KeyPath form for less than swift 4.0</li>
+</ul>
+<h4 id='v1-4-3' class='heading'>v1.4.3</h4>
+
+<ul>
+<li><a href="../../commit/c1a8a06">c1a8a06</a> - <strong>(Alex Lynch)</strong> Mark as v1.4.3</li>
+<li><a href="../../commit/321be79">321be79</a> - <strong>(Alex Lynch)</strong> More safely enter dispatch group to prevent early notification.</li>
+<li><a href="../../commit/554e7c7">554e7c7</a> - <strong>(Alex Lynch)</strong> Restore <code>each(withLimit:)</code>  form.</li>
+</ul>
+<h4 id='v1-4-2' class='heading'>v1.4.2</h4>
+
+<ul>
+<li><a href="../../commit/ddcf97f">ddcf97f</a> - <strong>(Alex Lynch)</strong> Mark as v1.4.2.</li>
+<li><a href="../../commit/66307d9">66307d9</a> - <strong>(Alex Lynch)</strong> Implement KeyPath support.</li>
+</ul>
+<h4 id='v1-4-1' class='heading'>v1.4.1</h4>
+
+<ul>
+<li><a href="../../commit/783161b">783161b</a> - <strong>(Alex Lynch)</strong> Marking as v1.4.1</li>
+<li><a href="../../commit/751fdac">751fdac</a> - <strong>(Alex Lynch)</strong> Extend bind support to throwing functions.</li>
+<li><a href="../../commit/b573fa9">b573fa9</a> - <strong>(Alex Lynch)</strong> Marking as version 1.4 (swift 4 compatible)</li>
+<li><a href="../../commit/5b2a07a">5b2a07a</a> - <strong>(Alex Lynch)</strong> Swift 4 support + much better code coverage.</li>
+</ul>
+<h4 id='v1-0-2' class='heading'>v1.0.2</h4>
+
+<ul>
+<li><a href="../../commit/7217eed">7217eed</a> - <strong>(Alex Lynch)</strong> Marking as v1.0.2.</li>
+<li><a href="../../commit/ece3302">ece3302</a> - <strong>(Alex Lynch)</strong> Improve resilience of <code>limit</code> for proper semaphore handing during errors.</li>
+<li><a href="../../commit/ebb6460">ebb6460</a> - <strong>(Alex Lynch)</strong> Marking as v1.0.1</li>
+<li><a href="../../commit/5a63069">5a63069</a> - <strong>(Alex Lynch)</strong> Suppress multiple callback for errors as well as successes. Remove references cycles caused by self-capture.</li>
+<li><a href="../../commit/1467b3c">1467b3c</a> - <strong>(Alex Lynch)</strong> Marking as v1.0 (yay!)</li>
+<li><a href="../../commit/9f19a24">9f19a24</a> - <strong>(Alex Lynch)</strong> Rename <code>fork</code> branch. Implement operator syntax for <code>conjoin</code>.</li>
+<li><a href="../../commit/2a4c846">2a4c846</a> - <strong>(Alex Lynch)</strong> Replace &lsquo;cntx&rsquo; var names with more expressive, localized names.</li>
+<li><a href="../../commit/382db42">382db42</a> - <strong>(Alex Lynch)</strong> Implement &lsquo;tunnel&rsquo; behavior.</li>
+<li><a href="../../commit/aa12000">aa12000</a> - <strong>(Alex Lynch)</strong> Rename &lsquo;value&rsquo; to &lsquo;insert&rsquo;. Implement &lsquo;drop&rsquo;. Remove &lsquo;splice&rsquo;</li>
+<li><a href="../../commit/0533360">0533360</a> - <strong>(Alex Lynch)</strong> Mark v0.10.1</li>
+<li><a href="../../commit/d3d2f91">d3d2f91</a> - <strong>(Alex Lynch)</strong> Marking as v0.10.0</li>
+<li><a href="../../commit/60fd8d6">60fd8d6</a> - <strong>(Alex Lynch)</strong> Convert map and filter to subchains.</li>
+<li><a href="../../commit/d848d28">d848d28</a> - <strong>(Alex Lynch)</strong> Marking as v0.9.1</li>
+<li><a href="../../commit/b032bea">b032bea</a> - <strong>(Alex Lynch)</strong> Add @escaping attribute where it was missing.</li>
+<li><a href="../../commit/9022d8f">9022d8f</a> - <strong>(Alex Lynch)</strong> Marking as v0.9.0</li>
+<li><a href="../../commit/25b6a20">25b6a20</a> - <strong>(Alex Lynch)</strong> Update tests to provide better code coverage.</li>
+<li><a href="../../commit/6271966">6271966</a> - <strong>(Alex Lynch)</strong> Update documentation.</li>
+<li><a href="../../commit/284893a">284893a</a> - <strong>(Alex Lynch)</strong> Redefine the root function as a FailableResult form. This is the most complex form. Handling it as the root function permits handling FailableResultProtocol in a single chain.</li>
+<li><a href="../../commit/21a9355">21a9355</a> - <strong>(Alex Lynch)</strong> Remove unnecessary overlap between ProcessLinks. Simplify!!!</li>
+<li><a href="../../commit/0bb4f72">0bb4f72</a> - <strong>(Alex Lynch)</strong> Marking as v0.8.2</li>
+<li><a href="../../commit/6210ad7">6210ad7</a> - <strong>(Alex Lynch)</strong> Implement functionDescription self-documentation for more helpful internalPath content in ErrorContext.</li>
+<li><a href="../../commit/6a13144">6a13144</a> - <strong>(Alex Lynch)</strong> Mark as v0.8.1</li>
+<li><a href="../../commit/0df9403">0df9403</a> - <strong>(Alex Lynch)</strong> Fix bug in ErrorContext file and line reporting.</li>
+<li><a href="../../commit/9915d96">9915d96</a> - <strong>(Alex Lynch)</strong> Mark as v0.8.0</li>
+<li><a href="../../commit/7c79805">7c79805</a> - <strong>(Alex Lynch)</strong> Implement support for swift style asynchronous errors with FailableResultProtocol.</li>
+<li><a href="../../commit/472c79a">472c79a</a> - <strong>(Alex Lynch)</strong> Implement functionFile, functionLine and internalPath properties of ErrorContext.</li>
+<li><a href="../../commit/5230b58">5230b58</a> - <strong>(Alex Lynch)</strong> Introduce ErrorContext, refactor and document.</li>
+<li><a href="../../commit/363c53e">363c53e</a> - <strong>(Alex Lynch)</strong> Mark as v0.7.1</li>
+<li><a href="../../commit/e9ea602">e9ea602</a> - <strong>(Alex Lynch)</strong> Correct fault in Tests around setBlockPerformer. Fix underlying bug.</li>
+<li><a href="../../commit/f22cde4">f22cde4</a> - <strong>(Alex Lynch)</strong> Marking as v0.7.0</li>
+<li><a href="../../commit/337fce4">337fce4</a> - <strong>(Alex Lynch)</strong> Abstract execution queue to support NSManagedObjectContexts.</li>
+<li><a href="../../commit/eeafe79">eeafe79</a> - <strong>(Alex Lynch)</strong> Remove unneeded dual-queue concept.</li>
+<li><a href="../../commit/76ada43">76ada43</a> - <strong>(Alex Lynch)</strong> Document project and mark as v0.6.2</li>
+<li><a href="../../commit/82ad53b">82ad53b</a> - <strong>(Alex Lynch)</strong> Mark as v0.6.1.</li>
+<li><a href="../../commit/900136a">900136a</a> - <strong>(Alex Lynch)</strong> Implement <code>setQueue</code>.</li>
+<li><a href="../../commit/f4dac4d">f4dac4d</a> - <strong>(Alex Lynch)</strong> Mark v0.6.0</li>
+<li><a href="../../commit/7ceefa9">7ceefa9</a> - <strong>(Alex Lynch)</strong> Remove potentially hazardous noError method from RootLink. Rename errorHandler to setError.</li>
+<li><a href="../../commit/86e99b7">86e99b7</a> - <strong>(Alex Lynch)</strong> Mark v0.5.0</li>
+<li><a href="../../commit/3977a54">3977a54</a> - <strong>(Alex Lynch)</strong> Simplify error handling expression in HoneyBee process definitions. Remove redundentant chain forms.</li>
+</ul>
+<h4 id='v0-4-1' class='heading'>v0.4.1</h4>
+
+<ul>
+<li><a href="../../commit/92071b5">92071b5</a> - <strong>(Alex Lynch)</strong> v0.4.1</li>
+<li><a href="../../commit/2d89ef0">2d89ef0</a> - <strong>(Alex Lynch)</strong> Correct post-limit behavior to not be within semaphore.</li>
+</ul>
+<h4 id='v0-4-0' class='heading'>v0.4.0</h4>
+
+<ul>
+<li><a href="../../commit/2b01f3c">2b01f3c</a> - <strong>(Alex Lynch)</strong> Mark as v0.4.0</li>
+<li><a href="../../commit/334a79b">334a79b</a> - <strong>(Alex Lynch)</strong> Slightly reorganize project.</li>
+<li><a href="../../commit/d6b2ac0">d6b2ac0</a> - <strong>(Alex Lynch)</strong> Remove operator syntax. The number of behaviors is growing and some take parameters. Operator syntax is no longer supportable.</li>
+<li><a href="../../commit/a828f4a">a828f4a</a> - <strong>(Alex Lynch)</strong> Implement <code>finally</code> and <code>limit</code> behaviors.</li>
+<li><a href="../../commit/8270a0d">8270a0d</a> - <strong>(Alex Lynch)</strong> Pass in failing object to error handler.</li>
+<li><a href="../../commit/e74aff9">e74aff9</a> - <strong>(Alex Lynch)</strong> Implement PathDescribing on JoinPoint</li>
+<li><a href="../../commit/09d74e7">09d74e7</a> - <strong>(Alex Lynch)</strong> Begin implementation of PathDescribing protocol for debugging and state keeping purposes. Add protection against multiple callbacks by client.</li>
+<li><a href="../../commit/c4518ad">c4518ad</a> - <strong>(Alex Lynch)</strong> <code>each</code> behavior forwards sequence as result.</li>
+<li><a href="../../commit/c58f68b">c58f68b</a> - <strong>(Alex Lynch)</strong> Delay evaluation of stored values in failableResultWrapper</li>
+</ul>
+<h4 id='v0-2-0' class='heading'>v0.2.0</h4>
+
+<ul>
+<li><a href="../../commit/fa269ce">fa269ce</a> - <strong>(Alex Lynch)</strong> 2.0</li>
+<li><a href="../../commit/3842e27">3842e27</a> - <strong>(Alex Lynch)</strong> More generated forms of chain and splice. Generated bind and bind operator.</li>
+<li><a href="../../commit/20060ac">20060ac</a> - <strong>(Alex Lynch)</strong> Remove (now) unnecessary dummy testing application. Just test.</li>
+<li><a href="../../commit/b61f62f">b61f62f</a> - <strong>(Alex Lynch)</strong> Version 0.1.8, open sourced.</li>
+<li><a href="../../commit/d13227e">d13227e</a> - <strong>(Alex Lynch)</strong> Remove unused variable.</li>
+<li><a href="../../commit/f4ff73c">f4ff73c</a> - <strong>(Alex Lynch)</strong> Execute root <code>function</code> on the provided queue. Adapt for threading difference.</li>
+<li><a href="../../commit/3febc61">3febc61</a> - <strong>(Alex Lynch)</strong> Release 0.1.5 built with swiftc 3.1. Suppress appending swiftc version number to build number until cocoa pods can handle it.</li>
+<li><a href="../../commit/68716d0">68716d0</a> - <strong>(Alex Lynch)</strong> Include swiftc version in build number.</li>
+<li><a href="../../commit/d066089">d066089</a> - <strong>(Alex Lynch)</strong> Generate chain forms to permit meta analysis.</li>
+<li><a href="../../commit/d73ec18">d73ec18</a> - <strong>(Alex Lynch)</strong> Publish 0.1.4</li>
+<li><a href="../../commit/3f971a3">3f971a3</a> - <strong>(Alex Lynch)</strong> Revert depreciations and add initial support for void forms of ‘chain’</li>
+<li><a href="../../commit/5d2b663">5d2b663</a> - <strong>(Alex Lynch)</strong> Add build and deploy script.</li>
+<li><a href="../../commit/c793d55">c793d55</a> - <strong>(Alex Lynch)</strong> Deprecate less-functionally oriented <code>value</code> and <code>start(with:)</code> behaviors.</li>
+<li><a href="../../commit/46603d6">46603d6</a> - <strong>(Alex Lynch)</strong> Move CommonCrypto framework source to separate project.</li>
+<li><a href="../../commit/ba118cb">ba118cb</a> - <strong>(Alex Lynch)</strong> Make framework a universal binary.</li>
+<li><a href="../../commit/0c2a2a8">0c2a2a8</a> - <strong>(Alex Lynch)</strong> Implement build number scrip.</li>
+<li><a href="../../commit/3af29ba">3af29ba</a> - <strong>(Alex Lynch)</strong> More functional description of <code>testEachWithRateLimiter</code></li>
+<li><a href="../../commit/a6f8184">a6f8184</a> - <strong>(Alex Lynch)</strong> Implement rate limiter concept and support in <code>each</code> behavior.</li>
+<li><a href="../../commit/6b18038">6b18038</a> - <strong>(Alex Lynch)</strong> Make FailableResult internal.</li>
+<li><a href="../../commit/3ba8778">3ba8778</a> - <strong>(Alex Lynch)</strong> Make JoinPoint internal.</li>
+<li><a href="../../commit/42d23b7">42d23b7</a> - <strong>(Alex Lynch)</strong> Implement operator syntax for <code>chain,</code> <code>conjoin,</code> <code>value,</code> and <code>optionally</code></li>
+<li><a href="../../commit/c7d3dcd">c7d3dcd</a> - <strong>(Alex Lynch)</strong> Privatize <code>joinPoint</code></li>
+<li><a href="../../commit/8fc0a61">8fc0a61</a> - <strong>(Alex Lynch)</strong> Remove <code>splice</code> behavior and simplify <code>conjoin</code></li>
+<li><a href="../../commit/2d9a7d4">2d9a7d4</a> - <strong>(Alex Lynch)</strong> Implement async signatures for map and filter.</li>
+<li><a href="../../commit/f75927f">f75927f</a> - <strong>(Alex Lynch)</strong> Implement <code>filter</code> behavior.</li>
+<li><a href="../../commit/869b152">869b152</a> - <strong>(Alex Lynch)</strong> <code>map</code> behavior passes queue to asyncMap .</li>
+<li><a href="../../commit/c9fc358">c9fc358</a> - <strong>(Alex Lynch)</strong> Test multi-parameter functions.</li>
+<li><a href="../../commit/33246f7">33246f7</a> - <strong>(Alex Lynch)</strong> Build test for ‘each’ behavior. Correct each behavior. Implement new secondary forms of ‘chain’</li>
+<li><a href="../../commit/1b275db">1b275db</a> - <strong>(Alex Lynch)</strong> Refactor tests around license protection.</li>
+<li><a href="../../commit/36b498f">36b498f</a> - <strong>(Alex Lynch)</strong> Added six optional callback forms. Miraculously resolve “chain2 abmbiguiuty problem”</li>
+<li><a href="../../commit/d9c295e">d9c295e</a> - <strong>(Alex Lynch)</strong> Reorganize access control and reduce ProcessLink clutter.</li>
+<li><a href="../../commit/cd13e26">cd13e26</a> - <strong>(Alex Lynch)</strong> Namespace the starting functions in a struct.</li>
+<li><a href="../../commit/9c589ff">9c589ff</a> - <strong>(Alex Lynch)</strong> Correct functional programming terminology.</li>
+<li><a href="../../commit/d2e9e65">d2e9e65</a> - <strong>(Alex Lynch)</strong> Commit CommonCrypto scheme.</li>
+<li><a href="../../commit/1306cdc">1306cdc</a> - <strong>(Alex Lynch)</strong> Implement access control strategy.</li>
+<li><a href="../../commit/c78f8bd">c78f8bd</a> - <strong>(Aaron Lynch)</strong> First round of Aaronchanges</li>
+<li><a href="../../commit/ffad587">ffad587</a> - <strong>(Alex Lynch)</strong> Add value checking to unit tests.</li>
+<li><a href="../../commit/00307b2">00307b2</a> - <strong>(Alex Lynch)</strong> Restructure project around testing and framework targets.</li>
+<li><a href="../../commit/db54c03">db54c03</a> - <strong>(Alex Lynch)</strong> Implement <code>each</code> behavior.</li>
+<li><a href="../../commit/136be94">136be94</a> - <strong>(Alex Lynch)</strong> Correct spelling error.</li>
+<li><a href="../../commit/22ad3de">22ad3de</a> - <strong>(Alex Lynch)</strong> Improve call site semantics and implement <code>optionally</code> behavior.</li>
+<li><a href="../../commit/bf49804">bf49804</a> - <strong>(Alex Lynch)</strong> Remove the unexpressive end() method and mark methods which return ProcessLink as @discardableResult</li>
+<li><a href="../../commit/5104523">5104523</a> - <strong>(Alex Lynch)</strong> Provide new secondary form of chain (the 3rd). Plus disambiguation alias.</li>
+<li><a href="../../commit/5607230">5607230</a> - <strong>(Alex Lynch)</strong> Ensure error handler is called in execution queue.</li>
+<li><a href="../../commit/3f2884e">3f2884e</a> - <strong>(Alex Lynch)</strong> Implement new secondary chaining form (the second).</li>
+<li><a href="../../commit/52dd27a">52dd27a</a> - <strong>(Alex Lynch)</strong> Define value behavior.</li>
+<li><a href="../../commit/6c47a35">6c47a35</a> - <strong>(Alex Lynch)</strong> Support execution queue selection in primary behaviors.</li>
+<li><a href="../../commit/b386625">b386625</a> - <strong>(Alex Lynch)</strong> Implement first of secondary forms.</li>
+<li><a href="../../commit/b959849">b959849</a> - <strong>(Alex Lynch)</strong> Organize methods around primary forms.</li>
+<li><a href="../../commit/a448c71">a448c71</a> - <strong>(Alex Lynch)</strong> Create iOS framework target.</li>
+<li><a href="../../commit/d222f21">d222f21</a> - <strong>(Alex Lynch)</strong> Publicize classes and methods for use in external module. Introduce splice method.</li>
+<li><a href="../../commit/5421b87">5421b87</a> - <strong>(Alex Lynch)</strong> Implement join.</li>
+<li><a href="../../commit/89211a6">89211a6</a> - <strong>(Alex Lynch)</strong> Implement checked error handling.</li>
+<li><a href="../../commit/37171a5">37171a5</a> - <strong>(Alex Lynch)</strong> Rename function to better clarify it’s meaning.</li>
+<li><a href="../../commit/8c96b13">8c96b13</a> - <strong>(Alex Lynch)</strong> Implement map instruction.</li>
+<li><a href="../../commit/549384a">549384a</a> - <strong>(Alex Lynch)</strong> Update method names for greater declarative clarity.</li>
+<li><a href="../../commit/e93ff6e">e93ff6e</a> - <strong>(Alex Lynch)</strong> Initial implementation of parallel syntax.</li>
+<li><a href="../../commit/218a839">218a839</a> - <strong>(Alex Lynch)</strong> Implement support for asynchronous methods.</li>
+<li><a href="../../commit/b0e3366">b0e3366</a> - <strong>(Alex Lynch)</strong> Cleaner syntax for process definitions.</li>
+<li><a href="../../commit/a37346d">a37346d</a> - <strong>(Alex Lynch)</strong> Proof of concept.</li>
+<li><a href="../../commit/4795c9f">4795c9f</a> - <strong>(Alex Lynch)</strong> Initial Commit</li>
+</ul>
+
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2020 <a class="link" href="http://HoneyBee.link/3.0.0.a.2/docs/index.html" target="_blank" rel="external">Alex Lynch</a>. All rights reserved. (Last updated: 2020-08-09)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.5</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>

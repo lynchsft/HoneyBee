@@ -1,0 +1,1251 @@
+{
+  "warnings": [
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/AsyncTrace.swift",
+      "line": 11,
+      "symbol": "AsyncTrace",
+      "symbol_kind": "source.lang.swift.decl.struct",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/AsyncTrace.swift",
+      "line": 31,
+      "symbol": "AsyncTrace.toString()",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/AsyncTrace.swift",
+      "line": 73,
+      "symbol": "AsyncTrace.lastFile",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/AsyncTrace.swift",
+      "line": 77,
+      "symbol": "AsyncTrace.lastLine",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/AsyncTrace.swift",
+      "line": 81,
+      "symbol": "AsyncTrace.componentCount",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/AsyncTrace.swift",
+      "line": 91,
+      "symbol": "AsyncTraceComponent",
+      "symbol_kind": "source.lang.swift.decl.class",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FailureRate.swift",
+      "line": 11,
+      "symbol": "FailureRateAwareError",
+      "symbol_kind": "source.lang.swift.decl.protocol",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FailureRate.swift",
+      "line": 12,
+      "symbol": "FailureRateAwareError.failureRateExceeded(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.static",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FailureRate.swift",
+      "line": 16,
+      "symbol": "Never.failureRateExceeded(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.static",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FailureRate.swift",
+      "line": 22,
+      "symbol": "NSError.failureRateExceeded(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.static",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FaultResponse.swift",
+      "line": 30,
+      "symbol": "FaultResponse.evaluate(_:_:file:line:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 15,
+      "symbol": "AsyncZeroArgFunction",
+      "symbol_kind": "source.lang.swift.decl.struct",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 27,
+      "symbol": "AsyncZeroArgFunction.callAsFunction(file:line:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 33,
+      "symbol": "AsyncSingleArgFunction",
+      "symbol_kind": "source.lang.swift.decl.struct",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 45,
+      "symbol": "AsyncSingleArgFunction.callAsFunction(_:file:line:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 50,
+      "symbol": "AsyncSingleArgFunction.callAsFunction(_:file:line:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 55,
+      "symbol": "AsyncSingleArgFunction.callAsFunction(_:file:line:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 60,
+      "symbol": "AsyncSingleArgFunction",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 62,
+      "symbol": "AsyncSingleArgFunction.callAsFunction(_:file:line:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 67,
+      "symbol": "AsyncSingleArgFunction.callAsFunction(_:file:line:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 76,
+      "symbol": "AsyncDoubleArgFunction",
+      "symbol_kind": "source.lang.swift.decl.struct",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 87,
+      "symbol": "AsyncDoubleArgFunction.callAsFunction(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 93,
+      "symbol": "AsyncDoubleArgFunction.callAsFunction(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 102,
+      "symbol": "AsyncDoubleArgFunction.callAsFunction(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 107,
+      "symbol": "AsyncDoubleArgFunction",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 108,
+      "symbol": "AsyncDoubleArgFunction.callAsFunction(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 117,
+      "symbol": "AsyncDoubleArgFunction.callAsFunction(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 130,
+      "symbol": "AsyncTripleArgFunction",
+      "symbol_kind": "source.lang.swift.decl.struct",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 141,
+      "symbol": "AsyncTripleArgFunction.callAsFunction(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 150,
+      "symbol": "AsyncTripleArgFunction.callAsFunction(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 159,
+      "symbol": "AsyncTripleArgFunction.callAsFunction(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 164,
+      "symbol": "AsyncTripleArgFunction",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 165,
+      "symbol": "AsyncTripleArgFunction.callAsFunction(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 174,
+      "symbol": "AsyncTripleArgFunction.callAsFunction(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 188,
+      "symbol": "ZeroArgFunction",
+      "symbol_kind": "source.lang.swift.decl.struct",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 193,
+      "symbol": "ZeroArgFunction.callAsFunction(_:file:line:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 200,
+      "symbol": "ZeroArgFunction.callAsFunction(_:file:line:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 207,
+      "symbol": "ZeroArgFunction.callAsFunction(_:file:line:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 215,
+      "symbol": "ZeroArgFunction.on(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 220,
+      "symbol": "ZeroArgFunction",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 222,
+      "symbol": "ZeroArgFunction.callAsFunction(_:file:line:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 229,
+      "symbol": "ZeroArgFunction.callAsFunction(_:file:line:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 244,
+      "symbol": "SingleArgFunction",
+      "symbol_kind": "source.lang.swift.decl.struct",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 248,
+      "symbol": "SingleArgFunction.callAsFunction(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 255,
+      "symbol": "SingleArgFunction.callAsFunction(_:file:line:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 260,
+      "symbol": "SingleArgFunction.callAsFunction(_:file:line:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 265,
+      "symbol": "SingleArgFunction.callAsFunction(_:file:line:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 269,
+      "symbol": "SingleArgFunction.on(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 274,
+      "symbol": "SingleArgFunction",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 276,
+      "symbol": "SingleArgFunction.callAsFunction(_:file:line:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 280,
+      "symbol": "SingleArgFunction.callAsFunction(_:file:line:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 287,
+      "symbol": "DoubleArgFunction",
+      "symbol_kind": "source.lang.swift.decl.struct",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 291,
+      "symbol": "DoubleArgFunction.callAsFunction(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 297,
+      "symbol": "DoubleArgFunction.callAsFunction(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 305,
+      "symbol": "DoubleArgFunction.callAsFunction(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 309,
+      "symbol": "DoubleArgFunction.callAsFunction(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 317,
+      "symbol": "DoubleArgFunction.on(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 322,
+      "symbol": "DoubleArgFunction",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 323,
+      "symbol": "DoubleArgFunction.callAsFunction(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 331,
+      "symbol": "DoubleArgFunction.callAsFunction(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 348,
+      "symbol": "TripleArgFunction",
+      "symbol_kind": "source.lang.swift.decl.struct",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 352,
+      "symbol": "TripleArgFunction.callAsFunction(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 358,
+      "symbol": "TripleArgFunction.callAsFunction(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 366,
+      "symbol": "TripleArgFunction.callAsFunction(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 370,
+      "symbol": "TripleArgFunction.callAsFunction(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 380,
+      "symbol": "TripleArgFunction.on(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 385,
+      "symbol": "TripleArgFunction",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 386,
+      "symbol": "TripleArgFunction.callAsFunction(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 394,
+      "symbol": "TripleArgFunction.callAsFunction(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 410,
+      "symbol": "BoundZeroArgFunction",
+      "symbol_kind": "source.lang.swift.decl.struct",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 417,
+      "symbol": "BoundZeroArgFunction.callAsFunction(_:file:line:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 421,
+      "symbol": "BoundZeroArgFunction.callAsFunction(_:file:line:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 426,
+      "symbol": "BoundZeroArgFunction",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 428,
+      "symbol": "BoundZeroArgFunction.callAsFunction(_:file:line:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 433,
+      "symbol": "BoundZeroArgFunction.callAsFunction(_:file:line:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 439,
+      "symbol": "BoundSingleArgFunction",
+      "symbol_kind": "source.lang.swift.decl.struct",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 445,
+      "symbol": "BoundSingleArgFunction.callAsFunction(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 450,
+      "symbol": "BoundSingleArgFunction.callAsFunction(_:file:line:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 455,
+      "symbol": "BoundSingleArgFunction.callAsFunction(_:file:line:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 460,
+      "symbol": "BoundSingleArgFunction.callAsFunction(_:file:line:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 465,
+      "symbol": "BoundSingleArgFunction",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 467,
+      "symbol": "BoundSingleArgFunction.callAsFunction(_:file:line:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 472,
+      "symbol": "BoundSingleArgFunction.callAsFunction(_:file:line:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 478,
+      "symbol": "BoundDoubleArgFunction",
+      "symbol_kind": "source.lang.swift.decl.struct",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 484,
+      "symbol": "BoundDoubleArgFunction.callAsFunction(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 488,
+      "symbol": "BoundDoubleArgFunction.callAsFunction(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 492,
+      "symbol": "BoundDoubleArgFunction.callAsFunction(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 496,
+      "symbol": "BoundDoubleArgFunction.callAsFunction(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 501,
+      "symbol": "BoundDoubleArgFunction",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 502,
+      "symbol": "BoundDoubleArgFunction.callAsFunction(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 506,
+      "symbol": "BoundDoubleArgFunction.callAsFunction(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 512,
+      "symbol": "BoundTripleArgFunction",
+      "symbol_kind": "source.lang.swift.decl.struct",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 518,
+      "symbol": "BoundTripleArgFunction.callAsFunction(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 522,
+      "symbol": "BoundTripleArgFunction.callAsFunction(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 526,
+      "symbol": "BoundTripleArgFunction.callAsFunction(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 531,
+      "symbol": "BoundTripleArgFunction",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 532,
+      "symbol": "BoundTripleArgFunction.callAsFunction(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
+      "line": 536,
+      "symbol": "BoundTripleArgFunction.callAsFunction(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/HoneyBee.swift",
+      "line": 150,
+      "symbol": "HoneyBee.async(on:callback:file:line:_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.static",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/HoneyBee.swift",
+      "line": 163,
+      "symbol": "HoneyBee.async(on:completion:file:line:_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.static",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/HoneyBee.swift",
+      "line": 185,
+      "symbol": "HoneyBee.async(callback:file:line:_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.static",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/HoneyBee.swift",
+      "line": 193,
+      "symbol": "HoneyBee.async(completion:file:line:_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.static",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link+DynamicMemberSubscripts.swift",
+      "line": 13,
+      "symbol": "Link.subscript(dynamicMember:)",
+      "symbol_kind": "source.lang.swift.decl.function.subscript",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link+DynamicMemberSubscripts.swift",
+      "line": 21,
+      "symbol": "Link.subscript(dynamicMember:)",
+      "symbol_kind": "source.lang.swift.decl.function.subscript",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link+DynamicMemberSubscripts.swift",
+      "line": 29,
+      "symbol": "Link.subscript(dynamicMember:)",
+      "symbol_kind": "source.lang.swift.decl.function.subscript",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link+DynamicMemberSubscripts.swift",
+      "line": 37,
+      "symbol": "Link.subscript(dynamicMember:)",
+      "symbol_kind": "source.lang.swift.decl.function.subscript",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link+DynamicMemberSubscripts.swift",
+      "line": 45,
+      "symbol": "Link.subscript(dynamicMember:)",
+      "symbol_kind": "source.lang.swift.decl.function.subscript",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link+DynamicMemberSubscripts.swift",
+      "line": 53,
+      "symbol": "Link.subscript(dynamicMember:)",
+      "symbol_kind": "source.lang.swift.decl.function.subscript",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link+DynamicMemberSubscripts.swift",
+      "line": 61,
+      "symbol": "Link.subscript(dynamicMember:)",
+      "symbol_kind": "source.lang.swift.decl.function.subscript",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link+DynamicMemberSubscripts.swift",
+      "line": 69,
+      "symbol": "Link.subscript(dynamicMember:)",
+      "symbol_kind": "source.lang.swift.decl.function.subscript",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link+DynamicMemberSubscripts.swift",
+      "line": 79,
+      "symbol": "Link.subscript(dynamicMember:)",
+      "symbol_kind": "source.lang.swift.decl.function.subscript",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link+DynamicMemberSubscripts.swift",
+      "line": 87,
+      "symbol": "Link.subscript(dynamicMember:)",
+      "symbol_kind": "source.lang.swift.decl.function.subscript",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link+DynamicMemberSubscripts.swift",
+      "line": 95,
+      "symbol": "Link.subscript(dynamicMember:)",
+      "symbol_kind": "source.lang.swift.decl.function.subscript",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link+DynamicMemberSubscripts.swift",
+      "line": 103,
+      "symbol": "Link.subscript(dynamicMember:)",
+      "symbol_kind": "source.lang.swift.decl.function.subscript",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link+DynamicMemberSubscripts.swift",
+      "line": 111,
+      "symbol": "Link.subscript(dynamicMember:)",
+      "symbol_kind": "source.lang.swift.decl.function.subscript",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link+DynamicMemberSubscripts.swift",
+      "line": 119,
+      "symbol": "Link.subscript(dynamicMember:)",
+      "symbol_kind": "source.lang.swift.decl.function.subscript",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link+DynamicMemberSubscripts.swift",
+      "line": 127,
+      "symbol": "Link.subscript(dynamicMember:)",
+      "symbol_kind": "source.lang.swift.decl.function.subscript",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link+DynamicMemberSubscripts.swift",
+      "line": 135,
+      "symbol": "Link.subscript(dynamicMember:)",
+      "symbol_kind": "source.lang.swift.decl.function.subscript",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link+DynamicMemberSubscripts.swift",
+      "line": 145,
+      "symbol": "Link.subscript(dynamicMember:)",
+      "symbol_kind": "source.lang.swift.decl.function.subscript",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link+DynamicMemberSubscripts.swift",
+      "line": 153,
+      "symbol": "Link.subscript(dynamicMember:)",
+      "symbol_kind": "source.lang.swift.decl.function.subscript",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link+DynamicMemberSubscripts.swift",
+      "line": 161,
+      "symbol": "Link.subscript(dynamicMember:)",
+      "symbol_kind": "source.lang.swift.decl.function.subscript",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link+DynamicMemberSubscripts.swift",
+      "line": 169,
+      "symbol": "Link.subscript(dynamicMember:)",
+      "symbol_kind": "source.lang.swift.decl.function.subscript",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link+DynamicMemberSubscripts.swift",
+      "line": 178,
+      "symbol": "Link.subscript(dynamicMember:)",
+      "symbol_kind": "source.lang.swift.decl.function.subscript",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link+DynamicMemberSubscripts.swift",
+      "line": 186,
+      "symbol": "Link.subscript(dynamicMember:)",
+      "symbol_kind": "source.lang.swift.decl.function.subscript",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link+DynamicMemberSubscripts.swift",
+      "line": 194,
+      "symbol": "Link.subscript(dynamicMember:)",
+      "symbol_kind": "source.lang.swift.decl.function.subscript",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link+DynamicMemberSubscripts.swift",
+      "line": 202,
+      "symbol": "Link.subscript(dynamicMember:)",
+      "symbol_kind": "source.lang.swift.decl.function.subscript",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link+DynamicMemberSubscripts.swift",
+      "line": 213,
+      "symbol": "Link.subscript(dynamicMember:)",
+      "symbol_kind": "source.lang.swift.decl.function.subscript",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link+DynamicMemberSubscripts.swift",
+      "line": 217,
+      "symbol": "Link.subscript(dynamicMember:)",
+      "symbol_kind": "source.lang.swift.decl.function.subscript",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link+DynamicMemberSubscripts.swift",
+      "line": 221,
+      "symbol": "Link.subscript(dynamicMember:)",
+      "symbol_kind": "source.lang.swift.decl.function.subscript",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link+DynamicMemberSubscripts.swift",
+      "line": 225,
+      "symbol": "Link.subscript(dynamicMember:)",
+      "symbol_kind": "source.lang.swift.decl.function.subscript",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link+DynamicMemberSubscripts.swift",
+      "line": 230,
+      "symbol": "Link.subscript(dynamicMember:)",
+      "symbol_kind": "source.lang.swift.decl.function.subscript",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link+DynamicMemberSubscripts.swift",
+      "line": 234,
+      "symbol": "Link.subscript(dynamicMember:)",
+      "symbol_kind": "source.lang.swift.decl.function.subscript",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link+DynamicMemberSubscripts.swift",
+      "line": 238,
+      "symbol": "Link.subscript(dynamicMember:)",
+      "symbol_kind": "source.lang.swift.decl.function.subscript",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link+DynamicMemberSubscripts.swift",
+      "line": 242,
+      "symbol": "Link.subscript(dynamicMember:)",
+      "symbol_kind": "source.lang.swift.decl.function.subscript",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link+DynamicMemberSubscripts.swift",
+      "line": 247,
+      "symbol": "Link.subscript(dynamicMember:)",
+      "symbol_kind": "source.lang.swift.decl.function.subscript",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link+DynamicMemberSubscripts.swift",
+      "line": 255,
+      "symbol": "Link.subscript(dynamicMember:)",
+      "symbol_kind": "source.lang.swift.decl.function.subscript",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link+DynamicMemberSubscripts.swift",
+      "line": 263,
+      "symbol": "Link.subscript(dynamicMember:)",
+      "symbol_kind": "source.lang.swift.decl.function.subscript",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link+DynamicMemberSubscripts.swift",
+      "line": 271,
+      "symbol": "Link.subscript(dynamicMember:)",
+      "symbol_kind": "source.lang.swift.decl.function.subscript",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link+DynamicMemberSubscripts.swift",
+      "line": 280,
+      "symbol": "Link.subscript(dynamicMember:)",
+      "symbol_kind": "source.lang.swift.decl.function.subscript",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link+DynamicMemberSubscripts.swift",
+      "line": 288,
+      "symbol": "Link.subscript(dynamicMember:)",
+      "symbol_kind": "source.lang.swift.decl.function.subscript",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link+DynamicMemberSubscripts.swift",
+      "line": 296,
+      "symbol": "Link.subscript(dynamicMember:)",
+      "symbol_kind": "source.lang.swift.decl.function.subscript",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link+DynamicMemberSubscripts.swift",
+      "line": 304,
+      "symbol": "Link.subscript(dynamicMember:)",
+      "symbol_kind": "source.lang.swift.decl.function.subscript",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link.swift",
+      "line": 11,
+      "symbol": "Link",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link.swift",
+      "line": 78,
+      "symbol": "Link",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link.swift",
+      "line": 79,
+      "symbol": "Link",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link.swift",
+      "line": 140,
+      "symbol": "Link",
+      "symbol_kind": "source.lang.swift.decl.class",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link.swift",
+      "line": 144,
+      "symbol": "Link",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link.swift",
+      "line": 211,
+      "symbol": "Link",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link.swift",
+      "line": 358,
+      "symbol": "Link.subscript(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.subscript",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link.swift",
+      "line": 364,
+      "symbol": "Link.subscript(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.subscript",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link.swift",
+      "line": 370,
+      "symbol": "Link.subscript(dynamicMember:)",
+      "symbol_kind": "source.lang.swift.decl.function.subscript",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link.swift",
+      "line": 456,
+      "symbol": "Link",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link.swift",
+      "line": 460,
+      "symbol": "Link.onResult(file:line:_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link.swift",
+      "line": 472,
+      "symbol": "Link.onResult(file:line:_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link.swift",
+      "line": 484,
+      "symbol": "Link.onCompletion(file:line:_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link.swift",
+      "line": 496,
+      "symbol": "Link.onCompletion(file:line:_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link.swift",
+      "line": 508,
+      "symbol": "Link.onError(file:line:_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link.swift",
+      "line": 516,
+      "symbol": "Link.onError(file:line:_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link.swift",
+      "line": 523,
+      "symbol": "Link.handleError(file:line:_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link.swift",
+      "line": 541,
+      "symbol": "Link",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link.swift",
+      "line": 543,
+      "symbol": "Link.onResult(file:line:_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link.swift",
+      "line": 552,
+      "symbol": "Link",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link.swift",
+      "line": 555,
+      "symbol": "Link.expect(_:file:line:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link.swift",
+      "line": 561,
+      "symbol": "Link.expect(_:file:line:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link.swift",
+      "line": 568,
+      "symbol": "Link.chain(file:line:functionDescription:_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link.swift",
+      "line": 575,
+      "symbol": "Link.chain(file:line:functionDescription:_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link.swift",
+      "line": 743,
+      "symbol": ">>(_:_:)",
+      "symbol_kind": "source.lang.swift.decl.function.free",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link.swift",
+      "line": 747,
+      "symbol": ">>(_:_:)",
+      "symbol_kind": "source.lang.swift.decl.function.free",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link.swift",
+      "line": 751,
+      "symbol": ">>(_:_:)",
+      "symbol_kind": "source.lang.swift.decl.function.free",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link.swift",
+      "line": 756,
+      "symbol": ">>(_:_:)",
+      "symbol_kind": "source.lang.swift.decl.function.free",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link.swift",
+      "line": 760,
+      "symbol": ">>(_:_:)",
+      "symbol_kind": "source.lang.swift.decl.function.free",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link.swift",
+      "line": 765,
+      "symbol": ">>(_:_:)",
+      "symbol_kind": "source.lang.swift.decl.function.free",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link.swift",
+      "line": 771,
+      "symbol": ">>(_:_:)",
+      "symbol_kind": "source.lang.swift.decl.function.free",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link.swift",
+      "line": 775,
+      "symbol": "Link",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link.swift",
+      "line": 839,
+      "symbol": "Link",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link.swift",
+      "line": 1034,
+      "symbol": "Link",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Link.swift",
+      "line": 1090,
+      "symbol": "Link",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/Result.swift",
+      "line": 12,
+      "symbol": "Result.value()",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    }
+  ],
+  "source_directory": "/Users/lynchal/personal/HoneyBee"
+}

@@ -195,17 +195,17 @@ public class If<E: Error, P: AsyncBlockPerformer> {
     /// Adds an async else clause to an existing if_
     /// Example usage:
     ///
-    /// let hb = HoneyBee.start().handlingErrors(with: someErrorHandler)
+    ///     let hb = HoneyBee.start().handlingErrors(with: someErrorHandler)
     ///
-    /// let testAPassed = testAAsyncFunc(hb) // a Link<Bool, DefaultDispatchQueue>
-    /// let testBPassed = testBAsyncFunc(hb) // a Link<Bool, DefaultDispatchQueue>
-    /// if_ (testAPassed) {
-    ///     someAsyncNextStep(hb)(.nextStep)
-    /// }.else_if (testBPassed) {
-    ///     someSuboptimalStep(hb)(.disappointed)
-    /// }.else {
-    ///     someAsyncRemediationFunc(hb)
-    /// }
+    ///     let testAPassed = testAAsyncFunc(hb) // a Link<Bool, DefaultDispatchQueue>
+    ///     let testBPassed = testBAsyncFunc(hb) // a Link<Bool, DefaultDispatchQueue>
+    ///     if_ (testAPassed) {
+    ///         someAsyncNextStep(hb)(.nextStep)
+    ///     }.else_if (testBPassed) {
+    ///         someSuboptimalStep(hb)(.disappointed)
+    ///     }.else {
+    ///         someAsyncRemediationFunc(hb)
+    ///     }
     public func `else`(_ action: @escaping () -> Void) {
         self.else_if(self.condition.insert(true), action)
     }

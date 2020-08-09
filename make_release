@@ -7,11 +7,10 @@ require "katip"
 
 project_name = "HoneyBee"
 version_string = ARGV.shift
-username = ARGV.shift
 host_name = "HoneyBee.link"
 
-if username == nil || username == nil
-	puts "Expected: make_release <version_string> <username>"
+if version_string == nil
+	puts "Expected: make_release <version_string>"
 	exit
 end
 
@@ -36,7 +35,7 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = "10.0"
   s.osx.deployment_target = "10.11"
   s.tvos.deployment_target = "10.0"
-  s.pod_target_xcconfig = { "SWIFT_VERSION" => "4.2" }
+  s.pod_target_xcconfig = { "SWIFT_VERSION" => "5.2" }
 
   s.source       = { :git => "https://github.com/lynchsft/HoneyBee.git", :tag=>"v#{version_string}"}
 
@@ -46,24 +45,16 @@ end
 
 File.open("#{project_name}.podspec",'w') {|f| f.puts spec}
 
-puts `git add #{project_name}/Info.plist ChangeLog.md #{project_name}.podspec`
+puts "Documenting"
+puts `rm -rf docs/*`
+puts `jazzy --xcodebuild-arguments -scheme,#{project_name} --no-hide-documentation-coverage --output ./docs/ --documentation=./*.md `
+
+puts `git add #{project_name}/Info.plist ChangeLog.md #{project_name}.podspec docs`
 puts `git commit -m "Mark as v#{version_string}"`
 puts `git tag v#{version_string}`
 puts `git push --tags`
 
 
-puts "Documenting"
-puts `rm -rf products/*`
-puts `jazzy --xcodebuild-arguments -scheme,#{project_name}  --output products/docs/`
-puts `cd products; rsync -e 'ssh -p 18765' -r docs #{username}@#{host_name}:public_html/#{project_name}/#{version_string}/`
-
-
 puts "Publishing"
-puts `pod trunk push --swift-version=4.1 #{project_name}.podspec`
+puts `pod trunk push --swift-version=5.2 #{project_name}.podspec`
 
-
-puts "Linking Current"
-Net::SSH.start(host_name, username, :port=>18765) do |ssh|
-  result = ssh.exec!("cd public_html/#{project_name}; rm current; ln -sf #{version_string} current; ls -l current")
-  puts result
-end

@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>AsyncZeroArgFunction Structure Reference</title>
+    <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="../js/jquery.min.js" defer></script>
+    <script src="../js/jazzy.js" defer></script>
+    
+    <script src="../js/lunr.min.js" defer></script>
+    <script src="../js/typeahead.jquery.js" defer></script>
+    <script src="../js/jazzy.search.js" defer></script>
+  </head>
+  <body>
+    <a name="//apple_ref/swift/Struct/AsyncZeroArgFunction" class="dashAnchor"></a>
+    <a title="AsyncZeroArgFunction Structure Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="../index.html">HoneyBee 3.0.0.a.2 Docs</a> (59% documented)</p>
+        <p class="header-right">
+          <form role="search" action="../search.json">
+            <input type="text" placeholder="Search documentation" data-typeahead>
+          </form>
+        </p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="../index.html">HoneyBee Reference</a>
+        <img id="carat" src="../img/carat.png" />
+        AsyncZeroArgFunction Structure Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="../Guides.html">Guides</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../changelog.html">ChangeLog</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../readme.html">README</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Classes/AsyncTraceComponent.html">AsyncTraceComponent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ElseContext.html">ElseContext</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes.html#/s:8HoneyBee10ExecutableC">Executable</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/If.html">If</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/Link.html">Link</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Enums.html">Enumerations</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Enums/FailureRate.html">FailureRate</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/FaultResponse.html">FaultResponse</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Extensions.html">Extensions</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Extensions/DispatchQueue.html">DispatchQueue</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/NSError.html">NSError</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/NSManagedObjectContext.html">NSManagedObjectContext</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/Never.html">Never</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/Optional.html">Optional</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/Result.html">Result</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Functions.html">Functions</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee1poiyAA4LinkCyx_q_q0_q1_tq2_q3_GADyx_q_q0_tq2_q3_G_ADyq1_q2_q3_Gts5ErrorR2_AA19AsyncBlockPerformerR3_r4_lF">+(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee1poiyAA4LinkCyx_q_q0_q1_tq2_q3_GADyx_q_q0_tq2_q3_G_ADyq1_s5NeverOq3_Gts5ErrorR2_AA19AsyncBlockPerformerR3_r4_lF">+(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee1poiyAA4LinkCyx_q_q0_q1_tq2_q3_GADyx_q_q0_ts5NeverOq3_G_ADyq1_q2_q3_Gts5ErrorR2_AA19AsyncBlockPerformerR3_r4_lF">+(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee1poiyAA4LinkCyx_q_q0_q1_ts5Error_pq4_GADyx_q_q0_tq2_q4_G_ADyq1_q3_q4_GtsAER2_sAER3_AA19AsyncBlockPerformerR4_r5_lF">+(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee1poiyAA4LinkCyx_q_q0_q1_ts5NeverOq2_GADyx_q_q0_tAFq2_G_ADyq1_AFq2_GtAA19AsyncBlockPerformerR2_r3_lF">+(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee1poiyAA4LinkCyx_q_q0_tq1_q2_GADyx_q_tq1_q2_G_ADyq0_q1_q2_Gts5ErrorR1_AA19AsyncBlockPerformerR2_r3_lF">+(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee1poiyAA4LinkCyx_q_q0_tq1_q2_GADyx_q_tq1_q2_G_ADyq0_s5NeverOq2_Gts5ErrorR1_AA19AsyncBlockPerformerR2_r3_lF">+(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee1poiyAA4LinkCyx_q_q0_tq1_q2_GADyx_q_ts5NeverOq2_G_ADyq0_q1_q2_Gts5ErrorR1_AA19AsyncBlockPerformerR2_r3_lF">+(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee1poiyAA4LinkCyx_q_q0_ts5Error_pq3_GADyx_q_tq1_q3_G_ADyq0_q2_q3_GtsAER1_sAER2_AA19AsyncBlockPerformerR3_r4_lF">+(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee1poiyAA4LinkCyx_q_q0_ts5NeverOq1_GADyx_q_tAFq1_G_ADyq0_AFq1_GtAA19AsyncBlockPerformerR1_r2_lF">+(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee1poiyAA4LinkCyx_q_tq0_q1_GADyxq0_q1_G_ADyq_q0_q1_Gts5ErrorR0_AA19AsyncBlockPerformerR1_r2_lF">+(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee1poiyAA4LinkCyx_q_tq0_q1_GADyxq0_q1_G_ADyq_s5NeverOq1_Gts5ErrorR0_AA19AsyncBlockPerformerR1_r2_lF">+(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee1poiyAA4LinkCyx_q_tq0_q1_GADyxs5NeverOq1_G_ADyq_q0_q1_Gts5ErrorR0_AA19AsyncBlockPerformerR1_r2_lF">+(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee1poiyAA4LinkCyx_q_ts5Error_pq2_GADyxq0_q2_G_ADyq_q1_q2_GtsAER0_sAER1_AA19AsyncBlockPerformerR2_r3_lF">+(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee1poiyAA4LinkCyx_q_ts5NeverOq0_GADyxAFq0_G_ADyq_AFq0_GtAA19AsyncBlockPerformerR0_r1_lF">+(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee2pgoiyAA4LinkCyq_q0_q1_GADyxq0_q1_G_ADyq_s5NeverOq1_Gts5ErrorR0_AA19AsyncBlockPerformerR1_r2_lF">+&gt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee2pgoiyAA4LinkCyq_q0_q1_GADyxq0_q1_G_AEts5ErrorR0_AA19AsyncBlockPerformerR1_r2_lF">+&gt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee2pgoiyAA4LinkCyq_q0_q1_GADyxs5NeverOq1_G_AEts5ErrorR0_AA19AsyncBlockPerformerR1_r2_lF">+&gt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee2pgoiyAA4LinkCyq_s5Error_pq2_GADyxq0_q2_G_ADyq_q1_q2_GtsAER0_sAER1_AA19AsyncBlockPerformerR2_r3_lF">+&gt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee2pgoiyAA4LinkCyq_s5NeverOq0_GADyxAFq0_G_AGtAA19AsyncBlockPerformerR0_r1_lF">+&gt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee1loiyAA4LinkCySbq_q0_GADyxq_q0_G_AFtSLRzs5ErrorR_AA19AsyncBlockPerformerR0_r1_lF">&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee1loiyAA4LinkCySbq_q0_GADyxq_q0_G_xtSLRzs5ErrorR_AA19AsyncBlockPerformerR0_r1_lF">&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee1loiyAA4LinkCySbq_q0_Gx_ADyxq_q0_GtSLRzs5ErrorR_AA19AsyncBlockPerformerR0_r1_lF">&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee2lpoiyAA4LinkCyxq0_q1_GADyxs5NeverOq1_G_ADyq_q0_q1_Gts5ErrorR0_AA19AsyncBlockPerformerR1_r2_lF">&lt;+(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee2lpoiyAA4LinkCyxq0_q1_GAE_ADyq_q0_q1_Gts5ErrorR0_AA19AsyncBlockPerformerR1_r2_lF">&lt;+(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee2lpoiyAA4LinkCyxq0_q1_GAE_ADyq_s5NeverOq1_Gts5ErrorR0_AA19AsyncBlockPerformerR1_r2_lF">&lt;+(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee2lpoiyAA4LinkCyxs5Error_pq2_GADyxq0_q2_G_ADyq_q1_q2_GtsAER0_sAER1_AA19AsyncBlockPerformerR2_r3_lF">&lt;+(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee2lpoiyAA4LinkCyxs5NeverOq0_GAG_ADyq_AFq0_GtAA19AsyncBlockPerformerR0_r1_lF">&lt;+(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee2leoiyAA4LinkCySbq_q0_GADyxq_q0_G_AFtSLRzs5ErrorR_AA19AsyncBlockPerformerR0_r1_lF">&lt;=(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee2leoiyAA4LinkCySbq_q0_GADyxq_q0_G_xtSLRzs5ErrorR_AA19AsyncBlockPerformerR0_r1_lF">&lt;=(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee2leoiyAA4LinkCySbq_q0_Gx_ADyxq_q0_GtSLRzs5ErrorR_AA19AsyncBlockPerformerR0_r1_lF">&lt;=(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee3elloiyq0_q_Kcq0_x_q_tKc_xtr1_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee3elloiyq0_q_cq0_x_q_tc_xtr1_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee3elloiyq0_xKcq0_q_Kcxc_q_tr1_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee3elloiyq0_xKcq0_x_q_tKc_q_tr1_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee3elloiyq0_x_q_tKcq0_x_xq_tKc_xtr1_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee3elloiyq0_x_q_tcq0_x_xq_tc_xtr1_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee3elloiyq0_x_xtKcq0_x_q_tKcxc_q_tr1_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee3elloiyq0_x_xtKcq0_x_xq_tKc_q_tr1_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee3elloiyq0_x_xtcq0_x_q_tcxc_q_tr1_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee3elloiyq0_x_xtcq0_x_xq_tc_q_tr1_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee3elloiyq0_xcq0_q_cxc_q_tr1_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee3elloiyq0_xcq0_x_q_tc_q_tr1_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee3elloiyq1_q__q0_tKcq1_x_q_q0_tKc_xtr2_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee3elloiyq1_q__q0_tcq1_x_q_q0_tc_xtr2_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee3elloiyq1_x_q0_tKcq1_q__q0_tKcxc_q_tr2_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee3elloiyq1_x_q0_tKcq1_x_q_q0_tKc_q_tr2_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee3elloiyq1_x_q0_tcq1_q__q0_tcxc_q_tr2_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee3elloiyq1_x_q0_tcq1_x_q_q0_tc_q_tr2_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee3elloiyq1_x_q_tKcq1_q__q0_tKcxc_q0_tr2_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee3elloiyq1_x_q_tKcq1_x_q_q0_tKc_q0_tr2_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee3elloiyq1_x_q_tcq1_q__q0_tcxc_q0_tr2_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee3elloiyq1_x_q_tcq1_x_q_q0_tc_q0_tr2_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee3elloiyq2_q__q0_q1_tKcq2_x_q_q0_q1_tKc_xtr3_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee3elloiyq2_q__q0_q1_tcq2_x_q_q0_q1_tc_xtr3_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee3elloiyq2_x_q0_q1_tKcq2_q__q0_q1_tKcxc_q_tr3_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee3elloiyq2_x_q0_q1_tKcq2_x_q_q0_q1_tKc_q_tr3_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee3elloiyq2_x_q0_q1_tcq2_q__q0_q1_tcxc_q_tr3_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee3elloiyq2_x_q0_q1_tcq2_x_q_q0_q1_tc_q_tr3_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee3elloiyq2_x_q_q0_tKcq2_q__q0_q1_tKcxc_q1_tr3_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee3elloiyq2_x_q_q0_tKcq2_x_q_q0_q1_tKc_q1_tr3_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee3elloiyq2_x_q_q0_tcq2_q__q0_q1_tcxc_q1_tr3_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee3elloiyq2_x_q_q0_tcq2_x_q_q0_q1_tc_q1_tr3_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee3elloiyq2_x_q_q1_tKcq2_q__q0_q1_tKcxc_q0_tr3_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee3elloiyq2_x_q_q1_tKcq2_x_q_q0_q1_tKc_q0_tr3_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee3elloiyq2_x_q_q1_tcq2_q__q0_q1_tcxc_q0_tr3_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee3elloiyq2_x_q_q1_tcq2_x_q_q0_q1_tc_q0_tr3_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee3elloiyq_xKcq_x_xtKc_xtr0_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee3elloiyq_xcq_x_xtc_xtr0_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee3elloiyq_yKcq_xKc_xtr0_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee3elloiyq_ycq_xc_xtr0_lF">=&lt;&lt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee2eeoiyAA4LinkCySbq_q0_GADyxq_q0_G_AFtSQRzs5ErrorR_AA19AsyncBlockPerformerR0_r1_lF">==(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee2eeoiyAA4LinkCySbq_q0_GADyxq_q0_G_xtSQRzs5ErrorR_AA19AsyncBlockPerformerR0_r1_lF">==(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee2eeoiyAA4LinkCySbq_q0_Gx_ADyxq_q0_GtSQRzs5ErrorR_AA19AsyncBlockPerformerR0_r1_lF">==(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee1goiyAA4LinkCySbq_q0_GADyxq_q0_G_AFtSLRzs5ErrorR_AA19AsyncBlockPerformerR0_r1_lF">&gt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee1goiyAA4LinkCySbq_q0_GADyxq_q0_G_xtSLRzs5ErrorR_AA19AsyncBlockPerformerR0_r1_lF">&gt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee1goiyAA4LinkCySbq_q0_Gx_ADyxq_q0_GtSLRzs5ErrorR_AA19AsyncBlockPerformerR0_r1_lF">&gt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee2geoiyAA4LinkCySbq_q0_GADyxq_q0_G_AFtSLRzs5ErrorR_AA19AsyncBlockPerformerR0_r1_lF">&gt;=(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee2geoiyAA4LinkCySbq_q0_GADyxq_q0_G_xtSLRzs5ErrorR_AA19AsyncBlockPerformerR0_r1_lF">&gt;=(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee2geoiyAA4LinkCySbq_q0_Gx_ADyxq_q0_GtSLRzs5ErrorR_AA19AsyncBlockPerformerR0_r1_lF">&gt;=(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee2ggoiyAA4LinkCyxq_q0_GADyxs5NeverOq0_G_q_mts5ErrorR_AA19AsyncBlockPerformerR0_r1_lF">&gt;&gt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee2ggoiyAA4LinkCyxq_q0_GxyXA_ADyytq_q0_Gts5ErrorR_AA19AsyncBlockPerformerR0_r1_lF">&gt;&gt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee2ggoiyAA4LinkCyxq_q1_GADyxq_q0_G_ADyytq_q1_Gts5ErrorR_AA19AsyncBlockPerformerR0_AaIR1_r2_lF">&gt;&gt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee2ggoiyAA4LinkCyxq_q1_GADyxq_q0_G_ADyyts5NeverOq1_Gts5ErrorR_AA19AsyncBlockPerformerR0_AaKR1_r2_lF">&gt;&gt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee2ggoiyAA4LinkCyxq_q1_GADyxq_q0_G_q1_ts5ErrorR_AA19AsyncBlockPerformerR0_AaHR1_r2_lF">&gt;&gt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee2ggoiyAA4LinkCyxs5NeverOq0_GADyxAFq_G_ADyytAFq0_GtAA19AsyncBlockPerformerR_AaJR0_r1_lF">&gt;&gt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee2ggoiyAA4LinkCyytxq0_GADyytxq_G_q0_ts5ErrorRzAA19AsyncBlockPerformerR_AaHR0_r1_lF">&gt;&gt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee6async0yAA15ZeroArgFunctionVyxq_Gyyq_Sg_xSgtcSgcs5ErrorR_r0_lF">async0(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee6async0yAA15ZeroArgFunctionVyxq_Gyyq_Sg_xSgtccs5ErrorR_r0_lF">async0(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee6async0yAA15ZeroArgFunctionVyxq_Gyys6ResultOyxq_Gccs5ErrorR_r0_lF">async0(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee6async0yAA15ZeroArgFunctionVyxq_GyyxSg_q_SgtcSgcs5ErrorR_r0_lF">async0(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee6async0yAA15ZeroArgFunctionVyxq_GyyxSg_q_Sgtccs5ErrorR_r0_lF">async0(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee6async0yAA15ZeroArgFunctionVyxs5Error_pGxyKclF">async0(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee6async0yAA15ZeroArgFunctionVyxs5NeverOGxyclF">async0(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee6async0yAA15ZeroArgFunctionVyxs5NeverOGyyxcSgclF">async0(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee6async0yAA15ZeroArgFunctionVyxs5NeverOGyyxcclF">async0(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee6async0yAA15ZeroArgFunctionVyyts5NeverOGyyycSgcF">async0(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee6async0yAA15ZeroArgFunctionVyyts5NeverOGyyyccF">async0(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee6async0yAA15ZeroArgFunctionVyytxGyyxSgcSgcs5ErrorRzlF">async0(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee6async0yAA15ZeroArgFunctionVyytxGyyxSgccs5ErrorRzlF">async0(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee6async1yAA17SingleArgFunctionVyxq_q0_Gyx_yq0_Sg_q_Sgtctcs5ErrorR0_r1_lF">async1(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee6async1yAA17SingleArgFunctionVyxq_q0_Gyx_yq_Sg_q0_SgtcSgtcs5ErrorR0_r1_lF">async1(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee6async1yAA17SingleArgFunctionVyxq_q0_Gyx_yq_Sg_q0_Sgtctcs5ErrorR0_r1_lF">async1(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee6async1yAA17SingleArgFunctionVyxq_q0_Gyx_ys6ResultOyq_q0_Gctcs5ErrorR0_r1_lF">async1(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee6async1yAA17SingleArgFunctionVyxq_s5Error_pGq_xKcr0_lF">async1(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee6async1yAA17SingleArgFunctionVyxq_s5NeverOGq_xcr0_lF">async1(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee6async1yAA17SingleArgFunctionVyxq_s5NeverOGyx_yq_cSgtcr0_lF">async1(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee6async1yAA17SingleArgFunctionVyxq_s5NeverOGyx_yq_ctcr0_lF">async1(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee6async1yAA17SingleArgFunctionVyxytq_Gyx_yq_SgcSgtcs5ErrorR_r0_lF">async1(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee6async1yAA17SingleArgFunctionVyxytq_Gyx_yq_Sgctcs5ErrorR_r0_lF">async1(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee6async1yAA17SingleArgFunctionVyxyts5NeverOGyx_yycSgtclF">async1(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee6async1yAA17SingleArgFunctionVyxyts5NeverOGyx_yyctclF">async1(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee6async2yAA17DoubleArgFunctionVyxq_q0_q1_Gyx_q_yq0_Sg_q1_SgtcSgtcs5ErrorR1_r2_lF">async2(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee6async2yAA17DoubleArgFunctionVyxq_q0_q1_Gyx_q_yq0_Sg_q1_Sgtctcs5ErrorR1_r2_lF">async2(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee6async2yAA17DoubleArgFunctionVyxq_q0_q1_Gyx_q_yq1_Sg_q0_Sgtctcs5ErrorR1_r2_lF">async2(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee6async2yAA17DoubleArgFunctionVyxq_q0_q1_Gyx_q_ys6ResultOyq0_q1_Gctcs5ErrorR1_r2_lF">async2(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee6async2yAA17DoubleArgFunctionVyxq_q0_s5Error_pGq0_x_q_tKcr1_lF">async2(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee6async2yAA17DoubleArgFunctionVyxq_q0_s5NeverOGq0_x_q_tcr1_lF">async2(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee6async2yAA17DoubleArgFunctionVyxq_q0_s5NeverOGyx_q_yq0_cSgtcr1_lF">async2(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee6async2yAA17DoubleArgFunctionVyxq_q0_s5NeverOGyx_q_yq0_ctcr1_lF">async2(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee6async2yAA17DoubleArgFunctionVyxq_ytq0_Gyx_q_yq0_SgcSgtcs5ErrorR0_r1_lF">async2(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee6async2yAA17DoubleArgFunctionVyxq_ytq0_Gyx_q_yq0_Sgctcs5ErrorR0_r1_lF">async2(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee6async2yAA17DoubleArgFunctionVyxq_yts5NeverOGyx_q_yycSgtcr0_lF">async2(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee6async2yAA17DoubleArgFunctionVyxq_yts5NeverOGyx_q_yyctcr0_lF">async2(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee6async3yAA17TripleArgFunctionVyxq_q0_q1_q2_Gyx_q_q0_yq1_Sg_q2_SgtcSgtcs5ErrorR2_r3_lF">async3(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee6async3yAA17TripleArgFunctionVyxq_q0_q1_q2_Gyx_q_q0_yq1_Sg_q2_Sgtctcs5ErrorR2_r3_lF">async3(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee6async3yAA17TripleArgFunctionVyxq_q0_q1_q2_Gyx_q_q0_yq2_Sg_q1_Sgtctcs5ErrorR2_r3_lF">async3(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee6async3yAA17TripleArgFunctionVyxq_q0_q1_q2_Gyx_q_q0_ys6ResultOyq1_q2_Gctcs5ErrorR2_r3_lF">async3(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee6async3yAA17TripleArgFunctionVyxq_q0_q1_s5Error_pGq1_x_q_q0_tKcr2_lF">async3(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee6async3yAA17TripleArgFunctionVyxq_q0_q1_s5NeverOGq1_x_q_q0_tcr2_lF">async3(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee6async3yAA17TripleArgFunctionVyxq_q0_q1_s5NeverOGyx_q_q0_yq1_cSgtcr2_lF">async3(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee6async3yAA17TripleArgFunctionVyxq_q0_q1_s5NeverOGyx_q_q0_yq1_ctcr2_lF">async3(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee6async3yAA17TripleArgFunctionVyxq_q0_ytq1_Gyx_q_q0_yq1_SgcSgtcs5ErrorR1_r2_lF">async3(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee6async3yAA17TripleArgFunctionVyxq_q0_ytq1_Gyx_q_q0_yq1_Sgctcs5ErrorR1_r2_lF">async3(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee6async3yAA17TripleArgFunctionVyxq_q0_yts5NeverOGyx_q_q0_yycSgtcr1_lF">async3(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee6async3yAA17TripleArgFunctionVyxq_q0_yts5NeverOGyx_q_q0_yyctcr1_lF">async3(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee4bindyq0_q_Kcq0_x_q_tKc_xtr1_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee4bindyq0_q_cq0_x_q_tc_xtr1_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee4bindyq0_xKcq0_q_Kcxc_q_tr1_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee4bindyq0_xKcq0_x_q_tKc_q_tr1_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee4bindyq0_x_q_tKcq0_x_xq_tKc_xtr1_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee4bindyq0_x_q_tcq0_x_xq_tc_xtr1_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee4bindyq0_x_xtKcq0_x_q_tKcxc_q_tr1_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee4bindyq0_x_xtKcq0_x_xq_tKc_q_tr1_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee4bindyq0_x_xtcq0_x_q_tcxc_q_tr1_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee4bindyq0_x_xtcq0_x_xq_tc_q_tr1_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee4bindyq0_xcq0_q_cxc_q_tr1_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee4bindyq0_xcq0_x_q_tc_q_tr1_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee4bindyq1_q__q0_tKcq1_x_q_q0_tKc_xtr2_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee4bindyq1_q__q0_tcq1_x_q_q0_tc_xtr2_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee4bindyq1_x_q0_tKcq1_q__q0_tKcxc_q_tr2_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee4bindyq1_x_q0_tKcq1_x_q_q0_tKc_q_tr2_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee4bindyq1_x_q0_tcq1_q__q0_tcxc_q_tr2_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee4bindyq1_x_q0_tcq1_x_q_q0_tc_q_tr2_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee4bindyq1_x_q_tKcq1_q__q0_tKcxc_q0_tr2_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee4bindyq1_x_q_tKcq1_x_q_q0_tKc_q0_tr2_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee4bindyq1_x_q_tcq1_q__q0_tcxc_q0_tr2_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee4bindyq1_x_q_tcq1_x_q_q0_tc_q0_tr2_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee4bindyq2_q__q0_q1_tKcq2_x_q_q0_q1_tKc_xtr3_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee4bindyq2_q__q0_q1_tcq2_x_q_q0_q1_tc_xtr3_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee4bindyq2_x_q0_q1_tKcq2_q__q0_q1_tKcxc_q_tr3_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee4bindyq2_x_q0_q1_tKcq2_x_q_q0_q1_tKc_q_tr3_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee4bindyq2_x_q0_q1_tcq2_q__q0_q1_tcxc_q_tr3_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee4bindyq2_x_q0_q1_tcq2_x_q_q0_q1_tc_q_tr3_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee4bindyq2_x_q_q0_tKcq2_q__q0_q1_tKcxc_q1_tr3_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee4bindyq2_x_q_q0_tKcq2_x_q_q0_q1_tKc_q1_tr3_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee4bindyq2_x_q_q0_tcq2_q__q0_q1_tcxc_q1_tr3_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee4bindyq2_x_q_q0_tcq2_x_q_q0_q1_tc_q1_tr3_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee4bindyq2_x_q_q1_tKcq2_q__q0_q1_tKcxc_q0_tr3_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee4bindyq2_x_q_q1_tKcq2_x_q_q0_q1_tKc_q0_tr3_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee4bindyq2_x_q_q1_tcq2_q__q0_q1_tcxc_q0_tr3_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee4bindyq2_x_q_q1_tcq2_x_q_q0_q1_tc_q0_tr3_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee4bindyq_xKcq_x_xtKc_xtr0_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee4bindyq_xcq_x_xtc_xtr0_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee4bindyq_yKcq_xKc_xtr0_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee4bindyq_ycq_xc_xtr0_lF">bind(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8HoneyBee3if_yAA2IfCyxq_GAA4LinkCySbxq_G_yycts5ErrorRzAA19AsyncBlockPerformerR_r0_lF">if_(_:_:)</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Protocols.html">Protocols</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Protocols/AsyncBlockPerformer.html">AsyncBlockPerformer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/FailureRateAwareError.html">FailureRateAwareError</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/OptionalProtocol.html">OptionalProtocol</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Structs.html">Structures</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Structs/AsyncDoubleArgFunction.html">AsyncDoubleArgFunction</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/AsyncSingleArgFunction.html">AsyncSingleArgFunction</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/AsyncTrace.html">AsyncTrace</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/AsyncTripleArgFunction.html">AsyncTripleArgFunction</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/AsyncZeroArgFunction.html">AsyncZeroArgFunction</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/BackgroundDispatchQueue.html">BackgroundDispatchQueue</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/BoundDoubleArgFunction.html">BoundDoubleArgFunction</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/BoundSingleArgFunction.html">BoundSingleArgFunction</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/BoundTripleArgFunction.html">BoundTripleArgFunction</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/BoundZeroArgFunction.html">BoundZeroArgFunction</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/DefaultDispatchQueue.html">DefaultDispatchQueue</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/DoubleArgFunction.html">DoubleArgFunction</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/ErrorContext.html">ErrorContext</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/HoneyBee.html">HoneyBee</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/MainDispatchQueue.html">MainDispatchQueue</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SingleArgFunction.html">SingleArgFunction</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/TripleArgFunction.html">TripleArgFunction</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/UserInitiatedDispatchQueue.html">UserInitiatedDispatchQueue</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/UserInteractiveDispatchQueue.html">UserInteractiveDispatchQueue</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/UtilityDispatchQueue.html">UtilityDispatchQueue</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/ZeroArgFunction.html">ZeroArgFunction</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            <h1>AsyncZeroArgFunction</h1>
+              <div class="declaration">
+                <div class="language">
+                  
+                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">AsyncZeroArgFunction</span><span class="o">&lt;</span><span class="kt">R</span><span class="p">,</span> <span class="kt">E</span><span class="p">,</span> <span class="kt">P</span><span class="o">&gt;</span> <span class="k">where</span> <span class="kt">E</span> <span class="p">:</span> <span class="kt">Error</span><span class="p">,</span> <span class="kt">P</span> <span class="p">:</span> <span class="kt"><a href="../Protocols/AsyncBlockPerformer.html">AsyncBlockPerformer</a></span></code></pre>
+
+                </div>
+              </div>
+            <p>Undocumented</p>
+
+          </section>
+          <section class="section task-group-section">
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8HoneyBee20AsyncZeroArgFunctionV06callAsF04file4lineAA4LinkCyxq_q0_Gs12StaticStringV_SutF"></a>
+                    <a name="//apple_ref/swift/Method/callAsFunction(file:line:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8HoneyBee20AsyncZeroArgFunctionV06callAsF04file4lineAA4LinkCyxq_q0_Gs12StaticStringV_SutF">callAsFunction(file:<wbr>line:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@discardableResult</span>
+<span class="kd">public</span> <span class="kd">func</span> <span class="nf">callAsFunction</span><span class="p">(</span><span class="nv">file</span><span class="p">:</span> <span class="kt">StaticString</span> <span class="o">=</span> <span class="kd">#file</span><span class="p">,</span> <span class="nv">line</span><span class="p">:</span> <span class="kt">UInt</span> <span class="o">=</span> <span class="kd">#line</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Link.html">Link</a></span><span class="o">&lt;</span><span class="kt">R</span><span class="p">,</span> <span class="kt">E</span><span class="p">,</span> <span class="kt">P</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2020 <a class="link" href="http://HoneyBee.link/3.0.0.a.2/docs/index.html" target="_blank" rel="external">Alex Lynch</a>. All rights reserved. (Last updated: 2020-08-09)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.5</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>
