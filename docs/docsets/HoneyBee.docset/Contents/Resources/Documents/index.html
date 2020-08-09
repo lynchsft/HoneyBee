@@ -16,7 +16,7 @@
     <a title="HoneyBee  Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="index.html">HoneyBee 3.0.0.a.3 Docs</a> (59% documented)</p>
+        <p><a href="index.html">HoneyBee 3.0.0.a.4 Docs</a> (59% documented)</p>
         <p class="header-right">
           <form role="search" action="search.json">
             <input type="text" placeholder="Search documentation" data-typeahead>
@@ -735,6 +735,9 @@
 <li><strong>Bring Your Own Code.</strong> HoneyBee works with your asynchronous and synchronous functions, as they are today, with no modifications. (Usually.)</li>
 <li><strong>Safe By Default.</strong> HoneyBee enforces proper error handling techniques - while also reducing programmer burden.</li>
 </ul>
+<h2 id='documentation' class='heading'>Documentation</h2>
+
+<p>View project documentation <strong><a href="https://lynchsft.github.io/HoneyBee/index.html">here.</a></strong></p>
 <h2 id='quick-examples' class='heading'>Quick Examples</h2>
 <h3 id='example-show-me' class='heading'>Example: Show Me.</h3>
 <pre class="highlight swift"><code><span class="kt">HoneyBee</span><span class="o">.</span><span class="n">start</span> <span class="p">{</span> <span class="n">root</span> <span class="k">in</span>
@@ -756,7 +759,7 @@
 <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">func1</span><span class="p">(</span><span class="nv">completion</span><span class="p">:</span> <span class="p">([</span><span class="kt">String</span><span class="p">]?,</span> <span class="kt">Error</span><span class="p">?)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)</span> <span class="p">{</span><span class="o">...</span><span class="p">}</span>
 <span class="kd">func</span> <span class="nf">func2</span><span class="p">(</span><span class="nv">string</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt">Int</span> <span class="p">{</span><span class="o">...</span><span class="p">}</span>
 <span class="kd">func</span> <span class="nf">func3</span><span class="p">(</span><span class="nv">int</span><span class="p">:</span> <span class="kt">Int</span><span class="p">,</span> <span class="nv">completion</span><span class="p">:</span> <span class="p">(</span><span class="kt">Error</span><span class="p">?)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)</span> <span class="p">{</span><span class="o">...</span><span class="p">}</span>
-<span class="kd">func</span> <span class="nf">func4</span><span class="p">(</span><span class="nv">int</span><span class="p">:</span> <span class="kt">Int</span><span class="p">,</span> <span class="nv">completion</span><span class="p">:</span> <span class="p">(</span><span class="kt">FailableResult</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)</span> <span class="p">{</span><span class="o">...</span><span class="p">}</span>
+<span class="kd">func</span> <span class="nf">func4</span><span class="p">(</span><span class="nv">int</span><span class="p">:</span> <span class="kt">Int</span><span class="p">,</span> <span class="nv">completion</span><span class="p">:</span> <span class="p">(</span><span class="kt">Result</span><span class="o">&lt;</span><span class="kt">String</span><span class="p">,</span> <span class="kt">Error</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)</span> <span class="p">{</span><span class="o">...</span><span class="p">}</span>
 <span class="kd">func</span> <span class="nf">func5</span><span class="p">(</span><span class="nv">strings</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span><span class="p">],</span> <span class="nv">completion</span><span class="p">:</span> <span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)</span> <span class="p">{</span><span class="o">...</span><span class="p">}</span>
 <span class="kd">func</span> <span class="nf">successFunc</span><span class="p">(</span><span class="nv">strings</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span><span class="p">])</span> <span class="p">{</span><span class="o">...</span><span class="p">}</span>
 <span class="kt">HoneyBee</span><span class="o">.</span><span class="n">start</span> <span class="p">{</span> <span class="n">root</span> <span class="k">in</span>
@@ -848,7 +851,7 @@ Let&rsquo;s take a look at the Honeybee form:</p>
 <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">handleError</span><span class="p">(</span><span class="n">_</span> <span class="nv">errorContext</span><span class="p">:</span> <span class="kt">ErrorContext</span><span class="p">)</span> <span class="p">{</span>
     <span class="nf">print</span><span class="p">(</span><span class="n">errorContext</span><span class="p">)</span>
 <span class="p">}</span>
-<span class="kd">func</span> <span class="nf">stringToInt</span><span class="p">(</span><span class="nv">string</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">callback</span><span class="p">:</span> <span class="p">(</span><span class="kt">FailableResult</span><span class="o">&lt;</span><span class="kt">Int</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)</span> <span class="p">{</span>
+<span class="kd">func</span> <span class="nf">stringToInt</span><span class="p">(</span><span class="nv">string</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">callback</span><span class="p">:</span> <span class="p">(</span><span class="kt">Result</span><span class="o">&lt;</span><span class="kt">Int</span><span class="p">,</span> <span class="kt">Error</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">if</span> <span class="k">let</span> <span class="nv">int</span> <span class="o">=</span> <span class="kt">Int</span><span class="p">(</span><span class="n">string</span><span class="p">)</span> <span class="p">{</span>
         <span class="nf">callback</span><span class="p">(</span><span class="o">.</span><span class="nf">success</span><span class="p">(</span><span class="n">int</span><span class="p">))</span>
     <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>

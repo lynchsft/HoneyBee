@@ -1,5 +1,6 @@
 
 #### [Current]
+ * [68d653c](../../commit/68d653c) - __(Alex Lynch)__ Update version release script.
  * [e600106](../../commit/e600106) - __(Alex Lynch)__ Mark as v3.0.0.a.3
  * [7c660d0](../../commit/7c660d0) - __(Alex Lynch)__ Mark as v3.0.0.a.2
 
