@@ -59,6 +59,23 @@ private class ErrorIgnoringExecutableWrapper<E: Error>: Executable<E> {
     }
 }
 
+private class ErrorUpcastingExecutableWrapper<E: Error>: Executable<E> {
+    private let executeWrapper: (Any, @escaping () -> Void) -> Void
+    private let ancestorFailedWrapper: (ErrorContext<Error>) -> Void
+    init(executable: Executable<Error>) {
+        self.executeWrapper = executable.execute
+        self.ancestorFailedWrapper = executable.ancestorFailed
+    }
+
+    override func execute(argument: Any, completion: @escaping () -> Void) {
+        self.executeWrapper(argument, completion)
+    }
+
+    override func ancestorFailed(_ context: ErrorContext<E>) {
+        ancestorFailedWrapper(context.mapError{$0})
+    }
+}
+
 extension Link where E == Never {
     /// Primary chain form. All other forms translate into this form.
     ///
@@ -77,7 +94,7 @@ extension Link where E == Never {
             }
             function(b, callback)
         }
-        var trace = self.trace
+        var trace = self.trace.get()
         trace.append(.init(action: (functionDescription ?? tname(function)), file: file, line: line))
         let newLink = Link<C, OtherE, P>(function: wrapperFunction,
                                      blockPerformer: self.blockPerformer,
@@ -104,7 +121,7 @@ extension Link where E == Never {
            }
            function(b, callback)
        }
-       var trace = self.trace
+       var trace = self.trace.get()
        trace.append(.init(action: (functionDescription ?? tname(function)), file: file, line: line))
        let newLink = Link<C, E, P>(function: wrapperFunction,
                                     blockPerformer: self.blockPerformer,
@@ -137,19 +154,19 @@ final public class Link<B, E: Error, P: AsyncBlockPerformer> : Executable<E>  {
 	
 	// Debug info
 	
-    var trace: AsyncTrace
+    var trace: AtomicValue<AsyncTrace>
     
     fileprivate var functionFile: StaticString {
-        self.trace.last.file
+        self.trace.get().last.file
     }
     fileprivate var functionLine: UInt {
-        self.trace.last.line
+        self.trace.get().last.line
     }
 	
 	init(function:  @escaping (Any, @escaping (Result<B, E>) -> Void) -> Void, blockPerformer: P, trace: AsyncTrace) {
 		self.function = function
 		self.blockPerformer = blockPerformer
-		self.trace = trace
+        self.trace = AtomicValue(value: trace)
 	}
 	
 	fileprivate func debug(_ message: String) {
@@ -183,7 +200,7 @@ final public class Link<B, E: Error, P: AsyncBlockPerformer> : Executable<E>  {
             }
             function(b, callback)
         }
-        var trace = self.trace
+        var trace = self.trace.get()
         trace.append(.init(action: (functionDescription ?? tname(function)), file: file, line: line))
         let newLink = Link<C, E, P>(function: wrapperFunction,
                                      blockPerformer: self.blockPerformer,
@@ -221,7 +238,7 @@ final public class Link<B, E: Error, P: AsyncBlockPerformer> : Executable<E>  {
                 }
             }
         }
-        var trace = self.trace
+        var trace = self.trace.get()
         trace.append(.init(action: (functionDescription ?? tname(function)), file: file, line: line))
         let newLink = Link<C, E, P>(function: wrapperFunction,
                                      blockPerformer: self.blockPerformer,
@@ -259,20 +276,16 @@ final public class Link<B, E: Error, P: AsyncBlockPerformer> : Executable<E>  {
                 }
             }
         }
-        var trace = self.trace
+        var trace = self.trace.get()
         trace.append(.init(action: (functionDescription ?? tname(function)), file: file, line: line))
         let newLink = Link<C, Error, P>(function: wrapperFunction,
                                      blockPerformer: self.blockPerformer,
                                      trace: trace)
 
         if let existingFailure = self.ancestorFailureBox.getValue() {
-            newLink.ancestorFailed(existingFailure as! ErrorContext<Error>)
+            newLink.ancestorFailed(existingFailure.mapError{$0})
         } else {
-            if let neverSelf = self as? Link<B,Never,P> {
-                neverSelf.createdLinks.push(NonErroringExecutableWrapper(executable: newLink))
-            } else {
-                self.createdLinks.push(newLink as! Executable<E>)
-            }
+            self.createdLinks.push(ErrorUpcastingExecutableWrapper(executable: newLink))
         }
         return newLink
     }
@@ -307,7 +320,7 @@ final public class Link<B, E: Error, P: AsyncBlockPerformer> : Executable<E>  {
 		} else {
 			var bb:B? = nil
 			
-			var trace = self.trace
+            var trace = self.trace.get()
 			trace.append(.init(action: "finally", file: file, line: line))
 			let newFinalLink = Link<B, E, P>(function: { (_: Any, completion: (Result<B, E>)->Void) in
 				completion(.success(bb!))
@@ -327,7 +340,7 @@ final public class Link<B, E: Error, P: AsyncBlockPerformer> : Executable<E>  {
 	
 	fileprivate func joinPoint() -> JoinPoint<B, E, P> {
 		let link = JoinPoint<B, E, P>(blockPerformer: self.blockPerformer,
-								trace: self.trace)
+                                      trace: self.trace.get())
         self.createdLinks.push(link)
 		return link
 	}
@@ -339,7 +352,7 @@ final public class Link<B, E: Error, P: AsyncBlockPerformer> : Executable<E>  {
 	}
 	
     override func ancestorFailed(_ context: ErrorContext<E>) {
-		self.propagateFailureToDecendants(context)
+		self.propagateFailureToDescendants(context)
 	}
 	
 	public subscript(_ block: @escaping (B)->Void) -> Link<Void, E, P> {
@@ -373,11 +386,11 @@ extension Link {
 	
     private func processError(_ error: E, with argument: Any, completion: @escaping ()->Void) {
 		self.blockPerformer.asyncPerform {
-			let errorContext = ErrorContext(subject: argument, error: error, trace: self.trace)
+            let errorContext = ErrorContext(subject: argument, error: error, trace: self.trace.get())
 
 			// why not execute finally link here? Finally links are registered on `self`.
 			// If self errors, there is no downward chain to finally back from.
-			self.propagateFailureToDecendants(errorContext)
+			self.propagateFailureToDescendants(errorContext)
 			completion()
 		}
 	}
@@ -431,29 +444,17 @@ extension Link {
 		}
 	}
 	
-    fileprivate func propagateFailureToDecendants(_ context: ErrorContext<E>) {
-        let extendedContext = context.extend(with: self.trace)
-        self.ancestorFailureBox.setValue(extendedContext)
+    fileprivate func propagateFailureToDescendants(_ context: ErrorContext<E>) {
+        self.ancestorFailureBox.setValue(context)
 		self.createdLinks.drain { child in
-            child.ancestorFailed(extendedContext)
+            child.ancestorFailed(context)
 		}
-		self.finalLinkBox.get()?.ancestorFailed(extendedContext)
+		self.finalLinkBox.get()?.ancestorFailed(context)
 	}
 }
 
 extension Link {
-    // Result special form
-//    @discardableResult
-//    public func onResult(file: StaticString = #file,  line: UInt = #line, _ completion: @escaping  (Result<B, ErrorContext<E>>) -> Void) -> Link<B, E, P> {
-//        self.chain { (b: B, callback: @escaping (Result<Void, E>) -> Void) in
-//            completion(.success(b))
-//            callback(.success(Void()))
-//        }
-//        self.ancestorFailureBox.yieldValue(file: file, line: line) { context in
-//            completion(.failure(context))
-//        }
-//        return self
-//    }
+    // Result special forms
 
     @discardableResult
     public func onResult(file: StaticString = #file, line: UInt = #line, _ completion: @escaping  (Result<B, E>) -> Void) -> Link<B, E, P> {
@@ -530,7 +531,7 @@ extension Link {
 
         let newLink = Link<B, Never, P>(function: wrapperFunction,
                                         blockPerformer: self.blockPerformer,
-                                        trace: self.trace)
+                                        trace: self.trace.get())
 
        self.createdLinks.push(ErrorIgnoringExecutableWrapper(executable: newLink))
        return newLink
@@ -565,8 +566,8 @@ extension Link {
 
     @discardableResult
     public func chain<R>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, _ function: @escaping (B)->R) -> Link<R,E,P> {
-    self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b, completion: @escaping (Result<R, Never>) -> Void) in
-            completion(.success(function(b)))
+        self.chain(file: file, line: line, functionDescription: functionDescription ?? tname(function)) { (b, completion: @escaping (Result<R, Never>) -> Void) in
+            completion(.success(guarantee(faultResponse: .fail, function)(b)))
         }
     }
 
@@ -816,7 +817,7 @@ extension Link {
 			}
 			callback(.success(b))
 		}
-		var trace = self.trace
+        var trace = self.trace.get()
 		trace.append(.init(action: "switch to \(String(describing: OtherP.self))", file: file, line: line))
 		let link = Link<B, E, OtherP>(function: wrapperFunction,
 										  blockPerformer: otherPerformer,
@@ -828,7 +829,9 @@ extension Link {
 
 extension Link {
     func document(action: String, file: StaticString, line: UInt) -> Self {
-        self.trace.append(.init(action: action, file: file, line: line))
+        self.trace.access { trace in
+            trace.append(.init(action: action, file: file, line: line))
+        }
         return self
     }
 }
@@ -862,7 +865,7 @@ extension Link where B : Collection, E: FailureRateAwareError {
 					}
 				}
 
-			let integrationSerialQueue = DispatchQueue(label: "HoneyBee-Map-IntegrationQueue")
+			let integrationSerialQueue = DispatchQueue(label: "HoneyBeeMapIntegrationQueue")
 
 			for (index, element) in collection.enumerated() {
                 transform(element >> rootLink)
@@ -874,11 +877,11 @@ extension Link where B : Collection, E: FailureRateAwareError {
 			}
 		}
 	}
-//
-//	/// When the inbound type is a `Collection`, you may call `filter` to asynchronously filter the elements of B in parallel, using `filter` subchain
-//	///
-//	/// - Parameter filter: the filter subchain which produces a Bool
-//	/// - Returns: a `Link` which will yield to it's child links an array containing those `B.Iterator.Element`s which `filter` approved.
+
+	/// When the inbound type is a `Collection`, you may call `filter` to asynchronously filter the elements of B in parallel, using `filter` subchain
+	///
+	/// - Parameter filter: the filter subchain which produces a Bool
+	/// - Returns: a `Link` which will yield to it's child links an array containing those `B.Iterator.Element`s which `filter` approved.
     public func filter(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, limit: Int? = nil, acceptableFailure: FailureRate = .none, _ filter: @escaping (Link<B.Iterator.Element, E, P>) -> Link<Bool, E, P>) -> Link<[B.Iterator.Element],E, P> {
 		return self.map(file: file, line: line, functionDescription: functionDescription ?? "filter", limit: limit, acceptableFailure: acceptableFailure, { elem -> Link<B.Element?, E, P> in
 			elem.branch { stem in
@@ -897,22 +900,6 @@ extension Link where B : Collection, E: FailureRateAwareError {
 	/// The `Link` which is given as argument to the define block will pass to its child links the element of the collection which is currently being processed.
 	///
 	/// - Parameter defineBlock: a block which creates a subchain for each element of the Collection
-    /// - Returns: a Link which will pass the collection `B` to its child links
-    @discardableResult
-    public func each(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, limit: Int? = nil, acceptableFailure: FailureRate = .none, _ defineBlock: @escaping (Link<B.Element, E, P>) -> Void) -> Link<B, E, P> {
-        self.tunnel { collection in
-            self.map(file: file, line: line, functionDescription: functionDescription ?? "each", limit: limit, acceptableFailure: acceptableFailure) { elem -> Link<B.Element, E, P> in
-                defineBlock(elem)
-                return elem
-            }
-        }
-	}
-
-	/// When the inbound type is a `Collection`, you may call `each`
-	/// Each accepts a define block which creates a subchain which will be invoked once per element of the sequence.
-	/// The `Link` which is given as argument to the define block will pass to its child links the element of the collection which is currently being processed.
-	///
-	/// - Parameter defineBlock: a block which creates a subchain for each element of the Collection
 	/// - Returns: a Link which will pass an Array of the nonfailing elements of `B` to its child links
 	@discardableResult
     public func each<R>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, limit: Int? = nil, acceptableFailure: FailureRate = .none, _ defineBlock: @escaping (Link<B.Element, E, P>) -> Link<R, E, P>) -> Link<[B.Element], E, P> {
@@ -922,18 +909,18 @@ extension Link where B : Collection, E: FailureRateAwareError {
 			}
 		}
 	}
-//
-//	///  When the inbound type is a `Collection`, you may call `reduce`
-//	///  Reduce accepts a define block which creates a subchain which will be executed *sequentially*,
-//	///  once per element of the sequence. The result of each successive execution of the subchain will
-//	///  be forwarded to the next pass of the subchain. The result of the final execution of the subchain
-//	///  will be forwarded to the returned link.
-//	///
-//	/// - Parameters:
-//	///   - t: the value to reduce onto. In many cases this value can be called an "accumulator"
-//	///   - acceptableFailure: the acceptable failure rate
-//	///   - defineBlock: a block which creates a subchain for each element of the Collection
-//	/// - Returns: a Link which will pass the result of the reduce to its child links.
+
+	///  When the inbound type is a `Collection`, you may call `reduce`
+	///  Reduce accepts a define block which creates a subchain which will be executed *sequentially*,
+	///  once per element of the sequence. The result of each successive execution of the subchain will
+	///  be forwarded to the next pass of the subchain. The result of the final execution of the subchain
+	///  will be forwarded to the returned link.
+	///
+	/// - Parameters:
+	///   - t: the value to reduce onto. In many cases this value can be called an "accumulator"
+	///   - acceptableFailure: the acceptable failure rate
+	///   - defineBlock: a block which creates a subchain for each element of the Collection
+	/// - Returns: a Link which will pass the result of the reduce to its child links.
     public func reduce<T>(file: StaticString = #file, line: UInt = #line, functionDescription: String? = nil, with t: T, acceptableFailure: FailureRate = .none, _ defineBlock: @escaping (Link<(T,B.Element), E, P>) -> Link<T, E, P>) -> Link<T, E, P> {
         let atomicT = AtomicValue(value: t)
 
@@ -960,42 +947,36 @@ extension Link where B : Collection, E: FailureRateAwareError {
 
 		var elemLinks = Array<Link<B.Element, E, P>>()
 
-        return self.each(file: file, line: line, functionDescription: functionDescription ?? "reduce") { (elemLink: Link<B.Element, E, P>)  in
-            elemLinks.append(elemLink)
-        }.chain { (_:B, completion: @escaping (Result<B.Element, E>) -> Void) in
-			let reportedFailure: AtomicBool = false
-			let reportedSuccess: AtomicBool = false
-			func applyFinally(to link: Link<B.Element, E, P>) {
-				if link.finalLinkBox.get() == nil {
-					let _ = link.finally { link in
-						link.chain { (_:B.Element) -> Void in
-							if !reportedSuccess.get() {
-								reportedFailure.access { reported in
-									if reported == false {
-                                        completion(.failure(E.failureRateExceeded(FailureRate.none)))
-										reported = true
-									}
-								}
-							}
-						}
-					}
-				}
-			}
+        let rootLink = self.drop
+
+        return self.chain(file: file, line: line, functionDescription: functionDescription ?? "reduce") { (elements: B, completion: @escaping (Result<B.Element, E>) -> Void) in
+
+            for element in elements {
+                elemLinks.append(rootLink.insert(element))
+            }
+
 			while elemLinks.count >= 2 {
 				let e1 = elemLinks.removeFirst()
 				let e2 = elemLinks.removeFirst()
-				applyFinally(to: e1)
-				applyFinally(to: e2)
 
 				let e12 = defineBlock(e1+e2)
 				elemLinks.append(e12)
 			}
 
+            let reportedFailure: AtomicBool = false
+ 
 			let lastLink = elemLinks.removeFirst()
 			lastLink.chain { (b: B.Element) -> Void in
-				reportedSuccess.setTrue()
 				completion(.success(b))
-			}
+            }.onError { (e:E) in
+                reportedFailure.access { reported in
+                    if reported == false {
+                        completion(.failure(E.failureRateExceeded(FailureRate.none)))
+                        reported = true
+                    }
+                }
+
+            }
 		}
 	}
 }
@@ -1052,7 +1033,7 @@ fileprivate var limitPathsToSemaphores: [String:DispatchSemaphore] = [:]
 
 extension Link  {
 	fileprivate static func semaphore<X, SomeError, SomePerformer>(for link: Link<X, SomeError, SomePerformer>, withValue value: Int) -> DispatchSemaphore {
-		let pathString = link.trace.toString()
+        let pathString = link.trace.get().toString()
 		
 		limitPathsToSemaphoresLock.lock()
 		let semaphore = limitPathsToSemaphores[pathString] ?? DispatchSemaphore(value: value)
@@ -1104,32 +1085,9 @@ extension Link  {
 		return returnLink
 	}
 	
-	/// `limit` defines a subchain with special runtime protections. The links within the `limit` subchain are guaranteed to have at most `maxParallel` parallel executions. `limit` is particularly useful in the context of a fully parallel process when part of the process must access a limited resource pool such as CPU execution contexts or network resources.
-	///
-	/// - Parameters:
-	///   - maxParallel:  the maximum number of parallel executions permitted for the subchains defined by `defineBlock`
-	///   - defineBlock: a block which creates a subchain to be limited.
-	public func limit(_ maxParallel: Int, _ defineBlock: (Link<B, E, P>) -> Void) -> Void {
-		let semaphore = Link.semaphore(for: self, withValue: maxParallel)
-		
-		let openingLink = self.chain { (b:B) -> B in
-			semaphore.wait()
-			return b
-		}
-		let _ = openingLink.finally{ link in
-			link.chain { (_:B) -> Void in
-				semaphore.signal()
-			}
-		}
-		
-		defineBlock(openingLink)
-	}
 }
 
 extension Link {
-	private enum RetryError : Error {
-		case generalError
-	}
 	/// `retry` defines a subchain with special runtime properties. The defined subchain will execute a maximum of `maxTimes + 1` times in an attempt to reach a non-error result.
 	/// If each of the `maxTimes + 1` attempts result in error, the error from the last-attempted pass will be send to the registered error handler.
 	/// If any of the attempts succeeds, the result `R` will be forwarded to the link which is returned from this function. For example:
@@ -1147,19 +1105,19 @@ extension Link {
 	///   - defineBlock: a block which creates a subchain to be retried.
 	/// - Returns: a `Link` whose execution result `R` is the result of the final link of the subchain.
 	@discardableResult
-	public func retry<R>(_ maxTimes: Int, _ defineBlock: @escaping (Link<B, E, P>) -> Link<R, E, P>) -> Link<R, Error, P> {
-		precondition(maxTimes > 0, "retry requiers maxTimes > 0")
+    public func retry<R>(_ maxTimes: Int, _ defineBlock: @escaping (Link<B, E, P>) -> Link<R, E, P>) -> Link<R, E, P> {
+		precondition(maxTimes > 0, "retry requires maxTimes > 0")
 		
 		let retryTimes:AtomicInt = 0
 		
 		var result: R? = nil
 		
-		return self.chain { [weak self] (_: B, completion: @escaping (Result<R, Error>)->Void) -> Void in
+		return self.chain { [weak self] (_: B, completion: @escaping (Result<R, E>)->Void) -> Void in
 		
 			func invokeDefineBlock() {
 				if let this = self {
 					
-						let recorededError = AtomicValue<Error?>(value: nil)
+						let recordedError = AtomicValue<E?>(value: nil)
 						let passThroughLink = this.chain { return $0 }
 					
 						let _ = passThroughLink.finally { link in
@@ -1172,11 +1130,10 @@ extension Link {
 											invokeDefineBlock()
 											times += 1
 										} else {
-											if let recorededError = recorededError.get() {
-												completion(.failure(recorededError))
+											if let recordedError = recordedError.get() {
+												completion(.failure(recordedError))
 											} else {
-												// otherwise the recipie set a custom error handler inside the retry... which is fine.
-												completion(.failure(RetryError.generalError))
+                                                HoneyBee.internalFailureResponse.evaluate(true, "retry has no recorded error, but did not succeed.")
 											}
 										}
 									}
@@ -1187,7 +1144,7 @@ extension Link {
                         defineBlock(passThroughLink).chain { (r: R, callback: @escaping (Result<Void,Never>)->Void) in
 							result = r
                             callback(.success(Void()))
-                        }.onError(recorededError.set(value:))
+                        }.onError(recordedError.set(value:))
 				} else {
 					let message = "Lost self reference in retry"
 					HoneyBee.internalFailureResponse.evaluate(false, message)

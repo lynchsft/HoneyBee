@@ -26,7 +26,7 @@ fileprivate class RemoteObject {
         return Data()
     }
     
-    lazy private(set) var fetchData = async1(self.fetchData) as SingleArgFunction<String, Data>
+    lazy private(set) var fetchData = async1(self.fetchData) as SingleArgFunction<String, Data, Error>
     func fetchData(ref: String, completion: @escaping (Data?, Error?) -> Void ) {
         completion(Data(), nil)
     }
@@ -41,7 +41,7 @@ fileprivate class RemoteObject {
         Date()
     }
 
-    static var unite: TripleArgFunction<RemoteObject, RemoteObject, String, RemoteObject> { async3(unite) }
+    static var unite: TripleArgFunction<RemoteObject, RemoteObject, String, RemoteObject, Error> { async3(unite) }
     class func unite(a: RemoteObject, with b: RemoteObject, bindingName: String, completion: @escaping (Result<RemoteObject, Error>) -> Void) {
         completion(.success(b))
     }
@@ -51,7 +51,7 @@ fileprivate class RemoteObject {
 
     }
 
-    static var devide: BoundTripleArgFunction<String, RemoteObject, RemoteObject, Void, DefaultDispatchQueue> {
+    static var devide: BoundTripleArgFunction<String, RemoteObject, RemoteObject, Void, Error, DefaultDispatchQueue> {
         async3(devide).on(DefaultDispatchQueue.self)
     }
     class func devide(bindingNamed string: String, containing a: RemoteObject, and b: RemoteObject, completion: @escaping (Error?)-> Void) {
@@ -79,7 +79,7 @@ class CodeCoverageTests: XCTestCase {
         let data = remote.fetchData("fooId3")
         let time = remote.synchronize()
         
-        let injested = remote.ingest(data)(time)
+        let ingested = remote.ingest(data)(time)
 
         let finished = (ingested +> remote).deleteSelf()
 
@@ -100,16 +100,12 @@ class CodeCoverageTests: XCTestCase {
 
         let data = remote.syncFetchData("fooId3")
                     <+ remote.syncFetchData("fooId3" >> hb)
-                    <+ r.syncFetchData(hb)("fooId3")
-                    <+ r.syncFetchData(hb)("fooId3" >> hb)
                     <+ r.syncFetchData("fooId3")(hb)
 
         let time = remote.synchronize()
                     <+ r.synchronize(hb)
 
-        let injested = remote.syncInjest(data)(time)
-                        <+ r.syncInjest(hb)(data)(time)
-                        <+ r.syncInjest(hb)(Data())(Date())
+        let ingested = remote.syncInjest(data)(time)
                         <+ r.syncInjest(data)(time)
                         <+ r.syncInjest(Data())(Date())(hb)
                         <+ remote.syncInjest(Data())(time)
@@ -133,17 +129,15 @@ class CodeCoverageTests: XCTestCase {
         let remote2 = RemoteObject() >> hb
 
         let united = RemoteObject.unite(remote1)(remote2)("example")
-                     <+ RemoteObject.unite(hb)(remote1)(remote2)("example")
                      <+ RemoteObject.unite(r1)(remote2)("example")
 
 
         let actioned = (united >> utility).complexAction(3)("bar")(false)
-                       <+ (united >> utility).complexAction(3 >> utility)("bar")(false)
+        _ = (united >> utility).complexAction(3 >> utility)("bar")(false)
 
         let actionedRemote1 = actioned >> hb +> remote1 
 
         let finished = RemoteObject.devide("example")(actionedRemote1)(remote2)
-                    <+ RemoteObject.devide(hb)("example")(actionedRemote1)(remote2)
                     <+ RemoteObject.devide("example" >> hb)(actionedRemote1)(remote2)
 
         completion.fulfill(finished)

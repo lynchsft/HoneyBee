@@ -22,11 +22,7 @@ public struct ErrorContext<E: Error> {
 }
 
 extension ErrorContext {
-    func extend(with asyncTrace: AsyncTrace) -> Self {
-        let myCoumnt = self.trace.componentCount
-        let newContext = ErrorContext(subject: subject, error: error, trace: trace.join(asyncTrace))
-        assert(newContext.trace.componentCount == myCoumnt ||
-            newContext.trace.componentCount == myCoumnt + 1, "newContext's trace should be a single extension")
-        return newContext
+    func mapError<OtherE: Error>(_ transform: (_ error: E) -> OtherE) -> ErrorContext<OtherE> {
+        .init(subject: subject, error: transform(error), trace: trace)
     }
 }

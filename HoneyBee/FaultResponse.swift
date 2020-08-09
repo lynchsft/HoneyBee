@@ -24,10 +24,10 @@ public enum FaultResponse {
 	case assert
 	/// Invoke `preconditonFailure` with failure message
 	case fail
-	/// Invoke a custom handler with the falure message
+	/// Invoke a custom handler with the failure message
 	case custom(handler: (String)->Void)
 	
-	public func evaluate(_ flag: Bool, _ message: @autoclosure ()->String) {
+    public func evaluate(_ flag: Bool, _ message: @autoclosure ()->String, file: StaticString = #file, line: UInt = #line) {
 		if flag == false {
 			switch self {
 			case .suppress :
@@ -37,10 +37,10 @@ public enum FaultResponse {
 				print("HoneyBee Warning: \(realizedMessage)")
 			case .assert:
 				let realizedMessage = message()
-				assertionFailure(realizedMessage)
+				assertionFailure(realizedMessage, file: file, line: line)
 			case .fail:
 				let realizedMessage = message()
-				preconditionFailure(realizedMessage)
+				preconditionFailure(realizedMessage, file: file, line: line)
 			case .custom(let handler):
 				let realizedMessage = message()
 				handler(realizedMessage)

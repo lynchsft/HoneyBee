@@ -41,7 +41,7 @@ public struct AsyncTrace: CustomDebugStringConvertible {
         var newTrace = AsyncTrace(first: self.last) // will be overwritten
 		var matchingBeginingsCount = 0
 		for (index, myComp) in self.trace.enumerated() {
-			guard other.trace.count > index else {
+			guard index < other.trace.count else {
 				break
 			}
 			if myComp == other.trace[index] {
@@ -88,7 +88,7 @@ public struct AsyncTrace: CustomDebugStringConvertible {
 }
 
 // REFERENCE SEMANTICS are imporant for this type
-public struct AsyncTraceComponent: CustomStringConvertible, CustomDebugStringConvertible, Equatable {
+public class AsyncTraceComponent: CustomStringConvertible, CustomDebugStringConvertible, Equatable {
 	public static func == (lhs: AsyncTraceComponent, rhs: AsyncTraceComponent) -> Bool {
 		return lhs.action == rhs.action &&
 		String(describing: lhs.file) == String(describing: rhs.file) &&
@@ -98,6 +98,12 @@ public struct AsyncTraceComponent: CustomStringConvertible, CustomDebugStringCon
     let action: String
     let file: StaticString
 	let line: UInt
+
+    init(action: String, file: StaticString, line: UInt) {
+        self.action = action
+        self.file = file
+        self.line = line
+    }
 	
 	fileprivate static let join = AsyncTraceComponent(action: "", file: "", line: UInt.max)
     

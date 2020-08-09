@@ -25,7 +25,7 @@ public struct AsyncZeroArgFunction<R, E: Error, P: AsyncBlockPerformer> {
     
     @discardableResult
     public func callAsFunction(file: StaticString = #file, line: UInt = #line) -> Link<R, E, P> {
-        (root.document(action: action, file: file, line: line)+>function())
+        root+>function().document(action: action, file: file, line: line)
     }
 }
 

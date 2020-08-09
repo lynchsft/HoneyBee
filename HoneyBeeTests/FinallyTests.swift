@@ -73,7 +73,7 @@ class FinallyTests: XCTestCase {
                                     .chain(reachableExpectation.fulfill)
                             }
             let joinedContainer = string +> asynContainer
-            let b = joinedContainer.explodeA()
+            let b = joinedContainer.explode()
 
             let c = b.finally { link in
                                 link.drop

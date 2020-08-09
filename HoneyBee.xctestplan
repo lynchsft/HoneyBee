@@ -35,10 +35,15 @@
       "identifier" : "FA473BB71E352CB1007E4D61",
       "name" : "HoneyBee"
     },
+    "threadSanitizerEnabled" : true,
     "undefinedBehaviorSanitizerEnabled" : true
   },
   "testTargets" : [
     {
+      "skippedTests" : [
+        "ErrorHandlingTests\/testRetryNoReturn()",
+        "ErrorHandlingTests\/testRetryReturn()"
+      ],
       "target" : {
         "containerPath" : "container:HoneyBee.xcodeproj",
         "identifier" : "FA4109771E9CFBC4002A6BA6",

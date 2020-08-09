@@ -43,10 +43,10 @@ class SinglePathTests: XCTestCase {
             let hb = hb >> NSError.self
             let subject = self.funcContainer >> hb
 
-            let string = subject.intToStringA(4 >> hb)
+            let string = subject.intToString(4 >> hb)
 
-            let intAgain = subject.stringToIntA(string)
-            let multiplied = subject.multiplyIntA(intAgain)
+            let intAgain = subject.stringToInt(string)
+            let multiplied = subject.multiplyInt(intAgain)
 
             return XCTAssertEqual(multiplied, 8 >> hb)
         }
@@ -68,7 +68,7 @@ class SinglePathTests: XCTestCase {
 
             let funcContainer = self.funcContainer >> mainQ
 
-            let result = funcContainer.voidFuncA()
+            let result = funcContainer.voidFunc()
 
             return result
         }
@@ -161,11 +161,7 @@ class SinglePathTests: XCTestCase {
 				.chain(assertThreadIsMain =<< true)
 				.chain(expect.fulfill)
 
-		waitForExpectations(timeout: 1) { error in
-			if let error = error {
-				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
-			}
-		}
+		waitForExpectations(timeout: 1)
 	}
 
 	func testTunnel() {
@@ -176,7 +172,7 @@ class SinglePathTests: XCTestCase {
 		let a = hb
 				.insert(4)
 				.tunnel { link in
-                    (self.funcContainer >> hb).intToStringA(link)
+                    (self.funcContainer >> hb).intToString(link)
 						.chain(assertEquals =<< "4")
 						.chain(expectTunnel.fulfill)
 				}
@@ -185,11 +181,7 @@ class SinglePathTests: XCTestCase {
 				.chain(assertEquals =<< 8)
 				.chain(expectFinal.fulfill)
 
-		waitForExpectations(timeout: 1) { error in
-			if let error = error {
-				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
-			}
-		}
+		waitForExpectations(timeout: 3)
 	}
 
 	func testKeyPath() {
@@ -202,11 +194,7 @@ class SinglePathTests: XCTestCase {
         count.chain(assertEquals =<< 6)
             .chain(expect1.fulfill)
 
-		waitForExpectations(timeout: 1) { error in
-			if let error = error {
-				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
-			}
-		}
+		waitForExpectations(timeout: 3)
 	}
 
 	func testGetBlockPerformer() {
@@ -228,11 +216,7 @@ class SinglePathTests: XCTestCase {
 		count.chain(assertEquals =<< 6)
              .chain(expect1.fulfill)
 
-		waitForExpectations(timeout: 1) { error in
-			if let error = error {
-				XCTFail("waitForExpectationsWithTimeout errored: \(error)")
-			}
-		}
+		waitForExpectations(timeout: 1)
 	}
 
 }

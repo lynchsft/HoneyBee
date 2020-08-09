@@ -47,6 +47,15 @@ public func async0<R, E: Error>(_ function: @escaping (((R?, E?) -> Void)?) -> V
     }
 }
 
+/// Wraps an asynchronous function taking zero parameters
+/// - Parameters:
+///   - function: the function to wrap
+public func async0<R, E: Error>(_ function: @escaping (((E?, R?) -> Void)?) -> Void) -> ZeroArgFunction<R, E> {
+    ZeroArgFunction(action: tname(function)) { (completion: @escaping FunctionWrapperCompletion<R, E>) ->Void in
+        elevate(function)(completion)
+    }
+}
+
 /// Wraps an asynchronous function taking 3 parameters
 /// - Parameters:
 ///   - function: the function to wrap

@@ -54,7 +54,7 @@ class AsyncCurryTests: XCTestCase {
         }
 
         let testingFunctions = TestingFunctions() >> r4.drop
-        let error = testingFunctions.explodeA() // 6
+        let error = testingFunctions.explode() // 6
         error.onResult { (result: Result<Int, ErrorContext<NSError>>) in
             switch result {
             case .success(_):
@@ -103,7 +103,7 @@ class AsyncCurryTests: XCTestCase {
                     let value = $0.chain(+) // 5
                     let plus1 = increment(value) // 6
                     let testingFuncs = TestingFunctions() >> plus1.drop
-                    let error = testingFuncs.explodeA() +> plus1 // 7
+                    let error = testingFuncs.explode() +> plus1 // 7
 
                     error.onError(longError)
                     return error
@@ -138,7 +138,7 @@ class AsyncCurryTests: XCTestCase {
         let plus1 = increment(sum) // 5
         XCTAssertEqual(plus1, 10 >> hb)
         let testingFuncs = TestingFunctions() >> plus1.drop
-        testingFuncs.explodeA()  // 6
+        testingFuncs.explode()  // 6
             .onError(handleError)
 		
 		waitForExpectations(timeout: 3)
@@ -176,7 +176,7 @@ class AsyncCurryTests: XCTestCase {
                     let bigger = increment(int) // 4
 
                     let testingFuncs = TestingFunctions() >> bigger.drop
-                    let explode = testingFuncs.explodeA() +> bigger // 5
+                    let explode = testingFuncs.explode() +> bigger // 5
                     explode.onError(longError)
                     return explode
 			}
