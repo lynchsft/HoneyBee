@@ -1,6 +1,6 @@
 
 #### [Current]
-
+ * [7c660d0](../../commit/7c660d0) - __(Alex Lynch)__ Mark as v3.0.0.a.2
 
 #### v3.0.0-a.1
  * [38ba4a3](../../commit/38ba4a3) - __(Alex Lynch)__ Correct SemVer syntax.
