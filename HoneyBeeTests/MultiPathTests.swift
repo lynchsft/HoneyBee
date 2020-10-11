@@ -366,8 +366,8 @@ class MultiPathTests: XCTestCase {
 	}
 	
 	func testEach() {
-		var expectations:[XCTestExpectation] = []
-		var filledExpectationCount:AtomicInt = 0
+		var expectations: [XCTestExpectation] = []
+        let filledExpectationCount: AtomicInt = 0
 		
 		for int in 0..<10 {
 			expectations.append(expectation(description: "Expected to evaluate \(int)"))
@@ -396,8 +396,8 @@ class MultiPathTests: XCTestCase {
 	}
 	
 	func testEachWithRateLimiter() {
-		var expectations:[XCTestExpectation] = []
-		var filledExpectationCount: AtomicInt = 0
+		var expectations: [XCTestExpectation] = []
+        let filledExpectationCount: AtomicInt = 0
 		
 		for int in 0..<10 {
 			expectations.append(expectation(description: "Expected to evaluate \(int)"))

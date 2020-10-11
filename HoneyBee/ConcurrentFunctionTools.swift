@@ -28,7 +28,7 @@ func guarantee<A,B,R>(faultResponse: FaultResponse, file: StaticString = #file, 
 	let functionCalled: AtomicBool = false
 	functionCalled.guaranteeTrueAtDeinit(faultResponse: faultResponse, file: file, line: line)
 	return { (a:A, b:B) -> R in
-		faultResponse.evaluate(functionCalled.setTrue() == false, "function called more than once")
+		faultResponse.evaluate(functionCalled.setTrue() == false, "function called more than once", file: file, line: line)
 		return function(a,b)
 	}
 }

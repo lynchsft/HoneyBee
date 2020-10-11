@@ -277,6 +277,7 @@ extension SingleArgFunction where E == Never {
         link.chain(file: file, line: line, functionDescription: self.action, self.function)
     }
 
+    @discardableResult
     public func callAsFunction<OtherE: Error, P: AsyncBlockPerformer>(_ link: Link<A, OtherE, P>, file: StaticString = #file, line: UInt = #line) -> Link<R, OtherE, P> {
         link.chain(file: file, line: line, functionDescription: self.action, self.function)
     }
@@ -418,6 +419,7 @@ public struct BoundZeroArgFunction<R, E: Error,P: AsyncBlockPerformer> {
         self.zero(link, file: file, line: line)
     }
 
+    @discardableResult
     public func callAsFunction<OtherE: Error>(_ link: Link<Void, OtherE, P>, file: StaticString = #file, line: UInt = #line) -> Link<R, Error, P> {
         self.zero(link, file: file, line: line)
     }

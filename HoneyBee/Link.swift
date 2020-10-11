@@ -408,10 +408,10 @@ extension Link {
 				this.activeLinkCounter.increment()
 				this.createdLinksAsyncSemaphore?.wait()
 				this.blockPerformer.asyncPerform {
-					createdLink.execute(argument: result, completion: guarantee(faultResponse: HoneyBee.internalFailureResponse) {
+					createdLink.execute(argument: result) {
 						this.createdLinksAsyncSemaphore?.signal()
 						this.activeLinkCounter.decrement()
-					})
+					}
 				}
 			} else {
 				HoneyBee.internalFailureResponse.evaluate(false, "Lost self reference")
