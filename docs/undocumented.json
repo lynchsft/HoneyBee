@@ -352,336 +352,336 @@
     },
     {
       "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
-      "line": 280,
+      "line": 281,
       "symbol": "SingleArgFunction.callAsFunction(_:file:line:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
-      "line": 287,
+      "line": 288,
       "symbol": "DoubleArgFunction",
       "symbol_kind": "source.lang.swift.decl.struct",
       "warning": "undocumented"
     },
     {
       "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
-      "line": 291,
+      "line": 292,
       "symbol": "DoubleArgFunction.callAsFunction(_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
-      "line": 297,
+      "line": 298,
       "symbol": "DoubleArgFunction.callAsFunction(_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
-      "line": 305,
+      "line": 306,
       "symbol": "DoubleArgFunction.callAsFunction(_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
-      "line": 309,
+      "line": 310,
       "symbol": "DoubleArgFunction.callAsFunction(_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
-      "line": 317,
+      "line": 318,
       "symbol": "DoubleArgFunction.on(_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
-      "line": 322,
+      "line": 323,
       "symbol": "DoubleArgFunction",
       "symbol_kind": "source.lang.swift.decl.extension",
       "warning": "undocumented"
     },
     {
       "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
-      "line": 323,
+      "line": 324,
       "symbol": "DoubleArgFunction.callAsFunction(_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
-      "line": 331,
+      "line": 332,
       "symbol": "DoubleArgFunction.callAsFunction(_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
-      "line": 348,
+      "line": 349,
       "symbol": "TripleArgFunction",
       "symbol_kind": "source.lang.swift.decl.struct",
       "warning": "undocumented"
     },
     {
       "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
-      "line": 352,
+      "line": 353,
       "symbol": "TripleArgFunction.callAsFunction(_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
-      "line": 358,
+      "line": 359,
       "symbol": "TripleArgFunction.callAsFunction(_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
-      "line": 366,
+      "line": 367,
       "symbol": "TripleArgFunction.callAsFunction(_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
-      "line": 370,
+      "line": 371,
       "symbol": "TripleArgFunction.callAsFunction(_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
-      "line": 380,
+      "line": 381,
       "symbol": "TripleArgFunction.on(_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
-      "line": 385,
+      "line": 386,
       "symbol": "TripleArgFunction",
       "symbol_kind": "source.lang.swift.decl.extension",
       "warning": "undocumented"
     },
     {
       "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
-      "line": 386,
+      "line": 387,
       "symbol": "TripleArgFunction.callAsFunction(_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
-      "line": 394,
+      "line": 395,
       "symbol": "TripleArgFunction.callAsFunction(_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
-      "line": 410,
+      "line": 411,
       "symbol": "BoundZeroArgFunction",
       "symbol_kind": "source.lang.swift.decl.struct",
       "warning": "undocumented"
     },
     {
       "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
-      "line": 417,
+      "line": 418,
       "symbol": "BoundZeroArgFunction.callAsFunction(_:file:line:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
-      "line": 421,
+      "line": 423,
       "symbol": "BoundZeroArgFunction.callAsFunction(_:file:line:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
-      "line": 426,
+      "line": 428,
       "symbol": "BoundZeroArgFunction",
       "symbol_kind": "source.lang.swift.decl.extension",
       "warning": "undocumented"
     },
     {
       "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
-      "line": 428,
+      "line": 430,
       "symbol": "BoundZeroArgFunction.callAsFunction(_:file:line:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
-      "line": 433,
+      "line": 435,
       "symbol": "BoundZeroArgFunction.callAsFunction(_:file:line:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
-      "line": 439,
+      "line": 441,
       "symbol": "BoundSingleArgFunction",
       "symbol_kind": "source.lang.swift.decl.struct",
       "warning": "undocumented"
     },
     {
       "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
-      "line": 445,
+      "line": 447,
       "symbol": "BoundSingleArgFunction.callAsFunction(_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
-      "line": 450,
+      "line": 452,
       "symbol": "BoundSingleArgFunction.callAsFunction(_:file:line:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
-      "line": 455,
+      "line": 457,
       "symbol": "BoundSingleArgFunction.callAsFunction(_:file:line:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
-      "line": 460,
+      "line": 462,
       "symbol": "BoundSingleArgFunction.callAsFunction(_:file:line:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
-      "line": 465,
+      "line": 467,
       "symbol": "BoundSingleArgFunction",
       "symbol_kind": "source.lang.swift.decl.extension",
       "warning": "undocumented"
     },
     {
       "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
-      "line": 467,
+      "line": 469,
       "symbol": "BoundSingleArgFunction.callAsFunction(_:file:line:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
-      "line": 472,
+      "line": 474,
       "symbol": "BoundSingleArgFunction.callAsFunction(_:file:line:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
-      "line": 478,
+      "line": 480,
       "symbol": "BoundDoubleArgFunction",
       "symbol_kind": "source.lang.swift.decl.struct",
       "warning": "undocumented"
     },
     {
       "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
-      "line": 484,
+      "line": 486,
       "symbol": "BoundDoubleArgFunction.callAsFunction(_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
-      "line": 488,
+      "line": 490,
       "symbol": "BoundDoubleArgFunction.callAsFunction(_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
-      "line": 492,
+      "line": 494,
       "symbol": "BoundDoubleArgFunction.callAsFunction(_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
-      "line": 496,
+      "line": 498,
       "symbol": "BoundDoubleArgFunction.callAsFunction(_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
-      "line": 501,
+      "line": 503,
       "symbol": "BoundDoubleArgFunction",
       "symbol_kind": "source.lang.swift.decl.extension",
       "warning": "undocumented"
     },
     {
       "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
-      "line": 502,
+      "line": 504,
       "symbol": "BoundDoubleArgFunction.callAsFunction(_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
-      "line": 506,
+      "line": 508,
       "symbol": "BoundDoubleArgFunction.callAsFunction(_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
-      "line": 512,
+      "line": 514,
       "symbol": "BoundTripleArgFunction",
       "symbol_kind": "source.lang.swift.decl.struct",
       "warning": "undocumented"
     },
     {
       "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
-      "line": 518,
+      "line": 520,
       "symbol": "BoundTripleArgFunction.callAsFunction(_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
-      "line": 522,
+      "line": 524,
       "symbol": "BoundTripleArgFunction.callAsFunction(_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
-      "line": 526,
+      "line": 528,
       "symbol": "BoundTripleArgFunction.callAsFunction(_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
-      "line": 531,
+      "line": 533,
       "symbol": "BoundTripleArgFunction",
       "symbol_kind": "source.lang.swift.decl.extension",
       "warning": "undocumented"
     },
     {
       "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
-      "line": 532,
+      "line": 534,
       "symbol": "BoundTripleArgFunction.callAsFunction(_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/lynchal/personal/HoneyBee/HoneyBee/FunctionWrappers.swift",
-      "line": 536,
+      "line": 538,
       "symbol": "BoundTripleArgFunction.callAsFunction(_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"

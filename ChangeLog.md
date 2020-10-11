@@ -1,5 +1,7 @@
 
 #### [Current]
+ * [bb87455](../../commit/bb87455) - __(Alex Lynch)__ Cleanup and bug fixes.
+ * [c64ad19](../../commit/c64ad19) - __(Alex Lynch)__ Mark as v3.0.0.a.4
  * [68d653c](../../commit/68d653c) - __(Alex Lynch)__ Update version release script.
  * [e600106](../../commit/e600106) - __(Alex Lynch)__ Mark as v3.0.0.a.3
  * [7c660d0](../../commit/7c660d0) - __(Alex Lynch)__ Mark as v3.0.0.a.2
